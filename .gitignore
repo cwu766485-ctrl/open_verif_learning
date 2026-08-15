@@ -1,0 +1,21 @@
+# Local toolchains and downloaded third-party packages
+.tooling/
+tmp/
+
+# Picker-generated DUT and native libraries
+labs/course2_picker_fifo/generated/
+*.so
+
+# Simulation, coverage, and test artifacts
+*.fst
+*.dat
+reports/
+.pytest_cache/
+**/__pycache__/
+*.py[cod]
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

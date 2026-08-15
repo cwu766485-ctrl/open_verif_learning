@@ -1,0 +1,4 @@
+SyncFIFO:
+  - "reg [3:0] wptr"
+  - "reg [3:0] rptr"
+  - "reg [4:0] counter"
