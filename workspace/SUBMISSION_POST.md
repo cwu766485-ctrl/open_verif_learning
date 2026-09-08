@@ -26,8 +26,8 @@ make report
 
 ### 验证结果
 
-- 基线 7 个 pytest 用例全部通过；新增冲突替换、writeback、backpressure、probe、跨 line 和长随机序列后，请在 Linux/WSL 重跑并把最终用例数填在这里
-- 基线 RTL line coverage：79.2%（1151/1454）；新增回归后的覆盖率请以 `make report` 结果为准
+- Linux/WSL `make report` 共 12 个 pytest 用例全部通过，包含冲突替换、writeback、backpressure、probe、跨 line 和长随机序列
+- RTL line coverage：80.1%（1164/1454）
 - 覆盖内容：复位/流水线排空、cold miss/refill/hit、整字写、byte mask、MMIO 隔离、dirty eviction/writeback、下游延迟、coherence probe、跨 Cache line 访问和长随机序列
 
 报告包含功能梳理、测试点分解、测试用例、参考模型、结果分析和未覆盖项说明。

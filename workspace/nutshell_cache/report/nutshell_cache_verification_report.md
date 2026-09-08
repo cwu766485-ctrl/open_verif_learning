@@ -10,9 +10,9 @@
 
 最终命令 `make report` 的结果为：
 
-- 7 个测试全部通过（`7 passed`）；
+- 12 个测试全部通过（`12 passed`）；
 - Toffee HTML 报告：`reports/cache`；
-- Verilator RTL 行覆盖率：79.2%（1151/1454），详细页面为
+- Verilator RTL 行覆盖率：80.1%（1164/1454），详细页面为
   `reports/rtl/index.html`；
 - 测试波形：`cache.fst`。
 
@@ -90,8 +90,8 @@ make report
 结果摘要：
 
 ```text
-7 passed
-RTL line coverage: 79.2% (1151 of 1454 lines)
+12 passed
+RTL line coverage: 80.1% (1164 of 1454 lines)
 ```
 
 `reports/cache` 是 Toffee 生成的 HTML 测试报告，`reports/rtl` 是
