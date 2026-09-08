@@ -9,7 +9,7 @@
 
 ### 代码与报告
 
-- 验证代码仓库：<填写 GitHub 仓库链接>
+- 验证代码仓库：https://github.com/cwu766485-ctrl/open_verif_learning/tree/c4da358
 - 验证报告（Markdown）：`workspace/nutshell_cache/report/nutshell_cache_verification_report.md`
 - 验证报告（PDF）：`workspace/nutshell_cache/report/nutshell_cache_verification_report.pdf`
 - Toffee HTML 报告：`workspace/nutshell_cache/reports/cache`
