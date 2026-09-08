@@ -1,0 +1,123 @@
+name: FPGA Nightly Regression
+
+on:
+  schedule:
+    # 12:00 UTC == 20:00 UTC+8
+    - cron: '00 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-fpga-nutshell:
+    timeout-minutes: 1440
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare NutShell
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          rm -rf NutShell && rm -rf env-scripts
+          git clone --single-branch --depth 1 https://github.com/OSCPU/NutShell.git
+          cd NutShell && make init && rm -rf difftest && cp -r $GITHUB_WORKSPACE .
+          echo "NOOP_HOME=$(pwd)" >> $GITHUB_ENV
+          echo "DIFFTEST_LOG=/nfs/home/ci-runner/ci-runner-difftest/pr_log" >> "$GITHUB_ENV"
+
+      - name: Prepare FPGA scripts
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          git clone --single-branch --depth 1 https://github.com/OpenXiangShan/env-scripts.git
+          cd env-scripts
+          echo "ENV_SCRIPTS_HOME=$(pwd)" >> $GITHUB_ENV
+
+      - name: Build NutShell
+        run: |
+          cd $NOOP_HOME
+          make verilog BOARD=fpgadiff MILL_ARGS="--difftest-config ESBIFDU" -j2
+          make -C difftest fpga-release RELEASE_SUFFIX="ci"
+          echo "RELEASE_HOME=$(pwd)/$(ls -d *_NutShell_*_ci)" >> $GITHUB_ENV
+
+      - name: Create FPGA project
+        run: |
+          echo "/nfs/tools/xilinx/Vivado/2024.2/bin" >> "$GITHUB_PATH"
+          source /nfs/tools/xilinx/Vivado/2024.2/settings64.sh
+          cd $GITHUB_WORKSPACE/../env-scripts/fpga_diff
+          make update_core_flist CORE_DIR=$RELEASE_HOME/build
+          make vivado CPU=nutshell
+
+      - name: Build FPGA synth
+        run: |
+          source /nfs/tools/xilinx/Vivado/2024.2/settings64.sh
+          cd $ENV_SCRIPTS_HOME/fpga_diff
+          make synth PRJ=./fpga_nutshell/fpga_nutshell.xpr
+          bash ./tools/generate_reports.sh nutshell
+
+      - name: Extract Vivado Hierarchical utilization
+        run: |
+          set -euo pipefail
+          IN_PATH=$ENV_SCRIPTS_HOME/fpga_diff
+          MD_PATH="$RUNNER_TEMP/vivado_hier_filtered.md"
+          python3 $NOOP_HOME/difftest/scripts/fpga/ci.py --input "$IN_PATH" --cpu nutshell \
+            --filter-instance-root U_CPU_TOP --filter-modules HostEndpoint,GatewayEndpoint,nutcore \
+            --csv-md-output "$MD_PATH"
+          echo "VIVADO_HIER_MD=$MD_PATH" >> "$GITHUB_ENV"
+
+
+      - name: Comment utilization to latest PR on master
+        uses: actions/github-script@v9
+        env:
+          VIVADO_HIER_MD: ${{ env.VIVADO_HIER_MD }}
+        with:
+          script: |
+            const fs = require('fs');
+            const MARKER = '<!-- VIVADO_HIER_UTILIZATION -->';
+            let content;
+            try {
+              content = fs.readFileSync(process.env.VIVADO_HIER_MD, 'utf8');
+              if (!content.trim()) throw new Error('empty');
+            } catch (e) {
+              content = 'Vivado Hierarchical utilization: section missing or extract failed. Please check the job logs for runme.log output.';
+            }
+            const body = `${MARKER}\n\n${content}`;
+
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const headSha = context.sha;
+
+            const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner,
+              repo,
+              commit_sha: headSha,
+            });
+            if (!pulls.data.length) {
+              core.warning(`No PR associated with commit ${headSha}, skip commenting.`);
+              return;
+            }
+
+            const pr = pulls.data
+              .filter(p => p.merged_at)
+              .sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at))[0];
+            if (!pr) {
+              core.warning('No merged PR found for this commit.');
+              return;
+            }
+
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existed = comments.data.find(c => c.body && c.body.includes(MARKER));
+            if (existed) {
+              core.info(`Utilization comment already exists on PR #${pr.number}, skip commenting.`);
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pr.number,
+              body,
+            });
+            core.info(`Commented utilization to PR #${pr.number}`);

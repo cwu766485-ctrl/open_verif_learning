@@ -9,8 +9,10 @@
 | 目录 | 内容 |
 | --- | --- |
 | `docs/` | 芯片验证基础、Picker、Toffee 及两个学习任务的中文笔记 |
-| `labs/course2_picker_fifo/` | 学习任务 1：Picker 生成 Python DUT，完成复位、读写及波形测试 |
-| `labs/course3_toffee_fifo/` | 学习任务 2：Toffee Bundle、Agent、参考模型、功能覆盖率 |
+| `workspace/picker_fifo/` | 学习任务 1：Picker 生成 Python DUT，完成复位、读写及波形测试 |
+| `workspace/toffee_fifo/` | 学习任务 2：Toffee Bundle、Agent、参考模型、功能覆盖率 |
+| `workspace/nutshell_cache/` | 学习任务 3：果壳 Cache 的 Toffee/Picker 验证、功能测试、覆盖率和报告 |
+| `workspace/nutshell_src/` | NutShell 官方 Chisel 源码副本；Cache 已按类型、三级流水线和顶层连线拆分 |
 
 ## 已完成的验证
 
@@ -18,6 +20,8 @@
 - Picker：导出 Python DUT，比较 `AsRiseWrite()` 与 `AsImmWrite()`，并生成 FST 波形。
 - Toffee：实现读/写/控制/内部状态 Bundle，FIFO Agent，Python `deque` 参考模型，以及功能覆盖率。
 - 课程 3 测试：4 个 pytest 用例通过；功能覆盖率为 13/13 bins（100%）。
+- 果壳 Cache：7 个 pytest 用例通过；Verilator RTL 行覆盖率 79.2%，报告位于 `workspace/nutshell_cache/report/`。
+- NutShell Cache 源码：已完成 Chisel 源码级模块化，生成 `ICache/DCache/L2Cache` 及对应 Stage1/2/3 RTL。
 
 ## 运行
 
@@ -25,17 +29,23 @@
 
 ```bash
 # 学习任务 1
-cd labs/course2_picker_fifo
+cd workspace/picker_fifo
 make test
 
 # 学习任务 2
-cd ../course3_toffee_fifo
+cd ../toffee_fifo
 make test
 make report
 make clean
+
+# 学习任务 3：果壳 Cache
+cd ../nutshell_cache
+make report
 ```
 
 课程 2 的 `make test` 会在需要时运行 `picker export`，生成本地 `generated/` DUT；课程 3 则复用它。
+
+NutShell 源码重构和生成命令见 [`workspace/nutshell_src/CACHE_REFACTOR.md`](workspace/nutshell_src/CACHE_REFACTOR.md)。
 
 ## 学习资源与来源
 

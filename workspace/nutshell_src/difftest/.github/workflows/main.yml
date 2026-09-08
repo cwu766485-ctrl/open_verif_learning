@@ -1,0 +1,481 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  test-difftest-main:
+    runs-on: ubuntu-latest
+    container: ghcr.io/openxiangshan/xs-env:ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Compile
+        run: |
+          mill -i design.compile
+
+      - name: Generate Verilog
+        run: |
+          make
+
+      - name: Copy the Profile File
+        run: |
+          mv build/generated-src/difftest_profile.json .
+          make clean
+
+      - name: Generate Verilog using Profile
+        run: |
+          make PROFILE=./difftest_profile.json NUM_CORES=4
+
+      - name: Generate EMU using Profile-Generated RTL
+        run: |
+          make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j2
+          make clean
+
+      - name: Generate EMU with Squash
+        run: |
+          make PROFILE=./difftest_profile.json NUM_CORES=4 CONFIG=S
+          make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j2
+          make clean
+
+      - name: Generate EMU with SoftArchUpdate
+        run: |
+          make PROFILE=./difftest_profile.json NUM_CORES=4 CONFIG=U
+          make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j2
+          make clean
+
+      - name: Clean the Profile File
+        run: |
+          rm -f ./difftest_profile.json
+
+  test-verilator-nutshell:
+    runs-on: ubuntu-latest
+    container: ghcr.io/openxiangshan/xs-env:ubuntu-24.04
+
+    needs: test-difftest-main
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable -Werror for EMU Build
+        run: |
+          echo "CXX_NO_WARNING=1" >> $GITHUB_ENV
+
+      - name: Prepare NutShell
+        run: |
+            cd $GITHUB_WORKSPACE/..
+            git clone -b dev-difftest --single-branch https://github.com/OSCPU/NutShell.git
+            cd NutShell && rm -rf difftest && cp -r $GITHUB_WORKSPACE .
+            echo "NOOP_HOME=$(pwd)" >> $GITHUB_ENV
+            echo "WORKLOAD=$(pwd)/ready-to-run/microbench.bin" >> $GITHUB_ENV
+            echo "REF_SO=$(pwd)/ready-to-run/riscv64-nemu-interpreter-so" >> $GITHUB_ENV
+
+      - name: Simulation without DiffTest
+        run: |
+            cd $NOOP_HOME
+            make emu NO_DIFF=1 EMU_TRACE=1 -j2
+            ./build/emu -i $WORKLOAD --dump-wave -C 10000
+            ./build/emu -i $WORKLOAD --dump-wave-full -C 10000
+            make clean
+
+      - name: Simulation with No Diff
+        run: |
+            cd $NOOP_HOME
+            make emu -j2
+            ./build/emu -i $WORKLOAD --no-diff
+
+      - name: Basic Difftest
+        run: |
+            cd $NOOP_HOME
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+
+      - name: Basic Difftest without Image
+        run: |
+            cd $NOOP_HOME
+            ./build/emu --no-diff -C 10000
+            make clean
+
+      - name: Basic Difftest with PGO build using compiler instrumentation
+        run: |
+            cd $NOOP_HOME
+            make emu PGO_WORKLOAD=$WORKLOAD LLVM_PROFDATA=llvm-profdata PGO_EMU_ARGS="--diff $REF_SO 2>/dev/null" PGO_BOLT=0 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Basic Difftest with PGO build using BOLT
+        run: |
+            cd $NOOP_HOME
+            make emu PGO_WORKLOAD=$WORKLOAD PGO_EMU_ARGS="--diff $REF_SO 2>/dev/null" PGO_BOLT=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with Snapshot
+        run: |
+            cd $NOOP_HOME
+            make emu EMU_SNAPSHOT=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with Trace
+        run: |
+            cd $NOOP_HOME
+            make emu EMU_TRACE=1 -j2
+            ./build/emu -b 10 -e 12 -i $WORKLOAD --dump-wave --diff $REF_SO
+            ./build/emu -e 12 -i $WORKLOAD --dump-wave-full --diff $REF_SO
+            make clean
+
+      - name: Difftest with two threads
+        run: |
+            cd $NOOP_HOME
+            make emu EMU_THREADS=2 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with Verilator Coverage
+        run: |
+            cd $NOOP_HOME
+            rm -rf *.coverage
+            make emu EMU_COVERAGE=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO -C 10000 --dump-coverage
+            make -C difftest coverage
+            ls -lh *.coverage
+            make clean
+
+      - name: Difftest with DiffTrace
+        run: |
+            cd $NOOP_HOME
+            make emu -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --dump-difftrace microbench
+            ./build/emu -i $WORKLOAD --diff $REF_SO --load-difftrace microbench
+            make clean
+
+      - name: Difftest with Footprints
+        run: |
+            cd $NOOP_HOME
+            make emu -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --dump-footprints microbench.bin
+            ./build/emu -i microbench.bin --diff $REF_SO --as-footprints
+            make clean
+
+      - name: Difftest with Global DPI-C Enable
+        run: |
+            cd $NOOP_HOME
+            make emu MILL_ARGS="--difftest-config E" -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with Squash and Global Enable
+        run: |
+            cd $NOOP_HOME
+            make emu MILL_ARGS="--difftest-config ES" -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with Squash GlobalEnable and Query
+        run: |
+            cd $NOOP_HOME
+            make emu MILL_ARGS="--difftest-config ES" DIFFTEST_QUERY=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO
+            make clean
+
+      - name: Difftest with JsonProfile and DiffTestIOTrace
+        run: |
+            cd $NOOP_HOME
+            make emu MILL_ARGS="--difftest-config ET" -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --iotrace-name iotrace
+            cd difftest && export NOOP_HOME=$(pwd)
+            make difftest_verilog PROFILE=../build/generated-src/difftest_profile.json CONFIG=EL
+            make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --iotrace-name ../iotrace
+            make clean && make -C .. clean
+
+      - name: Difftest with JsonProfile and DiffTestIOTrace-ZSTD
+        run: |
+            cd $NOOP_HOME
+            make emu MILL_ARGS="--difftest-config ET" IOTRACE_ZSTD=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --iotrace-name iotrace
+            cd difftest && export NOOP_HOME=$(pwd)
+            make difftest_verilog PROFILE=../build/generated-src/difftest_profile.json CONFIG=EL
+            make emu WITH_CHISELDB=0 WITH_CONSTANTIN=0 IOTRACE_ZSTD=1 -j2
+            ./build/emu -i $WORKLOAD --diff $REF_SO --iotrace-name ../iotrace
+            make clean && make -C .. clean
+
+  test-vcs-top-nutshell:
+    runs-on: ubuntu-latest
+    container: ghcr.io/openxiangshan/xs-env:ubuntu-24.04
+
+    needs: test-difftest-main
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable -Werror for EMU Build
+        run: |
+          echo "CXX_NO_WARNING=1" >> $GITHUB_ENV
+
+      - name: Prepare NutShell
+        run: |
+            cd $GITHUB_WORKSPACE/..
+            git clone -b dev-difftest --single-branch https://github.com/OSCPU/NutShell.git
+            cd NutShell && rm -rf difftest && cp -r $GITHUB_WORKSPACE .
+            echo "NOOP_HOME=$(pwd)" >> $GITHUB_ENV
+            echo "WORKLOAD=$(pwd)/ready-to-run/microbench.bin" >> $GITHUB_ENV
+            echo "REF_SO=$(pwd)/ready-to-run/riscv64-nemu-interpreter-so" >> $GITHUB_ENV
+
+      - name: Verilator Build with VCS Top (NO_DIFF)
+        run: |
+            cd $NOOP_HOME
+            make simv NO_DIFF=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +max-cycles=100000
+            make clean
+
+      - name: Verilator with Random Memory(8MB)
+        run: |
+            cd $NOOP_HOME
+            make simv VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +random-mem +seed=1234 +ram_size=8MB
+            make clean
+
+      - name: Verilator Build with VCS Top (PGO using compiler instrumentation)
+        run: |
+            cd $NOOP_HOME
+            make simv VCS=verilator PGO_WORKLOAD=$WORKLOAD LLVM_PROFDATA=llvm-profdata VCS_PGO_ARGS="+diff=$REF_SO 2>/dev/null" PGO_BOLT=0 -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (PGO using BOLT)
+        run: |
+            cd $NOOP_HOME
+            make simv VCS=verilator PGO_WORKLOAD=$WORKLOAD VCS_PGO_ARGS="+diff=$REF_SO 2>/dev/null" PGO_BOLT=1 -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (TraceFst)
+        run: |
+            cd $NOOP_HOME
+            make simv VCS=verilator EMU_TRACE=fst -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +dump-wave
+            make clean
+
+      - name: Verilator Build with VCS Top (2 THREADS)
+        run: |
+            cd $NOOP_HOME
+            make simv VCS=verilator EMU_THREADS=2 -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (SYNTHESIS)(with DutZone)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config Z" SYNTHESIS=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            make clean
+
+      - name: Verilator Build with VCS Top (disable DPIC RAM/FLASH)(with DutZone)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config Z" DISABLE_DIFFTEST_RAM_DPIC=1 DISABLE_DIFFTEST_FLASH_DPIC=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with DutZone PerfCnt Query)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ZP" DIFFTEST_PERFCNT=1 DIFFTEST_QUERY=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with Batch InternalStep PerfCnt)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config BIP" DIFFTEST_PERFCNT=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with Batch InternalStep Squash Delta PerfCnt)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config BISDP" DIFFTEST_PERFCNT=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with GlobalEnable Squash Replay Batch PerfCnt)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ESRBP" DIFFTEST_PERFCNT=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with GlobalEnable Squash Replay Batch InternalStep NonBlock PerfCnt Query)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ESRBINP" DIFFTEST_PERFCNT=1 DIFFTEST_QUERY=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with SoftArchUpdate GlobalEnable Squash Replay Batch InternalStep Delta NonBlock PerfCnt Query)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config UESRBIDNP" DIFFTEST_PERFCNT=1 DIFFTEST_QUERY=1 VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +no-diff +max-cycles=100000
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO
+            make clean
+
+      - name: Verilator Build with VCS Top (with workload-list)
+        run : |
+            cd $NOOP_HOME
+            echo "./ready-to-run/microbench.bin 10000" > list.txt
+            echo "./ready-to-run/linux.bin 20000" >> list.txt
+            make simv VCS=verilator WORKLOAD_SWITCH=1 -j2
+            ./build/simv +diff=$REF_SO +workload-list=./list.txt
+            make clean
+
+      - name: Verilator Build with VCS Top (with JsonProfile and DiffTestIOTrace)
+        run : |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ZET" VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +iotrace-name=iotrace
+            cd difftest && export NOOP_HOME=$(pwd)
+            make difftest_verilog PROFILE=../build/generated-src/difftest_profile.json CONFIG=ZEL
+            make simv VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +iotrace-name=../iotrace
+            make clean && make -C .. clean
+
+      - name: Verilator Build with VCS Top (with JsonProfile and DiffTestIOTrace-ZSTD)
+        run : |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ZET" VCS=verilator IOTRACE_ZSTD=1 -j2
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +iotrace-name=iotrace
+            cd difftest && export NOOP_HOME=$(pwd)
+            make difftest_verilog PROFILE=../build/generated-src/difftest_profile.json CONFIG=ZEL
+            make simv VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0 IOTRACE_ZSTD=1
+            ./build/simv +workload=$WORKLOAD +diff=$REF_SO +iotrace-name=../iotrace
+            make clean && make -C .. clean
+
+      - name: Verilator Build with VCS Top (with LogPerf and WarmUp)
+        run : |
+            cd $NOOP_HOME
+            make simv VCS=verilator -j2
+            ./build/simv +workload=$WORKLOAD +b=0 +e=-1 +diff=$REF_SO +max-instrs=5000 +warmup_instr=1000
+            make clean
+
+  test-fpga-nutshell:
+    runs-on: ubuntu-latest
+    container: ghcr.io/openxiangshan/xs-env:ubuntu-24.04
+
+    needs: test-difftest-main
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare NutShell
+        run: |
+            cd $GITHUB_WORKSPACE/..
+            git clone -b dev-difftest --single-branch https://github.com/OSCPU/NutShell.git
+            cd NutShell && rm -rf difftest && cp -r $GITHUB_WORKSPACE .
+            echo "NOOP_HOME=$(pwd)" >> $GITHUB_ENV
+
+      - name: FPGA-difftest Build (no THREAD, no ASYNC_CLK)
+        run: |
+            cd $NOOP_HOME
+            make sim-verilog MILL_ARGS="--difftest-config ESBIDUF" -j2
+            make -C difftest fpga-build FPGA=1 FPGA_SIM=1 DIFFTEST_PERFCNT=1
+            make simv VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0 FPGA_SIM=1
+            bash difftest/scripts/fpga_sim/cosim.sh WORKLOAD=./ready-to-run/microbench.bin DIFF=./ready-to-run/riscv64-nemu-interpreter-so
+            make -C difftest fpga-clean vcs-clean
+
+      - name: FPGA-difftest Build (RANDOM_MEM)
+        run: |
+            cd $NOOP_HOME
+            make sim-verilog MILL_ARGS="--difftest-config ESBIDUF" -j2
+            make -C difftest fpga-build FPGA=1 FPGA_SIM=1 DIFFTEST_PERFCNT=1
+            make simv VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0 FPGA_SIM=1
+            set -euo pipefail
+            bash difftest/scripts/fpga_sim/cosim.sh WORKLOAD=./ready-to-run/microbench.bin DIFF=./ready-to-run/riscv64-nemu-interpreter-so RAM_SIZE=1MB SEED=1234 RANDOM_MEM=1 2>&1 | tee fpga-random-mem.log
+            host_first_word=$(grep 'Using memory random init seed' fpga-random-mem.log | head -n1 | sed -n 's/.*first word = \(0x[0-9a-fA-F]*\).*/\1/p' || true)
+            simv_first_word=$(grep 'FPGA_SIM.*Memory random init with seed' fpga-random-mem.log | head -n1 | sed -n 's/.*first word = \(0x[0-9a-fA-F]*\).*/\1/p' || true)
+            test -n "$host_first_word" && test -n "$simv_first_word" && test "$host_first_word" = "$simv_first_word"
+            make -C difftest fpga-clean vcs-clean
+
+      - name: FPGA-difftest Build (with THREAD and ASYNC_CLK)
+        run: |
+            cd $NOOP_HOME
+            make sim-verilog MILL_ARGS="--difftest-config ESBIDUF" -j2
+            make -C difftest fpga-build FPGA=1 FPGA_SIM=1 USE_THREAD_MEMPOOL=1 DIFFTEST_PERFCNT=1
+            make simv VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0 FPGA_SIM=1 ASYNC_CLK_2N=1
+            bash difftest/scripts/fpga_sim/cosim.sh WORKLOAD=./ready-to-run/microbench.bin DIFF=./ready-to-run/riscv64-nemu-interpreter-so
+            make -C difftest fpga-clean vcs-clean
+
+      - name: FPGA-difftest Build (ASYNC_CLK, RANDOM_MEM, H2C)
+        run: |
+            cd $NOOP_HOME
+            make simv MILL_ARGS="--difftest-config ESBIDUF" VCS=verilator WITH_CHISELDB=0 WITH_CONSTANTIN=0 FPGA_SIM=1 ASYNC_CLK_2N=1
+            make -C difftest fpga-build FPGA=1 FPGA_SIM=1 USE_XDMA_H2C=1 DIFFTEST_PERFCNT=1
+            set -euo pipefail
+            bash difftest/scripts/fpga_sim/cosim.sh WORKLOAD=./ready-to-run/microbench.bin DIFF=./ready-to-run/riscv64-nemu-interpreter-so RAM_SIZE=1MB SEED=1234 RANDOM_MEM=1 2>&1 | tee fpga-h2c-async-random.log
+            grep -q 'FPGA_SIM H2C queued' fpga-h2c-async-random.log
+            grep -q 'H2C load done' fpga-h2c-async-random.log
+            host_first_word=$(grep 'Using memory random init seed' fpga-h2c-async-random.log | head -n1 | sed -n 's/.*first word = \(0x[0-9a-fA-F]*\).*/\1/p' || true)
+            simv_first_word=$(grep 'FPGA_SIM.*Memory random init with seed' fpga-h2c-async-random.log | head -n1 | sed -n 's/.*first word = \(0x[0-9a-fA-F]*\).*/\1/p' || true)
+            test -n "$host_first_word" && test -n "$simv_first_word" && test "$host_first_word" = "$simv_first_word"
+            make -C difftest fpga-clean vcs-clean
+
+
+      - name: FPGA-difftest Release
+        run: |
+            cd $NOOP_HOME
+            make verilog BOARD=fpgadiff MILL_ARGS="--difftest-config ESBIDUF" -j2
+            make -C difftest fpga-release
+
+  test-gsim-rocketchip:
+    runs-on: ubuntu-latest
+    container: ghcr.io/openxiangshan/xs-env:ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download latest released GSIM
+        run: |
+          # GSIM depends on GMP and clang >= 19
+          sudo apt update
+          sudo apt install -y libgmp-dev clang-19
+          cd $GITHUB_WORKSPACE/..
+          mkdir -p gsim-bin && cd gsim-bin
+          curl -s https://api.github.com/repos/OpenXiangShan/gsim/releases/latest \
+            | grep "browser_download_url"                                         \
+            | grep "gsim"                                                         \
+            | cut -d '"' -f 4                                                     \
+            | xargs wget -O gsim
+          chmod +x gsim
+          echo "GSIM_BIN=$(pwd)/gsim" >> $GITHUB_ENV
+      - name: Build the REF - Spike
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          git clone https://github.com/OpenXiangShan/riscv-isa-sim.git
+          echo "SPIKE_HOME=$(pwd)/riscv-isa-sim" >> $GITHUB_ENV
+          make -C riscv-isa-sim/difftest CPU=ROCKET_CHIP -j2
+      - name: Prepare Rocket Chip
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          git clone -b dev-difftest --single-branch https://github.com/OpenXiangShan/rocket-chip.git
+          cd rocket-chip && make init && rm -r difftest
+          cp -r $GITHUB_WORKSPACE .
+          make bootrom CROSS=riscv64-linux-gnu-
+          echo "NOOP_HOME=$(pwd)" >> $GITHUB_ENV
+      - name: Build and run EMU with GSIM
+        run: |
+          cd $NOOP_HOME
+          make emu REF=Spike GSIM=1 GSIM_CXX=clang++-19 -j2
+          ./build/emu -i ./bootrom/bootrom.img -C 1000000

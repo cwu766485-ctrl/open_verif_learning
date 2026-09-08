@@ -1,0 +1,39 @@
+package build
+
+import mill._
+import mill.scalalib._
+
+val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
+
+object ivys {
+  val scala = "2.13.14"
+  val chisel = mvn"org.chipsalliance::chisel:7.11.0"
+  val chiselPlugin = mvn"org.chipsalliance:::chisel-plugin:7.11.0"
+}
+
+trait CommonModule extends ScalaModule {
+  override def scalaVersion = ivys.scala
+
+  override def scalacOptions = Seq("-Ymacro-annotations")
+}
+
+trait HasChisel extends ScalaModule {
+  override def ivyDeps = Agg(ivys.chisel)
+  override def scalacPluginIvyDeps = Agg(ivys.chiselPlugin)
+}
+
+trait CommonNS extends SbtModule with CommonModule with HasChisel
+
+object difftest extends CommonNS {
+  override def millSourcePath = pwd / "difftest"
+}
+
+object generator extends CommonNS {
+  override def millSourcePath = pwd
+
+  override def moduleDeps = super.moduleDeps ++ Seq(
+    difftest
+  )
+
+  object test extends SbtTests with TestModule.ScalaTest
+}

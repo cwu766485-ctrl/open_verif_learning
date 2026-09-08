@@ -19,3 +19,36 @@ reports/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Nested repository metadata is kept outside the submission tree.  The parent
+# repository must contain the actual source files, not gitlink pointers.
+**/.git/
+**/.git
+**/.gitmodules
+
+# Third-party toolchains, build products and language caches
+**/build/
+**/out/
+**/target/
+**/debug/
+**/.bsp/
+**/.metals/
+**/.mill/
+**/*.class
+**/*.jar
+**/*.log
+**/*.vcd
+**/*.wlf
+**/report/*.tex
+**/generated/
+**/Cache/
+**/Cache_modular/
+**/picker_out/
+
+# NutShell FPGA images and external run bundles are not needed to reproduce
+# the cache verification task.
+workspace/nutshell_src/fpga/boot/
+workspace/nutshell_src/ready-to-run/
+
+# Local backups of the two upstream repositories' histories.
+tmp/git-metadata/

@@ -14,7 +14,7 @@ pytest 测试 + 参考模型 + 功能覆盖率 + 波形/报告
 
 ## 任务 1：用 Picker 验证“端口级正确性”
 
-位置：[course2_picker_fifo](../../labs/course2_picker_fifo)。
+位置：[picker_fifo](../../workspace/picker_fifo)。
 
 Picker 的工作是把 Verilog RTL 编译成 Python 能直接驱动的 `DUTSyncFIFO`。本任务的重点不是重写 RTL，而是学会：初始化输入、驱动时钟、复位、在正确的周期写/读、用断言观察端口和允许导出的内部状态。
 
@@ -29,7 +29,7 @@ Picker 的工作是把 Verilog RTL 编译成 Python 能直接驱动的 `DUTSyncF
 运行：
 
 ```bash
-cd /mnt/e/workspace/chip/open_verif/labs/course2_picker_fifo
+cd /mnt/e/workspace/chip/open_verif/workspace/picker_fifo
 make test
 make wave-smoke
 ```
@@ -38,15 +38,15 @@ make wave-smoke
 
 ## 任务 2：用 Toffee 把端口操作升级为验证平台
 
-位置：[course3_toffee_fifo](../../labs/course3_toffee_fifo)。本任务复用任务 1 生成的 Picker DUT，不再次手工接触 `.so` 或自动生成文件。
+位置：[toffee_fifo](../../workspace/toffee_fifo)。本任务复用任务 1 生成的 Picker DUT，不再次手工接触 `.so` 或自动生成文件。
 
 ### 1. Fixture：每个测试从干净的 DUT 开始
 
-[`tests/conftest.py`](../../labs/course3_toffee_fifo/tests/conftest.py) 创建 `DUTSyncFIFO`、启动 Toffee 时钟、把全部输入设成明确的初值，并将端口绑定给 Bundle。测试函数只表达场景，不再重复搭环境。
+[`tests/conftest.py`](../../workspace/toffee_fifo/tests/conftest.py) 创建 `DUTSyncFIFO`、启动 Toffee 时钟、把全部输入设成明确的初值，并将端口绑定给 Bundle。测试函数只表达场景，不再重复搭环境。
 
 ### 2. Bundle：端口的“轻量 interface”
 
-[`bundle/__init__.py`](../../labs/course3_toffee_fifo/bundle/__init__.py) 有四类 Bundle：
+[`bundle/__init__.py`](../../workspace/toffee_fifo/bundle/__init__.py) 有四类 Bundle：
 
 - `ControlBundle`：`rst_n`，提供 `reset()`；
 - `WriteBundle`：`we_i/data_i/full_o`，提供 `enqueue(data)`；
@@ -57,26 +57,26 @@ make wave-smoke
 
 ### 3. Agent：把“端口动作”变为“FIFO 事务”
 
-[`agent/__init__.py`](../../labs/course3_toffee_fifo/agent/__init__.py) 的 `FIFOAgent` 对外提供 `reset`、`enqueue`、`dequeue`、`idle`。这里才是测试、参考模型和覆盖率共同使用的入口。
+[`agent/__init__.py`](../../workspace/toffee_fifo/agent/__init__.py) 的 `FIFOAgent` 对外提供 `reset`、`enqueue`、`dequeue`、`idle`。这里才是测试、参考模型和覆盖率共同使用的入口。
 
 `enqueue_dequeue()` 用 `Executor` 放进 `write` 和 `read` 两个调度组，在同一个时钟周期并发读写。对于非满非空 FIFO，两个指针都会前进，而 `counter` 不变；这是同步 FIFO 的关键场景。
 
 ### 4. Env 与参考模型：不要只相信 DUT 自己
 
-[`ref/__init__.py`](../../labs/course3_toffee_fifo/ref/__init__.py) 用 Python `deque` 表示期望 FIFO：容量 16，满时拒绝写，空时拒绝读。 [`env/__init__.py`](../../labs/course3_toffee_fifo/env/__init__.py) 将它绑定给名为 `fifo` 的 Agent。
+[`ref/__init__.py`](../../workspace/toffee_fifo/ref/__init__.py) 用 Python `deque` 表示期望 FIFO：容量 16，满时拒绝写，空时拒绝读。 [`env/__init__.py`](../../workspace/toffee_fifo/env/__init__.py) 将它绑定给名为 `fifo` 的 Agent。
 
 于是 `await fifo.enqueue(data)` 的“是否接收”、`await fifo.dequeue()` 的“读出数据”，不仅有测试自己的断言，Toffee 还会把 Agent 返回结果与参考模型的预测自动比较。这是可扩展验证平台最重要的思想：**DUT 是被验证对象，参考模型才是期望行为的独立来源。**
 
 ### 5. 功能覆盖率：我们是否真的跑到了关键情形
 
-[`coverage/__init__.py`](../../labs/course3_toffee_fifo/coverage/__init__.py) 对高层事务手工采样，覆盖：复位、空闲、正常读写、空读、满写、并发读写、读/写指针回绕、数据顺序，以及 FIFO 的空/中间/满占用状态。
+[`coverage/__init__.py`](../../workspace/toffee_fifo/coverage/__init__.py) 对高层事务手工采样，覆盖：复位、空闲、正常读写、空读、满写、并发读写、读/写指针回绕、数据顺序，以及 FIFO 的空/中间/满占用状态。
 
 本次 `make report` 的结果是：功能覆盖率 **13/13 bins，100%**。注意它不是“RTL 行覆盖率”：报告中的 RTL 行覆盖率是 83.78%，说明还有 RTL 语句尚未从所有可能的分支和组合路径经过。功能覆盖率 100% 意味着“我们定义的功能目标都命中”，不等于芯片已经绝对无 bug。
 
 运行：
 
 ```bash
-cd /mnt/e/workspace/chip/open_verif/labs/course3_toffee_fifo
+cd /mnt/e/workspace/chip/open_verif/workspace/toffee_fifo
 make test
 make report
 ```
