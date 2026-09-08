@@ -21,7 +21,6 @@
 !docs/*.md
 !report/
 !report/*.md
-!report/*.pdf
 !rtl/
 !rtl/*.v
 !rtl/modular/
@@ -37,6 +36,7 @@ test/**/__pycache__/
 *.fst
 *.dat
 reports/
+report/*.pdf
 Cache/
 Cache_modular/
 picker_out/

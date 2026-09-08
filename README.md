@@ -1,8 +1,8 @@
 # Open Verify Learning Notes
 
-基于[万众一芯开放验证](https://open-verify.cc/)新手任务的个人学习记录：使用 Picker、Toffee 和 pytest 验证一个同步 FIFO。
+这是基于[万众一芯开放验证](https://open-verify.cc/)新手任务的个人学习仓库：先用 Picker、Toffee 和 pytest 验证同步 FIFO，再完成 NutShell Cache 的验证实战。
 
-本仓库的重点是“可阅读的验证代码和学习笔记”，而不是提交本机工具安装目录或仿真二进制产物。
+仓库保留可阅读、可复现的源码、测试、报告和学习笔记；本机虚拟环境、编译缓存、仿真库、波形和覆盖率原始数据均由 `.gitignore` 排除。
 
 ## 内容
 
@@ -12,27 +12,28 @@
 | `workspace/picker_fifo/` | 学习任务 1：Picker 生成 Python DUT，完成复位、读写及波形测试 |
 | `workspace/toffee_fifo/` | 学习任务 2：Toffee Bundle、Agent、参考模型、功能覆盖率 |
 | `workspace/nutshell_cache/` | 学习任务 3：果壳 Cache 的 Toffee/Picker 验证、功能测试、覆盖率和报告 |
-| `workspace/nutshell_src/` | NutShell 官方 Chisel 源码副本；Cache 已按类型、三级流水线和顶层连线拆分 |
+| `workspace/nutshell_src/` | NutShell Chisel/Scala 源码副本；Cache 已按公共类型、三级流水线和顶层连线拆分 |
 
 ## 已完成的验证
 
 - 同步 FIFO：32 bit 宽、深度 16、同步低有效复位。
 - Picker：导出 Python DUT，比较 `AsRiseWrite()` 与 `AsImmWrite()`，并生成 FST 波形。
 - Toffee：实现读/写/控制/内部状态 Bundle，FIFO Agent，Python `deque` 参考模型，以及功能覆盖率。
-- 课程 3 测试：4 个 pytest 用例通过；功能覆盖率为 13/13 bins（100%）。
-- 果壳 Cache：7 个 pytest 用例通过；Verilator RTL 行覆盖率 79.2%，报告位于 `workspace/nutshell_cache/report/`。
-- NutShell Cache 源码：已完成 Chisel 源码级模块化，生成 `ICache/DCache/L2Cache` 及对应 Stage1/2/3 RTL。
+- Toffee FIFO：4 个 pytest 用例通过；功能覆盖率为 13/13 bins（100%）。
+- 果壳 Cache：`make report` 通过 12 个 pytest 用例；Verilator RTL 行覆盖率 80.1%（1164/1454）。
+- Cache 验证覆盖复位/流水线排空、cold miss/refill/hit、写回、byte mask、MMIO 隔离、下游 backpressure、coherence probe、跨 line 访问和长随机序列。
+- NutShell Cache 源码：已完成 Chisel 源码级模块化，生成 RTL 的模块名按 ICache、DCache、L2Cache 角色区分。
 
 ## 运行
 
 建议在 Ubuntu WSL 中使用。先按[万众一芯安装文档](https://open-verify.cc/mlvp/docs/quick-start/installer/)准备 Picker、Toffee、Python 和 Verilator 环境；本仓库不提交这些本机工具文件。
 
 ```bash
-# 学习任务 1
+# 学习任务 1：Picker
 cd workspace/picker_fifo
 make test
 
-# 学习任务 2
+# 学习任务 2：Toffee
 cd ../toffee_fifo
 make test
 make report
@@ -45,7 +46,9 @@ make report
 
 课程 2 的 `make test` 会在需要时运行 `picker export`，生成本地 `generated/` DUT；课程 3 则复用它。
 
-NutShell 源码重构和生成命令见 [`workspace/nutshell_src/CACHE_REFACTOR.md`](workspace/nutshell_src/CACHE_REFACTOR.md)。
+NutShell 源码重构和 Chisel→FIRRTL/CIRCT→Verilog 生成命令见 [`workspace/nutshell_src/CACHE_REFACTOR.md`](workspace/nutshell_src/CACHE_REFACTOR.md)。生成目录由 `.gitignore` 排除，可随时重新生成。
+
+提交材料索引见 [`workspace/SUBMISSION.md`](workspace/SUBMISSION.md)，Discussion #13 的可复制提交文字见 [`workspace/SUBMISSION_POST.md`](workspace/SUBMISSION_POST.md)。
 
 ## 学习资源与来源
 
