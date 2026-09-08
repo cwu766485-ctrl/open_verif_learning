@@ -14,8 +14,8 @@
 - `nutshell_cache/`：学习任务 3，果壳 Cache；
 - `nutshell_cache/report/nutshell_cache_verification_report.md`：可直接阅读的报告；
 - `nutshell_cache/report/nutshell_cache_verification_report.md`：最终 Markdown 报告（正式版本）；
-- `nutshell_cache/reports/cache`：Toffee 测试报告；
-- `nutshell_cache/reports/rtl/index.html`：Verilator RTL 覆盖率报告。
+- `nutshell_cache/reports/cache`：运行 `make report` 后生成的 Toffee 测试报告；
+- `nutshell_cache/reports/rtl/index.html`：运行 `make report` 后生成的 Verilator RTL 覆盖率报告。
 
 ## 复核命令
 
