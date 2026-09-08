@@ -11,7 +11,7 @@
 
 - 验证代码仓库：https://github.com/cwu766485-ctrl/open_verif_learning/tree/99d9e58
 - 验证报告（Markdown）：`workspace/nutshell_cache/report/nutshell_cache_verification_report.md`
-- 验证报告（PDF）：`workspace/nutshell_cache/report/nutshell_cache_verification_report.pdf`
+- 验证报告（PDF）：可选；本次以 Markdown 报告为准（WSL 未安装 LaTeX，避免提交旧版 PDF）
 - Toffee HTML 报告：`workspace/nutshell_cache/reports/cache`
 - RTL 覆盖率报告：`workspace/nutshell_cache/reports/rtl/index.html`
 
