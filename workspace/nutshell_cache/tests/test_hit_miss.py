@@ -64,6 +64,9 @@ async def test_back_to_back_hit_write_then_read_forwarding(start_func):
     assert len(env.mem_ram.read_requests) == reads_before, (
         "queued same-line hit traffic must not issue another refill"
     )
+    assert env.testbench.properties.forward_data_cycles > 0, (
+        "back-to-back same-word hit traffic must exercise the data forwarding path"
+    )
 
 
 @case

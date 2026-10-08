@@ -27,6 +27,7 @@ class CacheScoreboard:
         self._writeback_before_refill = False
         self.pending_probes = deque()
         self.active_probe_release = None
+        self.coverage = None
 
     def write(self, transaction):
         if isinstance(transaction, SimpleBusRequest):
@@ -133,8 +134,26 @@ class CacheScoreboard:
                 return
         self.pending.popleft()
         if not self.reference.is_mmio(request.addr):
+            occupancy = self.reference.cache_tags.occupancy(request.addr)
             self._check_cache_outcome(item)
-        self.reference.observe_cache_access(request, item["cache_miss"])
+            if self.coverage is not None:
+                result = "miss" if item["cache_miss"] else "hit"
+                has_writeback = any(
+                    req.get("cmd") in (CMD_WRITEBST, CMD_WRITELST)
+                    for req in item["memory_requests"]
+                )
+                victim_class = None
+                if item["cache_miss"] and occupancy == self.reference.cache_tags.WAYS:
+                    victim_class = "dirty" if has_writeback else "clean"
+                self.coverage.sample_cache_access(
+                    occupancy=occupancy,
+                    result=result,
+                    partial_write=(
+                        request.cmd == CMD_WRITE and 0 < request.wmask < 0xFF
+                    ),
+                    victim_class=victim_class,
+                )
+            self.reference.observe_cache_access(request, item["cache_miss"])
 
     def _check_cache_outcome(self, item):
         request = item["request"]
@@ -153,6 +172,7 @@ class CacheScoreboard:
 
         resolved = self.reference.cache_tags.predict_access(request, was_miss=observed_miss)
         self._check_dirty_writeback(item, resolved)
+        return resolved
 
     def _check_dirty_writeback(self, item, prediction):
         writebacks = [

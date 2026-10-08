@@ -28,11 +28,10 @@ installed.
 
 The maintained RTL source is under `rtl/`. The active verification
 environment is under `dv/`; `src/` and `test/` are legacy migration sources.
-The regression contains 35 passing tests: 16 Toffee/Verilator simulation
-scenarios and 19 Python unit tests. CI runs eight fixed random seeds (512
-operations total), checks all 20 planned functional coverage goals, and gates
-maintained-RTL line coverage against documented waivers. The latest measured
-results and limitations are in `dv/README.md`.
+The regression currently contains 37 passing pytest cases and closes 37/37
+functional coverage goals. The multi-seed run also gates maintained-RTL line
+coverage against reviewed waivers and runs three SymbiYosys proofs. Current
+measured results and formal-proof assumptions/limitations are in `dv/README.md`.
 
 The verification target is an open-toolchain DV flow based on Python/Toffee,
 pytest, Picker, and Verilator, without a dependency on a commercial simulator.

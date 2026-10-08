@@ -16,8 +16,9 @@ class CacheTestbench:
         self.scoreboard = CacheScoreboard()
         self.checker = CacheProtocolChecker("cpu")
         self.coherence_checker = CacheProtocolChecker("coherence")
-        self.properties = CacheDutProperties()
+        self.properties = CacheDutProperties(self.scoreboard.reference.cache_tags.replacement)
         self.coverage = self.env.coverage
+        self.scoreboard.coverage = self.coverage
 
         self.env.cpu.protocol_checker.name = "cpu"
         self.env.memory.protocol_checker.name = "memory"
@@ -50,6 +51,8 @@ class CacheTestbench:
         self.scoreboard.assert_no_errors()
         self.checker.assert_clean()
         self.coherence_checker.assert_clean()
+        if self.properties.forward_data_cycles:
+            self.coverage.sample(data_forwarding="same_word")
         self.coverage.assert_clean()
         stall_counts = {}
         for name, agent in (

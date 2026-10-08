@@ -28,6 +28,37 @@ class CacheAccessPrediction:
     dirty_victim_required: bool
 
 
+class LfsrReplacementModel:
+    """Independent cycle-by-cycle predictor for CacheStage2's victim LFSR."""
+
+    SEED = 0x1234567887654321
+    MASK64 = (1 << 64) - 1
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.state = self.SEED
+
+    def tick(self, reset=False):
+        """Advance once per RTL clock, or reload the RTL reset seed."""
+        if reset:
+            self.reset()
+        elif self.state == 0:
+            self.state = 1
+        else:
+            feedback = (
+                (self.state >> 0) ^ (self.state >> 1)
+                ^ (self.state >> 3) ^ (self.state >> 4)
+            ) & 1
+            self.state = ((feedback << 63) | (self.state >> 1)) & self.MASK64
+        return self.mask
+
+    @property
+    def mask(self):
+        return 1 << (self.state & 0x3)
+
+
 class SetAssociativeTagModel:
     """Four-way tag/valid/dirty model with nondeterministic full-set victims.
 
@@ -45,10 +76,12 @@ class SetAssociativeTagModel:
     MAX_CANDIDATE_STATES_PER_SET = 4096
 
     def __init__(self):
+        self.replacement = LfsrReplacementModel()
         self.reset()
 
     def reset(self):
         self._states = {}
+        self.replacement.reset()
         self.hits = 0
         self.misses = 0
         self.ambiguous_outcomes = 0
@@ -200,6 +233,12 @@ class SetAssociativeTagModel:
     def candidate_states(self, set_index):
         """Read-only state view for unit tests and debug reports."""
         return frozenset(self._states.get(set_index, {()}))
+
+    def occupancy(self, addr):
+        """Return the pre-access resident-line count, or None if ambiguous."""
+        set_index, _tag = self.address_fields(addr)
+        counts = {len(state) for state in self._states.get(set_index, {()})}
+        return next(iter(counts)) if len(counts) == 1 else None
 
     def observe_probe(self, addr, was_hit):
         """Check an observed probe result and invalidate the line on a hit."""

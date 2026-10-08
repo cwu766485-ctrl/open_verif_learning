@@ -50,7 +50,8 @@ module Cache(
   input  [63:0] io_mmio_resp_bits_rdata,
   output        io_empty,
   output        victim_way_mask_valid,
-  output [3:0]  victim_way_mask
+  output [3:0]  victim_way_mask,
+  output        forward_data_valid
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -778,6 +779,7 @@ module Cache(
   assign arb_io_in_1_bits_user = io_in_req_bits_user;
   assign arb_io_out_ready = s1_io_in_ready;
   assign victim_way_mask_valid = s2_io_out_valid; // Interface for uvm reference model
+  assign forward_data_valid = s2_io_out_bits_isForwardData;
   always @(posedge clock) begin
     if (reset) begin
       valid <= 1'h0;

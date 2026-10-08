@@ -25,7 +25,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test coverage rtl_coverage functional_coverage report gen_dut doctor clean
+.PHONY: wave test coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -51,9 +51,20 @@ report:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.closure reports/cache.info
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.functional_closure reports/functional_coverage.json
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -c "from dv.coverage.report import render_html; render_html('reports/functional_coverage.json', 'reports/functional_coverage.html')"
+	$(MAKE) fault_injection
 
 functional_coverage: test
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -c "from dv.coverage.report import render_html; render_html('reports/functional_coverage.json', 'reports/functional_coverage.html')"
+
+formal:
+	@source $(ENV_SCRIPT); export PATH="$(abspath ../../.tooling/sby-install/bin):$$PATH"; \
+	 mkdir -p reports/formal; \
+	 sby -f -d reports/formal/replacement_selector formal/replacement_selector.sby && \
+	 sby -f -d reports/formal/cache_way_selector formal/cache_way_selector.sby && \
+	 sby -f -d reports/formal/cache_stage2_stability formal/cache_stage2_stability.sby
+
+fault_injection:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.fault_injection.run
 
 doctor:
 	@source $(ENV_SCRIPT); echo "python: $$(command -v python3)"; python3 --version; \

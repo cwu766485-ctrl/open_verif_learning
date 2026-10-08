@@ -3,19 +3,19 @@
   "scope": "maintained rtl/ statement-line coverage only",
   "waivers": [
     {
-      "source": "rtl/pipeline/CacheStage2.v",
-      "line": 192,
-      "reason": "The 64-bit XOR LFSR is reset to a non-zero seed and a non-zero LFSR sequence cannot naturally enter its zero state; this recovery assignment requires state fault injection, outside this interface-level regression."
+      "source": "rtl/control/ReplacementSelector.v",
+      "line": 27,
+      "reason": "The recovery assignment for the zero LFSR state is unreachable after reset; the SymbiYosys proof asserts that the state remains non-zero from the reset seed under the RTL recurrence."
     },
     {
       "source": "rtl/pipeline/CacheStage2.v",
-      "line": 213,
-      "reason": "Assertion diagnostic guard for the one-hot victim-way invariant. Legal requests must not violate the invariant; assertion-failure injection is not part of the passing functional regression."
+      "line": 211,
+      "reason": "Assertion diagnostic for a multi-hot selected way. CacheWaySelector.sby proves the selected mask is one-hot under the documented unique-tag and replacement-mask assumptions; the diagnostic is intentionally not triggered by legal traffic."
     },
     {
       "source": "rtl/pipeline/CacheStage2.v",
-      "line": 214,
-      "reason": "Assertion diagnostic print for the one-hot victim-way invariant; intentionally not executed by legal functional stimulus."
+      "line": 212,
+      "reason": "Assertion failure print for a multi-hot selected way. CacheWaySelector.sby proves the selected mask is one-hot under the documented unique-tag and replacement-mask assumptions; the diagnostic is intentionally not triggered by legal traffic."
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",

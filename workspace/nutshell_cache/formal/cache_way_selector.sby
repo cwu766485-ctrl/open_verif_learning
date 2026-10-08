@@ -1,0 +1,13 @@
+[options]
+mode prove
+depth 2
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -D FORMAL CacheWaySelector.v
+prep -top CacheWaySelector
+
+[files]
+CacheWaySelector.v rtl/control/CacheWaySelector.v

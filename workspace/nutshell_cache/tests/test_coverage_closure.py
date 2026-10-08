@@ -17,7 +17,7 @@ def _payload(missing=()):
 
 
 def test_functional_closure_accepts_a_complete_plan():
-    assert check_payload(_payload()) == (20, 20)
+    assert check_payload(_payload()) == (len(CacheCoverage.GOALS), len(CacheCoverage.GOALS))
 
 
 def test_functional_closure_fails_when_a_planned_cross_is_uncovered():

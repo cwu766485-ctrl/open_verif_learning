@@ -70,7 +70,6 @@ module CacheStage2(
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
-  reg [63:0] _RAND_4;
   reg [31:0] _RAND_5;
   reg [63:0] _RAND_6;
   reg [31:0] _RAND_7;
@@ -108,23 +107,30 @@ module CacheStage2(
   wire  _hitVec_T_8 = metaWay_2_valid & metaWay_2_tag == addr_tag & io_in_valid;
   wire  _hitVec_T_11 = metaWay_3_valid & metaWay_3_tag == addr_tag & io_in_valid;
   wire [3:0] hitVec = {_hitVec_T_11,_hitVec_T_8,_hitVec_T_5,_hitVec_T_2};
-  reg [63:0] victimWaymask_lfsr;
-  wire  victimWaymask_xor = victimWaymask_lfsr[0] ^ victimWaymask_lfsr[1] ^ victimWaymask_lfsr[3] ^ victimWaymask_lfsr[4
-    ];
-  wire [63:0] _victimWaymask_lfsr_T_2 = {victimWaymask_xor,victimWaymask_lfsr[63:1]};
-  wire [3:0] victimWaymask = 4'h1 << victimWaymask_lfsr[1:0];
-  assign victim_way_mask = victimWaymask; // Interface for uvm reference model
+  wire [3:0] victimWaymask;
+  wire [3:0] refillWaymask;
+  // Expose the independent replacement unit's LFSR choice for DV checking.
+  assign victim_way_mask = victimWaymask;
   wire  _invalidVec_T = ~metaWay_0_valid;
   wire  _invalidVec_T_1 = ~metaWay_1_valid;
   wire  _invalidVec_T_2 = ~metaWay_2_valid;
   wire  _invalidVec_T_3 = ~metaWay_3_valid;
   wire [3:0] invalidVec = {_invalidVec_T_3,_invalidVec_T_2,_invalidVec_T_1,_invalidVec_T};
-  wire  hasInvalidWay = |invalidVec;
-  wire [1:0] _refillInvalidWaymask_T_3 = invalidVec >= 4'h2 ? 2'h2 : 2'h1;
-  wire [2:0] _refillInvalidWaymask_T_4 = invalidVec >= 4'h4 ? 3'h4 : {{1'd0}, _refillInvalidWaymask_T_3};
-  wire [3:0] refillInvalidWaymask = invalidVec >= 4'h8 ? 4'h8 : {{1'd0}, _refillInvalidWaymask_T_4};
-  wire [3:0] _waymask_T = hasInvalidWay ? refillInvalidWaymask : victimWaymask;
-  wire [3:0] waymask = io_out_bits_hit ? hitVec : _waymask_T;
+  ReplacementSelector replacementSelector (
+    .clock(clock),
+    .reset(reset),
+    .invalid_vec(invalidVec),
+    .lfsr_way_onehot(victimWaymask),
+    .refill_way_onehot(refillWaymask)
+  );
+  wire [3:0] waymask;
+  CacheWaySelector waySelector (
+    .request_valid(io_in_valid),
+    .hit_vec(hitVec),
+    .refill_waymask(refillWaymask),
+    .hit(io_out_bits_hit),
+    .selected_waymask(waymask)
+  );
   wire [1:0] _T_7 = waymask[0] + waymask[1];
   wire [1:0] _T_9 = waymask[2] + waymask[3];
   wire [2:0] _T_11 = _T_7 + _T_9;
@@ -162,8 +168,7 @@ module CacheStage2(
   assign io_out_bits_datas_1_data = io_dataReadResp_1_data;
   assign io_out_bits_datas_2_data = io_dataReadResp_2_data;
   assign io_out_bits_datas_3_data = io_dataReadResp_3_data;
-  assign io_out_bits_hit = io_in_valid & |hitVec;
-  assign io_out_bits_waymask = io_out_bits_hit ? hitVec : _waymask_T;
+  assign io_out_bits_waymask = waymask;
   assign io_out_bits_mmio = _io_out_bits_mmio_T_2 | _io_out_bits_mmio_T_5;
   assign io_out_bits_isForwardData = isForwardDataReg | isForwardData;
   assign io_out_bits_forwardData_data_data = isForwardData ? io_dataWriteBus_req_bits_data_data :
@@ -185,13 +190,6 @@ module CacheStage2(
     end
     if (isForwardMeta) begin
       forwardMetaReg_waymask <= io_metaWriteBus_req_bits_waymask;
-    end
-    if (reset) begin
-      victimWaymask_lfsr <= 64'h1234567887654321;
-    end else if (victimWaymask_lfsr == 64'h0) begin
-      victimWaymask_lfsr <= 64'h1;
-    end else begin
-      victimWaymask_lfsr <= _victimWaymask_lfsr_T_2;
     end
     if (reset) begin
       isForwardDataReg <= 1'h0;
@@ -274,8 +272,6 @@ initial begin
   forwardMetaReg_data_dirty = _RAND_2[0:0];
   _RAND_3 = {1{`RANDOM}};
   forwardMetaReg_waymask = _RAND_3[3:0];
-  _RAND_4 = {2{`RANDOM}};
-  victimWaymask_lfsr = _RAND_4[63:0];
   _RAND_5 = {1{`RANDOM}};
   isForwardDataReg = _RAND_5[0:0];
   _RAND_6 = {2{`RANDOM}};
@@ -289,4 +285,30 @@ end // initial
 `FIRRTL_AFTER_INITIAL
 `endif
 `endif // SYNTHESIS
+`ifdef FORMAL
+  reg f_past_valid = 1'b0;
+  always @(posedge clock) begin
+    f_past_valid <= 1'b1;
+
+    // The upstream ready/valid source must hold its request until accepted.
+    if (f_past_valid && !$past(reset) &&
+        $past(io_in_valid && !io_in_ready)) begin
+      assume(io_in_valid);
+      assume({io_in_bits_req_addr, io_in_bits_req_size, io_in_bits_req_cmd,
+              io_in_bits_req_wmask, io_in_bits_req_wdata, io_in_bits_req_user} ==
+             $past({io_in_bits_req_addr, io_in_bits_req_size, io_in_bits_req_cmd,
+                    io_in_bits_req_wmask, io_in_bits_req_wdata, io_in_bits_req_user}));
+    end
+
+    // A stalled Stage2 request remains valid and preserves its payload.
+    if (f_past_valid && !$past(reset) &&
+        $past(io_out_valid && !io_out_ready)) begin
+      assert(io_out_valid);
+      assert({io_out_bits_req_addr, io_out_bits_req_size, io_out_bits_req_cmd,
+              io_out_bits_req_wmask, io_out_bits_req_wdata, io_out_bits_req_user} ==
+             $past({io_out_bits_req_addr, io_out_bits_req_size, io_out_bits_req_cmd,
+                    io_out_bits_req_wmask, io_out_bits_req_wdata, io_out_bits_req_user}));
+    end
+  end
+`endif
 endmodule

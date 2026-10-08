@@ -5,3 +5,4 @@ pytest-asyncio==1.4.0
 pytest-reporter==0.5.3
 pytest-reporter-html1==0.9.5
 pytest-xdist==3.8.0
+click==8.1.8

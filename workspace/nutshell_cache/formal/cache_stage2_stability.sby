@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 3
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -D FORMAL -DSYNTHESIS CacheStage2.v ReplacementSelector.v CacheWaySelector.v
+prep -top CacheStage2
+
+[files]
+CacheStage2.v rtl/pipeline/CacheStage2.v
+ReplacementSelector.v rtl/control/ReplacementSelector.v
+CacheWaySelector.v rtl/control/CacheWaySelector.v

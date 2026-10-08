@@ -5,17 +5,22 @@ from dv.common.transaction import SimpleBusRequest, SimpleBusResponse
 
 
 class CacheDutProperties:
-    def __init__(self):
+    def __init__(self, replacement_model=None):
+        self.replacement_model = replacement_model
         self.outstanding_cpu_requests = 0
         self.accepted_cpu_requests = 0
         self.completed_cpu_responses = 0
         self.aborted_by_reset = 0
         self.sampled_cycles = 0
+        self.forward_data_cycles = 0
         self.errors = []
+        self.replacement_trace = []
 
     def on_reset(self):
         self.aborted_by_reset += self.outstanding_cpu_requests
         self.outstanding_cpu_requests = 0
+        if self.replacement_model is not None:
+            self.replacement_model.reset()
 
     def write(self, transaction):
         """Track requests/responses published only after driver handshakes."""
@@ -66,12 +71,43 @@ class CacheDutProperties:
 
     async def monitor(self, dut):
         while True:
+            # Snapshot reset before waiting for the edge. Reading it after
+            # the clock event can see a reset write from the test coroutine
+            # that occurred just after that edge, shifting the model phase.
+            reset = int(dut.reset.value)
             await ClockCycles(dut, 1)
             try:
+                if self.replacement_model is not None:
+                    expected_mask = self.replacement_model.mask
+                    self.replacement_model.tick(reset=bool(reset))
+                else:
+                    expected_mask = None
+                actual_mask = int(dut.victim_way_mask.value)
+                actual_valid = int(dut.victim_way_mask_valid.value)
+                if int(dut.forward_data_valid.value):
+                    self.forward_data_cycles += 1
+                if expected_mask is not None:
+                    self.replacement_trace.append((
+                        self.sampled_cycles, reset, actual_valid,
+                        self.replacement_model.state, expected_mask, actual_mask,
+                    ))
+                    self.replacement_trace = self.replacement_trace[-12:]
                 self.observe_victim_mask(
-                    valid=int(dut.victim_way_mask_valid.value),
-                    mask=int(dut.victim_way_mask.value),
+                    valid=actual_valid,
+                    mask=actual_mask,
                 )
+                if (
+                    expected_mask is not None
+                    and not reset
+                    and actual_valid
+                    and actual_mask != expected_mask
+                ):
+                    raise AssertionError(
+                        "replacement LFSR mismatch: "
+                        f"expected way mask 0x{expected_mask:x}, "
+                        f"got 0x{actual_mask:x}; recent samples="
+                        f"{self.replacement_trace!r}"
+                    )
             except AssertionError as exc:
                 self.errors.append(str(exc))
                 return

@@ -1,3 +1,5 @@
+import asyncio
+
 from toffee_test import ToffeeRequest, fixture
 from Cache import DUTCache
 from toffee import *
@@ -35,7 +37,11 @@ async def start_func(toffee_request: ToffeeRequest, request):
         tb.on_reset()
         dut.reset.AsImmWrite(); dut.reset.value = 1; dut.reset.AsRiseWrite()
         start_clock(dut)
+        # asyncio scheduling starts the cycle monitor immediately; Executor
+        # tasks are intentionally detached only after the reset sequence.
+        asyncio.create_task(tb.properties.monitor(dut))
         await ClockCycles(dut, 100)
+        tb.properties.replacement_model.reset()
         dut.reset.value = 0; dut.io_flush.value = 0
         env.mem_ram = SimpleBusRam(env.memory)
         env.mmio_ram = SimpleBusRam(env.mmio)
@@ -44,7 +50,6 @@ async def start_func(toffee_request: ToffeeRequest, request):
                 exec(env.cpu.req_handler(), sche_group="req_handler")
             if start_cpu_handlers and start_cpu_response_handler:
                 exec(env.cpu.rsp_handler(), sche_group="rsp_handler")
-            exec(tb.properties.monitor(dut), sche_group="dut_properties")
             exec(env.mem_ram.work(), sche_group="mem")
             exec(env.mmio_ram.work(), sche_group="mmio")
         return env

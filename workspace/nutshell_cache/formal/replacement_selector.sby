@@ -1,0 +1,13 @@
+[options]
+mode prove
+depth 6
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -D FORMAL ReplacementSelector.v
+prep -top ReplacementSelector
+
+[files]
+ReplacementSelector.v rtl/control/ReplacementSelector.v

@@ -14,4 +14,5 @@ control/AddressDecoder.v
 control/ByteMaskMerge.v
 control/TagCompareUnit.v
 control/ReplacementSelector.v
+control/CacheWaySelector.v
 CacheTop.v

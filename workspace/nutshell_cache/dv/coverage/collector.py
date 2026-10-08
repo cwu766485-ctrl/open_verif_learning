@@ -32,6 +32,14 @@ class CacheCoverage:
         "op_result=write/hit", "op_result=write/miss",
         "mask_result=partial/hit", "mask_result=partial/miss",
         "victim=dirty_eviction", "reset=cancelled_request",
+        "set_occupancy=empty", "set_occupancy=one", "set_occupancy=two",
+        "set_occupancy=three", "set_occupancy=full",
+        "occupancy_result=empty/miss", "occupancy_result=partial/miss",
+        "occupancy_result=full/miss", "occupancy_result=full/hit",
+        "victim=clean_eviction", "partial_write=hit", "partial_write=miss",
+        "backpressure_channel=cpu.req", "backpressure_channel=cpu.rsp",
+        "probe_release=8_beats", "reset=cancelled_miss",
+        "data_forwarding=same_word",
     )
 
     def sample(self, **features):
@@ -140,6 +148,8 @@ class CacheCoverage:
             self._probe_release_beats += 1
             if response.cmd == CMD_READLST or self._probe_release_beats == 8:
                 self.sample_burst("probe_release", self._probe_release_beats)
+                if self._probe_release_beats == 8:
+                    self.sample(probe_release="8_beats")
                 self._probe_releasing = False
 
     def sample_request(self, command, result=None, mmio=False, backpressure=False):
@@ -162,12 +172,33 @@ class CacheCoverage:
 
     def on_reset(self):
         cancelled = len(self._cpu_pending)
+        cancelled_misses = sum(
+            self._mem_refills > item["refills"] or self._mem_writebacks > item["writebacks"]
+            for item in self._cpu_pending
+        )
         self._cpu_pending.clear()
         self._probe_releasing = False
         self._probe_release_beats = 0
         if cancelled:
             self.sample(reset_cancelled_requests=cancelled)
             self.sample(reset="cancelled_request")
+        if cancelled_misses:
+            self.sample(reset_cancelled_misses=cancelled_misses)
+            self.sample(reset="cancelled_miss")
+
+    def sample_cache_access(self, *, occupancy, result, partial_write=False,
+                            victim_class=None):
+        occupancy_names = {0: "empty", 1: "one", 2: "two", 3: "three", 4: "full"}
+        name = occupancy_names.get(occupancy, "ambiguous")
+        self.sample(set_occupancy=name)
+        if name in ("empty", "full") or result == "hit":
+            self.sample(occupancy_result=f"{name}/{result}")
+        elif name in ("one", "two", "three") and result == "miss":
+            self.sample(occupancy_result="partial/miss")
+        if partial_write:
+            self.sample(partial_write=result)
+        if victim_class is not None:
+            self.sample(victim=f"{victim_class}_eviction")
 
     def assert_clean(self):
         assert not self._cpu_pending, f"coverage collector has {len(self._cpu_pending)} unmatched CPU request(s)"

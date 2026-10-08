@@ -4,7 +4,9 @@ import pytest
 
 from dv.common.transaction import SimpleBusRequest
 from dv.common.utils.cmd_code import CMD_READ, CMD_WRITE, CMD_WRITEBST, CMD_WRITELST
-from dv.models.reference import CacheReferenceModel, SetAssociativeTagModel
+from dv.models.reference import (
+    CacheReferenceModel, LfsrReplacementModel, SetAssociativeTagModel,
+)
 from dv.scoreboard.cache_scoreboard import CacheScoreboard
 
 
@@ -103,6 +105,15 @@ def test_tag_model_uses_highest_invalid_way_before_random_replacement():
     assert SetAssociativeTagModel.invalid_first_way(0b1100) == 1
     assert SetAssociativeTagModel.invalid_first_way(0b1110) == 0
     assert SetAssociativeTagModel.invalid_first_way(0b1111) is None
+
+
+def test_replacement_model_tracks_rtl_lfsr_and_reset_seed():
+    model = LfsrReplacementModel()
+    assert [model.mask, model.tick(), model.tick(), model.tick()] == [2, 1, 1, 1]
+
+    model.tick(reset=True)
+    assert model.state == LfsrReplacementModel.SEED
+    assert model.mask == 2
 
 
 def test_probe_hit_invalidates_tag_and_release_uses_reference_data():
