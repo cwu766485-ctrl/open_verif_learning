@@ -52,14 +52,24 @@ jobs:
           git -C .tooling/sby-source checkout b1a1e98cba941ec8433f8dc27f416cd7bb7f14be
           make -C .tooling/sby-source install \
             PREFIX="$GITHUB_WORKSPACE/.tooling/sby-install"
-      - name: Generate DUT and run regression plus coverage closure
+      - name: Check installed open-source toolchain
+        working-directory: workspace/nutshell_cache
+        run: |
+          source ../../.tooling/env.sh
+          picker --version
+          yosys --version
+          sby --version
+      - name: Generate DUT
+        working-directory: workspace/nutshell_cache
+        run: make gen_dut
+      - name: Run formal proofs
+        working-directory: workspace/nutshell_cache
+        run: make formal
+      - name: Run regression and coverage closure
         working-directory: workspace/nutshell_cache
         env:
           NUTSHELL_RANDOM_SEEDS: "0x2468ACE,0xFACE1234"
-        run: |
-          make gen_dut
-          make formal
-          make report
+        run: make report
       - name: Upload regression and coverage reports
         if: always()
         uses: actions/upload-artifact@v7
