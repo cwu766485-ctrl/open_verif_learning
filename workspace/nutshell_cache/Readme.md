@@ -20,11 +20,10 @@ make clean        # Remove generated simulator artifacts
 make doctor       # Check the project-local WSL Python/EDA toolchain
 ```
 
-Run these commands from Ubuntu/WSL. The Makefile sources
-`../../.tooling/env.sh`, which selects the project-local virtualenv containing
-Picker, Toffee, pytest and Verilator helpers. Running the system `python3`
-directly can produce `No module named pytest` even when the project toolchain is
-installed.
+Run these commands from Ubuntu/WSL. The Makefile sources `scripts/env.sh`,
+which activates the repository-local virtualenv plus the pinned Picker and SBY
+installations under `.tooling/`. Running the system `python3` directly can
+produce `No module named pytest` even when the project toolchain is installed.
 
 The maintained RTL source is under `rtl/`. The active verification
 environment is under `dv/`; `src/` and `test/` are legacy migration sources.

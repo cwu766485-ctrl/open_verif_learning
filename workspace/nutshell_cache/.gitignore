@@ -21,6 +21,8 @@
 !tests/
 !tests/**/
 !tests/**/*.py
+!scripts/
+!scripts/*.sh
 !formal/
 !formal/*.sby
 !formal/**/*.sby

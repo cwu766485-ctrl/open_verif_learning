@@ -1,5 +1,5 @@
 SHELL       := /bin/bash
-ENV_SCRIPT  := ../../.tooling/env.sh
+ENV_SCRIPT  := ./scripts/env.sh
 VSRC_DIR    = ./rtl
 PICKER      = picker
 NAME        = Cache
@@ -71,6 +71,7 @@ doctor:
 	 echo "pytest: $$(command -v pytest || true)"; python3 -m pytest --version; \
 	 python3 -c "import toffee, toffee_test; print('toffee: OK')"; \
 	 echo "picker: $$(command -v picker)"; picker --version || true; \
+	 echo "sby: $$(command -v sby)"; sby --version; \
 	 echo "verilator: $$(command -v verilator)"; verilator --version
 
 # Remove all generated DUT, simulator, waveform, coverage and Python cache

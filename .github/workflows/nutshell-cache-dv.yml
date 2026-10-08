@@ -55,8 +55,7 @@ jobs:
       - name: Check installed open-source toolchain
         working-directory: workspace/nutshell_cache
         run: |
-          source ../../.tooling/env.sh
-          export PATH="$GITHUB_WORKSPACE/.tooling/sby-install/bin:$PATH"
+          source scripts/env.sh
           picker --version
           yosys --version
           sby --version
