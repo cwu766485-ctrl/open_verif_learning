@@ -1,0 +1,57 @@
+name: NutShell cache open-source DV
+
+on:
+  push:
+    paths:
+      - "workspace/nutshell_cache/**"
+      - ".github/workflows/nutshell-cache-dv.yml"
+  pull_request:
+    paths:
+      - "workspace/nutshell_cache/**"
+      - ".github/workflows/nutshell-cache-dv.yml"
+  workflow_dispatch:
+
+jobs:
+  cache-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install open-source RTL toolchain dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git lcov libboost-all-dev \
+            libffi-dev libyaml-cpp-dev pkg-config python3-dev python3-venv \
+            swig verilator zlib1g-dev
+      - name: Create Python environment
+        run: |
+          python3 -m venv .tooling/venv
+          source .tooling/venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install -r workspace/nutshell_cache/requirements-dv.txt
+      - name: Build pinned Picker open-source RTL bridge
+        run: |
+          git clone --filter=blob:none https://github.com/XS-MLVP/picker.git .tooling/picker
+          git -C .tooling/picker checkout c100874936aad4030d3bc4c8425ab652f2fbc7ad
+          make -C .tooling/picker init
+          git -C .tooling/picker/dependence/xcomm checkout 23ba5c47310a74dab1567a4ca54ad85dec4512cb
+          source .tooling/venv/bin/activate
+          make -C .tooling/picker install \
+            ARGS="-DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/.tooling/picker-install"
+      - name: Generate DUT and run regression plus coverage closure
+        working-directory: workspace/nutshell_cache
+        env:
+          NUTSHELL_RANDOM_SEEDS: "0x2468ACE,0xFACE1234"
+        run: |
+          make gen_dut
+          make report
+      - name: Upload regression and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nutshell-cache-dv-reports
+          path: workspace/nutshell_cache/reports/
+          if-no-files-found: warn

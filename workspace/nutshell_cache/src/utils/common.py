@@ -3,6 +3,8 @@
     Author: yzcc
 """
 
+from dataclasses import dataclass
+
 class ReqMsg:
     def __init__(self, addr, cmd, size=7, mask=0, data=0):
 
@@ -54,6 +56,15 @@ class RespMsg:
         resp["bits_cmd"] = self.cmd
 
         return resp
+
+# Canonical transaction names live under dv.common.transaction. These aliases
+# preserve old imports while preventing two competing transaction definitions.
+try:
+    from dv.common.transaction.simplebus_request import SimpleBusRequest
+    from dv.common.transaction.simplebus_response import SimpleBusResponse
+except ImportError:  # keep this utility importable during minimal tooling setup
+    SimpleBusRequest = None
+    SimpleBusResponse = None
 
 def replicate_bits(binary_num, replication, num_bits):
     result = 0

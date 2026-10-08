@@ -10,6 +10,17 @@
 !.gitignore
 !.gtkwaverc
 !pytest.ini
+!requirements-dv.txt
+
+# Current Python-based verification environment and regression tests.
+!dv/
+!dv/**/
+!dv/**/*.py
+!dv/**/*.md
+!dv/**/*.json
+!tests/
+!tests/**/
+!tests/**/*.py
 
 !src/
 !src/**/
@@ -23,9 +34,11 @@
 !report/*.md
 !rtl/
 !rtl/*.v
-!rtl/modular/
-!rtl/modular/*.v
-!rtl/modular/*.f
+!rtl/
+!rtl/**/
+!rtl/**/*.v
+!rtl/**/*.f
+!rtl/**/*.md
 !tools/
 !tools/*.ps1
 

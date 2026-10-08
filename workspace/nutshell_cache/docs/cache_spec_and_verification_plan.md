@@ -93,7 +93,8 @@ Stage2 找到有效且 tag 相等的 way，Stage3 从四路数据中选择命中
 | cross-line boundary | 检查 64B line 末尾和下一条 line 首 word 不互相覆盖 |
 | long randomized mixed | 固定种子 128 笔冲突、byte mask、读写和替换混合事务 |
 
-最终 Linux/WSL `make report`：12 个用例全部通过；Verilator RTL 行覆盖率 80.1%（1164/1454）。
+初始阶段 Linux/WSL `make report`：12 个用例全部通过；Verilator RTL 行覆盖率 80.1%（1164/1454）。
+该数字是历史基线；当前回归与覆盖率结果以 `dv/README.md` 为准。
 新增用例覆盖了 dirty eviction/writeback、下游 backpressure、burst 暂停恢复、coherence probe、跨 line
 访问和长随机混合序列。
 数据 Cache flush 仍然不会作为通过项，因为当前 RTL 会触发自带设计断言；它被记录为

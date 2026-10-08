@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "scope": "maintained rtl/ statement-line coverage only",
+  "waivers": [
+    {
+      "source": "rtl/pipeline/CacheStage2.v",
+      "line": 192,
+      "reason": "The 64-bit XOR LFSR is reset to a non-zero seed and a non-zero LFSR sequence cannot naturally enter its zero state; this recovery assignment requires state fault injection, outside this interface-level regression."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage2.v",
+      "line": 213,
+      "reason": "Assertion diagnostic guard for the one-hot victim-way invariant. Legal requests must not violate the invariant; assertion-failure injection is not part of the passing functional regression."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage2.v",
+      "line": 214,
+      "reason": "Assertion diagnostic print for the one-hot victim-way invariant; intentionally not executed by legal functional stimulus."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 443,
+      "reason": "Shared CacheStage3 read-burst hit path. The verified NutShell L1 DCache configuration receives only single-beat READ/WRITE from the LSU; burst commands belong to the cache-hierarchy interface, not this CPU port."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 448,
+      "reason": "Verilator LCOV control-only line: the MMIO request-ready branch body at line 449 is hit, but the condition line itself is reported as a zero-count line. It is not an uncovered executable statement."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 459,
+      "reason": "DCache flush-clear path is not legal for this writable cache: the RTL asserts that flush is ICache-only and NutShell connects zero flush to the DCache."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 471,
+      "reason": "Shared CacheStage3 read-burst beat-counter path; READBST is outside the L1 DCache CPU-port contract used by this regression."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 495,
+      "reason": "Verilator LCOV control-only line: the state2 data-ready body at line 496 is hit, but this conditional line is reported as zero. It is not an uncovered executable statement."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 541,
+      "reason": "Shared CacheStage3 per-beat L1 burst-response counter path; READBST is outside the L1 DCache CPU-port contract used by this regression."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 547,
+      "reason": "Assertion diagnostic guard for the impossible MMIO-and-cache-hit combination; the address decoder bypasses MMIO before tag-hit processing."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 548,
+      "reason": "Assertion diagnostic print for the impossible MMIO-and-cache-hit combination; intentionally not executed by legal functional stimulus."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 571,
+      "reason": "Assertion diagnostic guard for simultaneous metadata hit-write and refill-write; these are mutually exclusive legal transaction phases."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 572,
+      "reason": "Assertion diagnostic print for simultaneous metadata hit-write and refill-write; intentionally not executed by legal functional stimulus."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 595,
+      "reason": "Assertion diagnostic guard for simultaneous data hit-write and refill-write; these are mutually exclusive legal transaction phases."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 596,
+      "reason": "Assertion diagnostic print for simultaneous data hit-write and refill-write; intentionally not executed by legal functional stimulus."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 619,
+      "reason": "Assertion diagnostic guard for DCache flush, prohibited by the writable-cache configuration and tied low by NutShell integration."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 620,
+      "reason": "Assertion diagnostic print for the prohibited DCache flush path; intentionally not executed by legal functional stimulus."
+    }
+  ]
+}
