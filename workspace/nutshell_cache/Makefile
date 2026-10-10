@@ -1,7 +1,7 @@
 SHELL       := /bin/bash
 ENV_SCRIPT  := ./scripts/env.sh
 VSRC_DIR    = ./rtl
-PICKER      = picke
+PICKER      = picker
 NAME        = Cache
 NAME_L      = cache
 SIM         = verilator
