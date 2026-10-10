@@ -1,5 +1,7 @@
 # Open Verify Learning Notes
 
+[![NutShell Cache DV CI](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml/badge.svg?branch=codex%2Fnutshell-cache-dv)](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml)
+
 这是基于[万众一芯开放验证](https://open-verify.cc/)新手任务的个人学习仓库：先用 Picker、Toffee 和 pytest 验证同步 FIFO，再完成 NutShell Cache 的验证实战。
 
 仓库保留可阅读、可复现的源码、测试、报告和学习笔记；本机虚拟环境、编译缓存、仿真库、波形和覆盖率原始数据均由 `.gitignore` 排除。
@@ -20,7 +22,8 @@
 - Picker：导出 Python DUT，比较 `AsRiseWrite()` 与 `AsImmWrite()`，并生成 FST 波形。
 - Toffee：实现读/写/控制/内部状态 Bundle，FIFO Agent，Python `deque` 参考模型，以及功能覆盖率。
 - Toffee FIFO：4 个 pytest 用例通过；功能覆盖率为 13/13 bins（100%）。
-- 果壳 Cache：`make report` 通过 12 个 pytest 用例；Verilator RTL 行覆盖率 80.1%（1164/1454）。
+- 果壳 Cache：`make report` 通过 39/39 个 pytest cases，命中 37/37 功能覆盖目标；维护 RTL 原始行覆盖率 98.0%（845/862），waiver 调整后 100%（845/845），含生成 wrapper 的全源覆盖率 95.1%（1423/1496）。
+- Cache 随机回归使用 6 个固定 seed、384 笔操作；GitHub Actions 干净 runner 扩展为 8 个固定 seed、512 笔操作，并执行形式检查及覆盖率 closure。
 - Cache 验证覆盖复位/流水线排空、cold miss/refill/hit、写回、byte mask、MMIO 隔离、下游 backpressure、coherence probe、跨 line 访问和长随机序列。
 - NutShell Cache 源码：已完成 Chisel 源码级模块化，生成 RTL 的模块名按 ICache、DCache、L2Cache 角色区分。
 

@@ -5,8 +5,11 @@ from dv.common.transaction import SimpleBusRequest, SimpleBusResponse
 
 
 class CacheDutProperties:
-    def __init__(self, replacement_model=None):
-        self.replacement_model = replacement_model
+    def __init__(self, replacement_model=None, tag_model=None):
+        self.tag_model = tag_model
+        self.replacement_model = (
+            tag_model.replacement if tag_model is not None else replacement_model
+        )
         self.outstanding_cpu_requests = 0
         self.accepted_cpu_requests = 0
         self.completed_cpu_responses = 0
@@ -39,6 +42,20 @@ class CacheDutProperties:
             raise AssertionError(
                 f"replacement selector mask must be one-hot, got 0x{mask:x}"
             )
+
+    def observe_cache_access(
+        self, *, valid, addr, cmd, was_miss, waymask, lfsr_waymask=None
+    ):
+        """Feed the exact Stage2 transfer to the independent tag Refm."""
+        if not valid or self.tag_model is None:
+            return
+        request = SimpleBusRequest(addr=addr, size=3, cmd=cmd, wmask=0, wdata=0)
+        self.tag_model.observe_access(
+            request,
+            was_miss=was_miss,
+            selected_way_mask=waymask,
+            lfsr_way_mask=lfsr_waymask,
+        )
 
     def observe_cycle(
         self,
@@ -108,6 +125,14 @@ class CacheDutProperties:
                         f"got 0x{actual_mask:x}; recent samples="
                         f"{self.replacement_trace!r}"
                     )
+                self.observe_cache_access(
+                    valid=int(dut.cache_access_event_valid.value),
+                    addr=int(dut.cache_access_event_addr.value),
+                    cmd=int(dut.cache_access_event_cmd.value),
+                    was_miss=bool(dut.cache_access_event_miss.value),
+                    waymask=int(dut.cache_access_event_waymask.value),
+                    lfsr_waymask=expected_mask,
+                )
             except AssertionError as exc:
                 self.errors.append(str(exc))
                 return

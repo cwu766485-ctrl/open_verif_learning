@@ -13,17 +13,23 @@
 - `toffee_fifo/`：学习任务 2，Toffee FIFO；
 - `nutshell_cache/`：学习任务 3，果壳 Cache；
 - `nutshell_cache/report/nutshell_cache_verification_report.md`：最终 Markdown 报告（正式版本）；
+- `nutshell_cache/nutshell_cache_report_demo.pdf`：当前验证结果 PDF；
 - `nutshell_cache/reports/cache`：运行 `make report` 后生成的 Toffee 测试报告；
 - `nutshell_cache/reports/rtl/index.html`：运行 `make report` 后生成的 Verilator RTL 覆盖率报告。
+
+当前 Cache 结果为 39/39 pytest cases、37/37 功能覆盖目标、维护 RTL 原始行覆盖率 98.0%（845/862），waiver 调整后 100%（845/845）。[GitHub Actions 干净环境 CI 记录](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml)。
 
 ## 复核命令
 
 ```bash
 cd /mnt/e/workspace/chip/open_verif
-source .tooling/env.sh
 make -C workspace/picker_fifo test
 make -C workspace/toffee_fifo report
-make -C workspace/nutshell_cache report
+cd workspace/nutshell_cache
+source scripts/env.sh
+make gen_dut
+make formal
+make report
 ```
 
 回复 Discussion 时建议附上 Cache 验证代码、Markdown 报告和报告截图或

@@ -27,10 +27,13 @@ produce `No module named pytest` even when the project toolchain is installed.
 
 The maintained RTL source is under `rtl/`. The active verification
 environment is under `dv/`; `src/` and `test/` are legacy migration sources.
-The regression currently contains 37 passing pytest cases and closes 37/37
-functional coverage goals. The multi-seed run also gates maintained-RTL line
-coverage against reviewed waivers and runs three SymbiYosys proofs. Current
-measured results and formal-proof assumptions/limitations are in `dv/README.md`.
+The current regression passes 39/39 pytest cases and closes 37/37 functional
+coverage goals. The local run covers six fixed seeds (384 randomized
+operations); GitHub Actions uses eight fixed seeds (512 operations) on a clean
+Ubuntu runner. Maintained-RTL line coverage is 98.0% raw (845/862), or 100%
+(845/845) after reviewed waivers; all-source coverage including generated DUT
+wrappers is 95.1% (1423/1496). Formal assumptions, limitations and the CI link
+are documented in `dv/README.md` and `formal/README.md`.
 
 The verification target is an open-toolchain DV flow based on Python/Toffee,
 pytest, Picker, and Verilator, without a dependency on a commercial simulator.
@@ -43,3 +46,6 @@ The architecture and verification plan are documented in
 
 This project verifies Verilog directly. Chisel is not required to regenerate
 the DUT or run the regression.
+
+The optional PDF summary can be regenerated with `python -m pip install -r
+report/requirements.txt` followed by `python report/build_report_pdf.py`.

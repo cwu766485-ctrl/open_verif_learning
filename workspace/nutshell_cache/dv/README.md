@@ -28,22 +28,20 @@ rather than through a separate sequencer API.
 ## Reference model
 
 The CPU-visible oracle maintains sparse 64-bit memory with byte-mask semantics.
-Alongside it, `SetAssociativeTagModel` models the cache's 128 sets, four ways,
-valid/tag/dirty state, and 64-byte lines. It predicts hit/miss before looking
-at memory traffic whenever its abstract state makes the answer deterministic;
-when randomized replacement leaves multiple legal states, observed traffic
-resolves and prunes those candidates. It rejects impossible hit/miss histories.
-The scoreboard checks dirty-victim addresses against legal model choices and
-compares all eight writeback data beats, masks, commands, and burst-base
-addresses. A separate `LfsrReplacementModel` independently advances the RTL
-seed and polynomial every sampled cycle; `CacheDutProperties` compares its
-predicted one-hot victim mask against the actual selector on every valid cycle.
-The tag model still keeps a set of legal physical-way states when replacement
-history is ambiguous, so it does not yet predict each evicted tag's exact way.
+Alongside it, `SetAssociativeTagModel` tracks the cache's 128 sets, four
+physical ways, valid/tag/dirty state, and 64-byte lines. It independently
+predicts hit/miss, invalid-first refill selection, and the exact LFSR-selected
+victim way. `CacheTop` exposes a verification-only Stage2 transfer event;
+`CacheDutProperties` compares each event's hit/miss and way mask against the
+Refm before updating its state. The scoreboard consumes the saved pre-access
+prediction and checks the exact dirty-victim address plus all eight writeback
+data beats, masks, commands, and burst-base addresses. The LFSR model advances
+independently each sampled clock and is checked against the RTL selector on
+every valid cycle.
 
 ## Current regression and coverage
 
-- 37/37 pytest cases pass. Scenarios include reset with a refill in flight,
+- 39/39 pytest cases pass. Scenarios include reset with a refill in flight,
   queued same-set misses, byte masks, MMIO bypass, probe/release,
   backpressure, same-word data forwarding, and exact eight-beat dirty-victim
   writeback.
@@ -54,7 +52,7 @@ history is ambiguous, so it does not yet predict each evicted tag's exact way.
 - The randomized cache sequence runs six fixed seeds x 64 operations (384
   operations); CI adds two fixed seeds, for eight reproducible seeds x 64
   operations (512 operations) per CI run.
-- The merged Verilator line report is 95.1% (1403/1476) across maintained RTL
+- The merged Verilator line report is 95.1% (1423/1496) across maintained RTL
   plus generated DUT/wrapper sources. Maintained `rtl/` entries are 98.0%
   (845/862). `make report` merges each Toffee test's `.dat`; using only the
   global `VCache_coverage.dat` under-counts the suite.
@@ -67,7 +65,7 @@ history is ambiguous, so it does not yet predict each evicted tag's exact way.
 - `make report` validates maintained-RTL coverage against the reviewed
   exclusions in `coverage/waivers.json`. Waiver-adjusted maintained RTL
   statement coverage is 100% (845/845); raw maintained-RTL coverage remains
-  98.0% (845/862), and the all-source report is 95.1%. Exclusions cover
+  98.0% (845/862), and the all-source report is 95.1% (1423/1496). Exclusions cover
   assertion-failure diagnostics, unreachable zero-state LFSR recovery,
   prohibited DCache flush, non-legal CPU burst paths, and two control-only
   LCOV line records whose statement bodies are hit. Generated wrappers remain
@@ -75,21 +73,33 @@ history is ambiguous, so it does not yet predict each evicted tag's exact way.
 
 `CacheDutProperties` tracks accepted/completed/reset-aborted CPU transactions,
 samples the RTL replacement-selector one-hot invariant, and rejects accounting
-imbalances. The existing ready/valid checkers verify stalled payload stability;
-the protocol checker catches missing, duplicate, or illegal responses.
+imbalances. The ready/valid checkers verify full stalled-payload stability;
+the protocol checker catches missing, duplicate, stale, or illegal responses.
+
+The Stage3 response-control harness runs an 8-cycle bounded Yosys SAT check for
+response provenance/duplicate retirement, reset cancellation, and stalled
+response valid/command stability. It uses actual CacheStage3 RTL with data
+arrays abstracted to constants, under the upstream single-beat READ/WRITE,
+stable-until-finish, and MMIO-bypass contracts. This is a bounded safety check,
+not an unbounded lifecycle proof; full response data-payload stability remains
+covered by simulation checkers.
 
 This is an open-source, sign-off-style regression flow, not commercial
 sign-off equivalence. GitHub Actions is configured to install the toolchain
 from scratch, generate the DUT, run formal checks and the multi-seed
 regression, gate RTL/functional coverage, and upload reports. Local
-SymbiYosys/Yosys/Z3 runs currently prove the LFSR recurrence and nonzero reset
-state, one-hot replacement/refill selection (under the unique-tag invariant),
-and Stage2 request-payload stability under backpressure (assuming a compliant
-upstream ready/valid source). Response loss/duplication and stale-response
-checks are currently simulation properties with checker fault injection; they
-are not yet end-to-end formal proofs. The tag model's exact physical-way state
-and a full-cache reset proof remain future work. UVM is not needed for this
-project's goal of demonstrating Python and open-source verification breadth.
+SymbiYosys/Yosys runs prove the LFSR recurrence and nonzero reset state,
+one-hot replacement/refill selection (under the unique-tag invariant), Stage2
+request-payload stability under backpressure, and bounded Stage3 response
+control properties. An unbounded end-to-end response lifecycle proof and a
+full-cache reset proof remain future work. UVM is not needed for this project's
+goal of demonstrating Python and open-source verification breadth.
+
+The current clean-runner workflow is tracked on the project branch; its live
+status and run history are available at
+https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml.
+The workflow runs eight fixed seeds (512 randomized operations) in addition
+to the local six-seed regression.
 
 ## Run
 

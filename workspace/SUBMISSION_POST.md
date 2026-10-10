@@ -9,9 +9,10 @@
 
 ### 代码与报告
 
-- 验证代码仓库：https://github.com/cwu766485-ctrl/open_verif_learning/tree/main
-- 验证报告（Markdown）：https://github.com/cwu766485-ctrl/open_verif_learning/blob/main/workspace/nutshell_cache/report/nutshell_cache_verification_report.md
-- 验证报告（PDF）：可选；本次以 Markdown 报告为准（WSL 未安装 LaTeX，避免提交旧版 PDF）
+- 验证代码仓库：https://github.com/cwu766485-ctrl/open_verif_learning/tree/codex/nutshell-cache-dv
+- 验证报告（Markdown）：https://github.com/cwu766485-ctrl/open_verif_learning/blob/codex/nutshell-cache-dv/workspace/nutshell_cache/report/nutshell_cache_verification_report.md
+- 验证报告（PDF）：`workspace/nutshell_cache/nutshell_cache_report_demo.pdf`
+- 干净环境 CI 记录：https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml
 - Toffee HTML 报告：执行 `make report` 后生成的 `workspace/nutshell_cache/reports/cache`
 - RTL 覆盖率报告：执行 `make report` 后生成的 `workspace/nutshell_cache/reports/rtl/index.html`
 
@@ -19,15 +20,18 @@
 
 ```bash
 cd workspace/nutshell_cache
-source ../../.tooling/env.sh
+source scripts/env.sh
 make gen_dut
+make formal
 make report
 ```
 
 ### 验证结果
 
-- Linux/WSL `make report` 共 12 个 pytest 用例全部通过，包含冲突替换、writeback、backpressure、probe、跨 line 和长随机序列
-- RTL line coverage：80.1%（1164/1454）
+- Linux/WSL `make report`：39/39 pytest cases 通过，包含冲突替换、writeback、backpressure、probe、reset cancellation、跨 line 和多 seed 随机序列
+- 功能覆盖：37/37 goals（100%）；维护 RTL 原始 line coverage：98.0%（845/862），waiver 调整后 100%（845/845）
+- 含生成 DUT/wrapper 的全源 line coverage：95.1%（1423/1496）；CI 每次使用 8 个固定 seed、512 笔随机操作
+- Fault injection：4/4 个代表性错误被 checker 捕获；形式验证范围和假设见验证报告
 - 覆盖内容：复位/流水线排空、cold miss/refill/hit、整字写、byte mask、MMIO 隔离、dirty eviction/writeback、下游延迟、coherence probe、跨 Cache line 访问和长随机序列
 
 报告包含功能梳理、测试点分解、测试用例、参考模型、结果分析和未覆盖项说明。

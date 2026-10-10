@@ -1,5 +1,6 @@
 """CPU-visible memory semantics and an independent cache-tag state model."""
 
+from collections import defaultdict, deque
 from dataclasses import dataclass
 
 from dv.common.transaction import SimpleBusRequest, SimpleBusResponse
@@ -13,19 +14,22 @@ from dv.common.utils.cmd_code import (
 
 @dataclass(frozen=True, order=True)
 class _LineState:
-    """One possible resident line in the architectural cache-state model."""
+    """A resident tag, with its exact physical way in the set."""
 
     tag: int
     dirty: bool
+    way: int
 
 
 @dataclass(frozen=True)
 class CacheAccessPrediction:
-    """Architectural hit/miss prediction plus legal dirty-victim choices."""
+    """Exact hit/miss and victim prediction for one cache access."""
 
     outcome: str
     dirty_victims: frozenset[int]
     dirty_victim_required: bool
+    selected_way: int | None = None
+    occupancy_before: int = 0
 
 
 class LfsrReplacementModel:
@@ -60,31 +64,29 @@ class LfsrReplacementModel:
 
 
 class SetAssociativeTagModel:
-    """Four-way tag/valid/dirty model with nondeterministic full-set victims.
+    """Four-way tag/valid/dirty model with exact physical-way replacement.
 
-    The RTL prefers the highest-numbered invalid way, then uses an LFSR victim
-    when a set is full.  Since the LFSR is intentionally pseudo-random, this
-    model tracks every architecturally legal replacement outcome rather than
-    copying the implementation's internal state.  Observed backing-memory
-    traffic resolves each access as hit or miss and prunes the candidate
-    states; impossible hit/miss sequences fail immediately.
+    At the Stage2-to-Stage3 transfer, the model independently predicts the
+    hit/miss result and selected refill way, compares them against the
+    observed RTL event and LFSR sample, then updates its way-indexed state.
+    It retains the pre-update prediction until the CPU response retires so the
+    scoreboard can check the exact dirty victim and writeback payload.
     """
 
     SETS = 128
     WAYS = 4
     LINE_BYTES = 64
-    MAX_CANDIDATE_STATES_PER_SET = 4096
-
     def __init__(self):
         self.replacement = LfsrReplacementModel()
         self.reset()
 
     def reset(self):
         self._states = {}
+        self._access_history = defaultdict(deque)
         self.replacement.reset()
         self.hits = 0
         self.misses = 0
-        self.ambiguous_outcomes = 0
+        self.exact_way_updates = 0
 
     @staticmethod
     def address_fields(addr):
@@ -104,14 +106,31 @@ class SetAssociativeTagModel:
     def line_base(set_index, tag):
         return ((tag << 7) | set_index) << 6
 
-    def predict_access(self, request, was_miss=None):
-        """Predict hit/miss from model state without consulting bus traffic.
+    @staticmethod
+    def _ordered(state):
+        return tuple(sorted(state, key=lambda line: line.way))
 
-        was_miss is only supplied after an observed access when several
-        abstract states make both outcomes legal. It narrows the victim set
-        for writeback checking; it does not override a deterministic
-        prediction.
-        """
+    @staticmethod
+    def _valid_mask(state):
+        return sum(1 << line.way for line in state)
+
+    @staticmethod
+    def _is_onehot_way(mask):
+        return 0 < mask <= 0xF and (mask & (mask - 1)) == 0
+
+    def _next_refill_way(self, state, lfsr_way_mask=None):
+        invalid_way = self.invalid_first_way(self._valid_mask(state))
+        if invalid_way is not None:
+            return invalid_way
+        mask = self.replacement.mask if lfsr_way_mask is None else lfsr_way_mask
+        if not self._is_onehot_way(mask):
+            raise AssertionError(f"tag model: invalid LFSR way mask 0x{mask:x}")
+        return mask.bit_length() - 1
+
+    def predict_access(
+        self, request, was_miss=None, *, selected_way_mask=None, lfsr_way_mask=None
+    ):
+        """Predict hit/miss and the exact way selected for a refill."""
         if request.cmd not in (CMD_READ, CMD_WRITE):
             raise ValueError(f"unsupported tag-model command 0x{request.cmd:x}")
         set_index, tag = self.address_fields(request.addr)
@@ -123,145 +142,122 @@ class SetAssociativeTagModel:
         elif not miss_states:
             outcome = "hit"
         else:
-            outcome = "ambiguous"
+            raise AssertionError(
+                f"tag model: physical-way state is ambiguous for tag 0x{tag:x} "
+                f"in set {set_index}; exact replacement history was lost"
+            )
 
-        if was_miss is True:
-            considered = miss_states
-        elif was_miss is False:
-            considered = hit_states
-        else:
-            considered = list(states)
-        if not considered:
+        if was_miss is not None and (outcome == "miss") != bool(was_miss):
             observed = "miss" if was_miss else "hit"
             raise AssertionError(
-                f"tag model: observed {observed} for impossible tag 0x{tag:x} "
-                f"in set {set_index}"
+                f"tag model: observed {observed} for predicted {outcome} at "
+                f"0x{request.addr:08x} in set {set_index}"
             )
 
-        victim_options = []
-        dirty_victims = set()
-        for state in considered:
-            if any(line.tag == tag for line in state):
-                victim_options.append(None)
-            elif len(state) < self.WAYS:
-                victim_options.append(None)
-            else:
-                for line in state:
-                    if line.dirty:
-                        victim_address = self.line_base(set_index, line.tag)
-                        dirty_victims.add(victim_address)
-                        victim_options.append(victim_address)
-                    else:
-                        victim_options.append(None)
-
-        dirty_victim_required = bool(victim_options) and all(
-            option is not None for option in victim_options
+        state = next(iter(hit_states or miss_states))
+        hit_line = next((line for line in state if line.tag == tag), None)
+        selected_way = hit_line.way if hit_line is not None else self._next_refill_way(
+            state, lfsr_way_mask
         )
+        expected_mask = 1 << selected_way
+        if selected_way_mask is not None and selected_way_mask != expected_mask:
+            raise AssertionError(
+                f"tag model: RTL selected way mask 0x{selected_way_mask:x}, expected "
+                f"0x{expected_mask:x} for {'hit' if hit_line else 'refill'} "
+                f"at 0x{request.addr:08x}"
+            )
+
+        victim = next((line for line in state if line.way == selected_way), None)
+        dirty_victims = frozenset((self.line_base(set_index, victim.tag),)) if (
+            outcome == "miss" and victim is not None and victim.dirty
+        ) else frozenset()
         return CacheAccessPrediction(
             outcome=outcome,
-            dirty_victims=frozenset(dirty_victims),
-            dirty_victim_required=dirty_victim_required,
+            dirty_victims=dirty_victims,
+            dirty_victim_required=bool(dirty_victims),
+            selected_way=selected_way,
+            occupancy_before=len(state),
         )
 
-    def observe_access(self, request, was_miss):
-        """Commit one completed CPU access using observed refill presence.
+    def observe_access(
+        self, request, was_miss, *, selected_way_mask=None, lfsr_way_mask=None,
+        record_prediction=True,
+    ):
+        """Cross-check one Stage2 event and update exact physical-way state.
 
-        Each candidate is an immutable tuple of resident ``(tag, dirty)``
-        entries. The abstraction intentionally ignores physical way identity;
-        it still enforces four-way capacity, hit/miss consistency, and dirty
-        state across all legal LFSR victim choices.
+        The saved prediction describes the pre-access state. The scoreboard
+        consumes it only when that CPU request's response retires.
         """
         if request.cmd not in (CMD_READ, CMD_WRITE):
-            return
-        prediction = self.predict_access(request)
-        if prediction.outcome == "hit" and was_miss:
-            raise AssertionError(
-                f"tag model: observed backing-memory miss for predicted hit at "
-                f"0x{request.addr:08x}"
-            )
-        if prediction.outcome == "miss" and not was_miss:
-            raise AssertionError(
-                f"tag model: observed hit for predicted miss at 0x{request.addr:08x}"
-            )
+            return None
+        prediction = self.predict_access(
+            request,
+            was_miss,
+            selected_way_mask=selected_way_mask,
+            lfsr_way_mask=lfsr_way_mask,
+        )
         set_index, tag = self.address_fields(request.addr)
-        states = self._states.get(set_index, {()})
-        matches = [state for state in states if any(line.tag == tag for line in state)]
-
+        state = next(iter(self._states.get(set_index, {()})))
         if was_miss:
-            candidates = [state for state in states if not any(line.tag == tag for line in state)]
-            if not candidates:
-                raise AssertionError(
-                    f"tag model: reported miss for resident tag 0x{tag:x} in set {set_index}"
-                )
-            next_states = set()
-            new_line = _LineState(tag, request.cmd == CMD_WRITE)
-            for state in candidates:
-                if len(state) < self.WAYS:
-                    next_states.add(tuple(sorted((*state, new_line))))
-                else:
-                    for victim_index in range(self.WAYS):
-                        next_states.add(
-                            tuple(sorted((*state[:victim_index], *state[victim_index + 1:], new_line)))
-                        )
+            way = prediction.selected_way
+            survivors = [line for line in state if line.way != way]
+            survivors.append(_LineState(tag, request.cmd == CMD_WRITE, way))
+            self._states[set_index] = {self._ordered(survivors)}
             self.misses += 1
-            if len(next_states) > 1:
-                self.ambiguous_outcomes += 1
         else:
-            if not matches:
-                raise AssertionError(
-                    f"tag model: reported hit for absent tag 0x{tag:x} in set {set_index}"
+            self._states[set_index] = {
+                self._ordered(
+                    _LineState(line.tag, line.dirty or request.cmd == CMD_WRITE, line.way)
+                    if line.tag == tag else line
+                    for line in state
                 )
-            next_states = set()
-            for state in matches:
-                updated = tuple(
-                    sorted(
-                        _LineState(line.tag, line.dirty or request.cmd == CMD_WRITE)
-                        if line.tag == tag else line
-                        for line in state
-                    )
-                )
-                next_states.add(updated)
+            }
             self.hits += 1
+        self.exact_way_updates += 1
+        if record_prediction:
+            key = (request.addr & ~0x3F, request.cmd)
+            self._access_history[key].append((prediction, bool(was_miss)))
+        return prediction
 
-        if len(next_states) > self.MAX_CANDIDATE_STATES_PER_SET:
-            raise AssertionError(
-                f"tag model: candidate-state limit exceeded in set {set_index}; "
-                "split the stress into reset-bounded scenarios or add a sound abstraction"
-            )
-        self._states[set_index] = next_states
+    def consume_access_prediction(self, request):
+        """Consume the saved pre-update oracle for a retired CPU request."""
+        key = (request.addr & ~0x3F, request.cmd)
+        history = self._access_history.get(key)
+        if not history:
+            return None
+        prediction, _was_miss = history.popleft()
+        if not history:
+            self._access_history.pop(key, None)
+        return prediction
 
     def candidate_states(self, set_index):
-        """Read-only state view for unit tests and debug reports."""
+        """Compatibility view; each set now has one exact physical-way state."""
         return frozenset(self._states.get(set_index, {()}))
 
     def occupancy(self, addr):
-        """Return the pre-access resident-line count, or None if ambiguous."""
+        """Return exact set occupancy."""
         set_index, _tag = self.address_fields(addr)
         counts = {len(state) for state in self._states.get(set_index, {()})}
-        return next(iter(counts)) if len(counts) == 1 else None
+        return next(iter(counts))
 
     def observe_probe(self, addr, was_hit):
         """Check an observed probe result and invalidate the line on a hit."""
         set_index, tag = self.address_fields(addr)
         states = self._states.get(set_index, {()})
+        if len(states) != 1:
+            raise AssertionError(f"tag model: expected exact state for probe in set {set_index}")
+        state = next(iter(states))
+        resident = any(line.tag == tag for line in state)
+        if resident != bool(was_hit):
+            observed = "hit" if was_hit else "miss"
+            raise AssertionError(
+                f"tag model: reported probe {observed} for "
+                f"{'resident' if resident else 'absent'} tag 0x{tag:x} in set {set_index}"
+            )
         if was_hit:
-            candidates = [state for state in states if any(line.tag == tag for line in state)]
-            if not candidates:
-                raise AssertionError(
-                    f"tag model: reported probe hit for absent tag 0x{tag:x} in set {set_index}"
-                )
-            next_states = {
+            self._states[set_index] = {
                 tuple(line for line in state if line.tag != tag)
-                for state in candidates
             }
-        else:
-            candidates = [state for state in states if not any(line.tag == tag for line in state)]
-            if not candidates:
-                raise AssertionError(
-                    f"tag model: reported probe miss for resident tag 0x{tag:x} in set {set_index}"
-                )
-            next_states = set(candidates)
-        self._states[set_index] = next_states
 
 
 class CacheReferenceModel:
@@ -296,10 +292,12 @@ class CacheReferenceModel:
             return SimpleBusResponse(CMD_WRITERSP, old)
         raise ValueError(f"unsupported CPU command 0x{request.cmd:x} at 0x{request.addr:08x}")
 
-    def observe_cache_access(self, request, was_miss):
+    def observe_cache_access(self, request, was_miss, *, record_prediction=True):
         """Update tag/valid/dirty state after the response has retired."""
         if not self.is_mmio(request.addr):
-            self.cache_tags.observe_access(request, was_miss)
+            self.cache_tags.observe_access(
+                request, was_miss, record_prediction=record_prediction
+            )
 
     def reset_cache_state(self):
         """Model the tag-array invalidation performed by DUT reset."""

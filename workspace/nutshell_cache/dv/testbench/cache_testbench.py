@@ -16,7 +16,9 @@ class CacheTestbench:
         self.scoreboard = CacheScoreboard()
         self.checker = CacheProtocolChecker("cpu")
         self.coherence_checker = CacheProtocolChecker("coherence")
-        self.properties = CacheDutProperties(self.scoreboard.reference.cache_tags.replacement)
+        self.properties = CacheDutProperties(
+            tag_model=self.scoreboard.reference.cache_tags
+        )
         self.coverage = self.env.coverage
         self.scoreboard.coverage = self.coverage
 

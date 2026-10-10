@@ -134,8 +134,25 @@ class CacheScoreboard:
                 return
         self.pending.popleft()
         if not self.reference.is_mmio(request.addr):
-            occupancy = self.reference.cache_tags.occupancy(request.addr)
-            self._check_cache_outcome(item)
+            prediction = self.reference.cache_tags.consume_access_prediction(request)
+            if prediction is None:
+                # Standalone scoreboard/model tests do not have a sampled RTL
+                # access event; retain the direct-model fallback for them.
+                occupancy = self.reference.cache_tags.occupancy(request.addr)
+                prediction = self._check_cache_outcome(item)
+                self.reference.observe_cache_access(
+                    request, item["cache_miss"], record_prediction=False
+                )
+            else:
+                occupancy = prediction.occupancy_before
+                observed_miss = item["cache_miss"]
+                if (prediction.outcome == "miss") != observed_miss:
+                    self._fail(
+                        f"Stage2 tag Refm predicted {prediction.outcome} at "
+                        f"0x{request.addr:08x}, but observed "
+                        f"{'miss' if observed_miss else 'hit'} from memory traffic"
+                    )
+                self._check_dirty_writeback(item, prediction)
             if self.coverage is not None:
                 result = "miss" if item["cache_miss"] else "hit"
                 has_writeback = any(
@@ -153,7 +170,6 @@ class CacheScoreboard:
                     ),
                     victim_class=victim_class,
                 )
-            self.reference.observe_cache_access(request, item["cache_miss"])
 
     def _check_cache_outcome(self, item):
         request = item["request"]

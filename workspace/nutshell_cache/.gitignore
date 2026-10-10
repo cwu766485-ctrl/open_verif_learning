@@ -25,7 +25,10 @@
 !scripts/*.sh
 !formal/
 !formal/*.sby
+!formal/*.ys
+!formal/*.v
 !formal/**/*.sby
+!formal/**/*.v
 
 !src/
 !src/**/
@@ -46,6 +49,7 @@
 !rtl/**/*.md
 !tools/
 !tools/*.ps1
+!tools/*.json
 
 # Generated Python/simulator state remains ignored even under the exceptions.
 src/**/__pycache__/

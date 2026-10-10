@@ -710,4 +710,85 @@ end // initial
 `FIRRTL_AFTER_INITIAL
 `endif
 `endif // SYNTHESIS
+`ifdef FORMAL
+  // Stage3 response-lifecycle proof under the CPU cache port's single-beat
+  // READ/WRITE contract. The parent pipeline presents one stable request until
+  // io_isFinish; that is the same hold behavior enforced at CacheTop.
+  reg f_lifecycle_past_valid = 1'b0;
+  reg f_lifecycle_reset_seen = 1'b0;
+  reg f_active_cpu_request = 1'b0;
+  reg f_response_seen = 1'b0;
+  wire f_legal_cpu_request =
+    (io_in_bits_req_cmd == 4'h0) || (io_in_bits_req_cmd == 4'h1);
+  wire f_start_cpu_request = io_in_valid && f_legal_cpu_request &&
+    (state == 4'h0) && !f_active_cpu_request;
+  wire f_cpu_response_fire = io_out_valid && io_out_ready;
+
+  always @(posedge clock) begin
+    f_lifecycle_past_valid <= 1'b1;
+    if ($initstate)
+      assume (reset);
+
+    // CacheTop clears its Stage3-valid register synchronously with reset.
+    // Constrain only the first post-reset sample to that parent guarantee.
+    if (f_lifecycle_past_valid && $past(reset)) begin
+      assume (!io_in_valid);
+      assert (!io_out_valid);
+      assert (!io_dataReadRespToL1);
+    end
+
+    if (reset) begin
+      f_lifecycle_reset_seen <= 1'b1;
+      f_active_cpu_request <= 1'b0;
+      f_response_seen <= 1'b0;
+    end else if (f_lifecycle_reset_seen) begin
+      if (io_in_valid)
+        assume (f_legal_cpu_request);
+      // Stage2 marks MMIO as a bypass rather than a cache hit; it cannot
+      // present both classifications for the same valid request.
+      if (io_in_valid && io_in_bits_mmio)
+        assume (!io_in_bits_hit);
+
+      // The Stage3 control inputs must stay associated with one request until
+      // finish. The wide data payload is intentionally outside this control
+      // proof; its ready/valid stability is covered by the simulation checker.
+      if (f_lifecycle_past_valid && !$past(reset) &&
+          $past(io_in_valid && !io_isFinish)) begin
+        assume (io_in_valid);
+        assume ({io_in_bits_req_cmd, io_in_bits_hit, io_in_bits_mmio, meta_dirty} ==
+                $past({io_in_bits_req_cmd, io_in_bits_hit,
+                       io_in_bits_mmio, meta_dirty}));
+      end
+
+      if (f_start_cpu_request) begin
+        f_active_cpu_request <= 1'b1;
+        f_response_seen <= 1'b0;
+      end
+
+      // No CPU response can be emitted without an active (or same-cycle hit)
+      // request, and each single-beat request can retire at most once.
+      if (io_out_valid)
+        assert (f_active_cpu_request || f_start_cpu_request);
+      if (f_cpu_response_fire) begin
+        assert (f_active_cpu_request || f_start_cpu_request);
+        assert (!f_response_seen || f_start_cpu_request);
+        f_response_seen <= 1'b1;
+      end
+
+      // Finishing a legal CPU operation without a response would lose it.
+      if ((f_active_cpu_request || f_start_cpu_request) && io_isFinish) begin
+        assert (f_response_seen || f_cpu_response_fire);
+        f_active_cpu_request <= 1'b0;
+      end
+
+      // A stalled response must keep valid and response command stable; reset
+      // is the only permitted cancellation. Simulation checks the full payload.
+      if (f_lifecycle_past_valid && !$past(reset) &&
+          $past(io_out_valid && !io_out_ready)) begin
+        assert (io_out_valid);
+        assert (io_out_bits_cmd == $past(io_out_bits_cmd));
+      end
+    end
+  end
+`endif
 endmodule

@@ -1,7 +1,7 @@
 SHELL       := /bin/bash
 ENV_SCRIPT  := ./scripts/env.sh
 VSRC_DIR    = ./rtl
-PICKER      = picker
+PICKER      = picke
 NAME        = Cache
 NAME_L      = cache
 SIM         = verilator
@@ -61,7 +61,8 @@ formal:
 	 mkdir -p reports/formal; \
 	 sby -f -d reports/formal/replacement_selector formal/replacement_selector.sby && \
 	 sby -f -d reports/formal/cache_way_selector formal/cache_way_selector.sby && \
-	 sby -f -d reports/formal/cache_stage2_stability formal/cache_stage2_stability.sby
+	 sby -f -d reports/formal/cache_stage2_stability formal/cache_stage2_stability.sby && \
+	 yosys -Q -l reports/formal/cache_stage3_response_lifecycle_sat.log -s formal/cache_stage3_response_lifecycle.ys
 
 fault_injection:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.fault_injection.run

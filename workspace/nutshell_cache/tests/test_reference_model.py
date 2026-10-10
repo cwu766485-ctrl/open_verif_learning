@@ -38,7 +38,7 @@ def test_tag_model_predicts_unambiguous_hits_and_misses_before_bus_evidence():
     assert model.predict_access(_request(request.addr + 8)).outcome == "hit"
 
 
-def test_full_dirty_set_predicts_legal_victim_addresses():
+def test_full_dirty_set_predicts_exact_lfsr_victim_way_and_address():
     model = SetAssociativeTagModel()
     addresses = [0x1000 + way * 0x2000 for way in range(5)]
     for addr in addresses[:4]:
@@ -47,10 +47,14 @@ def test_full_dirty_set_predicts_legal_victim_addresses():
     prediction = model.predict_access(_request(addresses[4]))
     assert prediction.outcome == "miss"
     assert prediction.dirty_victim_required
-    assert prediction.dirty_victims == frozenset(addr & ~0x3F for addr in addresses[:4])
+    # Invalid-first fills use ways 3,2,1,0 respectively. The reset-seeded
+    # LFSR currently selects way 1, so the third line is the exact victim.
+    assert prediction.selected_way == 1
+    assert prediction.dirty_victims == frozenset((addresses[2] & ~0x3F,))
 
     model.observe_access(_request(addresses[4]), was_miss=True)
-    assert model.predict_access(_request(addresses[0])).outcome == "ambiguous"
+    assert model.predict_access(_request(addresses[2])).outcome == "miss"
+    assert model.predict_access(_request(addresses[0])).outcome == "hit"
 
 
 def test_scoreboard_checks_dirty_writeback_address_and_every_data_beat():
@@ -82,7 +86,7 @@ def test_scoreboard_checks_dirty_writeback_address_and_every_data_beat():
         scoreboard._check_dirty_writeback(item, prediction)
 
 
-def test_tag_model_tracks_all_legal_full_set_victims():
+def test_tag_model_tracks_exact_physical_way_after_full_set_replacement():
     model = SetAssociativeTagModel()
     addresses = [0x1000 + way * 0x2000 for way in range(5)]
 
@@ -90,13 +94,56 @@ def test_tag_model_tracks_all_legal_full_set_victims():
         model.observe_access(_request(addr), was_miss=True)
 
     states = model.candidate_states(0x1000 >> 6 & 0x7F)
-    assert len(states) == model.WAYS
+    assert len(states) == 1
     assert all(len(state) == model.WAYS for state in states)
-    # A reported hit is legal if the line remains in at least one candidate;
-    # the observation then removes the candidates in which it was evicted.
+    physical_state = next(iter(states))
+    assert {line.way: line.tag for line in physical_state} == {
+        0: addresses[3] >> 13,
+        1: addresses[4] >> 13,
+        2: addresses[1] >> 13,
+        3: addresses[0] >> 13,
+    }
+    # The independent LFSR predicts way 1 and the exact evicted line.
+    assert model.predict_access(_request(addresses[2])).outcome == "miss"
     model.observe_access(_request(addresses[0]), was_miss=False)
-    assert all(any(line.tag == addresses[0] >> 13 for line in state) for state in
-               model.candidate_states(0x1000 >> 6 & 0x7F))
+    assert any(line.tag == addresses[0] >> 13 for line in
+               next(iter(model.candidate_states(0x1000 >> 6 & 0x7F))))
+
+
+def test_exact_refill_event_cross_checks_and_updates_physical_way():
+    model = SetAssociativeTagModel()
+    addresses = [0x1800 + way * 0x2000 for way in range(5)]
+    # RTL picks the highest invalid way while any invalid way remains.
+    for addr, way in zip(addresses[:4], (3, 2, 1, 0)):
+        model.observe_access(
+            _request(addr, CMD_WRITE),
+            was_miss=True,
+            selected_way_mask=1 << way,
+            lfsr_way_mask=0b0010,
+        )
+    prediction = model.observe_access(
+        _request(addresses[4]),
+        was_miss=True,
+        selected_way_mask=0b0010,
+        lfsr_way_mask=0b0010,
+    )
+    assert prediction.selected_way == 1
+    assert prediction.dirty_victims == frozenset((addresses[2] & ~0x3F,))
+    resident = next(iter(model.candidate_states(0x1800 >> 6 & 0x7F)))
+    assert {line.way: line.tag for line in resident} == {
+        0: addresses[3] >> 13,
+        1: addresses[4] >> 13,
+        2: addresses[1] >> 13,
+        3: addresses[0] >> 13,
+    }
+
+    with pytest.raises(AssertionError, match="selected way mask"):
+        model.observe_access(
+            _request(addresses[2]),
+            was_miss=True,
+            selected_way_mask=0b1000,
+            lfsr_way_mask=0b0010,
+        )
 
 
 def test_tag_model_uses_highest_invalid_way_before_random_replacement():

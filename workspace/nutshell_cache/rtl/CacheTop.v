@@ -51,7 +51,12 @@ module Cache(
   output        io_empty,
   output        victim_way_mask_valid,
   output [3:0]  victim_way_mask,
-  output        forward_data_valid
+  output        forward_data_valid,
+  output        cache_access_event_valid,
+  output [31:0] cache_access_event_addr,
+  output [3:0]  cache_access_event_cmd,
+  output        cache_access_event_miss,
+  output [3:0]  cache_access_event_waymask
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -780,6 +785,14 @@ module Cache(
   assign arb_io_out_ready = s1_io_in_ready;
   assign victim_way_mask_valid = s2_io_out_valid; // Interface for uvm reference model
   assign forward_data_valid = s2_io_out_bits_isForwardData;
+  // Independent tag-model observation point at a real Stage2 -> Stage3
+  // transfer. MMIO and coherence traffic do not update the CPU tag model.
+  assign cache_access_event_valid = _T_4 & ~reset & ~s2_io_out_bits_mmio &
+    ((s2_io_out_bits_req_cmd == 4'h0) || (s2_io_out_bits_req_cmd == 4'h1));
+  assign cache_access_event_addr = s2_io_out_bits_req_addr;
+  assign cache_access_event_cmd = s2_io_out_bits_req_cmd;
+  assign cache_access_event_miss = ~s2_io_out_bits_hit;
+  assign cache_access_event_waymask = s2_io_out_bits_waymask;
   always @(posedge clock) begin
     if (reset) begin
       valid <= 1'h0;
