@@ -1,0 +1,3 @@
+read_verilog -formal -D FORMAL -DSYNTHESIS rtl/pipeline/CacheStage3.v rtl/control/MetaWriteArbiter.v rtl/control/DataWriteArbiter.v formal/cache_stage3_lifecycle_harness.v
+prep -top CacheStage3LifecycleHarness -flatten
+sat -prove-asserts -seq 8 -set-assumes -timeout 30 -dump_vcd reports/formal/cache_stage3_lifecycle_failure.vcd -verify
