@@ -49,12 +49,12 @@ every valid cycle.
   writes, clean/dirty victims, backpressure channels, probe release, reset
   cancellation, and data forwarding. The current regression hits 37/37
   (100%); `make report` fails if any planned goal is missed.
-- The randomized cache sequence runs six fixed seeds x 64 operations (384
-  operations); CI adds two fixed seeds, for eight reproducible seeds x 64
-  operations (512 operations) per CI run.
-- The merged Verilator line report is 95.1% (1423/1496) across maintained RTL
-  plus generated DUT/wrapper sources. Maintained `rtl/` entries are 98.0%
-  (845/862). `make report` merges each Toffee test's `.dat`; using only the
+- The randomized cache sequence runs seven fixed seeds x 64 operations (448
+  operations); CI adds two fixed seeds, for nine reproducible seeds x 64
+  operations (576 operations) per CI run.
+- The merged Verilator line report is 95.2% (1424/1496) across maintained RTL
+  plus generated DUT/wrapper sources. Maintained `rtl/` entries are 98.1%
+  (846/862). `make report` merges each Toffee test's `.dat`; using only the
   global `VCache_coverage.dat` under-counts the suite.
 - The regression CPU contract is the NutShell L1 DCache port: upstream LSU
   source emits single-beat `READ`/`WRITE`; `READBST` is not a legal CPU-port
@@ -64,8 +64,8 @@ every valid cycle.
   `READBST` rather than treating an unsupported request as a DUT bug.
 - `make report` validates maintained-RTL coverage against the reviewed
   exclusions in `coverage/waivers.json`. Waiver-adjusted maintained RTL
-  statement coverage is 100% (845/845); raw maintained-RTL coverage remains
-  98.0% (845/862), and the all-source report is 95.1% (1423/1496). Exclusions cover
+  statement coverage is 100% (846/846); raw maintained-RTL coverage remains
+  98.1% (846/862), and the all-source report is 95.2% (1424/1496). Exclusions cover
   assertion-failure diagnostics, unreachable zero-state LFSR recovery,
   prohibited DCache flush, non-legal CPU burst paths, and two control-only
   LCOV line records whose statement bodies are hit. Generated wrappers remain
@@ -98,8 +98,8 @@ goal of demonstrating Python and open-source verification breadth.
 The current clean-runner workflow is tracked on the project branch; its live
 status and run history are available at
 https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml.
-The workflow runs eight fixed seeds (512 randomized operations) in addition
-to the local six-seed regression.
+The workflow runs nine fixed seeds (576 randomized operations) in addition
+to the local seven-seed regression.
 
 ## Run
 

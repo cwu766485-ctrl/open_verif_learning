@@ -200,6 +200,8 @@ class SetAssociativeTagModel:
         state = next(iter(self._states.get(set_index, {()})))
         if was_miss:
             way = prediction.selected_way
+            if way is None:
+                raise AssertionError("tag model: a miss prediction must select a way")
             survivors = [line for line in state if line.way != way]
             survivors.append(_LineState(tag, request.cmd == CMD_WRITE, way))
             self._states[set_index] = {self._ordered(survivors)}

@@ -5,8 +5,7 @@ import random
 
 @case
 async def test_memory_backpressure_and_slow_refill(start_func):
-    """娑撳鐖?backpressure閿涙矮姹夋稉鍝勬鏉?ready/valid閿涘本顥呴弻?refill 閸欘垱娈忛崑婊冭嫙濮濓絿鈥橀幁銏狀槻閵?
-    濠碘偓閸旀唻绱板鎯扮箿 memory request ready閵嗕购esponse valid閿涘苯鑻熼崷?burst 娑擃參妫块幓鎺戝弳閸嬫粓銆戦敍娑樻倱閺冭泛娆㈡潻?CPU response ready閵?    濡偓閺屻儻绱伴張鈧紒鍫ｎ嚢閺佺増宓佸锝団€橀敍瀹恊at 娑撳秳娑径渚库偓浣风瑝闁插秴顦查妴浣风瑝娑斿崬绨敍灞肩瘍娑撳秵顒撮柨浣碘偓?    鐟曞棛娲婇惄顔界垼閿涙eady/valid 閹烩剝澧滈妴涔rst counter閵嗕笚SM wait 閻樿埖鈧降鈧?    """
+    """慢 refill 与 backpressure：延迟内存响应、在 burst 中制造停顿，并延迟 CPU 响应接收，检查事务完成和 ready/valid 行为。"""
     env: NtCacheEnv = await start_func(start_cpu_response_handler=False)
     env.mem_agent.response_valid_delay = 2
     env.mem_agent.response_beat_delay = 1

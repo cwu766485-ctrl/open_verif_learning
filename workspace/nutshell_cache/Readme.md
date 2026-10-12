@@ -28,11 +28,11 @@ produce `No module named pytest` even when the project toolchain is installed.
 The maintained RTL source is under `rtl/`. The active verification
 environment is under `dv/`; `src/` and `test/` are legacy migration sources.
 The current regression passes 39/39 pytest cases and closes 37/37 functional
-coverage goals. The local run covers six fixed seeds (384 randomized
-operations); GitHub Actions uses eight fixed seeds (512 operations) on a clean
-Ubuntu runner. Maintained-RTL line coverage is 98.0% raw (845/862), or 100%
-(845/845) after reviewed waivers; all-source coverage including generated DUT
-wrappers is 95.1% (1423/1496). Formal assumptions, limitations and the CI link
+coverage goals. The local run covers seven fixed seeds (448 randomized
+operations); GitHub Actions uses nine fixed seeds (576 operations) on a clean
+Ubuntu runner. Maintained-RTL line coverage is 98.1% raw (846/862), or 100%
+(846/846) after reviewed waivers; all-source coverage including generated DUT
+wrappers is 95.2% (1424/1496). Formal assumptions, limitations and the CI link
 are documented in `dv/README.md` and `formal/README.md`.
 
 The verification target is an open-toolchain DV flow based on Python/Toffee,

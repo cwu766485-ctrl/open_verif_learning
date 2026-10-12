@@ -1,0 +1,70 @@
+{
+  "defaultDistro": "Ubuntu",
+  "workingDirectory": "/mnt/e/workspace/chip/open_verif/workspace/nutshell_cache",
+  "tasks": {
+    "toolchain-doctor": {
+      "description": "Check the project-local Python, Picker, Verilator, and SymbiYosys toolchain.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && make doctor"
+      ]
+    },
+    "gen-dut": {
+      "description": "Regenerate the ignored Picker/Verilator Python DUT wrapper from the tracked RTL.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && make gen_dut"
+      ]
+    },
+    "unit-tests": {
+      "description": "Run project Python unit tests without rebuilding the DUT.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -q"
+      ]
+    },
+    "model-tests": {
+      "description": "Run targeted unit tests for the exact-way Refm, protocol properties, and fault injection.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -q tests/test_reference_model.py tests/test_dut_properties.py tests/test_fault_injection.py"
+      ]
+    },
+    "formal": {
+      "description": "Run all project SymbiYosys proofs.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && make formal"
+      ]
+    },
+    "formal-lifecycle": {
+        "description": "Run an 8-cycle bounded Yosys SAT check of CPU response accounting, reset cancellation, and stalled-response stability in the real CacheStage3 controller.",
+        "executable": "/usr/bin/bash",
+        "arguments": [
+          "-lic",
+          "source scripts/env.sh && mkdir -p reports/formal && yosys -Q -l reports/formal/cache_stage3_response_lifecycle_sat.log -s formal/cache_stage3_response_lifecycle.ys"
+        ]
+      },
+    "formal-status": {
+      "description": "Inspect active Yosys/SymbiYosys processes and memory pressure in the configured WSL environment.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "ps -eo pid,etime,pcpu,pmem,args | grep -E '[z]3|[y]osys|[s]by'; free -h"
+      ]
+    },
+    "report": {
+      "description": "Run the cache regression, coverage closure, and checker fault injection.",
+      "executable": "/usr/bin/bash",
+      "arguments": [
+        "-lic",
+        "source scripts/env.sh && make report"
+      ]
+    }
+  }
+}

@@ -5,8 +5,7 @@ import random
 
 @case
 async def test_dirty_eviction_writes_back(start_func):
-    """閼村繗顢戦弴鎸庡床閿涙艾鎮滈崥灞肩娑?set 婵夘偄鍙嗙粭?5 閺?line閿涘苯宸遍崚?4-way cache 閺囨寧宕查妴?
-    濠碘偓閸旀唻绱伴崗鍫濆晸濠娾€虫倱娑撯偓 set 閻?4 閺?line閿涘苯鍟€鐠佸潡妫剁粭?5 閺夆€冲暱缁?line閵?    濡偓閺屻儻绱扮悮顐ｆ禌閹?dirty victim 娴溠呮晸 writeback閿涘矂娈㈤崥搴㈡煀 line 閹靛秷鍏?refill閿涙稒妫弫鐗堝祦閸愭瑥娲栭崘鍛摠閵?    鐟曞棛娲婇惄顔界垼閿涙nvalid/victim 闁瀚ㄩ妴涔╥rty 閸掋倖鏌囬妴?-beat writeback閵嗕簚riteback 閸?refill閵?    """
+    """Dirty eviction：用 5 条映射到同一 set 的 cache line 填满 4-way cache 并触发替换，检查 dirty victim 的 8-beat 写回数据。"""
     env: NtCacheEnv = await start_func()
     base = 0x1000
     addresses = [base + way * 0x2000 for way in range(5)]

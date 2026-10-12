@@ -122,7 +122,14 @@ class CacheScoreboard:
         if isinstance(expected, list):
             expected = expected[item["response_index"]]
         self.compared += 1
-        if actual.cmd != expected.cmd or actual.rdata != expected.rdata:
+        # MMIO writes are forwarded to the external slave. SimpleBus does not
+        # define writeresp.rdata as architectural data, so only compare the
+        # response command for this case; the subsequent MMIO read checks the
+        # actual byte-mask/data update.
+        compare_rdata = not (
+            request.cmd == CMD_WRITE and self.reference.is_mmio(request.addr)
+        )
+        if actual.cmd != expected.cmd or (compare_rdata and actual.rdata != expected.rdata):
             self._fail(
                 f"#{self.compared} addr=0x{request.addr:08x} cmd=0x{request.cmd:x}: "
                 f"expected cmd=0x{expected.cmd:x}, data=0x{expected.rdata:016x}; "

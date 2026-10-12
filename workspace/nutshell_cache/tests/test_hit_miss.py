@@ -5,8 +5,7 @@ import random
 
 @case
 async def test_cross_cache_line_access(start_func):
-    """鐠?line 鏉堝湱鏅敍姘瀻閸掝偉顔栭梻顔荤瑐娑撯偓閺?line 閻ㄥ嫭娓堕崥搴濈娑?word 閸滃奔绗呮稉鈧弶?line 閻ㄥ嫮顑囨稉鈧稉?word閵?
-    濠碘偓閸旀唻绱扮拋鍧楁６ 0x83F8 娑?0x8400閿涘矁绻栨稉銈勯嚋閸︽澘娼冮幁鏉裤偨鐠恒劏绉?64B line 鏉堝湱鏅妴?    濡偓閺屻儻绱版稉銈嗘蒋 line 閻ㄥ嫭鏆熼幑顔惧缁斿绱濋崷鏉挎絻娴ｅ簼缍呴崚鍥у瀻娑撳秳绱版稉鑼殠閵?    鐟曞棛娲婇惄顔界垼閿涙ine offset 鏉堝湱鏅妴涔籩t/tag 闁插秵鏌婄拋锛勭暬閵嗕胶娴夐柇?line refill閵?    """
+    """跨 cache line 访问：在 0x83F8 与 0x8400 写入不同数据并读回，检查相邻 64B cache line 的地址译码与数据隔离。"""
     env: NtCacheEnv = await start_func()
     first_addr = 0x83F8
     second_addr = 0x8400
@@ -23,8 +22,7 @@ async def test_cross_cache_line_access(start_func):
 
 @case
 async def test_read_miss_then_hit(start_func):
-    """鐠囪崵宸辨径鍗炴倵閸涙垝鑵戦敍姘鳖儑娑撯偓濞喡ゎ嚢鐟欙箑褰傞弫瀛樻蒋 cache line refill閿涘瞼顑囨禍灞绢偧鐠囪鎳℃稉顓犵处鐎涙ǜ鈧?
-    濠碘偓閸旀唻绱版潻鐐电敾娑撱倖顐肩拋鍧楁６閸氬奔绔存稉顏勬勾閸р偓閵?    濡偓閺屻儻绱扮粭顑跨濞嗭紕鈥樼€圭偠顔栭梻?backing memory閿涙稓顑囨禍灞绢偧鏉╂柨娲栭惄绋挎倱閺佺増宓佹稉鏂剧瑝閸愬秷顔栭梻?memory閵?    鐟曞棛娲婇惄顔界垼閿涙ag compare閵嗕购ead miss閵?-beat refill閵嗕购ead hit閵?    """
+    """读 miss 后 hit：首次读取应触发下游 refill；再次读取同一地址应返回相同数据且不再产生下游读请求。"""
     env: NtCacheEnv = await start_func()
     addr = 0x1000
 
@@ -94,8 +92,7 @@ async def test_queued_conflict_misses_preserve_tag_state(start_func):
 
 @case
 async def test_sequential_words_preserve_order(start_func):
-    """閸氬奔绔?cache line 閻?8 娑?word閿涙岸鐛欑拠?line 閸?word index 閸?burst 妞ゅ搫绨妴?
-    濠碘偓閸旀唻绱伴崥鎴滅閺?64B line 閻?8 娑?8B word 閸掑棗鍩嗛崘娆忓弳娑撳秴鎮撻崐纭风礉閸愬秹鈧劒閲滅拠璇叉礀閵?    濡偓閺屻儻绱板В蹇庨嚋 word 閻欘剛鐝涙穱婵囧瘮閿涘奔绗夐懗钘夋礈 refill beat 閹存牕婀撮崸鈧幏鍏煎复閼板奔绨伴惄姝岊洬閻╂牓鈧?    鐟曞棛娲婇惄顔界垼閿涙ord index閵?-beat line閵嗕笍ata Array 鐞涘苯鍞寸€佃娼冮妴?    """
+    """顺序 word 访问：在同一 64B line 的 8 个 64-bit word 写入不同数据并读回，检查 word 选择和数据顺序。"""
     env: NtCacheEnv = await start_func()
     base = 0x2800
     expected = {}

@@ -5,8 +5,7 @@ import random
 
 @case
 async def test_reset_drains_pipeline(start_func):
-    """婢跺秳缍?濞翠焦鎸夌痪鎸庣缁岀尨绱版径宥勭秴缂佹挻娼崥?Cache 娑撳秴绨插▓瀣殌鐠囬攱鐪伴幋鏍︾瑓濞撻晲绨ㄩ崝掳鈧?
-    濠碘偓閸旀唻绱伴崣顏呭⒔鐞涘苯鍙曢崗?reset 濞翠胶鈻奸妴?    濡偓閺屻儻绱癷o_empty=1閿涘emory/MMIO 娑撱倖娼稉瀣埗閹崵鍤庨柈鑺ョ梾閺堝顕Ч鍌樷偓?    鐟曞棛娲婇惄顔界垼閿涙eset閵嗕焦绁﹀瀵稿殠 drain閵嗕胶鈹栭梻鑼Ц閹降鈧?    """
+    """复位空闲状态：确认复位后 pipeline 为空，且没有产生 memory/MMIO 访问。"""
     env: NtCacheEnv = await start_func()
     assert int(env.dut.io_empty.value) == 1
     assert not env.mem_ram.requests

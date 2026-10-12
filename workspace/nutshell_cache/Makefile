@@ -75,11 +75,10 @@ doctor:
 	 echo "sby: $$(command -v sby)"; sby --version; \
 	 echo "verilator: $$(command -v verilator)"; verilator --version
 
-# Remove all generated DUT, simulator, waveform, coverage and Python cache
-# artifacts.  Source RTL, tests, documentation and report source remain.
+# Remove transient build and per-test trace artifacts. Keep consolidated
+# coverage reports, formal proof logs, and experimental formal records.
 clean:
-	rm -rf Cache Cache_* picker_out reports .pytest_cache
+	rm -rf Cache picker_out .pytest_cache
 	find . -type d \( -name __pycache__ -o -name .pytest_cache \) -prune -exec rm -rf {} +
 	rm -f *.dat *.fst *.vcd *.log *.tmp *.so *.a *.o
-	rm -f VCache_coverage.dat cache.fst cache.vcd
-	rm -f reports/*.info reports/**/*.info
+	rm -f reports/DUTCache_test_*.dat reports/DUTCache_test_*.fst
