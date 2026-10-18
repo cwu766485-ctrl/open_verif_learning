@@ -18,13 +18,31 @@ Measured 2026-10-18 on the local WSL2 x86-64 host, with a 32 KiB, 4-way,
 | Read pattern | Accesses | Hits | Misses | Hit rate | RTL cycles/access |
 |---|---:|---:|---:|---:|---:|
 | One hot line, 64 reads | 64 | 63 | 1 | 98.4375% | 4.125 |
+| Sequential 4 KiB scan, 8-byte loads | 512 | 448 | 64 | 87.5% | 5.000 |
 | 256 lines / 16 KiB, two passes | 512 | 256 | 256 | 50% | 8.000 |
+| Sequential 1 KiB array, four passes | 512 | 496 | 16 | 96.875% | 4.250 |
 | Five lines mapping to one 4-way set, five sweeps | 25 | 12 | 13 | 48% | 8.160 |
 
-The working-set test begins cold, so its first pass misses and the second pass
-hits. The conflict test deliberately exceeds the four ways available in one
-set. This makes the counters useful for checking that the hit/miss monitor
-sees both reuse and conflict behavior.
+These percentages describe different address traces, not one cache-wide
+property. The 16 KiB test reads one word from each line on each pass: all 256
+first-pass accesses are cold misses and all 256 second-pass accesses hit, so
+the combined result is exactly 50%. The 4 KiB scan reads all eight 64-bit words
+in each 64-byte line: one compulsory miss is followed by seven hits per line.
+The 1 KiB loop repeats four times, so only its 16 cold line fills miss.
+
+The five-line conflict trace exceeds the four ways in one set. Its first sweep
+has five compulsory misses; the four later sweeps produce 3, 3, 4, and 2 hits
+in this deterministic LFSR replacement run. Because this is only 25 accesses,
+48% is a short, seed-specific stress result rather than a representative
+steady-state cache hit rate. A longer 10-sweep attempt currently stalls on the
+33rd demand read (`0x104000`) and times out in the testbench memory responder;
+that trace is not included as a valid measurement and needs investigation.
+
+Across these serial traces, measured hit accesses take 4 RTL cycles and line
+misses take 12 RTL cycles with this testbench responder. This explains the
+cycles/access column, but it is still a cache transaction-latency result, not
+a CPU IPC uplift. The full CPU's valid DCache-off comparison is not available
+yet, so these values must not be presented as measured system-level speedup.
 
 ## CPU IPC smoke baseline
 

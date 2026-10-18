@@ -10,7 +10,7 @@
   "clock_measurement": "sampled RTL rising-edge cycles; excludes reset sweep",
   "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
   "simulator": "Verilator 5.020 2024-01-01 rev (Debian 5.020-1)",
-  "timestamp_utc": "2026-10-18T12:59:48.860759+00:00",
+  "timestamp_utc": "2026-10-18T14:45:00.029417+00:00",
   "scenarios": [
     {
       "name": "hot_line",
@@ -24,6 +24,17 @@
       "cycles_per_access": 4.125
     },
     {
+      "name": "sequential_array_scan_4k",
+      "description": "One sequential 4 KiB array scan using 8-byte loads across 64-byte lines.",
+      "accesses": 512,
+      "hits": 448,
+      "misses": 64,
+      "hit_rate": 0.875,
+      "miss_rate": 0.125,
+      "rtl_cycles": 2560,
+      "cycles_per_access": 5.0
+    },
+    {
       "name": "working_set_fits",
       "description": "Two sequential passes over 256 lines (16 KiB) in a cold 32 KiB DCache.",
       "accesses": 512,
@@ -35,15 +46,31 @@
       "cycles_per_access": 8.0
     },
     {
+      "name": "repeated_array_kernel_1k_4_passes",
+      "description": "Four passes over a 1 KiB array using sequential 8-byte loads.",
+      "accesses": 512,
+      "hits": 496,
+      "misses": 16,
+      "hit_rate": 0.96875,
+      "miss_rate": 0.03125,
+      "rtl_cycles": 2176,
+      "cycles_per_access": 4.25
+    },
+    {
       "name": "five_way_conflict",
-      "description": "Five tags mapped to one 4-way set, replayed for five sweeps.",
+      "description": "Five tags mapped to one 4-way set, replayed for 5 sweeps.",
       "accesses": 25,
       "hits": 12,
       "misses": 13,
       "hit_rate": 0.48,
       "miss_rate": 0.52,
       "rtl_cycles": 204,
-      "cycles_per_access": 8.16
+      "cycles_per_access": 8.16,
+      "cold_first_sweep_misses": 5,
+      "steady_state_accesses": 20,
+      "steady_state_hits": 12,
+      "steady_state_misses": 8,
+      "steady_state_hit_rate": 0.6
     }
   ]
 }
