@@ -1,0 +1,14 @@
+{
+  "benchmark": "NutShell inorder CPU microbench",
+  "image": "workspace/nutshell_src/ready-to-run/microbench.bin",
+  "core": "inorder",
+  "measurement": "DiffTest trap event counters, run with --no-diff",
+  "build_configuration": "BOARD=sim CORE=inorder; DiffTest counters enabled; no reference comparison",
+  "timestamp_utc_date": "2026-10-18",
+  "simulator": "Verilator 5.020",
+  "retired_instructions": 783387,
+  "cycles": 1512377,
+  "ipc": 0.517984,
+  "result": "MicroBench PASS; 10 subtests passed",
+  "scope": "From simulator reset through the good trap; includes startup and test harness"
+}

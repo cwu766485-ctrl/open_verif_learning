@@ -1,0 +1,44 @@
+{
+  "benchmark": "EEMBC CoreMark 2K performance workload on NutShell inorder RTL",
+  "source": "OpenXiangShan/nexus-am apps/coremark",
+  "source_commit": "9ea03e6565ed90ef958ad127c0357b0a295da75e",
+  "iterations": 100,
+  "data_size_per_algorithm_bytes": 666,
+  "compiler": "riscv64-unknown-elf-gcc 13.2.0",
+  "compiler_flags": "-O2 -march=rv64imac_zicsr_zifencei -mabi=lp64",
+  "seed_crc": "0xe9f5",
+  "crc": {
+    "list": "0xe714",
+    "matrix": "0x1fd7",
+    "state": "0x8e3a",
+    "final": "0x988c"
+  },
+  "validation_run": {
+    "iterations": 10,
+    "seed_crc": "0x18f2",
+    "crc": {
+      "list": "0xe3c1",
+      "matrix": "0x0747",
+      "state": "0x8d84",
+      "final": "0xc64e"
+    },
+    "clint_mtime_microseconds": 687,
+    "estimated_core_cycles": 6870000,
+    "result": "Good trap; 2K validation-seed algorithm CRCs match"
+  },
+  "timed_region": {
+    "clint_mtime_microseconds": 6844,
+    "sim_cycles_per_microsecond": 10000,
+    "estimated_core_cycles": 68440000,
+    "iterations_per_million_cycles": 1.461133
+  },
+  "whole_image_to_good_trap": {
+    "retired_instructions": 35921323,
+    "cycles": 68511547,
+    "ipc": 0.52431
+  },
+  "host_simulation_seconds": 255.293,
+  "result": "Good trap; performance-seed CRCs match the 2K run",
+  "eembc_minimum_10_second_run_rule_met": false,
+  "limitations": "Cycle-normalized RTL result only; not an EEMBC reportable score or physical CoreMark/MHz result. The port's built-in float score print is unsupported and was not used."
+}

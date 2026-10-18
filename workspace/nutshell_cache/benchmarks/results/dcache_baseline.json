@@ -1,0 +1,49 @@
+{
+  "benchmark": "NutShell L1 DCache standalone RTL microbench",
+  "measurement_source": "accepted Stage2-to-Stage3 CPU READ event; MMIO/coherence excluded",
+  "cache": {
+    "capacity_bytes": 32768,
+    "ways": 4,
+    "line_bytes": 64,
+    "sets": 128
+  },
+  "clock_measurement": "sampled RTL rising-edge cycles; excludes reset sweep",
+  "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "simulator": "Verilator 5.020 2024-01-01 rev (Debian 5.020-1)",
+  "timestamp_utc": "2026-10-18T12:59:48.860759+00:00",
+  "scenarios": [
+    {
+      "name": "hot_line",
+      "description": "64 repeated reads of one cold line; first access fills the line.",
+      "accesses": 64,
+      "hits": 63,
+      "misses": 1,
+      "hit_rate": 0.984375,
+      "miss_rate": 0.015625,
+      "rtl_cycles": 264,
+      "cycles_per_access": 4.125
+    },
+    {
+      "name": "working_set_fits",
+      "description": "Two sequential passes over 256 lines (16 KiB) in a cold 32 KiB DCache.",
+      "accesses": 512,
+      "hits": 256,
+      "misses": 256,
+      "hit_rate": 0.5,
+      "miss_rate": 0.5,
+      "rtl_cycles": 4096,
+      "cycles_per_access": 8.0
+    },
+    {
+      "name": "five_way_conflict",
+      "description": "Five tags mapped to one 4-way set, replayed for five sweeps.",
+      "accesses": 25,
+      "hits": 12,
+      "misses": 13,
+      "hit_rate": 0.48,
+      "miss_rate": 0.52,
+      "rtl_cycles": 204,
+      "cycles_per_access": 8.16
+    }
+  ]
+}

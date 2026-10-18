@@ -37,6 +37,11 @@
 !src/**/*.py
 !docs/
 !docs/*.md
+!benchmarks/
+!benchmarks/**/
+!benchmarks/*.py
+!benchmarks/*.md
+!benchmarks/results/*.json
 !rtl/
 !rtl/*.v
 !rtl/

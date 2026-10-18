@@ -17,6 +17,7 @@ make gen_dut      # Compile maintained rtl/ with Picker/Verilator
 make test         # Run the regular Python/Toffee regression
 make test_slow    # Run opt-in full-capacity and mega-random stress tests
 make mega_random  # Run only the large seeded cache/MMIO random test
+make benchmark   # Measure deterministic L1 DCache hit/miss and RTL cycles
 make report       # Run tests and generate reports/coverage
 make clean        # Remove generated simulator artifacts
 make doctor       # Check the project-local WSL Python/EDA toolchain
@@ -48,6 +49,15 @@ current coverage numbers and closure gaps are documented in `dv/README.md`.
 
 The architecture and verification plan are documented in
 `docs/cache_spec_and_verification_plan.md`.
+
+## Performance baseline
+
+`make benchmark` runs three reproducible read traces on the maintained
+Verilator RTL and writes `benchmarks/results/dcache_baseline.json`. The current
+baseline and measurement boundaries are documented in
+[`benchmarks/README.md`](benchmarks/README.md). These are standalone L1 DCache
+RTL measurements; they do not represent full-CPU IPC, CoreMark, or a physical
+clock-frequency result.
 
 This project verifies Verilog directly. Chisel is not required to regenerate
 the DUT or run the regression.

@@ -16,8 +16,17 @@ class CacheDutProperties:
         self.aborted_by_reset = 0
         self.sampled_cycles = 0
         self.forward_data_cycles = 0
+        self.cache_accesses = 0
+        self.cache_hits = 0
+        self.cache_misses = 0
         self.errors = []
         self.replacement_trace = []
+
+    def clear_cache_metrics(self):
+        """Clear measured demand-access counts without changing cache state."""
+        self.cache_accesses = 0
+        self.cache_hits = 0
+        self.cache_misses = 0
 
     def on_reset(self):
         self.aborted_by_reset += self.outstanding_cpu_requests
@@ -47,7 +56,14 @@ class CacheDutProperties:
         self, *, valid, addr, cmd, was_miss, waymask, lfsr_waymask=None
     ):
         """Feed the exact Stage2 transfer to the independent tag Refm."""
-        if not valid or self.tag_model is None:
+        if not valid:
+            return
+        self.cache_accesses += 1
+        if was_miss:
+            self.cache_misses += 1
+        else:
+            self.cache_hits += 1
+        if self.tag_model is None:
             return
         request = SimpleBusRequest(addr=addr, size=3, cmd=cmd, wmask=0, wdata=0)
         self.tag_model.observe_access(

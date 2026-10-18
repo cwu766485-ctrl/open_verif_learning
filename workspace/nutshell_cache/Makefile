@@ -25,13 +25,17 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
 # Test
 test:
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow"
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow and not benchmark"
+
+# Run deterministic DCache performance traces and write a JSON result.
+benchmark:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m benchmark benchmarks/test_dcache_benchmark.py
 
 # Long array and mixed-random sweeps are opt-in.
 test_slow:
@@ -53,7 +57,7 @@ rtl_coverage:
 
 report:
 	@rm -f reports/DUTCache_test_*.dat
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow" --toffee-report --report-dir reports --report-name cache
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow and not benchmark" --toffee-report --report-dir reports --report-name cache
 	$(MAKE) rtl_coverage
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.closure reports/cache.info
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.functional_closure reports/functional_coverage.json
