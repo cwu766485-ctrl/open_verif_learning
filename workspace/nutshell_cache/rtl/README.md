@@ -13,7 +13,8 @@ and small standalone combinational units here, with regression equivalence.
 ## Ownership
 
 - `rtl/`: maintained Verilog RTL source.
-- `src/`, `test/`: Python/Toffee verification environment and tests.
+- `src/`: retained legacy migration source.
+- `dv/`, `tests/`: active Python/Toffee verification environment and tests.
 
 ## Layout
 

@@ -25,13 +25,20 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor clean
+.PHONY: wave test test_slow mega_random coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
 # Test
 test:
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow"
+
+# Long array and mixed-random sweeps are opt-in.
+test_slow:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m slow
+
+mega_random:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv tests/test_random.py::test_mega_randomized_cache_mmio_traffic
 
 coverage: report
 
@@ -46,7 +53,7 @@ rtl_coverage:
 
 report:
 	@rm -f reports/DUTCache_test_*.dat
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv --toffee-report --report-dir reports --report-name cache
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m "not slow" --toffee-report --report-dir reports --report-name cache
 	$(MAKE) rtl_coverage
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.closure reports/cache.info
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.coverage.functional_closure reports/functional_coverage.json
@@ -62,7 +69,16 @@ formal:
 	 sby -f -d reports/formal/replacement_selector formal/replacement_selector.sby && \
 	 sby -f -d reports/formal/cache_way_selector formal/cache_way_selector.sby && \
 	 sby -f -d reports/formal/cache_stage2_stability formal/cache_stage2_stability.sby && \
-	 yosys -Q -l reports/formal/cache_stage3_response_lifecycle_sat.log -s formal/cache_stage3_response_lifecycle.ys
+	 yosys -Q -l reports/formal/cache_stage3_response_lifecycle_sat.log -s formal/cache_stage3_response_lifecycle.ys && \
+	 sby -f -d reports/formal/cache_metadata_invariant formal/cache_metadata_invariant.sby && \
+	 yosys -Q -l reports/formal/cache_metadata_stage3_sat.log -s formal/cache_metadata_stage3.ys && \
+	 yosys -Q -l reports/formal/cache_stage3_array_sat.log -s formal/cache_stage3_array.ys && \
+	 sby -f -d reports/formal/cache_metadata_reachability formal/cache_metadata_reachability.sby && \
+	 sby -f -d reports/formal/cache_stage3_reset_cover formal/cache_stage3_reset_cover.sby && \
+	 sby -f -d reports/formal/cache_stage3_stall_cover formal/cache_stage3_stall_cover.sby && \
+	 sby -f -d reports/formal/cache_stage3_refill_cover formal/cache_stage3_refill_cover.sby && \
+	 sby -f -d reports/formal/cache_stage3_dirty_writeback_cover formal/cache_stage3_dirty_writeback_cover.sby && \
+	 PYTHONPATH=.:./dv:./Cache:./tests python3 formal/mutations/run.py
 
 fault_injection:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.fault_injection.run

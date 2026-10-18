@@ -24,22 +24,19 @@
 !scripts/
 !scripts/*.sh
 !formal/
+!formal/**/
 !formal/*.sby
 !formal/*.ys
 !formal/*.v
 !formal/**/*.sby
 !formal/**/*.v
+!formal/**/*.py
 
 !src/
 !src/**/
 !src/**/*.py
-!test/
-!test/**/
-!test/*.py
 !docs/
 !docs/*.md
-!report/
-!report/*.md
 !rtl/
 !rtl/*.v
 !rtl/
@@ -53,12 +50,20 @@
 
 # Generated Python/simulator state remains ignored even under the exceptions.
 src/**/__pycache__/
-test/**/__pycache__/
 *.py[cod]
 *.fst
 *.dat
 reports/
-report/*.pdf
 Cache/
 Cache_modular/
 picker_out/
+
+# Keep the final report source and its reproducible build script in Git while
+# ignoring generated simulation/formal/coverage artifacts under reports/.
+!reports/
+reports/*
+!reports/final/
+reports/final/*
+!reports/final/*.md
+!reports/final/*.py
+!reports/final/*.pdf

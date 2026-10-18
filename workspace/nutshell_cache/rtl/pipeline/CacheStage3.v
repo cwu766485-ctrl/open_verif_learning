@@ -710,7 +710,29 @@ end // initial
 `FIRRTL_AFTER_INITIAL
 `endif
 `endif // SYNTHESIS
-`ifdef FORMAL
+`ifdef CACHE_STAGE3_FORMAL
+  function automatic [63:0] formal_expand_byte_mask(input [7:0] mask);
+    integer lane;
+    begin
+      for (lane = 0; lane < 8; lane = lane + 1)
+        formal_expand_byte_mask[lane * 8 +: 8] = {8{mask[lane]}};
+    end
+  endfunction
+
+  wire [63:0] formal_hit_write_expected =
+    (selected_cache_word & ~formal_expand_byte_mask(io_in_bits_req_wmask)) |
+    (io_in_bits_req_wdata & formal_expand_byte_mask(io_in_bits_req_wmask));
+  wire [63:0] formal_refill_write_expected =
+    (io_in_bits_req_cmd[0] && readingFirst) ?
+      ((io_mem_resp_bits_rdata & ~formal_expand_byte_mask(io_in_bits_req_wmask)) |
+       (io_in_bits_req_wdata & formal_expand_byte_mask(io_in_bits_req_wmask))) :
+      io_mem_resp_bits_rdata;
+  wire [63:0] formal_selected_victim_word =
+    ({64{io_in_bits_waymask[0]}} & dataWay_0_data) |
+    ({64{io_in_bits_waymask[1]}} & dataWay_1_data) |
+    ({64{io_in_bits_waymask[2]}} & dataWay_2_data) |
+    ({64{io_in_bits_waymask[3]}} & dataWay_3_data);
+
   // Stage3 response-lifecycle proof under the CPU cache port's single-beat
   // READ/WRITE contract. The parent pipeline presents one stable request until
   // io_isFinish; that is the same hold behavior enforced at CacheTop.
@@ -735,6 +757,7 @@ end // initial
       assume (!io_in_valid);
       assert (!io_out_valid);
       assert (!io_dataReadRespToL1);
+      assert (state == 4'h0);
     end
 
     if (reset) begin
@@ -755,9 +778,30 @@ end // initial
       if (f_lifecycle_past_valid && !$past(reset) &&
           $past(io_in_valid && !io_isFinish)) begin
         assume (io_in_valid);
-        assume ({io_in_bits_req_cmd, io_in_bits_hit, io_in_bits_mmio, meta_dirty} ==
-                $past({io_in_bits_req_cmd, io_in_bits_hit,
-                       io_in_bits_mmio, meta_dirty}));
+        assume ({io_in_bits_req_addr, io_in_bits_req_size, io_in_bits_req_cmd,
+                 io_in_bits_req_wmask, io_in_bits_req_wdata, io_in_bits_req_user,
+                 io_in_bits_hit, io_in_bits_waymask, io_in_bits_mmio,
+                 io_in_bits_metas_0_tag, io_in_bits_metas_0_dirty,
+                 io_in_bits_metas_1_tag, io_in_bits_metas_1_dirty,
+                 io_in_bits_metas_2_tag, io_in_bits_metas_2_dirty,
+                 io_in_bits_metas_3_tag, io_in_bits_metas_3_dirty,
+                 io_in_bits_datas_0_data, io_in_bits_datas_1_data,
+                 io_in_bits_datas_2_data, io_in_bits_datas_3_data,
+                 io_in_bits_isForwardData,
+                 io_in_bits_forwardData_data_data,
+                 io_in_bits_forwardData_waymask} ==
+                $past({io_in_bits_req_addr, io_in_bits_req_size, io_in_bits_req_cmd,
+                       io_in_bits_req_wmask, io_in_bits_req_wdata, io_in_bits_req_user,
+                       io_in_bits_hit, io_in_bits_waymask, io_in_bits_mmio,
+                       io_in_bits_metas_0_tag, io_in_bits_metas_0_dirty,
+                       io_in_bits_metas_1_tag, io_in_bits_metas_1_dirty,
+                       io_in_bits_metas_2_tag, io_in_bits_metas_2_dirty,
+                       io_in_bits_metas_3_tag, io_in_bits_metas_3_dirty,
+                       io_in_bits_datas_0_data, io_in_bits_datas_1_data,
+                       io_in_bits_datas_2_data, io_in_bits_datas_3_data,
+                       io_in_bits_isForwardData,
+                       io_in_bits_forwardData_data_data,
+                       io_in_bits_forwardData_waymask}));
       end
 
       if (f_start_cpu_request) begin
@@ -787,7 +831,21 @@ end // initial
           $past(io_out_valid && !io_out_ready)) begin
         assert (io_out_valid);
         assert (io_out_bits_cmd == $past(io_out_bits_cmd));
+        assert (io_out_bits_rdata == $past(io_out_bits_rdata));
       end
+
+      // Check the data transformations against an independent mask expansion.
+      if (hitWrite)
+        assert (dataWriteArb_io_in_0_bits_data_data == formal_hit_write_expected);
+      if (dataWriteArb_io_in_1_valid)
+        assert (dataWriteArb_io_in_1_bits_data_data == formal_refill_write_expected);
+
+      // A writeback request must carry the word returned by the selected-way
+      // SRAM read for the current beat. The one-set array harness additionally
+      // checks beat order and line contents end to end.
+      if (io_mem_req_valid && state == 4'h3 && state2 == 2'h2)
+        assert (io_mem_req_bits_wdata == formal_selected_victim_word);
+
     end
   end
 `endif

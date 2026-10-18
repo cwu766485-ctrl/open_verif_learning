@@ -22,6 +22,7 @@ class CacheCoverage:
     _probe_release_beats: int = 0
     _mem_refills: int = 0
     _mem_writebacks: int = 0
+    _last_cpu_addr: int | None = None
 
     GOALS = (
         "op=read", "op=write", "result=hit", "result=miss", "result=mmio",
@@ -40,6 +41,27 @@ class CacheCoverage:
         "backpressure_channel=cpu.req", "backpressure_channel=cpu.rsp",
         "probe_release=8_beats", "reset=cancelled_miss",
         "data_forwarding=same_word",
+        "region=cache", "region=mmio",
+        "op_result=read/mmio", "op_result=write/mmio",
+        "line_boundary=adjacent_pair",
+        "cross:result=miss,victim=dirty_eviction",
+        "backpressure_channel=memory.req",
+        "backpressure_channel=mmio.req",
+    )
+
+    MEGA_RANDOM_GOALS = (
+        "region=cache", "region=mmio",
+        "result=hit", "result=miss", "result=mmio",
+        "op_result=read/hit", "op_result=read/miss", "op_result=read/mmio",
+        "op_result=write/hit", "op_result=write/miss", "op_result=write/mmio",
+        "mask_result=partial/hit", "mask_result=partial/miss",
+        "burst=refill_beats=8", "burst=writeback_beats=8",
+        "victim=clean_eviction", "victim=dirty_eviction",
+        "set_occupancy=empty", "set_occupancy=one", "set_occupancy=two",
+        "set_occupancy=three", "set_occupancy=full",
+        "occupancy_result=full/hit", "occupancy_result=full/miss",
+        "line_boundary=adjacent_pair",
+        "cross:result=miss,victim=dirty_eviction",
     )
 
     def sample(self, **features):
@@ -84,6 +106,19 @@ class CacheCoverage:
 
     def _cpu_request(self, request):
         self.transactions += 1
+        is_mmio = CacheReferenceModel.is_mmio(request.addr)
+        self.sample(region="mmio" if is_mmio else "cache")
+        previous_addr = self._last_cpu_addr
+        if (
+            previous_addr is not None
+            and not is_mmio
+            and not CacheReferenceModel.is_mmio(previous_addr)
+            and (previous_addr & 0x3F) == 0x38
+            and request.addr == previous_addr + 8
+        ):
+            self.sample(line_boundary="adjacent_pair")
+        self._last_cpu_addr = request.addr
+
         if request.cmd == CMD_READ:
             op = "read"
         elif request.cmd == CMD_WRITE:
@@ -107,7 +142,7 @@ class CacheCoverage:
             ),
             "refills": self._mem_refills,
             "writebacks": self._mem_writebacks,
-            "is_mmio": CacheReferenceModel.is_mmio(request.addr),
+            "is_mmio": is_mmio,
             "responses_left": (1 << request.size) if request.cmd == CMD_READBST else 1,
         })
 
@@ -179,6 +214,7 @@ class CacheCoverage:
         self._cpu_pending.clear()
         self._probe_releasing = False
         self._probe_release_beats = 0
+        self._last_cpu_addr = None
         if cancelled:
             self.sample(reset_cancelled_requests=cancelled)
             self.sample(reset="cancelled_request")
@@ -198,7 +234,9 @@ class CacheCoverage:
         if partial_write:
             self.sample(partial_write=result)
         if victim_class is not None:
-            self.sample(victim=f"{victim_class}_eviction")
+            victim = f"{victim_class}_eviction"
+            self.sample(victim=victim)
+            self.sample(result=result, victim=victim)
 
     def assert_clean(self):
         assert not self._cpu_pending, f"coverage collector has {len(self._cpu_pending)} unmatched CPU request(s)"

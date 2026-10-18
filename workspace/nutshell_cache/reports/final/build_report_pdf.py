@@ -21,8 +21,7 @@ from reportlab.platypus import (
 )
 
 
-ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "nutshell_cache_report_demo.pdf"
+OUTPUT = Path(__file__).resolve().with_name("nutshell_cache_verification_report.pdf")
 NAVY = colors.HexColor("#17324D")
 ORANGE = colors.HexColor("#F28C28")
 PALE = colors.HexColor("#F2F5F8")

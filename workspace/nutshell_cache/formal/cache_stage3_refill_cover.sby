@@ -1,0 +1,16 @@
+[options]
+mode cover
+depth 16
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -DSYNTHESIS CacheStage3.v MetaWriteArbiter.v DataWriteArbiter.v CacheStage3MemoryPathCoverHarness.v
+prep -top CacheStage3CleanRefillCoverHarness -flatten
+
+[files]
+CacheStage3.v rtl/pipeline/CacheStage3.v
+MetaWriteArbiter.v rtl/control/MetaWriteArbiter.v
+DataWriteArbiter.v rtl/control/DataWriteArbiter.v
+CacheStage3MemoryPathCoverHarness.v formal/cache_stage3_memory_path_cover_harness.v

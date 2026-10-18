@@ -14,7 +14,9 @@ L1 data cache at its SimpleBus boundary.
 
 ```bash
 make gen_dut      # Compile maintained rtl/ with Picker/Verilator
-make test         # Run the Python/Toffee regression
+make test         # Run the regular Python/Toffee regression
+make test_slow    # Run opt-in full-capacity and mega-random stress tests
+make mega_random  # Run only the large seeded cache/MMIO random test
 make report       # Run tests and generate reports/coverage
 make clean        # Remove generated simulator artifacts
 make doctor       # Check the project-local WSL Python/EDA toolchain
@@ -26,11 +28,14 @@ installations under `.tooling/`. Running the system `python3` directly can
 produce `No module named pytest` even when the project toolchain is installed.
 
 The maintained RTL source is under `rtl/`. The active verification
-environment is under `dv/`; `src/` and `test/` are legacy migration sources.
-The current regression passes 39/39 pytest cases and closes 37/37 functional
-coverage goals. The local run covers seven fixed seeds (448 randomized
-operations); GitHub Actions uses nine fixed seeds (576 operations) on a clean
-Ubuntu runner. Maintained-RTL line coverage is 98.1% raw (846/862), or 100%
+environment is under `dv/`, with scenarios under `tests/`; `src/` is retained
+as a legacy migration source. Before the new timing and mega-random tests were
+added, the recorded regression passed 39/39 pytest cases and closed 37/37
+functional coverage goals. The local short-random run used seven fixed seeds
+(448 operations); GitHub Actions used nine (576 operations). The new slow
+mega-random test defaults to 32 seeds x 512 randomized operations, plus
+read-after-write checks and directed coverage setup. Maintained-RTL line
+coverage is 98.1% raw (846/862), or 100%
 (846/846) after reviewed waivers; all-source coverage including generated DUT
 wrappers is 95.2% (1424/1496). Formal assumptions, limitations and the CI link
 are documented in `dv/README.md` and `formal/README.md`.
@@ -47,5 +52,7 @@ The architecture and verification plan are documented in
 This project verifies Verilog directly. Chisel is not required to regenerate
 the DUT or run the regression.
 
-The optional PDF summary can be regenerated with `python -m pip install -r
-report/requirements.txt` followed by `python report/build_report_pdf.py`.
+The final report source and PDF are under `reports/final/`; simulation,
+coverage and formal run artifacts stay under `reports/`. Regenerate the PDF
+with `python -m pip install reportlab` followed by
+`python reports/final/build_report_pdf.py`.

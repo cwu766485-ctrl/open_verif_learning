@@ -1,0 +1,13 @@
+[options]
+mode cover
+depth 8
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal CacheMetadataTransitionHarness.v
+prep -top CacheMetadataTransitionHarness
+
+[files]
+CacheMetadataTransitionHarness.v formal/cache_metadata_transition_harness.v

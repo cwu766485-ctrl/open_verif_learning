@@ -23,7 +23,7 @@ pytest + Toffee environment
 ```
 
 The active Python environment is under `dv/`, with scenario tests in `tests/`.
-`src/` and `test/` are retained as legacy migration sources. Generated
+`src/` is retained as a legacy migration source. Generated
 `Cache/`, waveform, coverage and Python cache files are disposable and removed
 by `make clean`.
 

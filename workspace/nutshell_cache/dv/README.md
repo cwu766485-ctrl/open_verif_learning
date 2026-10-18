@@ -41,14 +41,16 @@ every valid cycle.
 
 ## Current regression and coverage
 
-- 39/39 pytest cases pass. Scenarios include reset with a refill in flight,
+- Before the new directed timing test was added, the recorded regression
+  passed 39/39 pytest cases. Scenarios include reset with a refill in flight,
   queued same-set misses, byte masks, MMIO bypass, probe/release,
   backpressure, same-word data forwarding, and exact eight-beat dirty-victim
   writeback.
-- The functional plan has 37 goals covering set occupancy, hit/miss and partial
-  writes, clean/dirty victims, backpressure channels, probe release, reset
-  cancellation, and data forwarding. The current regression hits 37/37
-  (100%); `make report` fails if any planned goal is missed.
+- The previous recorded functional plan had 37 goals and hit 37/37 (100%). The
+  expanded plan now has 45 goals, adding cache/MMIO region and MMIO operation
+  crosses, adjacent-line boundary traffic, dirty-miss, and downstream
+  memory/MMIO backpressure crosses. The new
+  plan has not yet been rerun; `make report` checks closure against all goals.
 - The randomized cache sequence runs seven fixed seeds x 64 operations (448
   operations); CI adds two fixed seeds, for nine reproducible seeds x 64
   operations (576 operations) per CI run.
@@ -71,18 +73,54 @@ every valid cycle.
   LCOV line records whose statement bodies are hit. Generated wrappers remain
   visible in the raw HTML report but are not counted as maintained RTL.
 
+`tests/test_protocol_contract.py` unit-tests the checker's transaction rules
+without running the DUT; it rejects illegal CPU commands, unpaired/duplicate
+responses, and stale responses after reset. `tests/test_timing.py` checks real
+RTL timing by delaying downstream request acceptance and holding the CPU
+response sink not-ready, then checking that response valid and payload remain
+stable until handshake. The full-capacity all-zero/all-one/alternating-bit
+data sweep adds an address-signature pass to catch address aliasing. The new
+mega-random test uses 32 fixed seeds x 512 operations by default, guarantees
+cache/MMIO and conflict-eviction scenarios, and checks generated stores with
+readbacks and the scoreboard. Both are marked `slow` and run with
+`make test_slow`; `make mega_random` runs only the mega-random test. Set
+`NUTSHELL_MEGA_RANDOM_SEEDS` to append reproducible seeds and
+`NUTSHELL_MEGA_RANDOM_OPS` to change the per-seed random length. Normal
+`make test` and `make report` omit these slow tests.
+
+The formal proof harnesses live under `formal/`. The mutation runner that
+checks whether formal assertions catch injected RTL changes also lives under
+`formal/mutations/`; `dv/fault_injection/` remains separate because it tests
+the Python checker and scoreboard with bad transaction observations.
+
 `CacheDutProperties` tracks accepted/completed/reset-aborted CPU transactions,
 samples the RTL replacement-selector one-hot invariant, and rejects accounting
 imbalances. The ready/valid checkers verify full stalled-payload stability;
 the protocol checker catches missing, duplicate, stale, or illegal responses.
 
-The Stage3 response-control harness runs an 8-cycle bounded Yosys SAT check for
-response provenance/duplicate retirement, reset cancellation, and stalled
-response valid/command stability. It uses actual CacheStage3 RTL with data
-arrays abstracted to constants, under the upstream single-beat READ/WRITE,
-stable-until-finish, and MMIO-bypass contracts. This is a bounded safety check,
-not an unbounded lifecycle proof; full response data-payload stability remains
-covered by simulation checkers.
+The Stage3 harness now checks response provenance and duplicate retirement,
+reset cancellation, and stalled response `valid`, `cmd`, and `rdata` stability.
+Independent formal expressions check byte-mask merging on hit writes, the
+first-beat write-miss merge, and the selected victim word sent to memory. A
+12-cycle harness connects Stage3 to a reduced one-set/four-way/eight-beat
+abstract data line and memory model, then checks refill writes and dirty
+writeback data/address/command behavior. These Stage3 checks are bounded;
+the proof assumptions and bounds are listed in `../formal/README.md`.
+
+The metadata invariant is proved by k-induction in a reduced transition model:
+valid ways in a set never contain duplicate tags when hit updates retain the
+matching tag and refills install a tag that was not already present. A
+12-cycle SAT bridge checks those write conditions against the actual Stage3
+metadata output. Directed SymbiYosys cover jobs exercise metadata refill/hit,
+reset during an active memory transaction, stalled responses, and the final
+beats of dirty writeback/refill. `make formal` also injects four planned RTL
+mutations and requires every one to be caught by an assertion.
+
+The data-line model is a constrained abstraction, not a proof of the complete
+128-set SRAM implementation. The metadata transition proof is unbounded under
+its write contract; the Stage3 integration, data movement, and lifecycle
+checks are bounded to their documented depths. Full-cache reset sweep and
+unbounded end-to-end transaction behavior remain outside the current proof.
 
 This is an open-source, sign-off-style regression flow, not commercial
 sign-off equivalence. GitHub Actions is configured to install the toolchain
