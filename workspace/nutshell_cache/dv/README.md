@@ -47,10 +47,13 @@ every valid cycle.
   backpressure, same-word data forwarding, and exact eight-beat dirty-victim
   writeback.
 - The previous recorded functional plan had 37 goals and hit 37/37 (100%). The
-  expanded plan now has 45 goals, adding cache/MMIO region and MMIO operation
+  expanded plan had 45 goals, adding cache/MMIO region and MMIO operation
   crosses, adjacent-line boundary traffic, dirty-miss, and downstream
-  memory/MMIO backpressure crosses. The new
-  plan has not yet been rerun; `make report` checks closure against all goals.
+  memory/MMIO backpressure crosses. The coherence additions bring the plan to
+  53 goals: arbitration priority, probe hits in all four ways, reset during a
+  stalled release, consecutive probes, and retained-line hit after a probe.
+  This expanded plan has not yet been rerun; `make report` checks closure
+  against all goals.
 - The randomized cache sequence runs seven fixed seeds x 64 operations (448
   operations); CI adds two fixed seeds, for nine reproducible seeds x 64
   operations (576 operations) per CI run.

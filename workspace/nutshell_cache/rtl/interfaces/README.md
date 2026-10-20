@@ -30,6 +30,8 @@ crossbar and peripherals.
 
 An external coherence source can probe a line.  A hit returns a probe-hit
 response followed by an eight-beat line release; a miss returns probe-miss.
+For this DCache interface, releasing a hit line does not invalidate its tag or
+clear its dirty state. A later CPU access to that line can still hit locally.
 
 ## Control/status
 

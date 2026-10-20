@@ -242,8 +242,19 @@ class SetAssociativeTagModel:
         counts = {len(state) for state in self._states.get(set_index, {()})}
         return next(iter(counts))
 
+    def resident_way(self, addr):
+        """Return the modeled physical way containing ``addr``, or ``None``."""
+        set_index, tag = self.address_fields(addr)
+        states = self._states.get(set_index, {()})
+        if len(states) != 1:
+            raise AssertionError(f"tag model: expected exact state for set {set_index}")
+        for line in next(iter(states)):
+            if line.tag == tag:
+                return line.way
+        return None
+
     def observe_probe(self, addr, was_hit):
-        """Check an observed probe result and invalidate the line on a hit."""
+        """Check a probe result; this DCache releases data without invalidating it."""
         set_index, tag = self.address_fields(addr)
         states = self._states.get(set_index, {()})
         if len(states) != 1:
@@ -256,10 +267,6 @@ class SetAssociativeTagModel:
                 f"tag model: reported probe {observed} for "
                 f"{'resident' if resident else 'absent'} tag 0x{tag:x} in set {set_index}"
             )
-        if was_hit:
-            self._states[set_index] = {
-                tuple(line for line in state if line.tag != tag)
-            }
 
 
 class CacheReferenceModel:

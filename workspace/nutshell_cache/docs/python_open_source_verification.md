@@ -19,7 +19,7 @@ pytest + Toffee environment
   - MMIO slave checks cache bypass
   - coherence agent checks probe/release
   - reference model checks architectural data, write masks, set/tag/dirty
-    history, and probe invalidation
+    history, and probe-hit line retention
 ```
 
 The active Python environment is under `dv/`, with scenario tests in `tests/`.

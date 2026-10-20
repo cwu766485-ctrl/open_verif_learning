@@ -163,7 +163,7 @@ def test_replacement_model_tracks_rtl_lfsr_and_reset_seed():
     assert model.mask == 2
 
 
-def test_probe_hit_invalidates_tag_and_release_uses_reference_data():
+def test_probe_hit_retains_tag_and_release_uses_reference_data():
     reference = CacheReferenceModel()
     request = _request(0xA028, CMD_WRITE)
     request.wdata = 0xAABBCCDDEEFF0011
@@ -173,9 +173,10 @@ def test_probe_hit_invalidates_tag_and_release_uses_reference_data():
 
     assert reference.probe_release_data(request.addr) == [0xAABBCCDDEEFF0011, 0, 0, 0, 0, 0, 0, 0]
     reference.observe_probe(request.addr, was_hit=True)
-    with pytest.raises(AssertionError, match="absent tag|impossible hit|predicted miss"):
-        reference.observe_cache_access(_request(request.addr), was_miss=False)
-    reference.observe_cache_access(_request(request.addr), was_miss=True)
+    assert reference.cache_tags.resident_way(request.addr) == 3
+    reference.observe_cache_access(_request(request.addr), was_miss=False)
+    with pytest.raises(AssertionError, match="resident tag|impossible miss|predicted hit"):
+        reference.observe_cache_access(_request(request.addr), was_miss=True)
 
 
 @pytest.mark.parametrize("was_miss", [False, True])

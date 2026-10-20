@@ -47,6 +47,11 @@ class CacheCoverage:
         "cross:result=miss,victim=dirty_eviction",
         "backpressure_channel=memory.req",
         "backpressure_channel=mmio.req",
+        "arbitration=coherence_wins_cpu",
+        "probe_way=0", "probe_way=1", "probe_way=2", "probe_way=3",
+        "reset=cancelled_probe_release",
+        "probe_sequence=consecutive",
+        "probe_post_state=retained_hit",
     )
 
     MEGA_RANDOM_GOALS = (
