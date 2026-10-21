@@ -2,6 +2,7 @@ coherence/CoherenceProtocol.sv
 coherence/MesiL1Controller.sv
 coherence/DirectoryController.sv
 coherence/MesiL1Array.sv
+coherence/CoherenceRequestArbiterCore.sv
 coherence/CoherenceRequestArbiter.sv
 coherence/SharedL2DirectoryArray.sv
 coherence/DualL1MesiCluster.sv

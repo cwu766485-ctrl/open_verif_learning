@@ -2,7 +2,7 @@
 
 **文档版本**：v0.2（设计评审草案）  
 **日期**：2026-10-20  
-**设计状态**：P1 控制 RTL、双 L1/L2 阵列、仲裁器及阻塞式子系统顶层已新增；替换完整性与回归验证仍未完成  
+**设计状态**：双 L1 + 共享 L2/Directory 的阻塞式 RTL 已接通；子系统定向/反压/reset/并发回归通过，仍需扩大系统级验证与 formal 范围
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -278,7 +278,9 @@ Core1 Write A -> GetM -> SnoopInvalidate(Core0)
 6. **Snoop 进度**：本地 CPU Miss/Refill 阻塞时，Snoop 不能与 Directory 等待形成循环依赖。实现时必须设计相应 Buffer/优先级/撤销重试路径，并用压力测试验证。
 7. **Reset 协调**：初版系统同步 Reset 清除所有暂态、目录所有权和旧 Response；旧请求不得在 Reset 后再次完成。Reset 后需重新初始化目录和 Meta Array。
 8. **Eviction**：L1 M→PutM 写回最新数据；L2 Inclusive Victim 必须先处理任何 L1 Sharer/Owner，再驱逐目录 Tag。
-9. **MMIO**：仍走原有 Bypass，不参与普通 MESI Line Allocation；必须明确地址域。
+9. **MMIO**：地址 `[0x3000_0000, 0x8000_0000)` 依 NutShell 现有译码走
+   bypass，不参与普通 MESI/L1/L2 分配；通过独立 MMIO 请求/响应端口与外设互连。
+   v1 LSU 请求为 64-bit word，MMIO `size=3'b011`，写入 Byte Mask 原样转发。
 
 ---
 
@@ -362,19 +364,38 @@ System DV (可选):
 MESI 控制 FSM、单事务 Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求
 仲裁器，以及 256 KiB 共享 L2/Directory 阵列。`CoherentCacheSubsystem` 将这些
 模块连成阻塞式 CPU-to-memory 路径，支持 L2/内存八拍 refill、owner SnoopData
-回写到 L2，以及无 sharer/owner 的 `DIR_I` L2 victim 回收；脏 victim 会先写回
-内存，再清 dirty 并失效目录项。L1 Put/PutAck 替换和带有效 L1 副本的 L2
-victim back-invalidation 尚未实现：L1 有效 victim 会让 miss 停住，L2 live
-victim 会令 line engine 报错停机。内存写接口以最后一拍握手作为完成，没有
-独立写响应。新增 RTL 尚未编译、仿真或回归。
+回写到 L2，以及 L1 的 PutS/PutE/PutM 替换事务。PutM 会传回完整八拍，收到
+PutAck/commit 后才清除 victim 并重放原 miss。L2 victim 回收覆盖无副本的
+`DIR_I`、逐个反失效 sharer 的 `DIR_S`，以及反失效 `DIR_U` owner 并回收整行
+数据；dirty victim 在释放目录项前写回内存。MMIO 地址 `[0x3000_0000,
+0x8000_0000)` 走独立 bypass FSM，不进入 L1/L2/Directory；reset 期间 CPU、
+MMIO 和 backing-memory 边界的 valid/ready 握手均被屏蔽。Memory 请求与整行
+数据 beat 携带当前 `txn_id`，refill 端拒绝 ID 不匹配的数据；外部 Memory 必须
+与子系统共用 reset，以取消 reset 前未完成的请求。当前 `make coherence_smoke` 已用
+定向场景通过 E→M 静默升级、M Owner 被远端读/写、E Owner 被远端写、S→M
+升级、MMIO 旁路读写与 Byte Mask、跨整行八拍数据检查、M/S/E L1 victim、DIR_U 脏 owner 回收、
+DIR_S 双 sharer 反失效，以及回写后再读数据等检查。Directory 会拒绝未登记为
+sharer 的 Upgrade；遇到 `GetM` miss 但目录仍记录本核为 U Owner 时，先对该
+Owner 做失效 snoop 并回收最新整行，再 refill 后授予 M，避免无数据 Grant。
+当前子系统回归通过了 ready/valid 反压、活动事务 reset 取消、同址双核与异址并发、
+地址域边界和字节掩码 corner cases。TB scoreboard 比较读数据并按 mask 更新写入参考值；
+monitor assertions 检查外部与内部通道 payload 稳定、MESI 唯一可写者及目录元数据。
+每次运行含 80 个受周期性 stall 影响的随机访问；`make coherence_random` 用五个 seed
+运行完整 directed + random suite。`make coherence_formal` 目前只对请求仲裁器完成
+selection、stall source retention 和持续竞争轮转性质的 k-induction；**整个 MESI/L2
+子系统还没有 formal proof**。活动事务 reset 覆盖 refill request、MMIO response、CPU
+response、owner SnoopData stream 和被反压的 dirty L2 writeback beat。仍未显式覆盖
+L2 receiver 对有效 memory refill data beat 施加 backpressure；当前 refill 测试覆盖
+的是 valid 间隙和 request-side stall。内存写接口以最后一拍握手作为完成，没有独立
+写响应。
 
 | 阶段 | RTL 交付 | DV Gate |
 |---|---|---|
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
-| P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory read/write adapter 顶层已连通；Put/PutAck 尚未接入 | GetS/GetM/Upgrade/Owner Snoop/Concurrent Cases 全通过 |
-| P3 真实 L2 | 256 KiB 8-way Tag/Data/Directory Array 已新增；空目录 victim 与 dirty writeback 已接通；live victim back-invalidation 未实现 | Block L2 Regression、系统 Invalidation/Writeback |
-| P4 签收强化 | Formal/Random/Mutation/Coverage + 系统性能基线 | 覆盖率与排除项说明、所有不变量/数据检查、重现脚本 |
+| P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
+| P3 真实 L2 | 256 KiB 8-way Tag/Data/Directory Array 支持 `DIR_I` 回收、`DIR_S` sharer 反失效、`DIR_U` owner 数据回收与 dirty writeback | `DIR_U`/`DIR_S` victim 回收、数据回写、scoreboard 及 5-seed × 80-operation regression 通过 |
+| P4 签收强化 | 子系统随机/断言和 arbiter formal 已建立 | 仍需全 subsystem formal、refill-data receiver backpressure、更多 corner/mutation/覆盖率与性能基线 |
 | P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 
 ---
@@ -387,15 +408,18 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 
 ---
 
-## 10. Design Review 待确认项
+## 10. Design Review 决策与剩余项
 
-- [ ] Directory 使用 I/S/U，支持 L1 E→M 静默升级。
-- [ ] 初版采用 L2 Tag/Directory Inclusive，Dirty Owner 数据可能比 L2 新。
-- [ ] 第一版每 L1 最多 1 Pending Miss + 全局 1 Directory Transaction，但 Snoop 必须有独立进度机制。
-- [ ] 新的 Coherence 消息与原始 SimpleBus Probe 语义分离。
-- [ ] v1 不接入 ICache MESI / DMA / 真实双 Core，先把两个 LSU Agent 的 DCache Coherence 验证完成。
-- [ ] 先使用 Behavioral L2 验证协议，再加入 256KiB/8-way Synthesizable L2。
-- [ ] 确认 Chisel/SV 源码归属和 CI 生成流程。
+以下架构决策已落入 RTL：
+
+- Directory 使用 I/S/U，兼容 L1 的 E→M 静默升级。
+- L2 保留 inclusive Tag/Directory；驱逐 live victim 前先反失效 L1，dirty owner 数据先回收。
+- 每个 L1 只有一个阻塞式 miss，Directory 全局串行；L1 snoop 有独立 FSM。Snoop 与本地 miss 的更广泛交错仍需增加压力用例。
+- 新的一致性消息与旧 SimpleBus Probe 语义分开。
+- v1 验证边界是两个 LSU Agent 和 DCache；真实双 Core、ICache MESI、DMA coherence 不在当前实现内。
+- 已接入 256 KiB / 8-way Shared L2/Directory 阵列。
+
+剩余集成项：新增 coherence smoke/random/formal 工作流步骤到 GitHub Actions；目前 CI 的 `make formal` 会跑 arbiter proof，但工作流尚未运行 `make coherence_smoke` 或 `make coherence_random`。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
 
 ---
 
@@ -408,4 +432,4 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 - [`CacheTop.scala`：当前 Chisel Cache Pipeline/Array 连接](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/nutcore/mem/CacheTop.scala)
 - [`test_coherence.py`：现有 Probe 不失效语义及相关测试](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_cache/tests/test_coherence.py)
 
-**状态声明**：本 SPEC 中原始 NutShell 硬件基线源自当前仓库可检查的源码；双核 L1/D MESI、Directory、256KiB L2 和系统级验证均是新项目的设计与验收目标，不应作为已完成成果陈述。
+**状态声明（2026-10-21）**：仓库已实现双 LSU Agent 驱动的双 L1 MESI、Directory 和 256 KiB 共享 L2 RTL，并有集成级定向/随机回归；具体通过范围和剩余缺口见第 8 节。这是可运行的阻塞式 RTL 子系统原型，不代表已接入两个真实 NutShell Core，也不代表完整 formal、PPA 或芯片签收完成。本 SPEC 第 0 节描述的 NutShell 单核基线来自可检查的 Chisel 源码；它与新增的双 L1 一致性子系统是不同范围。

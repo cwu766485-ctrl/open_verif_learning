@@ -1,0 +1,14 @@
+[options]
+mode prove
+depth 16
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -sv CoherenceRequestArbiterCore.sv coherence_request_arbiter_harness.v
+prep -top CoherenceRequestArbiterFormal
+
+[files]
+rtl/coherence/CoherenceRequestArbiterCore.sv
+formal/coherence_request_arbiter_harness.v

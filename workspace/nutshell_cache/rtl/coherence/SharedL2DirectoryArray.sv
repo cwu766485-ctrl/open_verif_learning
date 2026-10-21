@@ -240,14 +240,14 @@ module SharedL2DirectoryArray #(
       line_wr_expected_beat_q <= '0;
       protocol_error <= 1'b0;
       for (i = 0; i < SETS; i = i + 1) begin
-        replacement_ptr[i] <= '0;
+        replacement_ptr[i] = '0;
         for (j = 0; j < WAYS; j = j + 1) begin
-          valid_array[i][j] <= 1'b0;
-          tag_array[i][j] <= '0;
-          dir_state_array[i][j] <= DIR_I;
-          sharer_array[i][j] <= 2'b00;
-          owner_array[i][j] <= 1'b0;
-          dirty_array[i][j] <= 1'b0;
+          valid_array[i][j] = 1'b0;
+          tag_array[i][j] = '0;
+          dir_state_array[i][j] = DIR_I;
+          sharer_array[i][j] = 2'b00;
+          owner_array[i][j] = 1'b0;
+          dirty_array[i][j] = 1'b0;
         end
       end
     end else begin

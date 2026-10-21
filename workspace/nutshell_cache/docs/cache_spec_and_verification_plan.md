@@ -1,5 +1,7 @@
 # 果壳 Cache：规格、结构与验证计划
 
+> **范围说明**：本文记录原有单个 32 KiB L1 DCache（`rtl/Cache.v`）的规格与回归计划，作为升级前后的兼容性基线；双 L1 + MESI Directory + 共享 L2 子系统的架构和验收状态见 [`cache.md`](cache.md)。本文中的覆盖率和测试数字均按各节注明的历史日期理解。
+
 ## 1. 它是什么 Cache
 
 这份 `rtl/Cache.v` 不是一个独立的 CPU，也不是简单的 SRAM 控制器，而是

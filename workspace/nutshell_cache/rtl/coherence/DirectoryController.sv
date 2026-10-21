@@ -266,14 +266,21 @@ module DirectoryController #(
                     end
                     DIR_U: begin
                       if (lookup_owner_id == req_src_id) begin
-                        // A requester already recorded as the unique owner
-                        // needs no peer invalidation or line refill.
-                        grant_has_data_q <= 1'b0;
-                        grant_opcode_q <= GRANT_M;
+                        // A GetM is issued on an L1 miss. If the directory
+                        // still names this requester as owner, recover the
+                        // authoritative line from that L1 before granting;
+                        // otherwise a stale directory hit could grant write
+                        // permission to a requester that has no data.
+                        target_mask = core_bit(lookup_owner_id);
+                        pending_targets_q <= target_mask;
                         next_dir_state_q <= DIR_U;
                         next_sharers_q <= 2'b00;
                         next_owner_q <= req_src_id;
-                        state_q <= DIR_COMMIT;
+                        snoop_opcode_q <= SNOOP_INVALIDATE;
+                        snoop_response_must_be_data_q <= 1'b1;
+                        line_xfer_kind_q <= XFER_L2_REFILL;
+                        snoop_resume_q <= DIR_START_XFER;
+                        state_q <= DIR_SEND_SNOOP;
                       end else begin
                         target_mask = core_bit(lookup_owner_id);
                         pending_targets_q <= target_mask;
@@ -298,16 +305,21 @@ module DirectoryController #(
                   grant_has_data_q <= 1'b0;
                   case (lookup_dir_state)
                     DIR_S: begin
-                      target_mask = lookup_sharers & ~source_mask;
-                      pending_targets_q <= target_mask;
-                      next_dir_state_q <= DIR_U;
-                      next_sharers_q <= 2'b00;
-                      next_owner_q <= req_src_id;
-                      snoop_opcode_q <= SNOOP_INVALIDATE;
-                      snoop_response_must_be_data_q <= 1'b0;
-                      snoop_resume_q <= DIR_COMMIT;
-                      state_q <= (target_mask != 2'b00) ?
-                                 DIR_SEND_SNOOP : DIR_COMMIT;
+                      if (!lookup_sharers[req_src_id]) begin
+                        protocol_error <= 1'b1;
+                        state_q <= DIR_ERROR;
+                      end else begin
+                        target_mask = lookup_sharers & ~source_mask;
+                        pending_targets_q <= target_mask;
+                        next_dir_state_q <= DIR_U;
+                        next_sharers_q <= 2'b00;
+                        next_owner_q <= req_src_id;
+                        snoop_opcode_q <= SNOOP_INVALIDATE;
+                        snoop_response_must_be_data_q <= 1'b0;
+                        snoop_resume_q <= DIR_COMMIT;
+                        state_q <= (target_mask != 2'b00) ?
+                                   DIR_SEND_SNOOP : DIR_COMMIT;
+                      end
                     end
                     DIR_U: begin
                       if (lookup_owner_id == req_src_id) begin
