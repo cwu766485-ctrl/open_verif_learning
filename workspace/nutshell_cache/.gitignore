@@ -47,6 +47,8 @@
 !rtl/
 !rtl/**/
 !rtl/**/*.v
+!rtl/*.sv
+!rtl/**/*.sv
 !rtl/**/*.f
 !rtl/**/*.md
 !tools/

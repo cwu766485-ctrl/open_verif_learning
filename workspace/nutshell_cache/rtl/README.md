@@ -23,6 +23,9 @@ and small standalone combinational units here, with regression equivalence.
 - `array/`: metadata/data arrays and access wrappers.
 - `control/`: arbitration and small decision logic.
 - `interfaces/`: CPU, downstream-memory, MMIO and coherence interface contracts.
+- `coherence/`: staged, hand-written MESI controllers, dual-L1/L2 arrays,
+  arbitration and a blocking subsystem top; these sources are listed separately
+  in `Coherence.files.f` and do not alter the single-L1 baseline.
 - `bus/`: compatibility placeholder retained for future bus adapter modules.
 
 ## Naming policy
