@@ -35,7 +35,8 @@ module CoherentCacheSubsystem #(
   input  logic [63:0] mmio_resp_rdata,
 
   // Backing memory supplies a full 64-byte line in eight 64-bit beats and
-  // echoes mem_rd_req_txn_id on every response beat.
+  // echoes the request transaction ID. A failed read is one terminal beat
+  // with error=1 and last=1; see docs/cache.md for the v1 contract.
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
   output logic [31:0] mem_rd_req_addr,
@@ -46,10 +47,10 @@ module CoherentCacheSubsystem #(
   input  logic [2:0] mem_rd_data_beat_idx,
   input  logic [63:0] mem_rd_data,
   input  logic mem_rd_data_last,
+  input  logic mem_rd_data_error,
 
-  // Dirty L2 victims are written back as eight 64-bit beats. Completion is
-  // the handshake of beat 7; the memory model has no separate write response.
-  // Request and every data beat carry the same transaction ID.
+  // Dirty L2 victims are written back as eight 64-bit beats, followed by an
+  // explicit response. The victim stays dirty/valid until the response passes.
   output logic mem_wr_req_valid,
   input  logic mem_wr_req_ready,
   output logic [31:0] mem_wr_req_addr,
@@ -60,6 +61,10 @@ module CoherentCacheSubsystem #(
   output logic [2:0] mem_wr_data_beat_idx,
   output logic [63:0] mem_wr_data,
   output logic mem_wr_data_last,
+  input  logic mem_wr_rsp_valid,
+  output logic mem_wr_rsp_ready,
+  input  logic [TXN_ID_WIDTH-1:0] mem_wr_rsp_txn_id,
+  input  logic mem_wr_rsp_error,
 
   // Victim information is exposed to support directed system-level checks.
   output logic l2_victim_valid,
@@ -77,6 +82,8 @@ module CoherentCacheSubsystem #(
   output logic directory_protocol_error,
   output logic l2_protocol_error,
   output logic memory_adapter_protocol_error,
+  output logic memory_adapter_error,
+  output logic fatal_error,
   output logic mmio_protocol_error
 );
   import coherence_protocol_pkg::*;
@@ -226,11 +233,12 @@ module CoherentCacheSubsystem #(
   logic [31:0] l2_entry_invalidate_addr, l2_mark_clean_addr;
   logic l1_replace_valid_core [0:1];
 
-  typedef enum logic [3:0] {
+  typedef enum logic [4:0] {
     ENGINE_IDLE,
     ENGINE_VICTIM_READ,
     ENGINE_VICTIM_WRITE_REQ,
     ENGINE_VICTIM_WRITE_STREAM,
+    ENGINE_VICTIM_WRITE_WAIT_RSP,
     ENGINE_VICTIM_MARK_CLEAN,
     ENGINE_VICTIM_INVALIDATE,
     ENGINE_PUTM_STREAM,
@@ -255,6 +263,14 @@ module CoherentCacheSubsystem #(
   logic [31:0] grant_addr_q;
   logic [TXN_ID_WIDTH-1:0] grant_txn_q;
 
+  always_comb begin
+    fatal_error = (|l1_controller_protocol_error) ||
+                  (|l1_array_protocol_error) ||
+                  directory_protocol_error || l2_protocol_error ||
+                  memory_adapter_protocol_error || memory_adapter_error ||
+                  mmio_protocol_error;
+  end
+
   assign victim_snoop_active =
     (engine_state_q == ENGINE_VICTIM_SNOOP_SEND) ||
     (engine_state_q == ENGINE_VICTIM_SNOOP_WAIT);
@@ -276,9 +292,13 @@ module CoherentCacheSubsystem #(
   assign dir_write_ready = l2_dir_write_ready &&
                            (engine_state_q != ENGINE_VICTIM_CLEAR_DIR);
 
-  assign l2_lookup_addr = cluster_dir_req_valid ? cluster_dir_req_addr :
-                          dir_xfer_start_valid ? dir_xfer_addr :
-                          dir_grant_valid ? dir_grant_addr : engine_addr_q;
+  // The active Directory transaction owns the metadata lookup port while a
+  // line transfer starts. A queued request from the other L1 must not redirect
+  // the lookup used to decide whether this refill hits or needs a victim.
+  assign l2_lookup_addr = dir_xfer_start_valid ? dir_xfer_addr :
+                          dir_grant_valid ? dir_grant_addr :
+                          cluster_dir_req_valid ? cluster_dir_req_addr :
+                          engine_addr_q;
   assign l2_alloc_addr = dir_xfer_start_valid ? dir_xfer_addr : engine_addr_q;
 
   assign mmio_owner_pending = (mmio_state_q != MMIO_IDLE);
@@ -289,14 +309,17 @@ module CoherentCacheSubsystem #(
                               (cpu_req_addr[core] <  32'h8000_0000);
       cluster_cpu_req_valid[core] = cpu_req_valid[core] &&
                                     !cpu_req_is_mmio[core] &&
+                                    !fatal_error &&
                                     !(mmio_owner_pending &&
                                       (mmio_owner_q == 1'(core)));
       cluster_cpu_resp_ready[core] = cpu_resp_ready[core] &&
+                                     !fatal_error &&
                                      !(mmio_owner_pending &&
                                        (mmio_owner_q == 1'(core)));
       mmio_candidates[core] = cpu_req_valid[core] &&
                               cpu_req_is_mmio[core] &&
                               !reset &&
+                              !fatal_error &&
                               cluster_cpu_req_ready[core] &&
                               !(mmio_owner_pending &&
                                 (mmio_owner_q == 1'(core)));
@@ -310,14 +333,15 @@ module CoherentCacheSubsystem #(
                   mmio_candidates[mmio_select_core];
 
     for (integer core = 0; core < 2; core = core + 1) begin
-      cpu_req_ready[core] = !reset && (cpu_req_is_mmio[core] ?
+      cpu_req_ready[core] = !reset && !fatal_error && (cpu_req_is_mmio[core] ?
         (mmio_accept && (mmio_select_core == 1'(core))) :
         (cluster_cpu_req_ready[core] &&
          !(mmio_owner_pending && (mmio_owner_q == 1'(core)))));
       mmio_resp_to_core[core] = (mmio_state_q == MMIO_WAIT_RESP) &&
                                 mmio_resp_valid &&
                                 (mmio_owner_q == 1'(core));
-      cpu_resp_valid[core] = !reset && (cluster_cpu_resp_valid[core] ||
+      cpu_resp_valid[core] = !reset && !fatal_error &&
+                             (cluster_cpu_resp_valid[core] ||
                                         mmio_resp_to_core[core]);
       cpu_resp_addr[core] = (mmio_owner_pending &&
                              (mmio_owner_q == 1'(core))) ?
@@ -332,13 +356,15 @@ module CoherentCacheSubsystem #(
                               mmio_txn_q : cluster_cpu_resp_txn_id[core];
     end
 
-    mmio_req_valid = !reset && (mmio_state_q == MMIO_SEND_REQ);
+    mmio_req_valid = !reset && !fatal_error &&
+                     (mmio_state_q == MMIO_SEND_REQ);
     mmio_req_addr = mmio_addr_q;
     mmio_req_size = 3'b011;
     mmio_req_write = mmio_write_q;
     mmio_req_wmask = mmio_wmask_q;
     mmio_req_wdata = mmio_wdata_q;
-    mmio_resp_ready = !reset && (mmio_state_q == MMIO_WAIT_RESP) &&
+    mmio_resp_ready = !reset && !fatal_error &&
+                      (mmio_state_q == MMIO_WAIT_RESP) &&
                       cpu_resp_ready[mmio_owner_q];
   end
 
@@ -445,19 +471,25 @@ module CoherentCacheSubsystem #(
     dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE);
     dir_xfer_done_txn_id = engine_txn_q;
 
-    mem_rd_req_valid = !reset && (engine_state_q == ENGINE_MEM_REQ);
+    mem_rd_req_valid = !reset && !fatal_error &&
+                       (engine_state_q == ENGINE_MEM_REQ);
     mem_rd_req_addr = engine_addr_q;
     mem_rd_req_txn_id = engine_txn_q;
-    mem_rd_data_ready = !reset &&
-                        (engine_state_q == ENGINE_MEM_STREAM) &&
-                        ((mem_rd_data_txn_id != engine_txn_q) ||
-                         l2_line_wr_ready);
+    // Accept unexpected responses so the adapter can flag them instead of
+    // silently wedging the external response channel. A valid refill beat is
+    // backpressured by the L2 array; terminal errors and stale IDs are drained.
+    mem_rd_data_ready = !reset && !fatal_error &&
+                        ((engine_state_q != ENGINE_MEM_STREAM) ||
+                         (mem_rd_data_txn_id != engine_txn_q) ||
+                         mem_rd_data_error || l2_line_wr_ready);
+    mem_wr_rsp_ready = !reset && !fatal_error;
 
     mem_wr_req_valid = !reset &&
+                       !fatal_error &&
                        (engine_state_q == ENGINE_VICTIM_WRITE_REQ);
     mem_wr_req_addr = victim_addr_q;
     mem_wr_req_txn_id = engine_txn_q;
-    mem_wr_data_valid = !reset &&
+    mem_wr_data_valid = !reset && !fatal_error &&
                         (engine_state_q == ENGINE_VICTIM_WRITE_STREAM) &&
                         l2_line_data_valid;
     mem_wr_data_beat_idx = l2_line_data_beat_idx;
@@ -481,7 +513,8 @@ module CoherentCacheSubsystem #(
     snoop_data_ready_core[1] = 1'b0;
     if (engine_state_q == ENGINE_MEM_STREAM) begin
       l2_line_wr_valid = mem_rd_data_valid &&
-                         (mem_rd_data_txn_id == engine_txn_q);
+                         (mem_rd_data_txn_id == engine_txn_q) &&
+                         !mem_rd_data_error;
       l2_line_wr_addr = engine_addr_q;
       l2_line_wr_dirty = 1'b0;
       l2_line_wr_beat_idx = mem_rd_data_beat_idx;
@@ -708,8 +741,15 @@ module CoherentCacheSubsystem #(
       grant_addr_q <= '0;
       grant_txn_q <= '0;
       memory_adapter_protocol_error <= 1'b0;
+      memory_adapter_error <= 1'b0;
     end else begin
-      case (engine_state_q)
+      if ((mem_rd_data_valid && mem_rd_data_ready &&
+           (engine_state_q != ENGINE_MEM_STREAM)) ||
+          (mem_wr_rsp_valid && mem_wr_rsp_ready &&
+           (engine_state_q != ENGINE_VICTIM_WRITE_WAIT_RSP))) begin
+        memory_adapter_protocol_error <= 1'b1;
+        engine_state_q <= ENGINE_ERROR;
+      end else case (engine_state_q)
         ENGINE_IDLE: begin
           if (dir_xfer_start_valid && dir_xfer_start_ready) begin
             engine_addr_q <= line_align(dir_xfer_addr);
@@ -792,9 +832,23 @@ module CoherentCacheSubsystem #(
               memory_adapter_protocol_error <= 1'b1;
               engine_state_q <= ENGINE_ERROR;
             end else if (mem_wr_data_beat_idx == 3'd7) begin
-              engine_state_q <= ENGINE_VICTIM_MARK_CLEAN;
+              engine_state_q <= ENGINE_VICTIM_WRITE_WAIT_RSP;
             end else begin
               victim_expected_beat_q <= victim_expected_beat_q + 1'b1;
+            end
+          end
+        end
+
+        ENGINE_VICTIM_WRITE_WAIT_RSP: begin
+          if (mem_wr_rsp_valid && mem_wr_rsp_ready) begin
+            if (mem_wr_rsp_txn_id != engine_txn_q) begin
+              memory_adapter_protocol_error <= 1'b1;
+              engine_state_q <= ENGINE_ERROR;
+            end else if (mem_wr_rsp_error) begin
+              memory_adapter_error <= 1'b1;
+              engine_state_q <= ENGINE_ERROR;
+            end else begin
+              engine_state_q <= ENGINE_VICTIM_MARK_CLEAN;
             end
           end
         end
@@ -872,8 +926,16 @@ module CoherentCacheSubsystem #(
         ENGINE_MEM_STREAM: begin
           if (mem_rd_data_valid && mem_rd_data_ready) begin
             if ((mem_rd_data_txn_id != engine_txn_q) ||
-                (mem_rd_data_beat_idx != mem_expected_beat_q) ||
-                (mem_rd_data_last != (mem_rd_data_beat_idx == 3'd7))) begin
+                (mem_rd_data_beat_idx != mem_expected_beat_q)) begin
+              memory_adapter_protocol_error <= 1'b1;
+              engine_state_q <= ENGINE_ERROR;
+            end else if (mem_rd_data_error) begin
+              if (!mem_rd_data_last)
+                memory_adapter_protocol_error <= 1'b1;
+              memory_adapter_error <= 1'b1;
+              engine_state_q <= ENGINE_ERROR;
+            end else if (mem_rd_data_last !=
+                         (mem_rd_data_beat_idx == 3'd7)) begin
               memory_adapter_protocol_error <= 1'b1;
               engine_state_q <= ENGINE_ERROR;
             end else if (mem_rd_data_beat_idx == 3'd7) begin

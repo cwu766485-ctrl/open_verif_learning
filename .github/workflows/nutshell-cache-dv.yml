@@ -77,3 +77,32 @@ jobs:
           name: nutshell-cache-dv-reports
           path: workspace/nutshell_cache/reports/
           if-no-files-found: warn
+
+  coherence-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+      - name: Set up RTL and formal tools
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          version: "2026-10-21"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential make python3
+      - name: Run coherence module, formal, and subsystem regressions
+        run: make -C workspace/nutshell_cache COHERENCE_JOBS=2 coherence_verify
+      - name: Upload coherence verification logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cache-coherence-verification
+          path: |
+            workspace/nutshell_cache/reports/coherence/
+            workspace/nutshell_cache/reports/formal/
+          if-no-files-found: warn

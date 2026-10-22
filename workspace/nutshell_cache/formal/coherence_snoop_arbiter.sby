@@ -1,0 +1,14 @@
+[options]
+mode prove
+depth 1
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal -sv MesiL1SnoopArbiter.sv coherence_snoop_arbiter_harness.sv
+prep -top CoherenceSnoopArbiterFormal
+
+[files]
+rtl/coherence/MesiL1SnoopArbiter.sv
+formal/coherence_snoop_arbiter_harness.sv

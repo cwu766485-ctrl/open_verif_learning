@@ -1,0 +1,17 @@
+[options]
+mode bmc
+depth 16
+multiclock on
+
+[engines]
+smtbmc z3
+
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv DirectoryController.sv coherence_directory_harness.sv
+prep -top CoherenceDirectoryFormal
+
+[files]
+rtl/coherence/CoherenceProtocol.sv
+rtl/coherence/DirectoryController.sv
+formal/coherence_directory_harness.sv

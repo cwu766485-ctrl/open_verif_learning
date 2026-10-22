@@ -41,6 +41,7 @@ module CoherentCacheSubsystem_tb;
   logic [2:0] mem_rd_data_beat_idx;
   logic [63:0] mem_rd_data;
   logic mem_rd_data_last;
+  logic mem_rd_data_error;
 
   logic mem_wr_req_valid;
   logic mem_wr_req_ready;
@@ -52,6 +53,10 @@ module CoherentCacheSubsystem_tb;
   logic [2:0] mem_wr_data_beat_idx;
   logic [63:0] mem_wr_data;
   logic mem_wr_data_last;
+  logic mem_wr_rsp_valid;
+  logic mem_wr_rsp_ready;
+  logic [TXN_ID_WIDTH-1:0] mem_wr_rsp_txn_id;
+  logic mem_wr_rsp_error;
 
   logic l2_victim_valid;
   logic [31:0] l2_victim_addr;
@@ -67,16 +72,26 @@ module CoherentCacheSubsystem_tb;
   logic directory_protocol_error;
   logic l2_protocol_error;
   logic memory_adapter_protocol_error;
+  logic memory_adapter_error;
+  logic fatal_error;
 
   logic memory_active_q;
+  logic memory_read_valid_held_q;
   logic [2:0] memory_beat_q;
   logic [31:0] memory_line_addr_q;
   logic [TXN_ID_WIDTH-1:0] memory_txn_q;
+  logic memory_write_response_pending_q;
+  logic [TXN_ID_WIDTH-1:0] memory_write_response_txn_q;
+  logic memory_write_response_error_q;
+  logic inject_next_mem_rd_error;
+  logic inject_next_mem_wr_error;
   logic memory_slot_valid [0:127];
   logic [31:0] memory_slot_addr [0:127];
   logic [63:0] backing_store [0:127][0:7];
+  logic [63:0] staged_write_data_q [0:7];
   logic [6:0] memory_write_slot_q;
   logic [TXN_ID_WIDTH-1:0] memory_write_txn_q;
+  logic [31:0] memory_write_addr_q;
   logic [31:0] mmio_saved_addr_q;
   logic [63:0] mmio_saved_data_q;
   logic mmio_saved_valid_q;
@@ -122,6 +137,7 @@ module CoherentCacheSubsystem_tb;
   logic [2:0] mem_rd_data_beat_hold_q;
   logic [63:0] mem_rd_data_hold_q;
   logic mem_rd_data_last_hold_q;
+  logic mem_rd_data_error_hold_q;
   logic [31:0] mem_wr_addr_hold_q;
   logic [TXN_ID_WIDTH-1:0] mem_wr_txn_hold_q;
   logic [TXN_ID_WIDTH-1:0] mem_wr_data_txn_hold_q;
@@ -156,6 +172,7 @@ module CoherentCacheSubsystem_tb;
   integer cover_mmio_req_stall = 0;
   integer cover_mmio_resp_stall = 0;
   integer cover_mem_rd_req_stall = 0;
+  integer cover_mem_rd_data_stall = 0;
   integer cover_mem_wr_req_stall = 0;
   integer cover_mem_wr_data_stall = 0;
   integer cover_dir_req_stall = 0;
@@ -210,6 +227,7 @@ module CoherentCacheSubsystem_tb;
       mem_rd_data_beat_hold_q <= '0;
       mem_rd_data_hold_q <= '0;
       mem_rd_data_last_hold_q <= 1'b0;
+      mem_rd_data_error_hold_q <= 1'b0;
       mem_wr_addr_hold_q <= '0;
       mem_wr_txn_hold_q <= '0;
       mem_wr_data_txn_hold_q <= '0;
@@ -352,6 +370,8 @@ module CoherentCacheSubsystem_tb;
         cover_mmio_resp_stall <= cover_mmio_resp_stall + 1;
       if (mem_rd_req_valid && !mem_rd_req_ready)
         cover_mem_rd_req_stall <= cover_mem_rd_req_stall + 1;
+      if (mem_rd_data_valid && !mem_rd_data_ready)
+        cover_mem_rd_data_stall <= cover_mem_rd_data_stall + 1;
       if (mem_wr_req_valid && !mem_wr_req_ready)
         cover_mem_wr_req_stall <= cover_mem_wr_req_stall + 1;
       if (mem_wr_data_valid && !mem_wr_data_ready)
@@ -369,7 +389,8 @@ module CoherentCacheSubsystem_tb;
                 (mem_rd_data_valid && mem_rd_data_txn_id == mem_rd_data_txn_hold_q &&
                  mem_rd_data_beat_idx == mem_rd_data_beat_hold_q &&
                  mem_rd_data == mem_rd_data_hold_q &&
-                 mem_rd_data_last == mem_rd_data_last_hold_q))
+                 mem_rd_data_last == mem_rd_data_last_hold_q &&
+                 mem_rd_data_error == mem_rd_data_error_hold_q))
           else $fatal(1, "memory read beat changed while stalled");
       if (stalled_mem_wr_req_q)
         assert (mem_wr_req_ready ||
@@ -391,6 +412,7 @@ module CoherentCacheSubsystem_tb;
       mem_rd_data_beat_hold_q <= mem_rd_data_beat_idx;
       mem_rd_data_hold_q <= mem_rd_data;
       mem_rd_data_last_hold_q <= mem_rd_data_last;
+      mem_rd_data_error_hold_q <= mem_rd_data_error;
       stalled_mem_wr_req_q <= mem_wr_req_valid && !mem_wr_req_ready;
       mem_wr_addr_hold_q <= mem_wr_req_addr;
       mem_wr_txn_hold_q <= mem_wr_req_txn_id;
@@ -479,7 +501,8 @@ module CoherentCacheSubsystem_tb;
     mem_rd_req_ready = !stall_mem_rd_req &&
                        (!inject_periodic_stalls || (cycle_count % 4 != 0));
     mem_rd_data_valid = memory_active_q &&
-                        (!inject_periodic_stalls || (cycle_count % 3 != 0));
+                        (memory_read_valid_held_q ||
+                         !inject_periodic_stalls || (cycle_count % 3 != 0));
     mem_rd_data_txn_id = memory_txn_q;
     mem_rd_data_beat_idx = memory_beat_q;
     mem_rd_data = memory_word(memory_line_addr_q, memory_beat_q);
@@ -487,12 +510,17 @@ module CoherentCacheSubsystem_tb;
       if (memory_slot_valid[slot] &&
           (memory_slot_addr[slot] == memory_line_addr_q))
         mem_rd_data = backing_store[slot][memory_beat_q];
-    mem_rd_data_last = (memory_beat_q == 3'd7);
+    mem_rd_data_error = inject_next_mem_rd_error && memory_active_q &&
+                        (memory_beat_q == 3'd0);
+    mem_rd_data_last = mem_rd_data_error || (memory_beat_q == 3'd7);
 
     mem_wr_req_ready = !stall_mem_wr_req &&
                        (!inject_periodic_stalls || (cycle_count % 3 != 0));
     mem_wr_data_ready = !stall_mem_wr_data &&
                         (!inject_periodic_stalls || (cycle_count % 4 == 1));
+    mem_wr_rsp_valid = memory_write_response_pending_q;
+    mem_wr_rsp_txn_id = memory_write_response_txn_q;
+    mem_wr_rsp_error = memory_write_response_error_q;
     mmio_req_ready = !stall_mmio_req && !mmio_response_valid_q &&
                      (!inject_periodic_stalls || (cycle_count % 4 != 0));
     mmio_resp_valid = mmio_response_valid_q;
@@ -503,12 +531,19 @@ module CoherentCacheSubsystem_tb;
     integer write_slot;
     if (reset) begin
       memory_active_q <= 1'b0;
+      memory_read_valid_held_q <= 1'b0;
       memory_beat_q <= 3'b0;
       memory_line_addr_q <= 32'b0;
       memory_txn_q <= '0;
       memory_write_slot_q <= '0;
       memory_write_txn_q <= '0;
+      memory_write_addr_q <= '0;
       memory_write_expected_beat_q <= 0;
+      memory_write_response_pending_q <= 1'b0;
+      memory_write_response_txn_q <= '0;
+      memory_write_response_error_q <= 1'b0;
+      for (integer beat = 0; beat < 8; beat = beat + 1)
+        staged_write_data_q[beat] <= '0;
       mmio_response_valid_q <= 1'b0;
       mmio_response_data_q <= '0;
       mmio_response_delay_q <= 0;
@@ -526,15 +561,25 @@ module CoherentCacheSubsystem_tb;
         if (memory_active_q)
           $fatal(1, "memory received a second request during an active line read");
         memory_active_q <= 1'b1;
+        memory_read_valid_held_q <= 1'b0;
         memory_read_count <= memory_read_count + 1;
         memory_beat_q <= 3'b0;
         memory_line_addr_q <= mem_rd_req_addr;
         memory_txn_q <= mem_rd_req_txn_id;
-      end else if (memory_active_q && mem_rd_data_valid && mem_rd_data_ready) begin
-        if (memory_beat_q == 3'd7)
-          memory_active_q <= 1'b0;
+      end else begin
+        if (mem_rd_data_valid)
+          memory_read_valid_held_q <= !mem_rd_data_ready;
         else
-          memory_beat_q <= memory_beat_q + 1'b1;
+          memory_read_valid_held_q <= 1'b0;
+        if (memory_active_q && mem_rd_data_valid && mem_rd_data_ready) begin
+          if (mem_rd_data_error) begin
+            memory_active_q <= 1'b0;
+            memory_beat_q <= '0;
+          end else if (memory_beat_q == 3'd7)
+            memory_active_q <= 1'b0;
+          else
+            memory_beat_q <= memory_beat_q + 1'b1;
+        end
       end
 
       if (mem_wr_req_valid && mem_wr_req_ready) begin
@@ -550,9 +595,8 @@ module CoherentCacheSubsystem_tb;
           $fatal(1, "test memory backing-store table is full");
         memory_write_slot_q <= 7'(write_slot);
         memory_write_txn_q <= mem_wr_req_txn_id;
+        memory_write_addr_q <= mem_wr_req_addr;
         memory_write_expected_beat_q <= 0;
-        memory_slot_valid[write_slot] <= 1'b1;
-        memory_slot_addr[write_slot] <= mem_wr_req_addr;
       end
       if (mem_wr_data_valid && mem_wr_data_ready) begin
         if (mem_wr_data_txn_id != memory_write_txn_q)
@@ -562,9 +606,25 @@ module CoherentCacheSubsystem_tb;
           $fatal(1, "memory write beat sequence malformed: beat=%0d expected=%0d last=%b",
                  mem_wr_data_beat_idx, memory_write_expected_beat_q,
                  mem_wr_data_last);
-        backing_store[memory_write_slot_q][mem_wr_data_beat_idx] <= mem_wr_data;
+        staged_write_data_q[mem_wr_data_beat_idx] <= mem_wr_data;
         if (memory_write_expected_beat_q < 7)
           memory_write_expected_beat_q <= memory_write_expected_beat_q + 1;
+        if (mem_wr_data_last) begin
+          if (memory_write_response_pending_q)
+            $fatal(1, "memory received a second write before responding to the first");
+          memory_write_response_pending_q <= 1'b1;
+          memory_write_response_txn_q <= mem_wr_data_txn_id;
+          memory_write_response_error_q <= inject_next_mem_wr_error;
+        end
+      end
+      if (mem_wr_rsp_valid && mem_wr_rsp_ready) begin
+        if (!mem_wr_rsp_error) begin
+          memory_slot_valid[memory_write_slot_q] <= 1'b1;
+          memory_slot_addr[memory_write_slot_q] <= memory_write_addr_q;
+          for (integer beat = 0; beat < 8; beat = beat + 1)
+            backing_store[memory_write_slot_q][beat] <= staged_write_data_q[beat];
+        end
+        memory_write_response_pending_q <= 1'b0;
       end
 
       if (mmio_response_valid_q && mmio_resp_ready)
@@ -613,7 +673,7 @@ module CoherentCacheSubsystem_tb;
     .mem_rd_data_ready(mem_rd_data_ready),
     .mem_rd_data_txn_id(mem_rd_data_txn_id),
     .mem_rd_data_beat_idx(mem_rd_data_beat_idx), .mem_rd_data(mem_rd_data),
-    .mem_rd_data_last(mem_rd_data_last),
+    .mem_rd_data_last(mem_rd_data_last), .mem_rd_data_error(mem_rd_data_error),
     .mem_wr_req_valid(mem_wr_req_valid), .mem_wr_req_ready(mem_wr_req_ready),
     .mem_wr_req_addr(mem_wr_req_addr),
     .mem_wr_req_txn_id(mem_wr_req_txn_id),
@@ -622,6 +682,8 @@ module CoherentCacheSubsystem_tb;
     .mem_wr_data_txn_id(mem_wr_data_txn_id),
     .mem_wr_data_beat_idx(mem_wr_data_beat_idx), .mem_wr_data(mem_wr_data),
     .mem_wr_data_last(mem_wr_data_last),
+    .mem_wr_rsp_valid(mem_wr_rsp_valid), .mem_wr_rsp_ready(mem_wr_rsp_ready),
+    .mem_wr_rsp_txn_id(mem_wr_rsp_txn_id), .mem_wr_rsp_error(mem_wr_rsp_error),
     .l2_victim_valid(l2_victim_valid), .l2_victim_addr(l2_victim_addr),
     .l2_victim_dir_state(l2_victim_dir_state),
     .l2_victim_sharers(l2_victim_sharers),
@@ -633,6 +695,7 @@ module CoherentCacheSubsystem_tb;
     .directory_protocol_error(directory_protocol_error),
     .l2_protocol_error(l2_protocol_error),
     .memory_adapter_protocol_error(memory_adapter_protocol_error),
+    .memory_adapter_error(memory_adapter_error), .fatal_error(fatal_error),
     .mmio_protocol_error(mmio_protocol_error)
   );
 
@@ -993,26 +1056,62 @@ module CoherentCacheSubsystem_tb;
     input logic [1:0] sharers,
     input logic owner
   );
+    logic [31:0] addr0_line;
+    logic [31:0] addr1_line;
+    logic found0;
+    logic found1;
+    logic dir_found;
+    mesi_state_t observed0;
+    mesi_state_t observed1;
+    directory_state_t observed_dir;
+    logic [1:0] observed_sharers;
+    logic observed_owner;
     begin
       #1;
-      if (dut.l1_cluster.cores[0].l1_array.cpu_lookup_state !== core0_state ||
-          dut.l1_cluster.cores[1].l1_array.cpu_lookup_state !== core1_state)
-        $fatal(1, "L1 state mismatch: core0=%s core1=%s expected=%s/%s addr=%08x/%08x lookup=%08x/%08x hit=%b/%b resp=%b/%b",
-               dut.l1_cluster.cores[0].l1_array.cpu_lookup_state.name(),
-               dut.l1_cluster.cores[1].l1_array.cpu_lookup_state.name(),
-               core0_state.name(), core1_state.name(),
-               cpu_req_addr[0], cpu_req_addr[1],
-               dut.l1_cluster.cores[0].lookup_addr,
-               dut.l1_cluster.cores[1].lookup_addr,
-               dut.l1_cluster.cores[0].l1_array.cpu_lookup_hit,
-               dut.l1_cluster.cores[1].l1_array.cpu_lookup_hit,
-               dut.l1_cluster.cores[0].ctrl_resp_valid,
-               dut.l1_cluster.cores[1].ctrl_resp_valid);
-      if (!dut.l2_lookup_hit || dut.l2_lookup_state !== directory_state ||
-          dut.l2_lookup_sharers !== sharers || dut.l2_lookup_owner !== owner)
-        $fatal(1, "directory state mismatch: hit=%b state=%s sharers=%b owner=%b",
-               dut.l2_lookup_hit, dut.l2_lookup_state.name(),
-               dut.l2_lookup_sharers, dut.l2_lookup_owner);
+      addr0_line = line_align(cpu_req_addr[0]);
+      addr1_line = line_align(cpu_req_addr[1]);
+      found0 = 1'b0;
+      found1 = 1'b0;
+      dir_found = 1'b0;
+      observed0 = MESI_I;
+      observed1 = MESI_I;
+      observed_dir = DIR_I;
+      observed_sharers = 2'b00;
+      observed_owner = 1'b0;
+      for (integer way = 0; way < 4; way = way + 1) begin
+        if (dut.l1_cluster.cores[0].l1_array.valid_array[addr0_line[12:6]][way] &&
+            dut.l1_cluster.cores[0].l1_array.tag_array[addr0_line[12:6]][way] ==
+              addr0_line[31:13]) begin
+          found0 = 1'b1;
+          observed0 = dut.l1_cluster.cores[0].l1_array.state_array[addr0_line[12:6]][way];
+        end
+        if (dut.l1_cluster.cores[1].l1_array.valid_array[addr1_line[12:6]][way] &&
+            dut.l1_cluster.cores[1].l1_array.tag_array[addr1_line[12:6]][way] ==
+              addr1_line[31:13]) begin
+          found1 = 1'b1;
+          observed1 = dut.l1_cluster.cores[1].l1_array.state_array[addr1_line[12:6]][way];
+        end
+      end
+      for (integer way = 0; way < 8; way = way + 1) begin
+        if (dut.l2_array.valid_array[addr0_line[14:6]][way] &&
+            dut.l2_array.tag_array[addr0_line[14:6]][way] == addr0_line[31:15]) begin
+          dir_found = 1'b1;
+          observed_dir = dut.l2_array.dir_state_array[addr0_line[14:6]][way];
+          observed_sharers = dut.l2_array.sharer_array[addr0_line[14:6]][way];
+          observed_owner = dut.l2_array.owner_array[addr0_line[14:6]][way];
+        end
+      end
+      if ((observed0 !== core0_state) || (observed1 !== core1_state) ||
+          (!found0 && (core0_state != MESI_I)) ||
+          (!found1 && (core1_state != MESI_I)))
+        $fatal(1, "L1 state mismatch: core0=%s core1=%s expected=%s/%s addr=%08x/%08x hit=%b/%b",
+               observed0.name(), observed1.name(), core0_state.name(),
+               core1_state.name(), addr0_line, addr1_line, found0, found1);
+      if (!dir_found || observed_dir !== directory_state ||
+          observed_sharers !== sharers || observed_owner !== owner)
+        $fatal(1, "directory state mismatch: hit=%b state=%s sharers=%b owner=%b expected=%s/%b/%b addr=%08x",
+               dir_found, observed_dir.name(), observed_sharers, observed_owner,
+               directory_state.name(), sharers, owner, addr0_line);
     end
   endtask
 
@@ -1039,7 +1138,15 @@ module CoherentCacheSubsystem_tb;
     logic [31:0] eviction_word_addr;
     logic [31:0] l2_test_addr [0:8];
     logic [63:0] l2_dirty_value;
+    logic fanout_victim_written;
     logic [31:0] shared_addr;
+    logic [31:0] snoop_write_race_addr;
+    logic [63:0] snoop_write_race_data;
+    logic [63:0] snoop_write_race_readback;
+    logic [31:0] different_snoop_cpu_addr;
+    logic [31:0] different_snoop_target_addr;
+    logic [63:0] different_snoop_cpu_data;
+    logic [63:0] different_snoop_target_data;
     logic [31:0] random_addr;
     logic [31:0] random_state;
     logic [31:0] random_seed;
@@ -1057,6 +1164,8 @@ module CoherentCacheSubsystem_tb;
     integer l2_line_number;
     integer memory_slot_index;
     logic found_written_victim;
+    logic failed_victim_found;
+    logic failed_victim_dirty;
 
     reset = 1'b1;
     stall_mem_rd_req = 1'b0;
@@ -1064,6 +1173,8 @@ module CoherentCacheSubsystem_tb;
     stall_mem_wr_data = 1'b0;
     stall_mmio_req = 1'b0;
     inject_periodic_stalls = 1'b0;
+    inject_next_mem_rd_error = 1'b0;
+    inject_next_mem_wr_error = 1'b0;
     cycle_count = 0;
     reference_entries = 0;
     for (integer entry = 0; entry < 256; entry = entry + 1) begin
@@ -1121,6 +1232,60 @@ module CoherentCacheSubsystem_tb;
                   (value3 & 64'h0000_0000_FFFF_FFFF);
     mmio_count_before = mmio_request_count;
 
+    // Independently run the inclusive DIR_S victim path. In this two-core
+    // design the Directory transaction sequencer handles one remote target;
+    // the L2 victim controller must fan out sequential invalidations to both
+    // sharers before writing the dirty line back.
+    if ($test$plusargs("l2_multisnoop_only")) begin
+      for (l2_line_number = 0; l2_line_number <= 8; l2_line_number = l2_line_number + 1)
+        l2_test_addr[l2_line_number] = 32'h0040_0000 +
+                                       (l2_line_number * 32'h0000_8000);
+      l2_dirty_value = 64'hCAFE_BABE_0123_4567;
+      for (l2_line_number = 0; l2_line_number < 6; l2_line_number = l2_line_number + 1)
+        cpu_access(0, l2_test_addr[l2_line_number] + 32'd24,
+                   1'b0, 8'h00, 64'b0, ignored);
+
+      cpu_access(0, l2_test_addr[6] + 32'd24, 1'b0, 8'h00, 64'b0, ignored);
+      cpu_access(1, l2_test_addr[6] + 32'd24, 1'b0, 8'h00, 64'b0, ignored);
+      cpu_access(0, l2_test_addr[6] + 32'd24, 1'b1, 8'hFF,
+                 l2_dirty_value, ignored);
+      cpu_access(1, l2_test_addr[6] + 32'd24, 1'b0, 8'h00, 64'b0, ignored);
+      cpu_req_addr[0] = l2_test_addr[6] + 32'd24;
+      cpu_req_addr[1] = l2_test_addr[6] + 32'd24;
+      expect_protocol_state(MESI_S, MESI_S, DIR_S, 2'b11, 1'b0);
+
+      cpu_access(0, l2_test_addr[7] + 32'd24, 1'b0, 8'h00, 64'b0, ignored);
+      cpu_access(1, l2_test_addr[8] + 32'd24, 1'b0, 8'h00, 64'b0, ignored);
+      if (!saw_l2_shared_victim_q ||
+          observed_l2_shared_victim_q != l2_test_addr[6] ||
+          observed_l2_shared_sharers_q != 2'b11)
+        $fatal(1, "isolated victim did not fan out to both sharers: saw=%b addr=%08x sharers=%b",
+               saw_l2_shared_victim_q, observed_l2_shared_victim_q,
+               observed_l2_shared_sharers_q);
+
+      for (line_number = 0; line_number < 4; line_number = line_number + 1) begin
+        if ((dut.l1_cluster.cores[0].l1_array.valid_array[0][line_number] &&
+             dut.l1_cluster.cores[0].l1_array.tag_array[0][line_number] ==
+               l2_test_addr[6][31:13]) ||
+            (dut.l1_cluster.cores[1].l1_array.valid_array[0][line_number] &&
+             dut.l1_cluster.cores[1].l1_array.tag_array[0][line_number] ==
+               l2_test_addr[6][31:13]))
+          $fatal(1, "L2 DIR_S victim fanout left a sharer valid");
+      end
+
+      fanout_victim_written = 1'b0;
+      for (memory_slot_index = 0; memory_slot_index < 128;
+           memory_slot_index = memory_slot_index + 1)
+        if (memory_slot_valid[memory_slot_index] &&
+            memory_slot_addr[memory_slot_index] == l2_test_addr[6] &&
+            backing_store[memory_slot_index][3] == l2_dirty_value)
+          fanout_victim_written = 1'b1;
+      if (!fanout_victim_written || fatal_error)
+        $fatal(1, "multi-sharer dirty victim was not written back cleanly");
+      $display("PASS: isolated DIR_S victim invalidates both L1 sharers and writes back dirty data");
+      $finish;
+    end
+
     cpu_access(0, mmio_addr, 1'b0, 8'h00, 64'b0, mmio_data);
     if (mmio_data !== mmio_initial)
       $fatal(1, "MMIO read returned %016x, expected %016x",
@@ -1161,7 +1326,19 @@ module CoherentCacheSubsystem_tb;
       $fatal(1, "stalled memory read request was never presented");
     repeat (4) @(posedge clock);
     @(negedge clock);
+    force dut.l2_array.line_wr_ready = 1'b0;
     stall_mem_rd_req = 1'b0;
+    wait (mem_rd_data_valid);
+    #1;
+    if (!mem_rd_data_valid || mem_rd_data_ready || mem_rd_data_beat_idx != 3'd0)
+      $fatal(1, "L2 receiver stall failed: valid=%b mem_ready=%b array_ready=%b engine=%0d error=%b",
+             mem_rd_data_valid, mem_rd_data_ready, dut.l2_line_wr_ready,
+             dut.engine_state_q, mem_rd_data_error);
+    repeat (3) @(posedge clock);
+    if (!mem_rd_data_valid || mem_rd_data_ready || mem_rd_data_beat_idx != 3'd0)
+      $fatal(1, "memory refill beat did not remain stable under L2 backpressure");
+    release dut.l2_array.line_wr_ready;
+    $display("PASS: valid memory refill beat is held under L2 receiver backpressure");
     for (cycles = 0; cycles < 1000; cycles = cycles + 1) begin
       if (cpu_resp_valid[0])
         break;
@@ -1210,7 +1387,50 @@ module CoherentCacheSubsystem_tb;
     expect_protocol_state(MESI_E, MESI_I, DIR_U, 2'b00, 1'b0);
     $display("PASS: Core0 GetS refill from backing memory");
 
+    // Hold an E->M CPU write response while the other core requests the same
+    // line. The snoop must wait for the local store commit, then forward the
+    // new data; accepting it earlier would race the array metadata/data writes.
+    snoop_write_race_addr = 32'h0000_B018;
+    snoop_write_race_data = 64'hD00D_F00D_CAFE_1234;
+    cpu_access(0, snoop_write_race_addr, 1'b0, 8'h00, 64'b0, ignored);
+    @(negedge clock);
+    cpu_resp_ready[0] = 1'b0;
+    cpu_resp_ready[1] = 1'b0;
+    cpu_issue_only(0, snoop_write_race_addr, 1'b1, 8'hFF,
+                   snoop_write_race_data);
+    for (cycles = 0; cycles < 100; cycles = cycles + 1) begin
+      @(posedge clock);
+      if (cpu_resp_valid[0])
+        break;
+    end
+    if (!cpu_resp_valid[0])
+      $fatal(1, "local E-to-M write did not reach its stalled response");
+    cpu_issue_only(1, snoop_write_race_addr, 1'b0, 8'h00, 64'b0);
+    for (cycles = 0; cycles < 300; cycles = cycles + 1) begin
+      @(posedge clock);
+      if (dut.snoop_valid_core[0] && !dut.snoop_ready_core[0])
+        break;
+    end
+    if (!(dut.snoop_valid_core[0] && !dut.snoop_ready_core[0]))
+      $fatal(1, "same-line snoop was not backpressured behind the local write");
+    @(negedge clock);
+    cpu_resp_ready[0] = 1'b1;
+    cpu_response_only(0, snoop_write_race_addr, 1'b1, 8'hFF,
+                      snoop_write_race_data, ignored);
+    @(negedge clock);
+    cpu_resp_ready[1] = 1'b1;
+    cpu_response_only(1, snoop_write_race_addr, 1'b0, 8'h00, 64'b0,
+                      snoop_write_race_readback);
+    if (snoop_write_race_readback !== snoop_write_race_data)
+      $fatal(1, "same-line snoop returned stale data during local E-to-M write");
+    expect_protocol_state(MESI_S, MESI_S, DIR_S, 2'b11, 1'b0);
+    $display("PASS: same-line SnoopRead waits for local E-to-M write commit");
+    cpu_resp_ready[0] = 1'b1;
+    cpu_resp_ready[1] = 1'b1;
+
     cpu_access(0, word_addr, 1'b1, 8'hFF, value4, ignored);
+    cpu_req_addr[0] = word_addr;
+    cpu_req_addr[1] = word_addr;
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_line_with_word_override(0, line_addr, 3, value4);
     $display("PASS: E-to-M local write is silent and preserves the full line");
@@ -1284,6 +1504,41 @@ module CoherentCacheSubsystem_tb;
                                    clean_owner_value);
     $display("PASS: remote GetM invalidates a clean E owner and receives all beats");
 
+    // An unrelated SnoopInvalidate must still enter the independent Snoop
+    // FSM while the local CPU holds a response for another line.
+    different_snoop_cpu_addr = 32'h0030_0018;
+    different_snoop_target_addr = 32'h0030_8018;
+    different_snoop_cpu_data = 64'h55AA_0123_CDEF_9876;
+    different_snoop_target_data = 64'h8877_6655_4433_2211;
+    cpu_access(0, different_snoop_cpu_addr, 1'b0, 8'h00, 64'b0, ignored);
+    cpu_access(0, different_snoop_target_addr, 1'b0, 8'h00, 64'b0, ignored);
+    cpu_access(1, different_snoop_target_addr, 1'b0, 8'h00, 64'b0, ignored);
+    @(negedge clock);
+    cpu_resp_ready[0] = 1'b0;
+    cpu_issue_only(0, different_snoop_cpu_addr, 1'b1, 8'hFF,
+                   different_snoop_cpu_data);
+    wait (cpu_resp_valid[0]);
+    cpu_issue_only(1, different_snoop_target_addr, 1'b1, 8'hFF,
+                   different_snoop_target_data);
+    for (cycles = 0; cycles < 500; cycles = cycles + 1) begin
+      if (dut.snoop_valid_core[0] && dut.snoop_ready_core[0])
+        break;
+      @(posedge clock);
+    end
+    if (!(dut.snoop_valid_core[0] && dut.snoop_ready_core[0]))
+      $fatal(1, "different-line SnoopInvalidate was blocked by local CPU response");
+    cpu_response_only(1, different_snoop_target_addr, 1'b1, 8'hFF,
+                      different_snoop_target_data, ignored);
+    @(negedge clock);
+    cpu_resp_ready[0] = 1'b1;
+    cpu_response_only(0, different_snoop_cpu_addr, 1'b1, 8'hFF,
+                      different_snoop_cpu_data, ignored);
+    expect_word(0, different_snoop_target_addr, different_snoop_target_data);
+    expect_word(1, different_snoop_cpu_addr, different_snoop_cpu_data);
+    $display("PASS: different-line SnoopInvalidate progresses during a local CPU response stall");
+    cpu_req_addr[0] = clean_owner_word_addr;
+    cpu_req_addr[1] = clean_owner_word_addr;
+
     cpu_access(0, word_addr, 1'b1, 8'hFF, value4, ignored);
     for (line_number = 1; line_number <= 4; line_number = line_number + 1) begin
       eviction_line_addr = line_addr + (line_number * 32'h2000);
@@ -1310,7 +1565,7 @@ module CoherentCacheSubsystem_tb;
     expect_word(0, word_addr, value4);
     $display("PASS: clean E victim is removed with PutE; dirty L2 data is preserved");
 
-    expect_word(1, 32'h0000_B018, memory_word(32'h0000_B000, 3'd3));
+    expect_word(1, 32'h0000_B018, snoop_write_race_data);
     if ((dut.l1_cluster.cores[1].l1_array.valid_array[64][0] &&
          dut.l1_cluster.cores[1].l1_array.tag_array[64][0] == 19'h1) ||
         (dut.l1_cluster.cores[1].l1_array.valid_array[64][1] &&
@@ -1483,7 +1738,7 @@ module CoherentCacheSubsystem_tb;
     if ((l1_controller_protocol_error != 2'b00) ||
         (l1_array_protocol_error != 2'b00) || directory_protocol_error ||
         l2_protocol_error || memory_adapter_protocol_error ||
-        mmio_protocol_error)
+        memory_adapter_error || mmio_protocol_error || fatal_error)
       $fatal(1, "protocol error(s): ctrl=%b array=%b dir=%b l2=%b mem=%b mmio=%b",
              l1_controller_protocol_error, l1_array_protocol_error,
              directory_protocol_error, l2_protocol_error,
@@ -1556,7 +1811,7 @@ module CoherentCacheSubsystem_tb;
     if ((l1_controller_protocol_error != 2'b00) ||
         (l1_array_protocol_error != 2'b00) || directory_protocol_error ||
         l2_protocol_error || memory_adapter_protocol_error ||
-        mmio_protocol_error)
+        memory_adapter_error || mmio_protocol_error || fatal_error)
       $fatal(1, "protocol error after reset corner cases");
     $display("PASS: reset cancels a stalled cache response without replay");
 
@@ -1647,6 +1902,79 @@ module CoherentCacheSubsystem_tb;
       $fatal(1, "reset coverage hole: snoop_data=%0d mem_wr_data=%0d",
              cover_reset_snoop_data, cover_reset_mem_wr_data);
     $display("PASS: reset cancels a stalled dirty L2 writeback beat");
+
+    // A terminal backing-memory read error must fail-stop without returning
+    // fabricated data. The external memory sends only beat 0/error/last.
+    @(negedge clock);
+    reset = 1'b1;
+    reference_clear();
+    inject_next_mem_rd_error = 1'b0;
+    inject_next_mem_wr_error = 1'b0;
+    repeat (3) @(posedge clock);
+    @(negedge clock);
+    reset = 1'b0;
+    inject_next_mem_rd_error = 1'b1;
+    cpu_issue_only(0, 32'h0020_0000, 1'b0, 8'h00, 64'b0);
+    for (cycles = 0; cycles < 1000; cycles = cycles + 1) begin
+      if (fatal_error)
+        break;
+      @(posedge clock);
+    end
+    if (!fatal_error || !memory_adapter_error || memory_adapter_protocol_error ||
+        cpu_resp_valid[0] || cpu_resp_valid[1] || memory_active_q)
+      $fatal(1, "terminal read error did not enter clean fail-stop handling");
+    @(negedge clock);
+    cpu_req_valid[1] = 1'b1;
+    cpu_req_addr[1] = 32'h0020_0080;
+    #1;
+    if (cpu_req_ready[1])
+      $fatal(1, "fatal_error did not block a new CPU request");
+    cpu_req_valid[1] = 1'b0;
+    $display("PASS: terminal memory read error suppresses success and blocks new requests");
+
+    // After a system reset, force a dirty live L2 victim and return a failed
+    // write response. The victim must remain valid and dirty because beat 7
+    // alone is not a write commit.
+    @(negedge clock);
+    reset = 1'b1;
+    reference_clear();
+    inject_next_mem_rd_error = 1'b0;
+    inject_next_mem_wr_error = 1'b0;
+    repeat (3) @(posedge clock);
+    @(negedge clock);
+    reset = 1'b0;
+    for (l2_line_number = 0; l2_line_number < 6; l2_line_number = l2_line_number + 1)
+      expect_reference_word(0, l2_test_addr[l2_line_number] + 32'd24);
+    cpu_access(1, l2_test_addr[6] + 32'd24, 1'b1, 8'hFF,
+               l2_dirty_value, ignored);
+    expect_reference_word(0, l2_test_addr[7] + 32'd24);
+    inject_next_mem_wr_error = 1'b1;
+    cpu_issue_only(0, l2_test_addr[8] + 32'd24,
+                   1'b0, 8'h00, 64'b0);
+    for (cycles = 0; cycles < 4000; cycles = cycles + 1) begin
+      if (fatal_error)
+        break;
+      @(posedge clock);
+    end
+    failed_victim_found = 1'b0;
+    failed_victim_dirty = 1'b0;
+    for (integer way = 0; way < 8; way = way + 1) begin
+      if (dut.l2_array.valid_array[dut.victim_addr_q[14:6]][way] &&
+          dut.l2_array.tag_array[dut.victim_addr_q[14:6]][way] ==
+            dut.victim_addr_q[31:15]) begin
+        failed_victim_found = 1'b1;
+        failed_victim_dirty = dut.l2_array.dirty_array[dut.victim_addr_q[14:6]][way];
+      end
+    end
+    if (!fatal_error || !memory_adapter_error || memory_adapter_protocol_error ||
+        cpu_resp_valid[0] || cpu_resp_valid[1] || !failed_victim_found ||
+        !failed_victim_dirty || mem_wr_rsp_valid)
+      $fatal(1, "failed write response check: fatal=%b mem_err=%b mem_proto=%b cpu_resp=%b%b victim_found=%b dirty=%b victim_addr=%08x rsp_valid=%b rsp_err=%b engine=%0d",
+             fatal_error, memory_adapter_error, memory_adapter_protocol_error,
+             cpu_resp_valid[0], cpu_resp_valid[1], failed_victim_found,
+             failed_victim_dirty, dut.victim_addr_q, mem_wr_rsp_valid,
+             memory_write_response_error_q, dut.engine_state_q);
+    $display("PASS: failed write response preserves the valid dirty L2 victim");
 
     $display("PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression");
     $finish;

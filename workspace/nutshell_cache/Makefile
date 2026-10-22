@@ -1,4 +1,5 @@
 SHELL       := /bin/bash
+COHERENCE_JOBS ?= 2
 ENV_SCRIPT  := ./scripts/env.sh
 VSRC_DIR    = ./rtl
 PICKER      = picker
@@ -25,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_formal clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_multisnoop coherence_modules coherence_verify clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -86,7 +87,10 @@ formal: coherence_formal
 
 coherence_formal:
 	@mkdir -p reports/formal
-	@PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_request_arbiter formal/coherence_request_arbiter.sby
+	@PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_request_arbiter formal/coherence_request_arbiter.sby && \
+	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_snoop_arbiter formal/coherence_snoop_arbiter.sby && \
+	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
+	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_l1_controller formal/coherence_l1_controller.sby
 
 fault_injection:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.fault_injection.run
@@ -103,7 +107,7 @@ doctor:
 # single-L1 Python regression.
 coherence_build:
 	@mkdir -p reports/coherence
-	@cd rtl && verilator --binary --timing --assert -j 8 -Wall -Wno-fatal -Wno-BLKSEQ \
+	@cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module CoherentCacheSubsystem_tb \
 	  --Mdir ../reports/coherence/obj_dir -f Coherence.files.f \
 	  coherence/tb/CoherentCacheSubsystem_tb.sv
@@ -112,6 +116,50 @@ coherence_smoke: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb
 
 coherence_random: coherence_build
+	@for seed in 00000001 00001234 5EEDC0DE DEADBEEF 2468ACE0; do \
+	  echo "=== coherence regression seed=$$seed ==="; \
+	  reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +seed=$$seed || exit $$?; \
+	done
+
+# Fast array block tests use reduced geometries while preserving the RTL's
+# indexing, metadata, replacement, full-line transfer, and backpressure rules.
+coherence_l1_array:
+	@mkdir -p reports/coherence/l1_array_obj
+	@cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module MesiL1Array_tb --Mdir ../reports/coherence/l1_array_obj \
+	  -f Coherence.files.f coherence/tb/MesiL1Array_tb.sv
+	@reports/coherence/l1_array_obj/VMesiL1Array_tb
+
+coherence_l2_array:
+	@mkdir -p reports/coherence/l2_array_obj
+	@cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module SharedL2DirectoryArray_tb --Mdir ../reports/coherence/l2_array_obj \
+	  -f Coherence.files.f coherence/tb/SharedL2DirectoryArray_tb.sv
+	@reports/coherence/l2_array_obj/VSharedL2DirectoryArray_tb
+
+coherence_l1_controller:
+	@mkdir -p reports/coherence/l1_controller_obj
+	@cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module MesiL1Controller_tb --Mdir ../reports/coherence/l1_controller_obj \
+	  -f Coherence.files.f coherence/tb/MesiL1Controller_tb.sv
+	@reports/coherence/l1_controller_obj/VMesiL1Controller_tb
+
+coherence_directory:
+	@mkdir -p reports/coherence/directory_obj
+	@cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module DirectoryController_tb --Mdir ../reports/coherence/directory_obj \
+	  -f Coherence.files.f coherence/tb/DirectoryController_tb.sv
+	@reports/coherence/directory_obj/VDirectoryController_tb
+
+coherence_multisnoop: coherence_build
+	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
+
+coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory
+
+coherence_verify:
+	$(MAKE) coherence_modules && $(MAKE) coherence_formal && $(MAKE) coherence_build
+	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb
+	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
 	@for seed in 00000001 00001234 5EEDC0DE DEADBEEF 2468ACE0; do \
 	  echo "=== coherence regression seed=$$seed ==="; \
 	  reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +seed=$$seed || exit $$?; \

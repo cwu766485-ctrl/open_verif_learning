@@ -30,6 +30,7 @@
 !formal/*.v
 !formal/**/*.sby
 !formal/**/*.v
+!formal/**/*.sv
 !formal/**/*.py
 
 !src/

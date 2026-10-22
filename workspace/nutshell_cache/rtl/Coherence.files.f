@@ -1,4 +1,5 @@
 coherence/CoherenceProtocol.sv
+coherence/MesiL1SnoopArbiter.sv
 coherence/MesiL1Controller.sv
 coherence/DirectoryController.sv
 coherence/MesiL1Array.sv

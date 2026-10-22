@@ -119,7 +119,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 
 **Inclusive 设计规则**：v1 采用 L2 **Tag/Directory Inclusion**。若任何 L1 持有 Line A，L2 必须保留 A 的目录和 Tag；但 **L2 Data 不一定最新**（L1 的 M Owner 可以具有最新副本）。L2 驱逐 A 时必须先完成对 L1 的 Back-Invalidation / Dirty Owner 数据回收。
 
-**首版事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；全局 Directory 最多处理 1 笔事务。Snoop 接收/响应**不能因为本地 CPU Miss 而永久被阻塞**，需具备独立缓冲、优先处理或显式冲突仲裁机制；否则两个 L1 可能循环等待导致死锁。
+**首版事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；全局 Directory 最多处理 1 笔事务。Snoop 与本地 CPU 事务按第 6.2 节的同址/异址规则仲裁；协议保证无内部循环等待，外部响应反压则要求最终解除。
 
 ---
 
@@ -275,12 +275,70 @@ Core1 Write A -> GetM -> SnoopInvalidate(Core0)
 3. **Byte Mask**：CPU 写只更新指定 Byte；远程 Snoop 需要返回修改后的完整 64 B。
 4. **完整 Transfer**：每次整行数据恰好 8 拍，beat index 正确、不重复、不丢失、`last` 仅在最终拍。
 5. **Ready/Valid**：在所有 Channel Stall 期间保持 Valid/Payload；Beat Counter 只在握手时推进。
-6. **Snoop 进度**：本地 CPU Miss/Refill 阻塞时，Snoop 不能与 Directory 等待形成循环依赖。实现时必须设计相应 Buffer/优先级/撤销重试路径，并用压力测试验证。
+6. **Snoop 进度**：本地 CPU miss/refill 与 Snoop 的同址交错按第 6.2 节序列化；异址 Snoop 可独立接收。Directory 全局串行，外部 CPU response ready 和 Snoop response ready 最终解除是进展假设。
 7. **Reset 协调**：初版系统同步 Reset 清除所有暂态、目录所有权和旧 Response；旧请求不得在 Reset 后再次完成。Reset 后需重新初始化目录和 Meta Array。
 8. **Eviction**：L1 M→PutM 写回最新数据；L2 Inclusive Victim 必须先处理任何 L1 Sharer/Owner，再驱逐目录 Tag。
 9. **MMIO**：地址 `[0x3000_0000, 0x8000_0000)` 依 NutShell 现有译码走
    bypass，不参与普通 MESI/L1/L2 分配；通过独立 MMIO 请求/响应端口与外设互连。
    v1 LSU 请求为 64-bit word，MMIO `size=3'b011`，写入 Byte Mask 原样转发。
+
+### 6.1 v1 Backing Memory 接口契约（冻结）
+
+- `reset` 是同步、高有效、全子系统共用的复位。外存适配器必须在复位时取消
+  已接受的读写事务，清除待发送 beat/response，并保证复位释放后不返回旧事务的
+  响应；因此事务号可在复位后重新使用。若实际 memory controller 做不到取消，须在
+  它与本子系统之间增加 drain/epoch wrapper，不能直接连接。
+- Memory 不得在对应 request 握手的同一周期返回该事务的首个 response：读数据最早
+  在 read request 握手后的下一周期有效；写 response 最早在 write beat 7 握手后的
+  下一周期有效。`valid` 未握手时，response payload（含 `txn_id`、beat、data、
+  `last`、`error`）必须保持稳定。
+- Read request 握手后，成功事务返回同一 `txn_id` 的 8 个 64-bit beat，beat 为
+  0..7，`last` 只在 beat 7。Memory 可以任意暂停 valid 或接收端。失败事务返回一个
+  带相同 `txn_id`、`beat_idx=0`、`error=1`、`last=1` 的终止 beat，随后不再发送
+  该事务的数据。
+- Write request 握手后，Memory 接收同一 `txn_id` 的 8 个 64-bit beat；beat 7
+  握手不代表写入完成。之后必须返回一个带相同 `txn_id` 的 write response；
+  `error=0` 表示整行写入完成，`error=1` 表示写失败。L2 victim 只有收到成功
+  response 后才能清 dirty 或释放目录项。
+- Memory response 的错误事务号、错误 beat/last、非预期 response，以及 read/write
+  error 都触发 fail-stop：置位 sticky `fatal_error`、停止接收新 CPU/MMIO 请求并
+  抑制成功响应；不自动重试。SoC 必须先隔离/停止发起端，再对整个子系统复位。
+  该契约保证故障不会被伪装成成功数据，但不承诺从外存故障中透明恢复。
+
+### 6.2 Snoop 接收与进度规则（冻结）
+
+- 同一 L1 的 CPU FSM 与 Snoop FSM 可并行处理不同 cache line。异址 Snoop 不因本地
+  miss/refill 或 CPU response stall 被挡住；共享 metadata 写口发生竞争时，Snoop
+  metadata 更新优先，CPU 更新保持 valid/payload 并等待。
+- 同址冲突按 CPU 阶段处理：CPU 已进入 refill、metadata commit 或 response/store
+  commit 阶段时，Snoop 保持 valid 并等待；CPU request 仍在 Directory request/grant
+  阶段时，Snoop 可以先执行，Directory 随后基于更新后的目录状态处理排队请求。
+  被前一笔事务反失效的旧 Upgrade 会由 Directory 作为 GetM 恢复，并从当前 owner
+  取回完整数据。
+- CPU 与 Snoop 在两个 FSM 都 idle 时同周期请求同一行，Snoop 优先接收，CPU request
+  不握手，随后重试。这避免 E→M 本地 store 晚于 SnoopRead 数据采样提交。
+- Directory 全局一次只处理一笔事务；等待 owner/sharer Snoop 时不会启动第二笔
+  Directory 事务。Snoop response 和 CPU response 接收方最终拉高 ready 是进度假设；
+  对 Directory 阶段同址冲突采用 Snoop 先行，避免“Directory 等 Snoop、CPU 等
+  Directory”的循环依赖。Reset 取消两侧所有暂态和未完成握手。
+
+### 6.3 SRAM 组织与端口映射（v1 冻结）
+
+RTL 数组采用以下逻辑组织，实际 FPGA BRAM/ASIC SRAM 宏由目标工艺 adapter 映射；
+宏不得改变地址、字节掩码、握手或复位语义。
+
+| Array | 逻辑分 bank | 元数据 | 逻辑端口/冲突处理 |
+|---|---|---|---|
+| 每份 L1 data | 8 个 64-bit beat bank；每 bank 512 行（128 set × 4 way），总 32 KiB | 与数据分开 | 1 个 CPU word-read、1 个串行 Snoop line-read、1 个 64-bit write 端口；CPU store 与 refill 写按 L1 FSM 串行，Snoop line-read 可与异址 CPU lookup 并行 |
+| 每份 L1 tag/state | 4 way × 128 set；每行 tag、valid、MESI | replacement pointer 每 set 独立小寄存器 | CPU 与 Snoop 两个 lookup 读口、一个 metadata 写口；同周期写冲突由 Snoop 优先，CPU 等待；reset 清 valid/state 可见元数据，不要求清 data RAM |
+| Shared L2 data | 8 个 64-bit beat bank；每 bank 4096 行（512 set × 8 way），总 256 KiB | 与数据分开 | 1 个串行整行读端口 + 1 个整行写端口；全局 Directory/line engine 串行化 line read/write，memory beat 与 owner beat 共用 write port |
+| Shared L2 directory/tag | 8 way × 512 set；每行 tag、valid、DIR、sharers、owner、dirty | 与 L2 tag 同步更新 | 每周期一个 lookup/victim 读操作及一个更新操作；v1 Directory 全局串行；reset 清 valid，invalid 行的 tag/state 不参与 lookup |
+
+每份 L1 的 data 总量为 8×512×64 bit=32 KiB；共享 L2 为
+8×4096×64 bit=256 KiB。现有多维 `logic` 数组是可执行行为模型，不是已选定的
+foundry macro。同步 SRAM 的读延迟由 wrapper 表示为 ready/valid 流水级，并保持
+请求/返回事务关联。当前未指定 FPGA 型号或 ASIC 工艺，因此冻结的是端口、bank、
+reset 和优先级映射，不包含具体 macro 名称、时序角、面积或 PPA 承诺。
 
 ---
 
@@ -360,7 +418,7 @@ System DV (可选):
 
 ## 8. 开发阶段与通过门槛
 
-**当前实现记录（2026-10-21）**：`rtl/coherence/` 已新增协议编码、L1
+**当前实现记录（2026-10-22）**：`rtl/coherence/` 已新增协议编码、L1
 MESI 控制 FSM、单事务 Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求
 仲裁器，以及 256 KiB 共享 L2/Directory 阵列。`CoherentCacheSubsystem` 将这些
 模块连成阻塞式 CPU-to-memory 路径，支持 L2/内存八拍 refill、owner SnoopData
@@ -375,19 +433,36 @@ MMIO 和 backing-memory 边界的 valid/ready 握手均被屏蔽。Memory 请求
 定向场景通过 E→M 静默升级、M Owner 被远端读/写、E Owner 被远端写、S→M
 升级、MMIO 旁路读写与 Byte Mask、跨整行八拍数据检查、M/S/E L1 victim、DIR_U 脏 owner 回收、
 DIR_S 双 sharer 反失效，以及回写后再读数据等检查。Directory 会拒绝未登记为
-sharer 的 Upgrade；遇到 `GetM` miss 但目录仍记录本核为 U Owner 时，先对该
-Owner 做失效 snoop 并回收最新整行，再 refill 后授予 M，避免无数据 Grant。
+在 `DIR_S` 中未登记为 sharer 的 Upgrade 会被拒绝；在 `DIR_U` 下来自非 owner 的
+排队/过期 Upgrade 则按 GetM 恢复，先对当前 owner 做失效 Snoop 并取回最新整行，再
+授予带数据的 M，避免并发 Upgrade 形成死锁或无数据 Grant。
+模块级回归分别直接实例化并检查 `MesiL1Array`、`MesiL1Controller`、
+`DirectoryController` 和 `SharedL2DirectoryArray`。入口为 `make coherence_modules`，
+也可单独运行 `coherence_l1_array`、`coherence_l1_controller`、
+`coherence_directory`、`coherence_l2_array`。当前覆盖阵列 refill/byte mask/替换、
+八拍行读停顿、L1 E→M 与 GetS refill/SnoopData、Directory GetS/owner intervention/
+Upgrade、L2 dirty victim 安全回收，以及 L1 refill/L2 line write/Directory Snoop 的
+错误响应检测。`make coherence_formal` 包括 request arbiter 与 L1 CPU/Snoop
+arbiter 性质证明，以及 Directory/L1 控制器 16-step bounded safety checks；这些模块级
+仿真与局部 formal 检查都不等于全子系统形式证明。
 当前子系统回归通过了 ready/valid 反压、活动事务 reset 取消、同址双核与异址并发、
 地址域边界和字节掩码 corner cases。TB scoreboard 比较读数据并按 mask 更新写入参考值；
 monitor assertions 检查外部与内部通道 payload 稳定、MESI 唯一可写者及目录元数据。
 每次运行含 80 个受周期性 stall 影响的随机访问；`make coherence_random` 用五个 seed
-运行完整 directed + random suite。`make coherence_formal` 目前只对请求仲裁器完成
-selection、stall source retention 和持续竞争轮转性质的 k-induction；**整个 MESI/L2
-子系统还没有 formal proof**。活动事务 reset 覆盖 refill request、MMIO response、CPU
-response、owner SnoopData stream 和被反压的 dirty L2 writeback beat。仍未显式覆盖
-L2 receiver 对有效 memory refill data beat 施加 backpressure；当前 refill 测试覆盖
-的是 valid 间隙和 request-side stall。内存写接口以最后一拍握手作为完成，没有独立
-写响应。
+运行完整 directed + random suite。活动事务 reset 覆盖 refill request、MMIO response、CPU
+response、owner SnoopData stream 和被反压的 dirty L2 writeback beat。当前内存接口采用
+第 6.1 节冻结的共享同步 reset、终止 read error beat、独立 write response 和 sticky
+fail-stop 错误；定向用例确认 read error 不产生 CPU 成功 response，write error 保留
+`victim_addr_q` 指向的 valid/dirty L2 行。测试显式压住有效 refill beat 的 L2 ready，
+并检查 valid/payload 一直保持到握手；Snoop 用例覆盖同址 E→M 等待、Directory 等 grant
+期间的过期 Upgrade 恢复、以及 CPU response stall 时异址 Snoop 继续推进。`make
+coherence_smoke` 通过默认 seed；`make coherence_random` 的五个 seed（每个含 80 笔随机
+操作和完整 directed suite）均通过。`make coherence_formal` 包含 request arbiter 与
+CPU/Snoop 仲裁性质证明，以及 Directory/L1 各 16-step bounded safety checks；后者检查
+地址/事务路由、元数据、反压下 payload 稳定、Snoop/refill 路由和 reset 取消。
+这些有界检查不等于无界控制器证明；**整个 MESI/L2 子系统仍未做 formal proof**。
+SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为模型，具体目标工艺宏
+尚未映射。
 
 | 阶段 | RTL 交付 | DV Gate |
 |---|---|---|
@@ -395,7 +470,7 @@ L2 receiver 对有效 memory refill data beat 施加 backpressure；当前 refil
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
 | P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
 | P3 真实 L2 | 256 KiB 8-way Tag/Data/Directory Array 支持 `DIR_I` 回收、`DIR_S` sharer 反失效、`DIR_U` owner 数据回收与 dirty writeback | `DIR_U`/`DIR_S` victim 回收、数据回写、scoreboard 及 5-seed × 80-operation regression 通过 |
-| P4 签收强化 | 子系统随机/断言和 arbiter formal 已建立 | 仍需全 subsystem formal、refill-data receiver backpressure、更多 corner/mutation/覆盖率与性能基线 |
+| P4 签收强化 | 子系统随机/断言、arbiter formal、Directory/L1 bounded safety checks 已建立 | 仍需无界控制器/全 subsystem formal、更多 corner/mutation/覆盖率与性能基线 |
 | P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 
 ---
@@ -414,12 +489,16 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 
 - Directory 使用 I/S/U，兼容 L1 的 E→M 静默升级。
 - L2 保留 inclusive Tag/Directory；驱逐 live victim 前先反失效 L1，dirty owner 数据先回收。
-- 每个 L1 只有一个阻塞式 miss，Directory 全局串行；L1 snoop 有独立 FSM。Snoop 与本地 miss 的更广泛交错仍需增加压力用例。
+- 每个 L1 只有一个阻塞式 miss，Directory 全局串行；L1 Snoop 有独立 FSM。同址
+  Snoop/CPU 依阶段仲裁，异址 Snoop 可并行推进；同址 E→M stall、过期 Upgrade 和
+  异址 Snoop stall 场景已加入定向回归，后续仍可扩大压力组合与 liveness 验证。
+- 同址 CPU/Snoop 逐行串行，idle 同周期冲突由 Snoop 获胜；异址 Snoop 可在 CPU FSM 活跃时接收。CPU/Snoop response ready 最终解除是进度假设。
+- SRAM 逻辑组织已冻结为 64-bit × 8 beat banks、每份 L1 32 KiB、共享 L2 256 KiB；同步读延迟通过 wrapper ready/valid 表示。因没有目标 FPGA/工艺，具体 macro 型号、时序和 PPA 未定。
 - 新的一致性消息与旧 SimpleBus Probe 语义分开。
 - v1 验证边界是两个 LSU Agent 和 DCache；真实双 Core、ICache MESI、DMA coherence 不在当前实现内。
 - 已接入 256 KiB / 8-way Shared L2/Directory 阵列。
 
-剩余集成项：新增 coherence smoke/random/formal 工作流步骤到 GitHub Actions；目前 CI 的 `make formal` 会跑 arbiter proof，但工作流尚未运行 `make coherence_smoke` 或 `make coherence_random`。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
+剩余集成项：新增 coherence module/smoke/random/formal 工作流步骤到 GitHub Actions；目前 CI 的 `make formal` 会跑 arbiter proof，但工作流尚未运行 coherence benches。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
 
 ---
 
@@ -432,4 +511,4 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 - [`CacheTop.scala`：当前 Chisel Cache Pipeline/Array 连接](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/nutcore/mem/CacheTop.scala)
 - [`test_coherence.py`：现有 Probe 不失效语义及相关测试](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_cache/tests/test_coherence.py)
 
-**状态声明（2026-10-21）**：仓库已实现双 LSU Agent 驱动的双 L1 MESI、Directory 和 256 KiB 共享 L2 RTL，并有集成级定向/随机回归；具体通过范围和剩余缺口见第 8 节。这是可运行的阻塞式 RTL 子系统原型，不代表已接入两个真实 NutShell Core，也不代表完整 formal、PPA 或芯片签收完成。本 SPEC 第 0 节描述的 NutShell 单核基线来自可检查的 Chisel 源码；它与新增的双 L1 一致性子系统是不同范围。
+**状态声明（2026-10-22）**：仓库已实现双 LSU Agent 驱动的双 L1 MESI、Directory 和 256 KiB 共享 L2 RTL，并有集成级定向/随机回归；内存错误契约、Snoop 进度规则和逻辑 SRAM 映射已冻结。具体回归结果与 formal 边界见第 8 节。这是可运行的阻塞式 RTL 子系统原型，不代表已接入两个真实 NutShell Core，也不代表完整 subsystem formal、具体工艺 SRAM/PPA 或芯片签收完成。本 SPEC 第 0 节描述的 NutShell 单核基线来自可检查的 Chisel 源码；它与新增的双 L1 一致性子系统是不同范围。

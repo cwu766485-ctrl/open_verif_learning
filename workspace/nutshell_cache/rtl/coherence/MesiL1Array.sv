@@ -176,17 +176,17 @@ module MesiL1Array #(
       snoop_meta_way = refill_way_q;
     end
 
+    // The inferred array model exposes separate producer interfaces, but the
+    // SRAM contract has one metadata write port. Snoop updates have priority;
+    // CPU-side metadata remains pending until the snoop commit completes.
     snoop_meta_write_ready = 1'b1;
-    cpu_meta_write_ready = 1'b1;
+    cpu_meta_write_ready = !snoop_meta_write_valid;
     if (refill_pending_q &&
         (refill_addr_q == cpu_meta_write_line_addr))
       cpu_meta_write_ready = 1'b0;
     if (refill_pending_q &&
         (refill_addr_q == snoop_meta_write_line_addr))
       snoop_meta_write_ready = 1'b0;
-    if (cpu_meta_write_valid && snoop_meta_write_valid &&
-        (cpu_meta_write_line_addr == snoop_meta_write_line_addr))
-      cpu_meta_write_ready = 1'b0;
 
     refill_way_available = !valid_array[refill_set][refill_way] ||
       (tag_array[refill_set][refill_way] ==

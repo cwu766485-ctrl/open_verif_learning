@@ -21,6 +21,30 @@ Run `make formal` to execute the maintained formal gate:
 `make formal` runs all listed jobs. Logs and cover traces are generated under
 `reports/formal/`; these outputs are ignored by Git and recreated by the target.
 
+The coherence-specific formal gate is `make coherence_formal`. It runs the two
+arbiter proofs plus `coherence_directory.sby` and
+`coherence_l1_controller.sby`. The latter two use the Slang SystemVerilog
+frontend to elaborate the actual controller RTL and run 16-step bounded safety
+checks for transaction ID/address routing, legal directory metadata,
+ready/valid payload stability, Snoop/refill data routing, sticky protocol
+errors, and cancellation of in-flight outputs after reset. These bounded
+checks complement the focused simulation tests; they are not unbounded
+controller proofs or a proof of the dual-L1/L2 subsystem. The arbiters retain
+their separate k-inductive/combinational proofs.
+
+The controller harnesses leave downstream ready signals unconstrained so
+backpressure can occur for arbitrary cycles. Input stream payloads are assumed
+to obey their ready/valid hold rule where that rule is part of the interface
+contract. No fairness assumption is made, so the properties are safety checks
+and do not claim eventual completion. Directory multi-target L1 invalidation
+is not a possible single-request case in this two-core controller; the L2
+victim path's two-sharer invalidation is checked by the subsystem-directed
+`coherence_multisnoop` test.
+
+The GitHub Actions coherence workflow uses the YosysHQ OSS CAD Suite rather
+than Ubuntu's older Yosys package. This is needed because the maintained
+Directory and L1 formal jobs use SystemVerilog packages and `import`.
+
 The `assume`, `assert`, and `cover` statements are in the Verilog harnesses,
 not in the mutation runner or the `.ys` scripts. For example,
 `cache_metadata_invariant_harness.v` contains environment assumptions, the

@@ -328,9 +328,10 @@ module DirectoryController #(
                         next_owner_q <= req_src_id;
                         state_q <= DIR_COMMIT;
                       end else begin
-                        // Upgrade from a non-owner while the directory is U
-                        // is malformed; recover using the owner's line data.
-                        protocol_error <= 1'b1;
+                        // A concurrent Upgrade may have been invalidated by an
+                        // earlier serialized transaction while it waited at
+                        // the request arbiter. Recover it as GetM from the
+                        // current owner instead of treating it as malformed.
                         grant_opcode_q <= GRANT_DATA_M;
                         grant_has_data_q <= 1'b1;
                         target_mask = core_bit(lookup_owner_id);

@@ -122,6 +122,9 @@ module MesiL1Controller #(
   logic [31:0] snoop_addr_q;
   logic [31:0] resp_addr_q;
   logic resp_write_q;
+  logic req_snoop_cpu_ready;
+  logic req_snoop_snoop_ready;
+  logic cpu_snoop_lock;
   request_opcode_t req_opcode_q;
   mesi_state_t cpu_meta_state_q;
   mesi_state_t snoop_meta_state_q;
@@ -135,8 +138,24 @@ module MesiL1Controller #(
   logic snoop_meta_pending_q;
   logic snoop_state_change_q;
 
+  MesiL1SnoopArbiter req_snoop_arbiter (
+    .cpu_idle(cpu_state_q == CPU_IDLE),
+    .cpu_snoop_lock(cpu_snoop_lock),
+    .cpu_req_addr(cpu_req_addr), .cpu_req_valid(cpu_req_valid),
+    .cpu_active_addr(cpu_addr_q),
+    .snoop_idle(snoop_state_q == SNP_IDLE),
+    .snoop_req_addr(snoop_line_addr), .snoop_valid(snoop_valid),
+    .snoop_active_addr(snoop_addr_q),
+    .cpu_req_ready(req_snoop_cpu_ready),
+    .snoop_ready(req_snoop_snoop_ready)
+  );
+
+  assign cpu_snoop_lock = (cpu_state_q == CPU_REFILL) ||
+                          (cpu_state_q == CPU_META_WRITE) ||
+                          (cpu_state_q == CPU_RESP);
+
   always_comb begin
-    cpu_req_ready = (cpu_state_q == CPU_IDLE);
+    cpu_req_ready = req_snoop_cpu_ready;
     cpu_resp_valid = (cpu_state_q == CPU_RESP) && cpu_resp_pending_q;
     cpu_resp_addr = resp_addr_q;
     cpu_resp_write = resp_write_q;
@@ -161,7 +180,7 @@ module MesiL1Controller #(
                          grant_commit_pending_q;
     grant_commit_txn_id = cpu_txn_q;
 
-    snoop_ready = (snoop_state_q == SNP_IDLE);
+    snoop_ready = req_snoop_snoop_ready;
     snoop_rsp_valid = (snoop_state_q == SNP_SEND_RSP);
     snoop_rsp_opcode = snoop_rsp_opcode_q;
     snoop_rsp_txn_id = snoop_txn_q;
