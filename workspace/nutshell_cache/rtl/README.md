@@ -1,53 +1,45 @@
-# Readable RTL layout
+# Maintained RTL layout
 
-This directory is the maintained, human-oriented NutShell Cache RTL. It is a
-behavior-preserving Verilog baseline; timing and ready/valid handshakes are
-kept stable while generated provenance comments are removed.
-
-Do not delete generated-looking wires merely because their names are ugly:
-`_RAND_*` supports simulation initialization and `_T_*`/`_GEN_*` may encode
-synchronous-read timing and handshake conditions. The cleanup strategy is to
-move generated implementation into `generated/`, then maintain semantic RTL
-and small standalone combinational units here, with regression equivalence.
+`rtl/` contains the human-oriented NutShell Cache RTL. The legacy single-L1
+Verilog baseline keeps its interfaces and timing contracts stable. Do not
+remove generated-looking wires from that baseline without checking whether they
+carry initialization, synchronous-read timing, or handshake behavior.
 
 ## Ownership
 
-- `rtl/`: maintained Verilog RTL source.
+- `rtl/`: maintained synthesizable RTL and source filelists.
+- `tests/`: Python/Toffee tests and SystemVerilog benches.
 - `src/`: retained legacy migration source.
-- `dv/`, `tests/`: active Python/Toffee verification environment and tests.
 
-## Layout
+## Functional layout
 
-- `CacheTop.v`: top-level Cache module.
-- `pipeline/`: Stage 1 lookup, Stage 2 hit/miss decision, Stage 3 transaction FSM.
-- `array/`: metadata/data arrays and access wrappers.
-- `control/`: arbitration and small decision logic.
-- `interfaces/`: CPU, downstream-memory, MMIO and coherence interface contracts.
-- `coherence/`: staged, hand-written MESI controllers, dual-L1/L2 arrays,
-  arbitration and a blocking subsystem top; these sources are listed separately
-  in `Coherence.files.f` and do not alter the single-L1 baseline.
-- `bus/`: compatibility placeholder retained for future bus adapter modules.
+- `common/`: MESI and line-transfer protocol definitions.
+- `l1/`: MESI L1 array, controller, and snoop arbiter.
+- `directory/`, `l2/`: directory transaction contexts and shared L2 array.
+- `interconnect/`: request arbitration between L1 clients.
+- `bus/axi/`, `bus/apb/`: AXI line-memory adapter and APB performance CSR.
+- `cluster/`, `top/`: dual-L1 cluster and cache subsystem tops.
+- `legacy_l1/`: original CacheTop, pipeline, arrays, and control blocks.
+
+`Cache.files.f` and `Coherence.files.f` are the stable compile lists for the
+legacy and MESI designs. SystemVerilog benches are grouped under `tests/` and
+built through the focused Make targets.
 
 ## Naming policy
 
 New hand-written modules use semantic names such as `AddressDecoder`,
-`ByteMaskMerge`, `TagCompareUnit` and `ReplacementSelector`. Existing
-generated module names are retained inside the baseline until a full
-interface/trace equivalence check is available.
+`ByteMaskMerge`, `TagCompareUnit`, and `ReplacementSelector`. Existing generated
+module names are retained inside the legacy baseline until interface and trace
+equivalence is available.
 
-## Stage 3 Phase-2 regions
+## Legacy Stage 3 regions
 
-`pipeline/CacheStage3.v` is intentionally one stateful module. Its internal
-regions are request classification, selected-way data/meta, hit path, writeback
-path, refill path, MMIO bypass, coherence release, main FSM, array write
-arbitration and CPU response. These paths share request registers, beat
-counters, array ports and ready/valid state.
-
-Stage 3 remains one module in this first pass because hit, writeback, refill,
-MMIO, probe release, counters and ready/valid response control share state.
-Splitting those paths will be done only after a passing behavioral baseline.
+`legacy_l1/pipeline/CacheStage3.v` remains one stateful module. Its internal
+regions share request registers, beat counters, array ports, and ready/valid
+state, so splitting them requires a passing behavioral baseline first.
 
 ## Validation rule
 
-Any RTL edit must be compiled with `Cache.files.f` and run against the same
-regression before it is considered complete.
+Compile legacy RTL with `Cache.files.f` and the MESI subsystem with
+`Coherence.files.f`. Run the corresponding Python regression or focused
+SystemVerilog Make target after functional RTL changes.

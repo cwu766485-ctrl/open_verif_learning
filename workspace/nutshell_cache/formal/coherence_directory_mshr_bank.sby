@@ -14,7 +14,7 @@ memory_map
 opt_clean
 
 [files]
-rtl/coherence/CoherenceProtocol.sv
-rtl/coherence/DirectoryController.sv
-rtl/coherence/DirectoryMshrBank.sv
+rtl/common/CoherenceProtocol.sv
+rtl/directory/DirectoryController.sv
+rtl/directory/DirectoryMshrBank.sv
 formal/coherence_directory_mshr_bank_harness.sv

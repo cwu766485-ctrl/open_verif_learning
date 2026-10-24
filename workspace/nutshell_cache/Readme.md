@@ -57,6 +57,14 @@ current coverage numbers and closure gaps are documented in `dv/README.md`.
 The architecture and verification plan are documented in
 `docs/cache_spec_and_verification_plan.md`.
 
+## Repository layout
+
+- `rtl/` contains synthesizable hardware grouped by protocol, L1, Directory, L2, interconnect, bus, cluster, and top-level integration. The original single-L1 design is isolated under `rtl/legacy_l1/`.
+- `tests/` groups the Python L1 regression and verification-unit cases with SystemVerilog block benches. `dv/` contains reusable agents, environments, reference models, scoreboard, coverage, sequences, and checkers.
+- `formal/`, `benchmarks/`, and `scripts/` contain proof jobs, performance workloads, and automation.
+
+`rtl/Cache.files.f` and `rtl/Coherence.files.f` are the source lists for the legacy and MESI designs. Pytest discovers Python cases recursively under `tests/`.
+
 The coherent subsystem architecture, external bus contract, APB register map,
 outstanding-transaction limit and remaining formal/physical-design boundaries
 are documented in [`rtl/coherence/README.md`](rtl/coherence/README.md) and

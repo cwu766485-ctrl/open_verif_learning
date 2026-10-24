@@ -10,4 +10,4 @@ read_verilog -formal -D FORMAL ReplacementSelector.v
 prep -top ReplacementSelector
 
 [files]
-ReplacementSelector.v rtl/control/ReplacementSelector.v
+ReplacementSelector.v rtl/legacy_l1/control/ReplacementSelector.v

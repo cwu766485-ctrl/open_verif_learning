@@ -10,6 +10,6 @@ read_verilog -formal -D FORMAL -DSYNTHESIS CacheStage2.v ReplacementSelector.v C
 prep -top CacheStage2
 
 [files]
-CacheStage2.v rtl/pipeline/CacheStage2.v
-ReplacementSelector.v rtl/control/ReplacementSelector.v
-CacheWaySelector.v rtl/control/CacheWaySelector.v
+CacheStage2.v rtl/legacy_l1/pipeline/CacheStage2.v
+ReplacementSelector.v rtl/legacy_l1/control/ReplacementSelector.v
+CacheWaySelector.v rtl/legacy_l1/control/CacheWaySelector.v

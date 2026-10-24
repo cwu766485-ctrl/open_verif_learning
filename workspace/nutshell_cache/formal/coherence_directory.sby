@@ -12,6 +12,6 @@ read_slang -D FORMAL CoherenceProtocol.sv DirectoryController.sv coherence_direc
 prep -top CoherenceDirectoryFormal
 
 [files]
-rtl/coherence/CoherenceProtocol.sv
-rtl/coherence/DirectoryController.sv
+rtl/common/CoherenceProtocol.sv
+rtl/directory/DirectoryController.sv
 formal/coherence_directory_harness.sv

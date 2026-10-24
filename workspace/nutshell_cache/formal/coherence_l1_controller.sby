@@ -12,7 +12,7 @@ read_slang -D FORMAL CoherenceProtocol.sv MesiL1SnoopArbiter.sv MesiL1Controller
 prep -top CoherenceL1ControllerFormal
 
 [files]
-rtl/coherence/CoherenceProtocol.sv
-rtl/coherence/MesiL1SnoopArbiter.sv
-rtl/coherence/MesiL1Controller.sv
+rtl/common/CoherenceProtocol.sv
+rtl/l1/MesiL1SnoopArbiter.sv
+rtl/l1/MesiL1Controller.sv
 formal/coherence_l1_controller_harness.sv

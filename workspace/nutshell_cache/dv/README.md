@@ -76,9 +76,9 @@ every valid cycle.
   LCOV line records whose statement bodies are hit. Generated wrappers remain
   visible in the raw HTML report but are not counted as maintained RTL.
 
-`tests/test_protocol_contract.py` unit-tests the checker's transaction rules
+`tests/unit/test_protocol_contract.py` unit-tests the checker's transaction rules
 without running the DUT; it rejects illegal CPU commands, unpaired/duplicate
-responses, and stale responses after reset. `tests/test_timing.py` checks real
+responses, and stale responses after reset. `tests/l1/test_timing.py` checks real
 RTL timing by delaying downstream request acceptance and holding the CPU
 response sink not-ready, then checking that response valid and payload remain
 stable until handshake. The full-capacity all-zero/all-one/alternating-bit

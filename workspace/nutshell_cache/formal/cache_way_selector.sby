@@ -10,4 +10,4 @@ read_verilog -formal -D FORMAL CacheWaySelector.v
 prep -top CacheWaySelector
 
 [files]
-CacheWaySelector.v rtl/control/CacheWaySelector.v
+CacheWaySelector.v rtl/legacy_l1/control/CacheWaySelector.v

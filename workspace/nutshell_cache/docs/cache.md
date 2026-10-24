@@ -457,9 +457,11 @@ System DV (可选):
 
 ## 8. 开发阶段与通过门槛
 
-**当前实现记录（2026-10-24）**：`rtl/coherence/` 已新增协议编码、L1
-MESI 控制 FSM、单事务 Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求
-仲裁器，以及 256 KiB 共享 L2/Directory 阵列。`CoherentCacheSubsystem` 将这些
+**当前实现记录（2026-10-24）**：RTL 已按功能拆分到 `rtl/common/`、`rtl/l1/`、
+`rtl/directory/`、`rtl/l2/`、`rtl/interconnect/`、`rtl/bus/`、`rtl/cluster/` 和
+`rtl/top/`；原单 L1 RTL 收纳在 `rtl/legacy_l1/`。硬件包含协议编码、L1 MESI
+控制 FSM、Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求仲裁器，以及
+256 KiB 共享 L2/Directory 阵列。`CoherentCacheSubsystem` 将这些
 模块连成阻塞式 CPU-to-memory 路径，支持 L2/内存八拍 refill、owner SnoopData
 回写到 L2，以及 L1 的 PutS/PutE/PutM 替换事务。PutM 会传回完整八拍，收到
 PutAck/commit 后才清除 victim 并重放原 miss。L2 victim 回收覆盖无副本的
@@ -548,6 +550,6 @@ GitHub Actions 当前已运行 `make coherence_verify`；本次增加的 AXI/APB
 - [`Settings.scala`：HasL2cache 默认及嵌入式开关](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/top/Settings.scala)
 - [`Coherence.scala`：对 DCache 的现有 Probe/Forward 流程](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/system/Coherence.scala)
 - [`CacheTop.scala`：当前 Chisel Cache Pipeline/Array 连接](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/nutcore/mem/CacheTop.scala)
-- [`test_coherence.py`：现有 Probe 不失效语义及相关测试](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_cache/tests/test_coherence.py)
+- [`test_coherence.py`：现有 Probe 不失效语义及相关测试](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_cache/tests/l1/test_coherence.py)
 
 **状态声明（2026-10-22）**：仓库已实现双 LSU Agent 驱动的双 L1 MESI、Directory 和 256 KiB 共享 L2 RTL，并有集成级定向/随机回归；内存错误契约、Snoop 进度规则和逻辑 SRAM 映射已冻结。具体回归结果与 formal 边界见第 8 节。这是可运行的阻塞式 RTL 子系统原型，不代表已接入两个真实 NutShell Core，也不代表完整 subsystem formal、具体工艺 SRAM/PPA 或芯片签收完成。本 SPEC 第 0 节描述的 NutShell 单核基线来自可检查的 Chisel 源码；它与新增的双 L1 一致性子系统是不同范围。

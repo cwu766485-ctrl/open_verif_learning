@@ -4,7 +4,7 @@ This project intentionally verifies the maintained Verilog RTL directly. Chisel
 is not part of the build or test flow.
 
 ```text
-rtl/CacheTop.v + rtl/Cache.files.f
+rtl/legacy_l1/CacheTop.v + rtl/Cache.files.f
         |
         v
 Picker export --sim verilator --lang python

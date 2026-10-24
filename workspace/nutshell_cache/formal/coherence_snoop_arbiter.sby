@@ -10,5 +10,5 @@ read_verilog -formal -sv MesiL1SnoopArbiter.sv coherence_snoop_arbiter_harness.s
 prep -top CoherenceSnoopArbiterFormal
 
 [files]
-rtl/coherence/MesiL1SnoopArbiter.sv
+rtl/l1/MesiL1SnoopArbiter.sv
 formal/coherence_snoop_arbiter_harness.sv

@@ -228,7 +228,7 @@ in `make coherence_verify` and the CI workflow.
 
 ## Directed subsystem smoke test
 
-`tb/CoherentCacheSubsystem_tb.sv` exercises the integrated dual-L1 path with a
+`tests/subsystem/rtl/CoherentCacheSubsystem_tb.sv` exercises the integrated dual-L1 path with a
 small deterministic memory model. From the project root, run:
 
 ```sh

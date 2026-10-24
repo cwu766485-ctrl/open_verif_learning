@@ -3,72 +3,72 @@
   "scope": "maintained rtl/ statement-line coverage only",
   "waivers": [
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 36,
       "reason": "The DCache flush input is tied low by the documented writable-cache integration; flush-clear behavior is an ICache-only contract."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 76,
       "reason": "This output only signals a hit READBST response, which is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
     },
     {
-      "source": "rtl/control/ReplacementSelector.v",
+      "source": "rtl/legacy_l1/control/ReplacementSelector.v",
       "line": 27,
       "reason": "The recovery assignment for the zero LFSR state is unreachable after reset; the SymbiYosys proof asserts that the state remains non-zero from the reset seed under the RTL recurrence."
     },
     {
-      "source": "rtl/pipeline/CacheStage2.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage2.v",
       "line": 212,
       "reason": "Assertion failure print for a multi-hot selected way. CacheWaySelector.sby proves the selected mask is one-hot under the documented unique-tag and replacement-mask assumptions; the diagnostic is intentionally not triggered by legal traffic."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 443,
       "reason": "Shared CacheStage3 read-burst hit path. The verified NutShell L1 DCache configuration receives only single-beat READ/WRITE from the LSU; burst commands belong to the cache-hierarchy interface, not this CPU port."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 459,
       "reason": "DCache flush-clear path is not legal for this writable cache: the RTL asserts that flush is ICache-only and NutShell connects zero flush to the DCache."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 471,
       "reason": "Shared CacheStage3 read-burst beat-counter path; READBST is outside the L1 DCache CPU-port contract used by this regression."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 157,
       "reason": "Alias for the hit READBST path. READBST is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 541,
       "reason": "Shared CacheStage3 per-beat L1 burst-response counter path; READBST is outside the L1 DCache CPU-port contract used by this regression."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 275,
       "reason": "The hit READBST response wrap counter is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 548,
       "reason": "Assertion diagnostic print for the impossible MMIO-and-cache-hit combination; intentionally not executed by legal functional stimulus."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 572,
       "reason": "Assertion diagnostic print for simultaneous metadata hit-write and refill-write; intentionally not executed by legal functional stimulus."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 596,
       "reason": "Assertion diagnostic print for simultaneous data hit-write and refill-write; intentionally not executed by legal functional stimulus."
     },
     {
-      "source": "rtl/pipeline/CacheStage3.v",
+      "source": "rtl/legacy_l1/pipeline/CacheStage3.v",
       "line": 620,
       "reason": "Assertion diagnostic print for the prohibited DCache flush path; intentionally not executed by legal functional stimulus."
     }

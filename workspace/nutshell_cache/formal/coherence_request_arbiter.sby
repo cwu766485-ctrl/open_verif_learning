@@ -10,5 +10,5 @@ read_verilog -formal -sv CoherenceRequestArbiterCore.sv coherence_request_arbite
 prep -top CoherenceRequestArbiterFormal
 
 [files]
-rtl/coherence/CoherenceRequestArbiterCore.sv
+rtl/interconnect/CoherenceRequestArbiterCore.sv
 formal/coherence_request_arbiter_harness.v

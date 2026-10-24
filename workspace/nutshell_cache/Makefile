@@ -11,7 +11,7 @@ TARGET_LANG = python
 GTKWAVE 	= gtkwave
 
 # Generate DUT
-TOP_ENTRY = ./rtl/CacheTop.v
+TOP_ENTRY = ./rtl/legacy_l1/CacheTop.v
 RTL_FILELIST = ./rtl/Cache.files.f
 TL = python
 WAVEFORM = -w cache.fst
@@ -43,7 +43,7 @@ test_slow:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv -m slow
 
 mega_random:
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv tests/test_random.py::test_mega_randomized_cache_mmio_traffic
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m pytest -sv tests/l1/test_random.py::test_mega_randomized_cache_mmio_traffic
 
 coverage: report
 
@@ -114,7 +114,7 @@ coherence_build:
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert --coverage-line --coverage-branch -j $(COHERENCE_JOBS) -CFLAGS -O0 -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module CoherentCacheSubsystem_tb \
 	  --Mdir ../reports/coherence/obj_dir -f Coherence.files.f \
-	  coherence/tb/CoherentCacheSubsystem_tb.sv
+	  ../tests/subsystem/rtl/CoherentCacheSubsystem_tb.sv
 
 coherence_smoke: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb
@@ -155,43 +155,43 @@ coherence_l1_array:
 	@mkdir -p reports/coherence/l1_array_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1Array_tb --Mdir ../reports/coherence/l1_array_obj \
-	  -f Coherence.files.f coherence/tb/MesiL1Array_tb.sv
+	  -f Coherence.files.f ../tests/l1/rtl/MesiL1Array_tb.sv
 	@reports/coherence/l1_array_obj/VMesiL1Array_tb
 
 coherence_l2_array:
 	@mkdir -p reports/coherence/l2_array_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module SharedL2DirectoryArray_tb --Mdir ../reports/coherence/l2_array_obj \
-	  -f Coherence.files.f coherence/tb/SharedL2DirectoryArray_tb.sv
+	  -f Coherence.files.f ../tests/l2/rtl/SharedL2DirectoryArray_tb.sv
 	@reports/coherence/l2_array_obj/VSharedL2DirectoryArray_tb
 
 coherence_l1_controller:
 	@mkdir -p reports/coherence/l1_controller_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1Controller_tb --Mdir ../reports/coherence/l1_controller_obj \
-	  -f Coherence.files.f coherence/tb/MesiL1Controller_tb.sv
+	  -f Coherence.files.f ../tests/l1/rtl/MesiL1Controller_tb.sv
 	@reports/coherence/l1_controller_obj/VMesiL1Controller_tb
 
 coherence_directory:
 	@mkdir -p reports/coherence/directory_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module DirectoryController_tb --Mdir ../reports/coherence/directory_obj \
-	  -f Coherence.files.f coherence/tb/DirectoryController_tb.sv
+	  -f Coherence.files.f ../tests/directory/rtl/DirectoryController_tb.sv
 	@reports/coherence/directory_obj/VDirectoryController_tb
 
 coherence_request_arbiter:
 	@mkdir -p reports/coherence/request_arbiter_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherenceRequestArbiter_tb --Mdir ../reports/coherence/request_arbiter_obj \
-	  coherence/CoherenceProtocol.sv coherence/CoherenceRequestArbiterCore.sv \
-	  coherence/CoherenceRequestArbiter.sv coherence/tb/CoherenceRequestArbiter_tb.sv
+	  common/CoherenceProtocol.sv interconnect/CoherenceRequestArbiterCore.sv \
+	  interconnect/CoherenceRequestArbiter.sv ../tests/coherence/rtl/CoherenceRequestArbiter_tb.sv
 	@reports/coherence/request_arbiter_obj/VCoherenceRequestArbiter_tb
 
 coherence_snoop_arbiter:
 	@mkdir -p reports/coherence/snoop_arbiter_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1SnoopArbiter_tb --Mdir ../reports/coherence/snoop_arbiter_obj \
-	  coherence/MesiL1SnoopArbiter.sv coherence/tb/MesiL1SnoopArbiter_tb.sv
+	  l1/MesiL1SnoopArbiter.sv ../tests/l1/rtl/MesiL1SnoopArbiter_tb.sv
 	@reports/coherence/snoop_arbiter_obj/VMesiL1SnoopArbiter_tb
 
 coherence_cluster:
@@ -199,14 +199,14 @@ coherence_cluster:
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module DualL1MesiCluster_tb \
 	  --Mdir ../reports/coherence/cluster_obj -f Coherence.files.f \
-	  coherence/tb/DualL1MesiCluster_tb.sv
+	  ../tests/subsystem/rtl/DualL1MesiCluster_tb.sv
 	@reports/coherence/cluster_obj/VDualL1MesiCluster_tb
 
 coherence_bus_blocks:
 	@mkdir -p reports/coherence/bus_blocks_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CacheBusBlocks_tb --Mdir ../reports/coherence/bus_blocks_obj \
-	  -f Coherence.files.f coherence/tb/CacheBusBlocks_tb.sv
+	  -f Coherence.files.f ../tests/axi/rtl/CacheBusBlocks_tb.sv
 	@reports/coherence/bus_blocks_obj/VCacheBusBlocks_tb
 
 coherence_axi_lint:
@@ -219,7 +219,7 @@ coherence_axi_e2e:
 	@mkdir -p reports/coherence/axi_e2e_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherentCacheAxiSubsystem_tb --Mdir ../reports/coherence/axi_e2e_obj \
-	  -f Coherence.files.f coherence/tb/CoherentCacheAxiSubsystem_tb.sv
+	  -f Coherence.files.f ../tests/subsystem/rtl/CoherentCacheAxiSubsystem_tb.sv
 	@reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb
 
 coherence_multisnoop: coherence_build
