@@ -22,7 +22,6 @@ module DualL1MesiCluster #(
   output logic cpu_hit_event [0:1],
   output logic cpu_miss_event [0:1],
 
-  output logic [1:0] dir_req_ready,
   output logic dir_req_valid,
   input  logic dir_req_ready_from_directory,
   output logic dir_req_src_id,
@@ -131,10 +130,6 @@ module DualL1MesiCluster #(
     logic [2:0] refill_beat_idx;
     logic [63:0] refill_data;
     logic refill_last;
-    logic cpu_meta_write_valid;
-    logic cpu_meta_write_ready;
-    logic [31:0] cpu_meta_write_line_addr;
-    mesi_state_t cpu_meta_write_state;
     logic snoop_meta_write_valid;
     logic snoop_meta_write_ready;
     logic [31:0] snoop_meta_write_line_addr;
@@ -183,11 +178,8 @@ module DualL1MesiCluster #(
     replace_state_t replace_state_q;
     request_opcode_t replace_opcode_q;
     logic [31:0] replace_line_addr_q;
-    mesi_state_t replace_line_state_q;
     logic [31:0] pending_cpu_addr_q;
     logic pending_cpu_write_q;
-    logic [7:0] pending_cpu_wmask_q;
-    logic [63:0] pending_cpu_wdata_q;
     logic [TXN_ID_WIDTH-1:0] replace_txn_q;
     logic [TXN_ID_WIDTH-1:0] replace_txn_counter_q;
     logic replace_protocol_error_q;
@@ -235,7 +227,6 @@ module DualL1MesiCluster #(
     assign arb_req_txn_id[core] = arb_req_is_replace ? replace_txn_q :
                                                       controller_req_txn_id[core];
     assign controller_req_ready[core] = arb_req_ready[core] && !arb_req_is_replace;
-    assign dir_req_ready[core] = arb_req_ready[core];
 
     assign ctrl_grant_valid = grant_valid[core] &&
                               (replace_state_q != REPLACE_WAIT_ACK);
@@ -306,11 +297,8 @@ module DualL1MesiCluster #(
         replace_state_q <= REPLACE_IDLE;
         replace_opcode_q <= REQ_PUTS;
         replace_line_addr_q <= '0;
-        replace_line_state_q <= MESI_I;
         pending_cpu_addr_q <= '0;
         pending_cpu_write_q <= 1'b0;
-        pending_cpu_wmask_q <= '0;
-        pending_cpu_wdata_q <= '0;
         replace_txn_q <= '0;
         replace_txn_counter_q <= '0;
         replace_protocol_error_q <= 1'b0;
@@ -319,8 +307,6 @@ module DualL1MesiCluster #(
       end else if (cpu_req_valid[core] && cpu_req_ready[core]) begin
         pending_cpu_addr_q <= cpu_req_addr[core];
         pending_cpu_write_q <= cpu_req_write[core];
-        pending_cpu_wmask_q <= cpu_req_wmask[core];
-        pending_cpu_wdata_q <= cpu_req_wdata[core];
         store_wmask_q <= cpu_req_wmask[core];
         store_wdata_q <= cpu_req_wdata[core];
         replace_state_q <= REPLACE_CHECK;
@@ -338,7 +324,6 @@ module DualL1MesiCluster #(
             allocation_way_q <= replace_way_int;
             if (request_needs_replace) begin
               replace_line_addr_q <= replace_line_addr_int;
-              replace_line_state_q <= replace_state_int;
               replace_txn_q <= replace_txn_counter_q;
               replace_txn_counter_q <= replace_txn_counter_q + 1'b1;
               case (replace_state_int)
@@ -508,7 +493,8 @@ module DualL1MesiCluster #(
     assign array_line_data = array_line_data_int;
     assign array_line_data_last = array_line_data_last_int;
     assign controller_protocol_error[core] =
-      ctrl_protocol_error | replace_protocol_error_q;
+      ctrl_protocol_error | replace_protocol_error_q |
+      ((array_line_rd_valid && array_line_rd_ready) && !array_line_rd_hit);
   end
 
   CoherenceRequestArbiter #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) request_arbiter (

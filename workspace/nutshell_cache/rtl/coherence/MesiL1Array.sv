@@ -191,7 +191,7 @@ module MesiL1Array #(
     refill_way_available = !valid_array[refill_set][refill_way] ||
       (tag_array[refill_set][refill_way] ==
        refill_line_addr[6+SET_WIDTH +: TAG_WIDTH]);
-    refill_ready = (refill_way < WAYS) && refill_way_available &&
+    refill_ready = (int'(refill_way) < WAYS) && refill_way_available &&
                    ((refill_beat_idx == 3'd0) ? !refill_alloc_valid_q :
                                                 refill_pending_q);
     cpu_store_ready = 1'b1;

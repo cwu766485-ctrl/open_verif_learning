@@ -111,11 +111,13 @@ module DirectoryMshrBank #(
   logic commit_found;
   logic [MSHR_ID_WIDTH-1:0] commit_sel;
   logic [NUM_MSHRS-1:0] done_valid_ctx;
+  logic [NUM_MSHRS-1:0] commit_match_ctx;
 
-  always_comb begin : choose_transactions
+  // Request allocation is independent of the output-channel arbiters. Keep
+  // req_ready_ctx out of the request-valid path to avoid a false ready/valid
+  // combinational cycle through the request arbiter.
+  always_comb begin : choose_request_context
     integer i;
-    integer idx;
-    integer selected;
     integer first_free;
     req_found = 1'b0;
     duplicate_line = 1'b0;
@@ -131,9 +133,17 @@ module DirectoryMshrBank #(
       req_found = !duplicate_line;
     end
     req_ready = req_found && req_ready_ctx[req_sel];
+  end
+
+  always_comb begin : route_request_context
     req_valid_ctx = '0;
     if (req_valid && req_found) req_valid_ctx[req_sel] = 1'b1;
+  end
 
+  always_comb begin : choose_output_contexts
+    integer i;
+    integer idx;
+    integer selected;
     selected = -1;
     for (i = 0; i < NUM_MSHRS; i = i + 1) begin
       idx = (int'(write_rr_q) + i) % NUM_MSHRS;
@@ -171,37 +181,33 @@ module DirectoryMshrBank #(
     grant_sel = grant_offer_lock_q ? grant_offer_idx_q :
                 (grant_found ? MSHR_ID_WIDTH'(selected) : '0);
 
-    commit_found = 1'b0;
-    commit_sel = '0;
+    commit_match_ctx = '0;
     done_valid_ctx = '0;
     if (int'(line_xfer_done_context_id) < NUM_MSHRS)
       done_valid_ctx[line_xfer_done_context_id] = line_xfer_done_valid;
     for (i = 0; i < NUM_MSHRS; i = i + 1) begin
-      if (!commit_found && active_q[i] &&
-          (src_id_q[i] == grant_commit_src_id) &&
-          (txn_id_q[i] == grant_commit_txn_id)) begin
-        commit_found = 1'b1;
-        commit_sel = MSHR_ID_WIDTH'(i);
-      end
+      commit_match_ctx[i] = active_q[i] &&
+        (src_id_q[i] == grant_commit_src_id) &&
+        (txn_id_q[i] == grant_commit_txn_id);
     end
+    selected = -1;
+    for (i = 0; i < NUM_MSHRS; i = i + 1)
+      if ((selected < 0) && commit_match_ctx[i]) selected = i;
+    commit_found = (selected >= 0);
+    commit_sel = (selected >= 0) ? MSHR_ID_WIDTH'(selected) : '0;
   end
 
-  always_comb begin : route_channels
+  always_comb begin : route_channel_payloads
     dir_write_valid = write_found && write_valid_ctx[write_sel];
     dir_write_line_addr = write_addr_ctx[write_sel];
     dir_write_state = write_state_ctx[write_sel];
     dir_write_sharers = write_sharers_ctx[write_sel];
     dir_write_owner_id = write_owner_ctx[write_sel];
-    write_ready_ctx = '0;
-    if (dir_write_valid) write_ready_ctx[write_sel] = dir_write_ready;
-
     snoop_req_valid = !snoop_active_q && snoop_found && snoop_valid_ctx[snoop_sel];
     snoop_target_id = snoop_target_ctx[snoop_sel];
     snoop_req_opcode = snoop_opcode_ctx[snoop_sel];
     snoop_req_line_addr = snoop_addr_ctx[snoop_sel];
     snoop_req_txn_id = snoop_txn_ctx[snoop_sel];
-    snoop_ready_ctx = '0;
-    if (snoop_req_valid) snoop_ready_ctx[snoop_sel] = snoop_req_ready;
     snoop_rsp_ready = snoop_active_q &&
                       snoop_rsp_ready_ctx[snoop_active_idx_q];
 
@@ -211,8 +217,6 @@ module DirectoryMshrBank #(
     line_xfer_src_id = xfer_src_ctx[xfer_sel];
     line_xfer_txn_id = xfer_txn_ctx[xfer_sel];
     line_xfer_context_id = xfer_sel;
-    xfer_ready_ctx = '0;
-    if (line_xfer_start_valid) xfer_ready_ctx[xfer_sel] = line_xfer_start_ready;
     line_xfer_done_ready = 1'b0;
     if (line_xfer_done_valid &&
         (int'(line_xfer_done_context_id) < NUM_MSHRS))
@@ -224,14 +228,26 @@ module DirectoryMshrBank #(
     grant_has_data = grant_has_data_ctx[grant_sel];
     grant_line_addr = grant_addr_ctx[grant_sel];
     grant_txn_id = grant_txn_ctx[grant_sel];
-    grant_ready_ctx = '0;
-    if (grant_valid) grant_ready_ctx[grant_sel] = grant_ready;
-
     grant_commit_ready = commit_found &&
                          grant_commit_ready_ctx[commit_sel];
 
     snoop_data_to_l2 = snoop_data_ctx[snoop_sel];
     protocol_error = |error_ctx;
+  end
+
+  always_comb begin : route_channel_readies
+    write_ready_ctx = '0;
+    if (dir_write_valid) write_ready_ctx[write_sel] = dir_write_ready;
+
+    snoop_ready_ctx = '0;
+    if (snoop_req_valid) snoop_ready_ctx[snoop_sel] = snoop_req_ready;
+
+    xfer_ready_ctx = '0;
+    if (line_xfer_start_valid)
+      xfer_ready_ctx[xfer_sel] = line_xfer_start_ready;
+
+    grant_ready_ctx = '0;
+    if (grant_valid) grant_ready_ctx[grant_sel] = grant_ready;
   end
 
   always_ff @(posedge clock) begin : arbitration_state

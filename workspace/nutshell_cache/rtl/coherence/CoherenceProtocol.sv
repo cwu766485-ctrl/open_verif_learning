@@ -1,9 +1,9 @@
 package coherence_protocol_pkg;
   parameter int ADDR_WIDTH = 32;
-  parameter int LINE_BYTES = 64;
-  parameter int WORD_BYTES = 8;
-  parameter int LINE_BEATS = 8;
-  parameter int BEAT_WIDTH = 64;
+  localparam int LINE_BYTES = 64;
+  localparam int WORD_BYTES = 8;
+  localparam int LINE_BEATS = 8;
+  localparam int BEAT_WIDTH = 64;
   parameter int TXN_ID_WIDTH = 4;
 
   typedef enum logic [1:0] {

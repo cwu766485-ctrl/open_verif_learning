@@ -128,7 +128,6 @@ module CoherentCacheSubsystem #(
   } mmio_state_t;
   mmio_state_t mmio_state_q;
 
-  logic [1:0] cluster_dir_req_ready;
   logic cluster_dir_req_valid;
   logic cluster_dir_req_src_id;
   request_opcode_t cluster_dir_req_opcode;
@@ -198,7 +197,6 @@ module CoherentCacheSubsystem #(
   logic dir_xfer_src;
   logic [TXN_ID_WIDTH-1:0] dir_xfer_txn_id;
   logic dir_xfer_done_valid, dir_xfer_done_ready;
-  logic [TXN_ID_WIDTH-1:0] dir_xfer_done_txn_id;
   logic dir_grant_valid, dir_grant_ready, dir_grant_dst;
   grant_opcode_t dir_grant_opcode;
   logic dir_grant_has_data;
@@ -590,7 +588,6 @@ module CoherentCacheSubsystem #(
     dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE) ||
                           ((engine_state_q != ENGINE_XFER_DONE) &&
                            mem_mshr_done_found);
-    dir_xfer_done_txn_id = engine_txn_q;
     dir_xfer_done_context_id = (engine_state_q == ENGINE_XFER_DONE) ?
                                engine_context_q :
                                mem_mshr_context_q[mem_mshr_done_sel];
@@ -689,7 +686,7 @@ module CoherentCacheSubsystem #(
     .cpu_resp_txn_id(cluster_cpu_resp_txn_id),
     .cpu_hit_event(cluster_perf_hit_event),
     .cpu_miss_event(cluster_perf_miss_event),
-    .dir_req_ready(cluster_dir_req_ready), .dir_req_valid(cluster_dir_req_valid),
+    .dir_req_valid(cluster_dir_req_valid),
     .dir_req_ready_from_directory(dir_req_ready),
     .dir_req_src_id(cluster_dir_req_src_id),
     .dir_req_opcode(cluster_dir_req_opcode),

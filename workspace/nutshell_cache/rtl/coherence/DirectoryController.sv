@@ -90,7 +90,6 @@ module DirectoryController #(
 
   dir_fsm_state_t state_q;
   dir_fsm_state_t snoop_resume_q;
-  request_opcode_t req_opcode_q;
   snoop_opcode_t snoop_opcode_q;
   line_xfer_kind_t line_xfer_kind_q;
   grant_opcode_t grant_opcode_q;
@@ -155,7 +154,6 @@ module DirectoryController #(
     if (reset) begin
       state_q <= DIR_IDLE;
       snoop_resume_q <= DIR_COMMIT;
-      req_opcode_q <= REQ_GETS;
       snoop_opcode_q <= SNOOP_READ;
       line_xfer_kind_q <= XFER_L2_REFILL;
       grant_opcode_q <= GRANT_DATA_S;
@@ -176,7 +174,6 @@ module DirectoryController #(
           if (req_valid && req_ready) begin
             source_mask = core_bit(req_src_id);
             target_mask = 2'b00;
-            req_opcode_q <= req_opcode;
             src_id_q <= req_src_id;
             line_addr_q <= line_align(req_line_addr);
             txn_id_q <= req_txn_id;

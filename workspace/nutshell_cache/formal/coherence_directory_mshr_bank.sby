@@ -1,0 +1,20 @@
+[options]
+mode bmc
+depth 12
+multiclock on
+
+[engines]
+smtbmc z3
+
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv DirectoryController.sv DirectoryMshrBank.sv coherence_directory_mshr_bank_harness.sv
+prep -top CoherenceDirectoryMshrBankFormal
+memory_map
+opt_clean
+
+[files]
+rtl/coherence/CoherenceProtocol.sv
+rtl/coherence/DirectoryController.sv
+rtl/coherence/DirectoryMshrBank.sv
+formal/coherence_directory_mshr_bank_harness.sv

@@ -65,6 +65,7 @@ module CoherenceDirectoryFormal(
   logic past_valid = 1'b0;
   logic reset_seen_q = 1'b0;
   logic protocol_error_seen_q = 1'b0;
+  request_opcode_t accepted_req_opcode_q;
 
   logic dir_write_stall_q = 1'b0;
   logic [31:0] dir_write_addr_hold_q;
@@ -121,11 +122,14 @@ module CoherenceDirectoryFormal(
 
     if (reset) begin
       protocol_error_seen_q <= 1'b0;
+      accepted_req_opcode_q <= REQ_GETS;
       dir_write_stall_q <= 1'b0;
       snoop_stall_q <= 1'b0;
       xfer_stall_q <= 1'b0;
       grant_stall_q <= 1'b0;
     end else begin
+      if (req_valid && req_ready)
+        accepted_req_opcode_q <= req_opcode;
       if (protocol_error_seen_q)
         assert (protocol_error);
       protocol_error_seen_q <= protocol_error;
@@ -229,7 +233,7 @@ module CoherenceDirectoryFormal(
         assert (grant_line_addr == dut.line_addr_q);
         assert (grant_txn_id == dut.txn_id_q);
         assert (grant_has_data == grant_contains_data(grant_opcode));
-        case (dut.req_opcode_q)
+        case (accepted_req_opcode_q)
           REQ_GETS: begin
             assert ((grant_opcode == GRANT_DATA_S) ||
                     (grant_opcode == GRANT_DATA_E));

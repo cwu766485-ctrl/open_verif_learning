@@ -35,6 +35,13 @@ module CoherenceRequestArbiterCore #(
     out_opcode = in_opcode_flat[3*select_src +: 3];
     out_line_addr = in_line_addr_flat[32*select_src +: 32];
     out_txn_id = in_txn_id_flat[TXN_ID_WIDTH*select_src +: TXN_ID_WIDTH];
+  end
+
+  // Keep the upstream ready path separate from the valid/payload mux. Apart
+  // from making the handshake easier to audit, this avoids a false
+  // combinational-cycle report in tools that conservatively treat one
+  // always_comb block as a single dependency node.
+  always_comb begin
     in_ready = 2'b00;
     if (out_valid)
       in_ready[select_src] = out_ready;
