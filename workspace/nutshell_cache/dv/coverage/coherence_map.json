@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "regression": "dual_l1_shared_l2_mesi",
+  "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+  "required_stall_bins": [
+    "cpu_resp", "mmio_req", "mmio_resp", "mem_rd_req", "mem_rd_data",
+    "mem_wr_req", "mem_wr_data", "dir_req"
+  ],
+  "bins": [
+    {"id":"mesi.gets_cold_refill", "feature":"MESI GetS", "testpoint":"PASS: Core0 GetS refill from backing memory"},
+    {"id":"mesi.gets_share_m_owner", "feature":"MESI sharing/intervention", "testpoint":"PASS: Core1 GetS shares the full latest line from the M owner"},
+    {"id":"mesi.getm_upgrade_s", "feature":"MESI GetM / Upgrade", "testpoint":"PASS: shared-to-exclusive upgrade invalidates peer; remote read sees M data"},
+    {"id":"mesi.getm_remote_owner", "feature":"MESI GetM / intervention", "testpoint":"PASS: remote GetM invalidates an M owner and preserves its latest data"},
+    {"id":"mesi.getm_remote_clean_e", "feature":"MESI GetM / intervention", "testpoint":"PASS: remote GetM invalidates a clean E owner and receives all beats"},
+    {"id":"mesi.e_to_m_silent", "feature":"MESI E-to-M", "testpoint":"PASS: E-to-M local write is silent and preserves the full line"},
+    {"id":"mesi.snoop_waits_store_commit", "feature":"MESI progress", "testpoint":"PASS: same-line SnoopRead waits for local E-to-M write commit"},
+    {"id":"mesi.masked_owner_write", "feature":"MESI masked write", "testpoint":"PASS: byte-masked write is visible after remote owner intervention"},
+    {"id":"cpu_pair.same_line", "feature":"Concurrency / same line", "testpoint":"PASS: same-line simultaneous GetS/GetM and byte-mask corner cases"},
+    {"id":"cpu_pair.different_lines", "feature":"Concurrency / different lines", "testpoint":"PASS: different-address concurrent misses route to the correct cores"},
+    {"id":"cpu_pair.snoop_progress", "feature":"Concurrency / Snoop progress", "testpoint":"PASS: different-line SnoopInvalidate progresses during a local CPU response stall"},
+    {"id":"l1.putm", "feature":"L1 replacement", "testpoint":"PASS: dirty M victim uses PutM, returns to L2, then refills by peer"},
+    {"id":"l1.pute", "feature":"L1 replacement", "testpoint":"PASS: clean E victim is removed with PutE; dirty L2 data is preserved"},
+    {"id":"l1.puts", "feature":"L1 replacement", "testpoint":"PASS: shared S victim is removed with PutS while the peer retains its copy"},
+    {"id":"l2.live_u_victim", "feature":"L2 live victim reclaim", "testpoint":"PASS: L2 live victim back-invalidates an M owner and writes back its line"},
+    {"id":"l2.dirty_owner_writeback", "feature":"L2 live victim reclaim", "testpoint":"PASS: dirty owner data survives L2 eviction through backing memory"},
+    {"id":"l2.shared_multisnoop", "feature":"L2 shared victim multi-snoop", "testpoint":"PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data"},
+    {"id":"mmio.bypass", "feature":"MMIO isolation", "testpoint":"PASS: MMIO read/write bypasses L1, L2, and backing memory"},
+    {"id":"mmio.address_boundaries", "feature":"MMIO address decode", "testpoint":"PASS: cacheable/MMIO address-domain boundary cases"},
+    {"id":"backpressure.mem_refill", "feature":"Backpressure", "testpoint":"PASS: valid memory refill beat is held under L2 receiver backpressure"},
+    {"id":"backpressure.independent_channels", "feature":"Backpressure", "testpoint":"PASS: memory request/refill and CPU response survive independent stalls"},
+    {"id":"backpressure.mmio", "feature":"Backpressure", "testpoint":"PASS: MMIO request and response payloads remain stable under backpressure"},
+    {"id":"reset.refill", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels an active refill without a stale response"},
+    {"id":"reset.mmio", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels a backpressured MMIO response"},
+    {"id":"reset.cpu_rsp", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels a stalled cache response without replay"},
+    {"id":"reset.snoop_data", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels an active owner SnoopData stream"},
+    {"id":"reset.l2_writeback", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels a stalled dirty L2 writeback beat"},
+    {"id":"error.mem_read", "feature":"Error handling", "testpoint":"PASS: terminal memory read error suppresses success and blocks new requests"},
+    {"id":"error.mem_write", "feature":"Error handling", "testpoint":"PASS: failed write response preserves the valid dirty L2 victim"},
+    {"id":"random.seeded_data", "feature":"Seeded random data/state traffic", "testpoint":"PASS: seeded 80-operation coherence/data scoreboard regression seed="}
+  ]
+}

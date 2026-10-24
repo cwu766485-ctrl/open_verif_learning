@@ -55,11 +55,35 @@ make coherence_directory      # GetS/GetM/Upgrade, PutS/PutE/PutM,
                               # owner snoops, channel stalls, active reset
 make coherence_l2_array       # directory metadata, eight-beat data,
                               # read stall, dirty victim, reclaim, bad beat
-make coherence_modules        # all four focused module benches
+make coherence_request_arbiter # round-robin, source lock, payload routing,
+                               # reset and backpressure
+make coherence_snoop_arbiter   # same/different-line CPU/Snoop arbitration
+make coherence_cluster         # two L1 arrays/controllers plus request mux
+make coherence_modules         # all seven block/cluster benches
 make coherence_multisnoop     # L2 DIR_S victim invalidates both L1 sharers
 make coherence_formal         # arbiters plus 16-step Directory/L1 checks
 make coherence_verify         # all above plus subsystem directed/random tests
 ```
+
+## Verification decomposition
+
+| Layer | RTL block | Dedicated evidence | Remaining boundary |
+| --- | --- | --- | --- |
+| Protocol | `CoherenceProtocol.sv` | Compiled by every coherence bench; protocol encodings are exercised by the controller and subsystem tests | No separate package-only bench; the package contains enums and small helper functions |
+| Request arbitration | `CoherenceRequestArbiter` | Directed simulation for reset priority, round-robin alternation, selected-source retention under backpressure, and payload routing; separate SymbiYosys proof | No multi-request queue; only two request sources are supported |
+| Per-L1 CPU/Snoop arbitration | `MesiL1SnoopArbiter` | Directed same-line/different-line cases and independent SymbiYosys properties | Progress is checked under the documented valid/ready contract; no liveness proof without fairness assumptions |
+| L1 storage | `MesiL1Array` | Refill, lookup, masked store, Snoop metadata, line-read stalls, replacement, malformed beat | Reduced geometry in the bench; production geometry is checked by elaboration/integration |
+| L1 protocol control | `MesiL1Controller` | GetS/GetM/Upgrade, E-to-M, SnoopInvalidate, channel stalls, active reset; 16-step bounded formal checks | Formal harness is controller-level, not a proof of the array/controller composition |
+| Directory control | `DirectoryController` | GetS/GetM/Upgrade, PutS/PutE/PutM, owner Snoop, channel stalls, active reset; 16-step bounded formal checks | One globally serialized Directory transaction |
+| Shared L2 storage | `SharedL2DirectoryArray` | Tag/directory metadata, full-line transfers, stalls, dirty victim reporting and reclaim, malformed beat | Live-victim recovery is additionally checked at subsystem level |
+| Dual-L1 cluster | `DualL1MesiCluster` | Simultaneous independent L1 misses, request-source ordering, transaction routing, two full refills and CPU response-data checks | Snoop ownership between the two L1s and eviction interaction are covered at subsystem level |
+| Memory/MMIO adapters | Subsystem memory and MMIO paths | Backpressure, transaction IDs, read/write errors, reset cancellation and bypass are checked at subsystem level | Not split into separate adapter-only benches yet |
+| Integrated subsystem | `CoherentCacheSubsystem` | Directed MESI/victim/error/reset/concurrency tests, scoreboard, assertions, multisnoop case, and fixed-seed randomized operations | No unbounded proof of the complete subsystem |
+
+`make coherence_modules` runs six leaf-module benches plus the dual-L1 cluster
+bench. `make
+coherence_verify` adds the formal gate and integrated subsystem regression. The
+legacy single-L1 Python/Toffee verification remains a separate regression path.
 
 The Directory is a two-core, single-requester transaction controller. For any
 one request, its protocol can require at most one remote L1 snoop; the
@@ -109,6 +133,22 @@ suite with five recorded seeds. Directed cases also exercise terminal memory
 read errors and failed write responses while checking that the dirty victim is
 retained. This is a functional regression gate; it does not establish full RTL
 lint cleanliness or unbounded whole-subsystem proof.
+
+The integrated bench also maintains an independent two-core MESI shadow model.
+It updates the model from completed CPU transactions, accepted snoops, and Put
+requests, then compares every modeled line against both physical L1 copies,
+all eight data beats, and the corresponding L2 directory metadata. The data
+reference table separately checks every CPU read and masked write. Functional
+bins are defined in `dv/coverage/coherence_map.json` as Feature → Testpoint →
+Bin → Test; `make coherence_regression` fails if any planned bin or required
+ready/valid stall is absent. It retains per-seed logs, merged Verilator line and
+branch coverage, and `reports/coherence/regression.md` / `.json`.
+
+The regression report includes cycle-based L1 hit, miss, and remote-snoop
+latencies plus configured cache capacity. Those are RTL simulation results.
+There is no target standard-cell library, SRAM compiler model, clock
+constraint, or physical-design flow in this repository, so area and timing
+figures are not silicon PPA or static timing signoff.
 
 ## Directed subsystem smoke test
 

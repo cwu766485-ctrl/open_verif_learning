@@ -85,6 +85,8 @@ def _run_one(mutation: Mutation) -> dict[str, object]:
                     "CacheStage3LifecycleHarness.v",
                     "prep -top CacheStage3LifecycleHarness -flatten",
                     "chformal -cover -remove",
+                    "async2sync",
+                    "chformal -lower",
                     "sat -prove-asserts -seq 8 -set-assumes -timeout 30 -verify",
                     "",
                 )

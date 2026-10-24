@@ -14,9 +14,18 @@ async def test_memory_request_and_cpu_response_stall_timing(start_func):
     env.mem_agent.request_ready_delay = 6
     env.mem_agent.response_valid_delay = 2
 
-    # Keep the CPU response sink closed until the DUT has held its response.
+    # The legacy pipeline couples request acceptance to response READY. Let
+    # the miss enter the pipeline, then close the response sink before refill
+    # completes so the test exercises a real held response.
+    env.cpu.bundle.rsp.ready.value = 1
+    reads_before = len(env.mem_ram.read_requests)
+    await env.cpu.send_req(addr, 7, CMD_READ)
+    for _ in range(1000):
+        if len(env.mem_ram.read_requests) > reads_before:
+            break
+        await env.cpu.bundle.step()
+    assert len(env.mem_ram.read_requests) > reads_before, "miss did not reach backing memory"
     env.cpu.bundle.rsp.ready.value = 0
-    await env.cpu.non_block_read(addr)
 
     for _ in range(1000):
         await env.cpu.bundle.step()

@@ -219,6 +219,42 @@ module CoherenceDirectoryFormal(
         assert ((dir_write_state != DIR_U) ||
                 (dir_write_sharers == 2'b00));
       end
+
+      // Grants are legal only after the Directory's snoop/refill sequence has
+      // completed, and their permission must agree with the committed owner /
+      // sharer metadata. This checks the safety contract at the grant boundary.
+      if (grant_valid) begin
+        assert (dut.pending_targets_q == 2'b00);
+        assert (grant_dst_id == dut.src_id_q);
+        assert (grant_line_addr == dut.line_addr_q);
+        assert (grant_txn_id == dut.txn_id_q);
+        assert (grant_has_data == grant_contains_data(grant_opcode));
+        case (dut.req_opcode_q)
+          REQ_GETS: begin
+            assert ((grant_opcode == GRANT_DATA_S) ||
+                    (grant_opcode == GRANT_DATA_E));
+            if (grant_opcode == GRANT_DATA_S) begin
+              assert (dir_write_state == DIR_S);
+              assert (dir_write_sharers[dut.src_id_q]);
+              assert (!dir_write_owner_id);
+            end else begin
+              assert (dir_write_state == DIR_U);
+              assert (dir_write_owner_id == dut.src_id_q);
+              assert (dir_write_sharers == 2'b00);
+            end
+          end
+          REQ_GETM, REQ_UPGRADE: begin
+            assert ((grant_opcode == GRANT_DATA_M) ||
+                    (grant_opcode == GRANT_M));
+            assert (dir_write_state == DIR_U);
+            assert (dir_write_owner_id == dut.src_id_q);
+            assert (dir_write_sharers == 2'b00);
+          end
+          REQ_PUTS, REQ_PUTE, REQ_PUTM:
+            assert (grant_opcode == GRANT_PUT_ACK);
+          default: assert (1'b0);
+        endcase
+      end
     end
   end
 endmodule

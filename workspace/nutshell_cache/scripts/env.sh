@@ -11,9 +11,16 @@ if [[ ! -f "${_cache_repo_root}/.tooling/venv/bin/activate" ]]; then
   return 1
 fi
 
+if [[ -f "${_cache_repo_root}/.tooling/oss-cad-suite/environment" ]]; then
+  source "${_cache_repo_root}/.tooling/oss-cad-suite/environment"
+fi
 source "${_cache_repo_root}/.tooling/venv/bin/activate"
 export PATH="${_cache_repo_root}/.tooling/picker-install/bin:${_cache_repo_root}/.tooling/sby-install/bin:${_cache_repo_root}/.tooling/verible/bin:${PATH}"
 export LD_LIBRARY_PATH="${_cache_repo_root}/.tooling/picker-install/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+if [[ -d "${_cache_repo_root}/.tooling/local-deps/usr/include" ]]; then
+  export CPLUS_INCLUDE_PATH="${_cache_repo_root}/.tooling/local-deps/usr/include${CPLUS_INCLUDE_PATH:+:${CPLUS_INCLUDE_PATH}}"
+  export LIBRARY_PATH="${_cache_repo_root}/.tooling/local-deps/usr/lib/x86_64-linux-gnu${LIBRARY_PATH:+:${LIBRARY_PATH}}"
+fi
 export PIP_CACHE_DIR="${_cache_repo_root}/.tooling/pip-cache"
 
 unset _cache_project_root _cache_repo_root

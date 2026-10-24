@@ -22,48 +22,6 @@ async def _collect_probe_response(agent):
     return first, release
 
 
-async def _accept_cpu_and_probe_together(env, cpu_addr, probe_addr):
-    """Assert both request valids before stepping, then record handshakes."""
-    cpu, coh = env.cpu, env.coherence
-    cpu_req = SimpleBusRequest(cpu_addr, 7, CMD_READ, 0, 0)
-    coh_req = SimpleBusRequest(probe_addr, 7, CMD_PROBE, 0, 0)
-    cpu.bundle.req.assign({
-        "valid": 1, "addr": cpu_req.addr, "size": cpu_req.size,
-        "cmd": cpu_req.cmd, "wmask": cpu_req.wmask, "wdata": cpu_req.wdata,
-    })
-    coh.bundle.req.assign({
-        "valid": 1, "addr": coh_req.addr, "size": coh_req.size,
-        "cmd": coh_req.cmd, "wmask": coh_req.wmask, "wdata": coh_req.wdata,
-    })
-    assert int(cpu.bundle.req.valid.value) == 1
-    assert int(coh.bundle.req.valid.value) == 1
-
-    accepted_at = {}
-    for cycle in range(1000):
-        await cpu.bundle.step()
-        for name, agent, request in (
-            ("coherence", coh, coh_req),
-            ("cpu", cpu, cpu_req),
-        ):
-            bundle = agent.bundle.req
-            valid, ready = int(bundle.valid.value), int(bundle.ready.value)
-            payload = tuple(int(getattr(bundle, pin).value)
-                            for pin in ("addr", "size", "cmd", "wmask", "wdata"))
-            agent.protocol_checker.observe("req", valid, ready, payload)
-            if valid and ready:
-                if name == "coherence":
-                    assert int(cpu.bundle.req.valid.value) == 1
-                    assert int(cpu.bundle.req.ready.value) == 0, (
-                        "CPU ready must stay low while the higher-priority probe is valid"
-                    )
-                accepted_at[name] = cycle
-                bundle.valid.value = 0
-                agent.monitor.publish(request)
-        if len(accepted_at) == 2:
-            return accepted_at
-    raise TimeoutError("CPU and coherence requests did not both handshake")
-
-
 @case
 async def test_probe_hit_releases_cached_line(start_func):
     """Coherence probe：验证 probe hit/miss 响应，以及 hit 时按 8 个 beat 释放整条 cache line。"""
@@ -122,8 +80,8 @@ async def test_probe_during_stalled_refill_with_response_backpressure(start_func
 
 
 @case
-async def test_coherence_probe_wins_simultaneous_cpu_read(start_func):
-    """The fixed-priority arbiter accepts a coincident probe before the CPU read."""
+async def test_coherence_probe_completes_before_cpu_retry(start_func):
+    """A blocked CPU read retries after an explicit probe has completed."""
     env = await start_func(
         start_cpu_handlers=False, start_cpu_response_handler=False
     )
@@ -135,11 +93,79 @@ async def test_coherence_probe_wins_simultaneous_cpu_read(start_func):
         assert response["cmd"] == CMD_WRITERSP
 
     reads_before = len(env.mem_ram.read_requests)
-    accepted_at = await _accept_cpu_and_probe_together(env, cpu_addr, probe_addr)
-    assert accepted_at["coherence"] < accepted_at["cpu"], (
-        "coherence input 0 must win the same-cycle arbitration; CPU must retry"
+    # The legacy pipeline shares downstream readiness with the CPU response
+    # sink. Keep it open while the cache accepts the coherence request.
+    env.cpu.bundle.rsp.ready.value = 1
+    probe_result = await env.coh_agent.probe(probe_addr)
+    await env.cpu.send_req(cpu_addr, 7, CMD_READ)
+    cpu_response = await env.cpu.get_resp(response_ready_delay=0)
+    first, release = probe_result
+    assert cpu_response["cmd"] == CMD_READLST
+    assert cpu_response["rdata"] == cpu_data
+    assert first["cmd"] == CMD_PROBEHIT
+    assert len(release) == 8
+    assert release[0]["rdata"] == probe_data
+    assert release[-1]["cmd"] == CMD_READLST
+    assert len(env.mem_ram.read_requests) == reads_before, (
+        "both colliding requests target resident lines and must not refill"
     )
 
+
+@case
+async def test_simultaneous_coherence_request_wins_cpu_arbitration(start_func):
+    """A simultaneous resident-line probe is accepted before a CPU read."""
+    env: NtCacheEnv = await start_func(
+        start_cpu_handlers=False, start_cpu_response_handler=False
+    )
+    probe_addr, cpu_addr = 0x7000, 0x9000
+    probe_data, cpu_data = 0x1122334455667788, 0x8877665544332211
+    for addr, data in ((probe_addr, probe_data), (cpu_addr, cpu_data)):
+        await env.cpu.send_req(addr, 7, CMD_WRITE, 0xFF, data)
+        response = await env.cpu.get_resp(response_ready_delay=0)
+        assert response["cmd"] == CMD_WRITERSP
+
+    env.cpu.bundle.rsp.ready.value = 1
+    env.coherence.bundle.rsp.ready.value = 1
+    env.cpu.bundle.req.assign({
+        "valid": 1, "addr": cpu_addr, "size": 7, "cmd": CMD_READ,
+        "wmask": 0, "wdata": 0,
+    })
+    env.coherence.bundle.req.assign({
+        "valid": 1, "addr": probe_addr, "size": 7, "cmd": CMD_PROBE,
+        "wmask": 0, "wdata": 0,
+    })
+
+    # Both valid requests are presented before advancing the shared clock.
+    await env.cpu.bundle.step()
+    cpu_payload = (cpu_addr, 7, CMD_READ, 0, 0)
+    coh_payload = (probe_addr, 7, CMD_PROBE, 0, 0)
+    cpu_ready = int(env.cpu.bundle.req.ready.value)
+    coh_ready = int(env.coherence.bundle.req.ready.value)
+    env.cpu.protocol_checker.observe("req", 1, cpu_ready, cpu_payload)
+    env.coherence.protocol_checker.observe("req", 1, coh_ready, coh_payload)
+    assert coh_ready == 1 and cpu_ready == 0, (
+        f"coherence priority missing: coherence ready={coh_ready}, CPU ready={cpu_ready}"
+    )
+    env.coverage.sample(arbitration="coherence_wins_cpu")
+    env.coherence.monitor.publish(SimpleBusRequest(
+        probe_addr, 7, CMD_PROBE
+    ))
+    env.coherence.bundle.req.valid.value = 0
+
+    cpu_accepted = False
+    for _ in range(1000):
+        await env.cpu.bundle.step()
+        cpu_ready = int(env.cpu.bundle.req.ready.value)
+        env.cpu.protocol_checker.observe("req", 1, cpu_ready, cpu_payload)
+        if cpu_ready:
+            cpu_accepted = True
+            break
+    env.cpu.bundle.req.valid.value = 0
+    assert cpu_accepted, "CPU request did not proceed after the coherence request"
+    env.cpu.monitor.publish(SimpleBusRequest(cpu_addr, 7, CMD_READ))
+
+    env.cpu.bundle.rsp.ready.value = 0
+    env.coherence.bundle.rsp.ready.value = 0
     cpu_response, probe_result = await asyncio.gather(
         env.cpu.get_resp(response_ready_delay=0),
         _collect_probe_response(env.coherence),
@@ -151,10 +177,6 @@ async def test_coherence_probe_wins_simultaneous_cpu_read(start_func):
     assert len(release) == 8
     assert release[0]["rdata"] == probe_data
     assert release[-1]["cmd"] == CMD_READLST
-    assert len(env.mem_ram.read_requests) == reads_before, (
-        "both colliding requests target resident lines and must not refill"
-    )
-    env.coverage.sample(arbitration="coherence_wins_cpu")
 
 
 @case

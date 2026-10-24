@@ -3,14 +3,19 @@
   "scope": "maintained rtl/ statement-line coverage only",
   "waivers": [
     {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 36,
+      "reason": "The DCache flush input is tied low by the documented writable-cache integration; flush-clear behavior is an ICache-only contract."
+    },
+    {
+      "source": "rtl/pipeline/CacheStage3.v",
+      "line": 76,
+      "reason": "This output only signals a hit READBST response, which is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
+    },
+    {
       "source": "rtl/control/ReplacementSelector.v",
       "line": 27,
       "reason": "The recovery assignment for the zero LFSR state is unreachable after reset; the SymbiYosys proof asserts that the state remains non-zero from the reset seed under the RTL recurrence."
-    },
-    {
-      "source": "rtl/pipeline/CacheStage2.v",
-      "line": 211,
-      "reason": "Assertion diagnostic for a multi-hot selected way. CacheWaySelector.sby proves the selected mask is one-hot under the documented unique-tag and replacement-mask assumptions; the diagnostic is intentionally not triggered by legal traffic."
     },
     {
       "source": "rtl/pipeline/CacheStage2.v",
@@ -34,8 +39,8 @@
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
-      "line": 495,
-      "reason": "Verilator LCOV control-only line: the state2 data-ready body at line 496 is hit, but this conditional line is reported as zero. It is not an uncovered executable statement."
+      "line": 157,
+      "reason": "Alias for the hit READBST path. READBST is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
@@ -44,8 +49,8 @@
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
-      "line": 547,
-      "reason": "Assertion diagnostic guard for the impossible MMIO-and-cache-hit combination; the address decoder bypasses MMIO before tag-hit processing."
+      "line": 275,
+      "reason": "The hit READBST response wrap counter is outside the single-beat NutShell L1 DCache CPU-port contract used by this regression."
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
@@ -54,28 +59,13 @@
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
-      "line": 571,
-      "reason": "Assertion diagnostic guard for simultaneous metadata hit-write and refill-write; these are mutually exclusive legal transaction phases."
-    },
-    {
-      "source": "rtl/pipeline/CacheStage3.v",
       "line": 572,
       "reason": "Assertion diagnostic print for simultaneous metadata hit-write and refill-write; intentionally not executed by legal functional stimulus."
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",
-      "line": 595,
-      "reason": "Assertion diagnostic guard for simultaneous data hit-write and refill-write; these are mutually exclusive legal transaction phases."
-    },
-    {
-      "source": "rtl/pipeline/CacheStage3.v",
       "line": 596,
       "reason": "Assertion diagnostic print for simultaneous data hit-write and refill-write; intentionally not executed by legal functional stimulus."
-    },
-    {
-      "source": "rtl/pipeline/CacheStage3.v",
-      "line": 619,
-      "reason": "Assertion diagnostic guard for DCache flush, prohibited by the writable-cache configuration and tied low by NutShell integration."
     },
     {
       "source": "rtl/pipeline/CacheStage3.v",

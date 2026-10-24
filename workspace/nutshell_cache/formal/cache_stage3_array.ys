@@ -2,4 +2,6 @@ read_verilog -formal -DSYNTHESIS rtl/pipeline/CacheStage3.v rtl/control/MetaWrit
 prep -top CacheStage3ArrayHarness -flatten
 memory_map
 chformal -cover -remove
+async2sync
+chformal -lower
 sat -prove-asserts -seq 12 -set-assumes -timeout 30 -dump_vcd reports/formal/cache_stage3_array_failure.vcd -verify

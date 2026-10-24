@@ -60,9 +60,17 @@ class SlaveDriver(Agent):
     @driver_method()
     async def get_req(self):
         self.bundle.req.ready.value = 0
-        for _ in range(self.request_ready_delay):
+        # Apply configured backpressure only after a request is actually
+        # presented. Delaying READY before VALID arrives does not create a
+        # ready/valid stall and made the old counter depend on task ordering.
+        stalled = 0
+        while True:
             await self.bundle.step()
             self._observe("req")
+            if int(self.bundle.req.valid.value):
+                if stalled >= self.request_ready_delay:
+                    break
+                stalled += 1
         self.bundle.req.ready.value = 1
         # Complete the request handshake on a clock edge before lowering ready.
         for _ in range(10000):
