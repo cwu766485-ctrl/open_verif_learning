@@ -2,7 +2,8 @@
 // subsystem, exposes its performance counters through APB3, and connects its
 // line-memory ports to an AXI4 64-bit master adapter.
 module CoherentCacheAxiSubsystem #(
-  parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH
+  parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH,
+  parameter int AXI_MAX_OUTSTANDING = 4
 ) (
   input logic clock,
   input logic reset,
@@ -163,7 +164,10 @@ module CoherentCacheAxiSubsystem #(
     .perf_access_complete_event(perf_access_complete_event)
   );
 
-  LineMemoryAxi4Adapter #(.ID_WIDTH(TXN_ID_WIDTH)) memory_adapter (
+  LineMemoryAxi4Adapter #(
+    .ID_WIDTH(TXN_ID_WIDTH),
+    .MAX_OUTSTANDING(AXI_MAX_OUTSTANDING)
+  ) memory_adapter (
     .clock(clock), .reset(reset),
     .line_rd_req_valid(line_rd_req_valid), .line_rd_req_ready(line_rd_req_ready),
     .line_rd_req_addr(line_rd_req_addr), .line_rd_req_id(line_rd_req_id),

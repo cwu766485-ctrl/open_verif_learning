@@ -2,7 +2,7 @@
 
 **文档版本**：v0.2（设计评审草案）  
 **日期**：2026-10-20  
-**设计状态**：双 L1 + 共享 L2/Directory 已接通 AXI4 line adapter 与 APB 性能 CSR；AXI/APB 模块测试、MESI 子系统回归、bounded formal 基线和完整总线顶层 elaboration 已通过。AXI 总线端到端仿真、无界/全子系统 formal 与 PPA 仍未完成
+**设计状态**：双 L1 + 共享 L2/Directory 已接通支持四笔 outstanding 的 AXI4 line adapter 与 APB 性能 CSR；AXI memory model 端到端回归、四笔事务 ID/交错 R/乱序 B 模块测试、MESI 子系统回归、bounded formal 基线和完整总线顶层 elaboration 已通过。当前 Directory 仍串行处理 coherent line transfer；无界/全子系统 formal 与 PPA 仍未完成
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -354,9 +354,13 @@ reset 和优先级映射，不包含具体 macro 名称、时序角、面积或 
 恢复为原 line 接口；AXI RRESP 错误会形成终止 line error，并在适配器内部 drain
 该 burst 剩余 beat。BRESP/RRESP 及返回 ID 错误会传到 cache 错误状态。
 
-当前 Directory 一次只处理一笔 line transfer，适配器每类最多一个 outstanding
-事务，读写状态彼此独立。系统级 reset 必须同时作用于 AXI memory/interconnect，
-因为 AXI 本身没有取消已接受事务的通道。
+AXI 适配器读写通道各支持最多四笔 outstanding line transaction，使用不同活动
+ID 区分请求。R beat 根据 RID 回送，允许不同 ID 的 beat 交错；B 根据 BID 关联，
+允许不同 ID 的写响应乱序。AXI4 W 通道没有 WID，因此适配器按 AW 握手顺序缓存并
+发送完整 W burst。当前 Directory 仍一次只处理一笔 line transfer，故 MESI 顶层
+暂时不能同时发出四笔 refill；要让 cache miss 真正并行，需要后续增加多个 MSHR
+以及并行 Directory/L2 事务上下文。系统级 reset 必须同时作用于 AXI
+memory/interconnect，因为 AXI 本身没有取消已接受事务的通道。
 
 APB3 performance CSR 是只读寄存器窗口：`0x00` hit、`0x04` miss、`0x08` snoop、
 `0x0c` 成功 dirty writeback、`0x10` 错误状态、`0x14` 累计 cache access cycles、
@@ -366,8 +370,12 @@ APB3 performance CSR 是只读寄存器窗口：`0x00` hit、`0x04` miss、`0x08
 未映射 offset 返回 `PSLVERR`。本阶段只实现 APB，不实现 JTAG TAP；未来 Debug
 Bridge 可以连接该寄存器窗口。
 
-`make coherence_bus_blocks` 验证 burst 字段、通道反压、R 错误 drain、CSR 计数与
-APB 只读行为；`make coherence_axi_lint` elaboration 完整 AXI/APB 子系统顶层。
+`make coherence_bus_blocks` 验证 burst 字段、四笔 outstanding、交错 R beat、乱序 B
+响应、通道反压、R 错误 drain、CSR 计数与 APB 只读行为。`make coherence_axi_e2e`
+把完整 MESI 顶层连接到带地址/数据反压的 AXI RAM model，压力执行读写、共享与升级、
+冲突替换、dirty L2 写回和写回后 refill，并用参考数据模型比较 CPU 返回值。
+`make coherence_axi_lint` elaboration 完整 AXI/APB 子系统顶层；以上目标都进入
+`make coherence_verify` 与 CI。
 
 ---
 
@@ -498,7 +506,7 @@ SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为�
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
 | P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
-| P3 AXI/APB 外部集成 | 新增 `CoherentCacheAxiSubsystem`、64-bit 8-beat AXI4 line adapter、只读 APB performance CSR；模块测试与顶层 elaboration 已加入 Make/CI gate | `coherence_bus_blocks` 与 `coherence_axi_lint` 已通过；完整 AXI memory model 端到端事务仿真仍待补。AXI 每类一个 outstanding，与阻塞式 Directory 匹配 |
+| P3 AXI/APB 外部集成 | `CoherentCacheAxiSubsystem`、四笔 outstanding 的 64-bit 8-beat AXI4 adapter、只读 APB CSR；四笔事务适配器测试和 AXI RAM model 端到端读写压力回归加入 Make/CI | `coherence_bus_blocks`、`coherence_axi_e2e` 与 `coherence_axi_lint` 通过；adapter 每方向容量 4，MESI Directory 目前仍是单事务串行 |
 | P4 签收强化 | 子系统随机/断言、arbiter formal、Directory/L1 bounded safety checks 已建立 | 仍需无界控制器/全 subsystem formal、更多 corner/mutation/覆盖率与性能基线 |
 | P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 

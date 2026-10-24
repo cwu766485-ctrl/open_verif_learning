@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_multisnoop coherence_modules coherence_verify clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -211,13 +211,22 @@ coherence_axi_lint:
 	@source $(ENV_SCRIPT); cd rtl && verilator --lint-only --timing --assert -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherentCacheAxiSubsystem -f Coherence.files.f
 
+# End-to-end dual-L1 MESI simulation connected to a backpressured, burst-capable
+# AXI RAM model with read/write accounting and an architectural data scoreboard.
+coherence_axi_e2e:
+	@mkdir -p reports/coherence/axi_e2e_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module CoherentCacheAxiSubsystem_tb --Mdir ../reports/coherence/axi_e2e_obj \
+	  -f Coherence.files.f coherence/tb/CoherentCacheAxiSubsystem_tb.sv
+	@reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb
+
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
 
 coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
-	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint && $(MAKE) coherence_formal && $(MAKE) coherence_regression
+	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression
 
 # Remove transient build and per-test trace artifacts. Keep consolidated
 # coverage reports, formal proof logs, and experimental formal records.

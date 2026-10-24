@@ -25,6 +25,7 @@ make clean        # Remove generated simulator artifacts
 make doctor       # Check the project-local WSL Python/EDA toolchain
 make coherence_modules     # Run the independent MESI/L1/Directory/L2 benches
 make coherence_bus_blocks  # Check AXI line bursts and APB performance CSRs
+make coherence_axi_e2e     # Run the MESI subsystem against an AXI RAM model
 make coherence_axi_lint    # Elaborate the AXI/APB cache subsystem top
 make coherence_verify      # Run coherence modules, bounded formal and subsystem regression
 ```
@@ -59,9 +60,10 @@ The architecture and verification plan are documented in
 The coherent subsystem architecture, external bus contract, APB register map,
 outstanding-transaction limit and remaining formal/physical-design boundaries
 are documented in [`rtl/coherence/README.md`](rtl/coherence/README.md) and
-[`docs/cache.md`](docs/cache.md). The adapter exposes one outstanding read and
-one outstanding write at most, matching the current serialized Directory; the
-APB block does not implement a JTAG TAP.
+[`docs/cache.md`](docs/cache.md). The AXI adapter supports four active requests
+per direction, but the current serialized Directory issues only one coherent
+line transfer at a time. `make coherence_axi_e2e` runs the full cache through
+a burst-capable AXI RAM model. The APB block does not implement a JTAG TAP.
 
 ## Performance baseline
 

@@ -96,8 +96,71 @@ module CacheBusBlocks_tb;
     apb_penable = 1'b0;
   endtask
 
+  task automatic submit_read(input integer index);
+    @(negedge clock);
+    line_rd_req_valid = 1'b1;
+    line_rd_req_addr = 32'h0001_0000 + index * 64;
+    line_rd_req_id = 4'(index + 1);
+    #1;
+    if (!line_rd_req_ready)
+      $fatal(1, "read queue rejected slot %0d before reaching capacity", index);
+    tick();
+    @(negedge clock);
+    line_rd_req_valid = 1'b0;
+  endtask
+
+  task automatic send_interleaved_r(input integer index, input integer beat);
+    logic [63:0] expected_data;
+    expected_data = 64'h5000 + index * 256 + beat;
+    @(negedge clock);
+    axi_rid = 4'(index + 1);
+    axi_rdata = expected_data;
+    axi_rresp = 2'b00;
+    axi_rlast = (beat == 7);
+    axi_rvalid = 1'b1;
+    #1;
+    if (!axi_rready || !line_rd_data_valid ||
+        line_rd_data_id != 4'(index + 1) ||
+        line_rd_data_beat != 3'(beat) || line_rd_data != expected_data ||
+        line_rd_data_last != (beat == 7) || line_rd_data_error)
+      $fatal(1, "interleaved R beat mismatch id=%0d beat=%0d", index+1, beat);
+    tick();
+    @(negedge clock);
+    axi_rvalid = 1'b0;
+  endtask
+
+  task automatic submit_write(input integer index);
+    @(negedge clock);
+    line_wr_req_valid = 1'b1;
+    line_wr_req_addr = 32'h0002_0000 + index * 64;
+    line_wr_req_id = 4'(index + 1);
+    #1;
+    if (!line_wr_req_ready)
+      $fatal(1, "write queue rejected slot %0d before reaching capacity", index);
+    tick();
+    @(negedge clock);
+    line_wr_req_valid = 1'b0;
+  endtask
+
+  task automatic send_b(input integer index);
+    @(negedge clock);
+    axi_bid = 4'(index + 1);
+    axi_bresp = 2'b00;
+    axi_bvalid = 1'b1;
+    line_wr_rsp_ready = 1'b1;
+    #1;
+    if (!line_wr_rsp_valid || line_wr_rsp_error || !axi_bready ||
+        line_wr_rsp_id != 4'(index + 1))
+      $fatal(1, "out-of-order B response did not route by ID %0d", index+1);
+    tick();
+    @(negedge clock);
+    axi_bvalid = 1'b0;
+    line_wr_rsp_ready = 1'b0;
+  endtask
+
   initial begin : test
     integer beat;
+    integer txn;
     line_rd_req_valid = 1'b0;
     line_rd_req_addr = '0;
     line_rd_req_id = '0;
@@ -138,13 +201,20 @@ module CacheBusBlocks_tb;
     @(negedge clock);
     reset = 1'b0;
 
-    // AR payload must remain correct while the AXI address channel stalls.
+    // A line request is buffered while AXI ARREADY stalls. The queued AR
+    // payload then remains stable until its address handshake.
     line_rd_req_valid = 1'b1;
     line_rd_req_addr = 32'h0000_1237;
     line_rd_req_id = 4'h5;
+    #1;
+    if (!line_rd_req_ready || axi_arvalid)
+      $fatal(1, "line read request was not captured independently of ARREADY");
+    tick();
+    @(negedge clock);
+    line_rd_req_valid = 1'b0;
     repeat (2) begin
       #1;
-      if (!axi_arvalid || line_rd_req_ready || axi_araddr != 32'h0000_1200 ||
+      if (!axi_arvalid || axi_araddr != 32'h0000_1200 ||
           axi_arid != 4'h5 || axi_arlen != 8'd7 || axi_arsize != 3'b011 ||
           axi_arburst != 2'b01 || axi_arlock || axi_arcache != 4'b0011 ||
           axi_arprot != 3'b000)
@@ -155,7 +225,6 @@ module CacheBusBlocks_tb;
     axi_arready = 1'b1;
     tick();
     @(negedge clock);
-    line_rd_req_valid = 1'b0;
     axi_arready = 1'b0;
 
     // Eight R beats with alternating downstream stalls.
@@ -185,10 +254,13 @@ module CacheBusBlocks_tb;
     line_rd_req_valid = 1'b1;
     line_rd_req_addr = 32'h0000_4560;
     line_rd_req_id = 4'h6;
-    axi_arready = 1'b1;
+    axi_arready = 1'b0;
     tick();
     @(negedge clock);
     line_rd_req_valid = 1'b0;
+    axi_arready = 1'b1;
+    tick();
+    @(negedge clock);
     axi_arready = 1'b0;
     axi_rid = 4'h6;
     axi_rdata = 64'hbad0;
@@ -214,15 +286,21 @@ module CacheBusBlocks_tb;
     if (adapter_protocol_error)
       $fatal(1, "valid AXI error response incorrectly raised protocol_error");
 
-    // AW and W are independent; the bridge emits one eight-beat full-line
-    // burst, preserving the line ID in AW and B.
+    // AW is buffered independently; line data is gathered by ID before the
+    // AXI4 W burst is emitted in AW order.
     line_wr_req_valid = 1'b1;
     line_wr_req_addr = 32'h0000_8007;
     line_wr_req_id = 4'h3;
     axi_awready = 1'b0;
+    #1;
+    if (!line_wr_req_ready || axi_awvalid)
+      $fatal(1, "line write request was not captured independently of AWREADY");
+    tick();
+    @(negedge clock);
+    line_wr_req_valid = 1'b0;
     repeat (2) begin
       #1;
-      if (!axi_awvalid || line_wr_req_ready || axi_awaddr != 32'h0000_8000 ||
+      if (!axi_awvalid || axi_awaddr != 32'h0000_8000 ||
           axi_awid != 4'h3 || axi_awlen != 8'd7 || axi_awsize != 3'b011 ||
           axi_awburst != 2'b01 || axi_awlock || axi_awcache != 4'b0011 ||
           axi_awprot != 3'b000)
@@ -234,7 +312,6 @@ module CacheBusBlocks_tb;
     tick();
     @(negedge clock);
     axi_awready = 1'b0;
-    line_wr_req_valid = 1'b0;
     for (beat = 0; beat < 8; beat = beat + 1) begin
       line_wr_data_valid = 1'b1;
       line_wr_data_id = 4'h3;
@@ -243,18 +320,25 @@ module CacheBusBlocks_tb;
       line_wr_data_last = (beat == 7);
       axi_wready = 1'b0;
       #1;
+      if (!line_wr_data_ready || axi_wvalid)
+        $fatal(1, "line write data buffering failed at beat %0d", beat);
+      tick();
+      @(negedge clock);
+      line_wr_data_valid = 1'b0;
+    end
+    for (beat = 0; beat < 8; beat = beat + 1) begin
+      axi_wready = 1'b0;
+      #1;
       if (!axi_wvalid || axi_wdata != 64'h2000 + {{32{1'b0}}, beat[31:0]} ||
-          axi_wstrb != 8'hff || axi_wlast != (beat == 7) ||
-          line_wr_data_ready)
+          axi_wstrb != 8'hff || axi_wlast != (beat == 7))
         $fatal(1, "AXI W beat translation failed at beat %0d", beat);
       tick();
       @(negedge clock);
       axi_wready = 1'b1;
       tick();
       @(negedge clock);
-      axi_wready = 1'b0;
-      line_wr_data_valid = 1'b0;
     end
+    axi_wready = 1'b0;
     axi_bid = 4'h3;
     axi_bresp = 2'b00;
     axi_bvalid = 1'b1;
@@ -279,10 +363,13 @@ module CacheBusBlocks_tb;
     line_wr_req_valid = 1'b1;
     line_wr_req_addr = 32'h0000_9000;
     line_wr_req_id = 4'h4;
-    axi_awready = 1'b1;
+    axi_awready = 1'b0;
     tick();
     @(negedge clock);
     line_wr_req_valid = 1'b0;
+    axi_awready = 1'b1;
+    tick();
+    @(negedge clock);
     axi_awready = 1'b0;
     for (beat = 0; beat < 8; beat = beat + 1) begin
       line_wr_data_valid = 1'b1;
@@ -290,12 +377,16 @@ module CacheBusBlocks_tb;
       line_wr_data_beat = beat[2:0];
       line_wr_data = 64'h3000 + {{32{1'b0}}, beat[31:0]};
       line_wr_data_last = (beat == 7);
-      axi_wready = 1'b1;
       tick();
       @(negedge clock);
       line_wr_data_valid = 1'b0;
-      axi_wready = 1'b0;
     end
+    axi_wready = 1'b1;
+    for (beat = 0; beat < 8; beat = beat + 1) begin
+      tick();
+      @(negedge clock);
+    end
+    axi_wready = 1'b0;
     axi_bid = 4'h4;
     axi_bresp = 2'b10;
     axi_bvalid = 1'b1;
@@ -309,6 +400,97 @@ module CacheBusBlocks_tb;
     line_wr_rsp_ready = 1'b0;
     if (adapter_protocol_error)
       $fatal(1, "legal AXI SLVERR incorrectly raised protocol_error");
+
+    // Queue four reads while AR is blocked. The R channel then interleaves
+    // four distinct IDs and the adapter routes each beat to the right line.
+    axi_arready = 1'b0;
+    for (txn = 0; txn < 4; txn = txn + 1)
+      submit_read(txn);
+    @(negedge clock);
+    line_rd_req_valid = 1'b1;
+    line_rd_req_addr = 32'h0001_1000;
+    line_rd_req_id = 4'hf;
+    #1;
+    if (line_rd_req_ready)
+      $fatal(1, "read adapter accepted more than four outstanding requests");
+    line_rd_req_valid = 1'b0;
+    if (!axi_arvalid || axi_arid != 4'h1 || axi_araddr != 32'h0001_0000)
+      $fatal(1, "queued AR head was not held under backpressure");
+    axi_arready = 1'b1;
+    for (txn = 0; txn < 4; txn = txn + 1) begin
+      #1;
+      if (!axi_arvalid || axi_arid != 4'(txn + 1) ||
+          axi_araddr != (32'h0001_0000 + txn * 64))
+        $fatal(1, "queued AR order mismatch at entry %0d", txn);
+      tick();
+      @(negedge clock);
+    end
+    axi_arready = 1'b0;
+    line_rd_data_ready = 1'b1;
+    for (beat = 0; beat < 8; beat = beat + 1)
+      for (txn = 0; txn < 4; txn = txn + 1)
+        send_interleaved_r(txn, beat);
+
+    // Four writes can be accepted and filled concurrently. AW addresses are
+    // emitted in order, W bursts stay in that order, and B responses may
+    // return in a different order because their IDs identify each request.
+    axi_awready = 1'b0;
+    axi_wready = 1'b0;
+    for (txn = 0; txn < 4; txn = txn + 1)
+      submit_write(txn);
+    @(negedge clock);
+    line_wr_req_valid = 1'b1;
+    line_wr_req_addr = 32'h0002_1000;
+    line_wr_req_id = 4'hf;
+    #1;
+    if (line_wr_req_ready)
+      $fatal(1, "write adapter accepted more than four outstanding requests");
+    line_wr_req_valid = 1'b0;
+    for (beat = 0; beat < 8; beat = beat + 1) begin
+      for (txn = 0; txn < 4; txn = txn + 1) begin
+        line_wr_data_valid = 1'b1;
+        line_wr_data_id = 4'(txn + 1);
+        line_wr_data_beat = 3'(beat);
+        line_wr_data = 64'h6000 + txn * 256 + beat;
+        line_wr_data_last = (beat == 7);
+        #1;
+        if (!line_wr_data_ready || axi_wvalid)
+          $fatal(1, "write-data gather failed id=%0d beat=%0d", txn+1, beat);
+        tick();
+        @(negedge clock);
+        line_wr_data_valid = 1'b0;
+      end
+    end
+    if (axi_wvalid)
+      $fatal(1, "AXI W data issued before AW acceptance");
+    axi_awready = 1'b1;
+    for (txn = 0; txn < 4; txn = txn + 1) begin
+      #1;
+      if (!axi_awvalid || axi_awid != 4'(txn + 1) ||
+          axi_awaddr != (32'h0002_0000 + txn * 64))
+        $fatal(1, "queued AW order mismatch at entry %0d", txn);
+      tick();
+      @(negedge clock);
+    end
+    axi_awready = 1'b0;
+    axi_wready = 1'b1;
+    for (txn = 0; txn < 4; txn = txn + 1) begin
+      for (beat = 0; beat < 8; beat = beat + 1) begin
+        #1;
+        if (!axi_wvalid || axi_wdata != (64'h6000 + txn * 256 + beat) ||
+            axi_wlast != (beat == 7))
+          $fatal(1, "serialized AXI W order mismatch txn=%0d beat=%0d", txn, beat);
+        tick();
+        @(negedge clock);
+      end
+    end
+    axi_wready = 1'b0;
+    send_b(3);
+    send_b(1);
+    send_b(0);
+    send_b(2);
+    if (adapter_protocol_error)
+      $fatal(1, "legal four-outstanding traffic raised adapter protocol_error");
 
     // Exercise the APB counters and status mapping.
     hit_event = 2'b01;
@@ -358,10 +540,13 @@ module CacheBusBlocks_tb;
     line_rd_req_valid = 1'b1;
     line_rd_req_addr = 32'h0000_a000;
     line_rd_req_id = 4'h7;
-    axi_arready = 1'b1;
+    axi_arready = 1'b0;
     tick();
     @(negedge clock);
     line_rd_req_valid = 1'b0;
+    axi_arready = 1'b1;
+    tick();
+    @(negedge clock);
     axi_arready = 1'b0;
     axi_rid = 4'h8;
     axi_rresp = 2'b00;
@@ -369,8 +554,8 @@ module CacheBusBlocks_tb;
     axi_rvalid = 1'b1;
     line_rd_data_ready = 1'b1;
     #1;
-    if (!line_rd_data_valid || !line_rd_data_error || !line_rd_data_last)
-      $fatal(1, "AXI RID mismatch was not surfaced as a terminal line error");
+    if (line_rd_data_valid || !axi_rready)
+      $fatal(1, "unknown AXI RID was not drained independently of line data");
     tick();
     @(negedge clock);
     axi_rvalid = 1'b0;
