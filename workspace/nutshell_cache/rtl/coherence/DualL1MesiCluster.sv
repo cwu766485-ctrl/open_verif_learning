@@ -19,6 +19,8 @@ module DualL1MesiCluster #(
   output logic cpu_resp_write [0:1],
   output logic [63:0] cpu_resp_rdata [0:1],
   output logic [TXN_ID_WIDTH-1:0] cpu_resp_txn_id [0:1],
+  output logic cpu_hit_event [0:1],
+  output logic cpu_miss_event [0:1],
 
   output logic [1:0] dir_req_ready,
   output logic dir_req_valid,
@@ -208,6 +210,14 @@ module DualL1MesiCluster #(
     assign ctrl_cpu_req_valid = (replace_state_q == REPLACE_REPLAY);
     assign cpu_req_ready[core] = (replace_state_q == REPLACE_IDLE) &&
                                  ctrl_cpu_req_ready;
+    // A read hit needs an existing MESI copy. A write hit is silent only in
+    // E/M; an S-state store requires a Directory Upgrade and counts as a miss.
+    assign cpu_hit_event[core] = !reset && cpu_req_valid[core] &&
+      cpu_req_ready[core] && lookup_hit &&
+      (!cpu_req_write[core] || (lookup_state == MESI_E) ||
+       (lookup_state == MESI_M));
+    assign cpu_miss_event[core] = !reset && cpu_req_valid[core] &&
+      cpu_req_ready[core] && !cpu_hit_event[core];
     assign cpu_resp_valid[core] = ctrl_resp_valid &&
       (!ctrl_resp_write || array_store_ready);
     assign cpu_resp_addr[core] = ctrl_resp_addr;

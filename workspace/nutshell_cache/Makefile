@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_multisnoop coherence_modules coherence_verify clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_multisnoop coherence_modules coherence_verify clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -200,13 +200,24 @@ coherence_cluster:
 	  coherence/tb/DualL1MesiCluster_tb.sv
 	@reports/coherence/cluster_obj/VDualL1MesiCluster_tb
 
+coherence_bus_blocks:
+	@mkdir -p reports/coherence/bus_blocks_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module CacheBusBlocks_tb --Mdir ../reports/coherence/bus_blocks_obj \
+	  -f Coherence.files.f coherence/tb/CacheBusBlocks_tb.sv
+	@reports/coherence/bus_blocks_obj/VCacheBusBlocks_tb
+
+coherence_axi_lint:
+	@source $(ENV_SCRIPT); cd rtl && verilator --lint-only --timing --assert -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module CoherentCacheAxiSubsystem -f Coherence.files.f
+
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
 
 coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
-	$(MAKE) coherence_modules && $(MAKE) coherence_formal && $(MAKE) coherence_regression
+	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint && $(MAKE) coherence_formal && $(MAKE) coherence_regression
 
 # Remove transient build and per-test trace artifacts. Keep consolidated
 # coverage reports, formal proof logs, and experimental formal records.

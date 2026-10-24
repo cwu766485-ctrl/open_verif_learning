@@ -2,7 +2,7 @@
 
 **文档版本**：v0.2（设计评审草案）  
 **日期**：2026-10-20  
-**设计状态**：双 L1 + 共享 L2/Directory 的阻塞式 RTL 已接通；子系统定向/反压/reset/并发回归通过，仍需扩大系统级验证与 formal 范围
+**设计状态**：双 L1 + 共享 L2/Directory 已接通 AXI4 line adapter 与 APB 性能 CSR；顶层及模块回归正在验证，仍需扩大系统级验证与 formal 范围
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -99,9 +99,13 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
                     ▼
             Shared L2 Tag/Data
           256KiB / 8-way [拟定]
-                    │
-                    ▼
-           Backing Memory Model
+              ┌─────┴─────────────┐
+              ▼                   ▼
+       AXI4 Master Adapter   APB Performance CSR
+        64-bit / 8-beat       Counters / Status
+              │                   │
+              ▼                   ▼
+       AXI Memory Model     Software / Debug
 ```
 
 | 属性 | L1 DCache 0/1 | 共享 L2（拟定） |
@@ -340,6 +344,31 @@ foundry macro。同步 SRAM 的读延迟由 wrapper 表示为 ready/valid 流水
 请求/返回事务关联。当前未指定 FPGA 型号或 ASIC 工艺，因此冻结的是端口、bank、
 reset 和优先级映射，不包含具体 macro 名称、时序角、面积或 PPA 承诺。
 
+### 6.4 AXI4 memory adapter 与 APB performance CSR
+
+`CoherentCacheAxiSubsystem` 保留 Directory/L2 的 line-memory 契约，在下游加入
+64-bit AXI4 Master Adapter。每个缓存行使用 8-beat INCR burst：`ARLEN/AWLEN=7`、
+`ARSIZE/AWSIZE=3`、`ARID/AWID` 保留 line transaction ID；LOCK 为 0，CACHE 固定
+`4'b0011`，PROT 固定 `3'b000`。写回整行时
+`WSTRB=8'hff`；AW 与 W 独立握手，最后一个 W beat 后才接收 B。读通道将 R beat
+恢复为原 line 接口；AXI RRESP 错误会形成终止 line error，并在适配器内部 drain
+该 burst 剩余 beat。BRESP/RRESP 及返回 ID 错误会传到 cache 错误状态。
+
+当前 Directory 一次只处理一笔 line transfer，适配器每类最多一个 outstanding
+事务，读写状态彼此独立。系统级 reset 必须同时作用于 AXI memory/interconnect，
+因为 AXI 本身没有取消已接受事务的通道。
+
+APB3 performance CSR 是只读寄存器窗口：`0x00` hit、`0x04` miss、`0x08` snoop、
+`0x0c` 成功 dirty writeback、`0x10` 错误状态、`0x14` 累计 cache access cycles、
+`0x18` 已完成 cache access 数。访问周期按每周期 outstanding 的缓存 LSU 数累加，
+包括 response backpressure；软件用 `0x14 / 0x18` 计算平均访问延迟。Counters 是
+32-bit、reset 清零、溢出回绕；MMIO bypass 不计入 hit/miss/latency。写 CSR 或访问
+未映射 offset 返回 `PSLVERR`。本阶段只实现 APB，不实现 JTAG TAP；未来 Debug
+Bridge 可以连接该寄存器窗口。
+
+`make coherence_bus_blocks` 验证 burst 字段、通道反压、R 错误 drain、CSR 计数与
+APB 只读行为；`make coherence_axi_lint` elaboration 完整 AXI/APB 子系统顶层。
+
 ---
 
 ## 7. 验证总体架构：Block → Subsystem → System
@@ -418,7 +447,7 @@ System DV (可选):
 
 ## 8. 开发阶段与通过门槛
 
-**当前实现记录（2026-10-22）**：`rtl/coherence/` 已新增协议编码、L1
+**当前实现记录（2026-10-24）**：`rtl/coherence/` 已新增协议编码、L1
 MESI 控制 FSM、单事务 Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求
 仲裁器，以及 256 KiB 共享 L2/Directory 阵列。`CoherentCacheSubsystem` 将这些
 模块连成阻塞式 CPU-to-memory 路径，支持 L2/内存八拍 refill、owner SnoopData
@@ -469,7 +498,7 @@ SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为�
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
 | P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
-| P3 真实 L2 | 256 KiB 8-way Tag/Data/Directory Array 支持 `DIR_I` 回收、`DIR_S` sharer 反失效、`DIR_U` owner 数据回收与 dirty writeback | `DIR_U`/`DIR_S` victim 回收、数据回写、scoreboard 及 5-seed × 80-operation regression 通过 |
+| P3 AXI/APB 外部集成 | 新增 `CoherentCacheAxiSubsystem`、64-bit 8-beat AXI4 line adapter、只读 APB performance CSR；模块测试与顶层 elaboration 已加入 Make/CI gate | 当前提交需完成模块定向运行和 AXI/APB 顶层检查；AXI 每类一个 outstanding，与阻塞式 Directory 匹配 |
 | P4 签收强化 | 子系统随机/断言、arbiter formal、Directory/L1 bounded safety checks 已建立 | 仍需无界控制器/全 subsystem formal、更多 corner/mutation/覆盖率与性能基线 |
 | P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 
@@ -498,7 +527,7 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 - v1 验证边界是两个 LSU Agent 和 DCache；真实双 Core、ICache MESI、DMA coherence 不在当前实现内。
 - 已接入 256 KiB / 8-way Shared L2/Directory 阵列。
 
-剩余集成项：新增 coherence module/smoke/random/formal 工作流步骤到 GitHub Actions；目前 CI 的 `make formal` 会跑 arbiter proof，但工作流尚未运行 coherence benches。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
+GitHub Actions 当前已运行 `make coherence_verify`；本次增加的 AXI/APB 模块测试与顶层 elaboration 也已并入该 gate，需以本次 RTL 验证和下一次 Actions 结果作为交付依据。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
 
 ---
 

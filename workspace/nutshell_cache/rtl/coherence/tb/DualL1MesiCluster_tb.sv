@@ -18,6 +18,8 @@ module DualL1MesiCluster_tb;
   logic cpu_resp_write [0:1];
   logic [63:0] cpu_resp_rdata [0:1];
   logic [TXN_ID_WIDTH-1:0] cpu_resp_txn_id [0:1];
+  logic cpu_hit_event [0:1];
+  logic cpu_miss_event [0:1];
 
   logic [1:0] dir_req_ready;
   logic dir_req_valid;
@@ -192,6 +194,7 @@ module DualL1MesiCluster_tb;
 
   integer core;
   integer timeout;
+  integer hit_wait;
   logic [TXN_ID_WIDTH-1:0] first_txn;
   logic [TXN_ID_WIDTH-1:0] second_txn;
 
@@ -240,7 +243,9 @@ module DualL1MesiCluster_tb;
     cpu_req_valid[0] = 1'b1;
     cpu_req_valid[1] = 1'b1;
     #1;
-    if (!cpu_req_ready[0] || !cpu_req_ready[1])
+    if (!cpu_req_ready[0] || !cpu_req_ready[1] ||
+        !cpu_miss_event[0] || !cpu_miss_event[1] ||
+        cpu_hit_event[0] || cpu_hit_event[1])
       $fatal(1, "both idle L1 request ports should accept independent misses");
     tick();
     cpu_req_valid[0] = 1'b0;
@@ -274,6 +279,25 @@ module DualL1MesiCluster_tb;
     dir_req_ready_from_directory = 1'b0;
     complete_read_refill(1'b1, 32'h0000_2028, second_txn,
                          64'hB000_0000_0000_0000);
+
+    // A repeated read of a refilled line is reported as a cache hit and does
+    // not issue another Directory request.
+    cpu_req_addr[0] = 32'h0000_1018;
+    cpu_req_valid[0] = 1'b1;
+    #1;
+    if (!cpu_req_ready[0] || !cpu_hit_event[0] || cpu_miss_event[0])
+      $fatal(1, "refilled line was not reported as a CPU cache hit");
+    tick();
+    cpu_req_valid[0] = 1'b0;
+    for (hit_wait = 0; hit_wait < 20 && !cpu_resp_valid[0]; hit_wait = hit_wait + 1)
+      tick();
+    if (!cpu_resp_valid[0] || cpu_resp_rdata[0] !=
+        (64'hA000_0000_0000_0000 + 3))
+      $fatal(1, "cache hit event response mismatch: valid=%b rdata=%016x expected=%016x state=%0d",
+             cpu_resp_valid[0], cpu_resp_rdata[0],
+             64'hA000_0000_0000_0000 + 3,
+             dut.cores[0].l1_controller.cpu_state_q);
+    tick();
 
     if (controller_protocol_error != 2'b00 || array_protocol_error != 2'b00)
       $fatal(1, "cluster raised a protocol error during independent refills");

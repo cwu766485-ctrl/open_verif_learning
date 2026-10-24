@@ -39,6 +39,17 @@ does not change the legacy `rtl/Cache.files.f` single-L1 baseline.
   request/response bypass and never allocate in L1, L2, or the Directory.
   Memory requests and line beats carry the active transaction ID; refill beats
   with a mismatched ID are rejected before reaching the L2 array.
+- `LineMemoryAxi4Adapter.sv`: converts the existing 64-byte line request and
+  eight 64-bit beats into AXI4 64-bit INCR bursts (`LEN=7`, `SIZE=3`). It
+  preserves transaction IDs, emits normal non-locked memory attributes, applies full-line write strobes, drains trailing
+  read beats after an AXI read error, and returns AXI B/R errors to the cache.
+- `CachePerformanceCsr.sv`: read-only APB3 counters for cache hits, misses,
+  accepted snoops, successful dirty L2 writebacks, aggregate cache-access
+  cycles, completed cached accesses, and current error status.
+- `CoherentCacheAxiSubsystem.sv`: integration top combining the existing
+  coherent cache, AXI4 master adapter, and APB performance CSR. The original
+  `CoherentCacheSubsystem` remains available with its line-oriented memory
+  interface for existing simulations.
 
 ## Focused module regressions
 
@@ -77,7 +88,7 @@ make coherence_verify         # all above plus subsystem directed/random tests
 | Directory control | `DirectoryController` | GetS/GetM/Upgrade, PutS/PutE/PutM, owner Snoop, channel stalls, active reset; 16-step bounded formal checks | One globally serialized Directory transaction |
 | Shared L2 storage | `SharedL2DirectoryArray` | Tag/directory metadata, full-line transfers, stalls, dirty victim reporting and reclaim, malformed beat | Live-victim recovery is additionally checked at subsystem level |
 | Dual-L1 cluster | `DualL1MesiCluster` | Simultaneous independent L1 misses, request-source ordering, transaction routing, two full refills and CPU response-data checks | Snoop ownership between the two L1s and eviction interaction are covered at subsystem level |
-| Memory/MMIO adapters | Subsystem memory and MMIO paths | Backpressure, transaction IDs, read/write errors, reset cancellation and bypass are checked at subsystem level | Not split into separate adapter-only benches yet |
+| Memory/MMIO adapters | Subsystem memory/MMIO paths and AXI4 line adapter | Backpressure, IDs, AXI burst fields, read-error drain, APB CSR access, line-memory errors, reset cancellation, and MMIO bypass have directed checks | AXI adapter proof is simulation-based; it has no separate formal job |
 | Integrated subsystem | `CoherentCacheSubsystem` | Directed MESI/victim/error/reset/concurrency tests, scoreboard, assertions, multisnoop case, and fixed-seed randomized operations | No unbounded proof of the complete subsystem |
 
 `make coherence_modules` runs six leaf-module benches plus the dual-L1 cluster
@@ -149,6 +160,46 @@ latencies plus configured cache capacity. Those are RTL simulation results.
 There is no target standard-cell library, SRAM compiler model, clock
 constraint, or physical-design flow in this repository, so area and timing
 figures are not silicon PPA or static timing signoff.
+
+## AXI4 and APB integration
+
+`CoherentCacheAxiSubsystem` is the bus-facing top when connecting the design to
+an AXI memory port and software/debug access. The AXI adapter translates each
+cache line into one 64-bit, eight-beat INCR burst. `ARLEN/AWLEN=7`,
+`ARSIZE/AWSIZE=3`, and both burst types are INCR. LOCK is zero, CACHE is
+`4'b0011`, and PROT is `3'b000`. `ARID/AWID` carry the
+subsystem transaction ID and R/B IDs are checked on their return path. Dirty
+writeback uses `WSTRB=8'hff` because the cache emits a complete line. AW and W
+are independent channels; B is accepted only after the final W beat.
+
+The coherence Directory currently serializes line transfers. Therefore the
+AXI adapter allows one active read and one active write, with independent read
+and write state; the current subsystem does not issue them concurrently. This
+is the integration contract for this revision, not a multi-request queue. A
+shared reset must also reset the attached AXI memory model/interconnect because
+AXI has no transaction-cancel channel.
+
+The APB block is read-only and uses 32-bit accesses at these byte offsets:
+
+| Offset | Register | Meaning |
+| --- | --- | --- |
+| `0x00` | Cache Hit Count | Accepted cached CPU requests served by an existing MESI copy; an S-state write is counted as a miss because it needs Upgrade |
+| `0x04` | Cache Miss Count | Accepted cached CPU requests that need Directory access/refill/Upgrade |
+| `0x08` | Snoop Count | Snoop messages accepted by either L1, including inclusive L2 victim invalidations |
+| `0x0C` | Dirty Writeback Count | Successful dirty L2 victim writeback responses |
+| `0x10` | Error Status | bit 0 fatal, bit 1 protocol error, bit 2 memory response error, bit 3 MMIO protocol error |
+| `0x14` | Cache Access Cycles | Sum of cycles with each cached CPU request outstanding, including response backpressure |
+| `0x18` | Completed Cache Accesses | Accepted cached CPU responses; software may divide `0x14` by this value for average latency |
+
+Counters are 32-bit, clear on reset, wrap on overflow, and reject writes or
+unmapped offsets with `PSLVERR`. Hit/miss counts exclude the non-cacheable
+MMIO bypass. The APB CSR block is not a JTAG implementation; a later debug
+bridge can map its APB access into the same register window.
+
+`make coherence_bus_blocks` checks AXI burst conversion, read/write channel
+backpressure, read-error drain, APB reads, and read-only behavior.
+`make coherence_axi_lint` elaborates the full AXI/APB top. Both targets are
+included in `make coherence_verify` and the CI workflow.
 
 ## Directed subsystem smoke test
 

@@ -1,7 +1,9 @@
-# NutShell L1 DCache RTL & Verification
+# NutShell Cache RTL & Verification
 
-This project maintains and verifies a Verilog implementation of the NutShell
-L1 data cache at its SimpleBus boundary.
+This project keeps the original NutShell L1 DCache SimpleBus regression and a
+separate dual-L1 MESI subsystem with a shared Directory/L2. The coherent path
+now has a bus-facing AXI4 top and an APB performance CSR; it remains a blocking
+RTL prototype rather than a full CPU/SoC implementation.
 
 ## Tools
 
@@ -21,6 +23,10 @@ make benchmark   # Measure deterministic L1 DCache hit/miss and RTL cycles
 make report       # Run tests and generate reports/coverage
 make clean        # Remove generated simulator artifacts
 make doctor       # Check the project-local WSL Python/EDA toolchain
+make coherence_modules     # Run the independent MESI/L1/Directory/L2 benches
+make coherence_bus_blocks  # Check AXI line bursts and APB performance CSRs
+make coherence_axi_lint    # Elaborate the AXI/APB cache subsystem top
+make coherence_verify      # Run coherence modules, bounded formal and subsystem regression
 ```
 
 Run these commands from Ubuntu/WSL. The Makefile sources `scripts/env.sh`,
@@ -49,6 +55,13 @@ current coverage numbers and closure gaps are documented in `dv/README.md`.
 
 The architecture and verification plan are documented in
 `docs/cache_spec_and_verification_plan.md`.
+
+The coherent subsystem architecture, external bus contract, APB register map,
+outstanding-transaction limit and remaining formal/physical-design boundaries
+are documented in [`rtl/coherence/README.md`](rtl/coherence/README.md) and
+[`docs/cache.md`](docs/cache.md). The adapter exposes one outstanding read and
+one outstanding write at most, matching the current serialized Directory; the
+APB block does not implement a JTAG TAP.
 
 ## Performance baseline
 
