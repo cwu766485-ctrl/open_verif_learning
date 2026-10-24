@@ -1,5 +1,5 @@
-// Blocking dual-LSU subsystem: two private MESI L1s, one Directory, one
-// inclusive shared L2 array, and line-oriented backing-memory ports. L2
+// Dual-LSU subsystem: two blocking private MESI L1s, a four-context Directory
+// bank, one inclusive shared L2 array, and line-oriented backing-memory ports. L2
 // victims are reclaimed only after their inclusive L1 copies are invalidated.
 module CoherentCacheSubsystem #(
   parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH,
