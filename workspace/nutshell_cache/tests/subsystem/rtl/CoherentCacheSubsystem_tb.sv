@@ -2,7 +2,6 @@
 
 module CoherentCacheSubsystem_tb;
   import coherence_protocol_pkg::*;
-  localparam logic [4:0] TB_ENGINE_VICTIM_SNOOP_SEND = 5'd13;
   localparam int MODEL_SLOTS = 4;
 
   logic clock = 1'b0;
@@ -82,6 +81,35 @@ module CoherentCacheSubsystem_tb;
   logic perf_dirty_writeback_event;
   logic [1:0] perf_inflight;
   logic [1:0] perf_access_complete_event;
+  logic metadata_commit_valid [0:1];
+  logic [31:0] metadata_commit_line_addr [0:1];
+  mesi_state_t metadata_commit_state [0:1];
+  logic metadata_commit_is_snoop [0:1];
+  logic monitor_snoop_accept_valid [0:1];
+  logic [31:0] monitor_snoop_accept_addr [0:1];
+  snoop_opcode_t monitor_snoop_accept_opcode [0:1];
+  logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1];
+  integer metadata_commit_count = 0;
+  integer metadata_snoop_commit_count = 0;
+
+  always @(posedge clock) begin
+    if (!reset) begin
+      for (integer core = 0; core < 2; core = core + 1) begin
+        if (metadata_commit_valid[core]) begin
+          metadata_commit_count <= metadata_commit_count + 1;
+          if (metadata_commit_line_addr[core][5:0] != 6'b0)
+            $fatal(1, "metadata commit address is not line aligned: %08x",
+                   metadata_commit_line_addr[core]);
+          case (metadata_commit_state[core])
+            MESI_I, MESI_S, MESI_E, MESI_M: begin end
+            default: $fatal(1, "invalid committed MESI state for core %0d", core);
+          endcase
+          if (metadata_commit_is_snoop[core])
+            metadata_snoop_commit_count <= metadata_snoop_commit_count + 1;
+        end
+      end
+    end
+  end
   logic [4:0] performance_events_seen = 5'b0;
 
   always_ff @(posedge clock) begin
@@ -776,7 +804,15 @@ module CoherentCacheSubsystem_tb;
     .perf_snoop_event(perf_snoop_event),
     .perf_dirty_writeback_event(perf_dirty_writeback_event),
     .perf_inflight(perf_inflight),
-    .perf_access_complete_event(perf_access_complete_event)
+    .perf_access_complete_event(perf_access_complete_event),
+    .metadata_commit_valid(metadata_commit_valid),
+    .metadata_commit_line_addr(metadata_commit_line_addr),
+    .metadata_commit_state(metadata_commit_state),
+    .metadata_commit_is_snoop(metadata_commit_is_snoop),
+    .monitor_snoop_accept_valid(monitor_snoop_accept_valid),
+    .monitor_snoop_accept_addr(monitor_snoop_accept_addr),
+    .monitor_snoop_accept_opcode(monitor_snoop_accept_opcode),
+    .monitor_snoop_accept_txn_id(monitor_snoop_accept_txn_id)
   );
 
   task automatic reference_get(
@@ -917,35 +953,41 @@ module CoherentCacheSubsystem_tb;
     end
   endtask
 
+  task automatic coverage_mark(
+    input string bin_id,
+    input string old_state,
+    input string requester,
+    input string opcode,
+    input string snoop_target,
+    input string new_state,
+    input string data_source,
+    input integer beats
+  );
+    begin
+      $display("COV_EVENT: id=%s checker=PASS old_state=%s requester=%s opcode=%s snoop_target=%s new_state=%s data_source=%s beats=%0d",
+               bin_id, old_state, requester, opcode, snoop_target,
+               new_state, data_source, beats);
+    end
+  endtask
+
   task automatic state_model_observe_protocol;
     integer put_core;
+    mesi_state_t model_state;
     begin
       // An E-state store is a local silent E->M transition. It commits at
       // request acceptance even when the downstream CPU response is stalled.
-      if (cpu_req_valid[0] && cpu_req_ready[0] && cpu_req_write[0] &&
-          dut.l1_cluster.cores[0].lookup_hit &&
-          (dut.l1_cluster.cores[0].lookup_state == MESI_E))
-        state_model_set(cpu_req_addr[0], 0, MESI_M);
-      if (cpu_req_valid[1] && cpu_req_ready[1] && cpu_req_write[1] &&
-          dut.l1_cluster.cores[1].lookup_hit &&
-          (dut.l1_cluster.cores[1].lookup_state == MESI_E))
-        state_model_set(cpu_req_addr[1], 1, MESI_M);
-      if (dut.l1_cluster.cores[0].cpu_meta_write_valid &&
-          dut.l1_cluster.cores[0].cpu_meta_write_ready)
-        state_model_set(dut.l1_cluster.cores[0].cpu_meta_write_line_addr,
-                        0, dut.l1_cluster.cores[0].cpu_meta_write_state);
-      if (dut.l1_cluster.cores[1].cpu_meta_write_valid &&
-          dut.l1_cluster.cores[1].cpu_meta_write_ready)
-        state_model_set(dut.l1_cluster.cores[1].cpu_meta_write_line_addr,
-                        1, dut.l1_cluster.cores[1].cpu_meta_write_state);
-      if (dut.l1_cluster.cores[0].snoop_meta_write_valid &&
-          dut.l1_cluster.cores[0].snoop_meta_write_ready)
-        state_model_set(dut.l1_cluster.cores[0].snoop_meta_write_line_addr,
-                        0, dut.l1_cluster.cores[0].snoop_meta_write_state);
-      if (dut.l1_cluster.cores[1].snoop_meta_write_valid &&
-          dut.l1_cluster.cores[1].snoop_meta_write_ready)
-        state_model_set(dut.l1_cluster.cores[1].snoop_meta_write_line_addr,
-                        1, dut.l1_cluster.cores[1].snoop_meta_write_state);
+      // Predict a silent E->M store from the model's own committed MESI
+      // state. This does not sample the DUT lookup or its next-state signals.
+      if (cpu_req_valid[0] && cpu_req_ready[0] && cpu_req_write[0]) begin
+        state_model_get(cpu_req_addr[0], 0, model_state);
+        if (model_state == MESI_E)
+          state_model_set(cpu_req_addr[0], 0, MESI_M);
+      end
+      if (cpu_req_valid[1] && cpu_req_ready[1] && cpu_req_write[1]) begin
+        state_model_get(cpu_req_addr[1], 1, model_state);
+        if (model_state == MESI_E)
+          state_model_set(cpu_req_addr[1], 1, MESI_M);
+      end
       if (dut.cluster_dir_req_valid && dut.dir_req_ready &&
           ((dut.cluster_dir_req_opcode == REQ_PUTS) ||
            (dut.cluster_dir_req_opcode == REQ_PUTE) ||
@@ -953,15 +995,12 @@ module CoherentCacheSubsystem_tb;
         put_core = dut.cluster_dir_req_src_id;
         state_model_set(dut.cluster_dir_req_addr, put_core, MESI_I);
       end
-      if (dut.dir_snoop_valid && dut.dir_snoop_ready) begin
-        state_model_set(dut.dir_snoop_addr, dut.dir_snoop_target,
-                        (dut.dir_snoop_opcode == SNOOP_READ) ? MESI_S : MESI_I);
+      for (integer snoop_core = 0; snoop_core < 2; snoop_core = snoop_core + 1) begin
+        if (monitor_snoop_accept_valid[snoop_core])
+          state_model_set(monitor_snoop_accept_addr[snoop_core], snoop_core,
+                          (monitor_snoop_accept_opcode[snoop_core] == SNOOP_READ) ?
+                            MESI_S : MESI_I);
       end
-      if (dut.victim_snoop_active &&
-          (dut.engine_state_q == TB_ENGINE_VICTIM_SNOOP_SEND) &&
-          dut.snoop_valid_core[dut.victim_snoop_target_q] &&
-          dut.snoop_ready_core[dut.victim_snoop_target_q])
-        state_model_set(dut.victim_addr_q, dut.victim_snoop_target_q, MESI_I);
     end
   endtask
 
@@ -1187,16 +1226,11 @@ module CoherentCacheSubsystem_tb;
       for (cycles = 0; cycles < 500; cycles = cycles + 1) begin
         @(posedge clock);
         operation_cycles = operation_cycles + 1;
-        if (!snoop_seen && dut.dir_snoop_valid && dut.dir_snoop_ready &&
-            line_align(dut.dir_snoop_addr) == line_align(addr)) begin
-          snoop_seen = 1'b1;
-          snoop_start_cycle = operation_cycles;
-        end
-        if (!snoop_seen && dut.victim_snoop_active &&
-            (dut.engine_state_q == TB_ENGINE_VICTIM_SNOOP_SEND) &&
-            dut.snoop_valid_core[dut.victim_snoop_target_q] &&
-            dut.snoop_ready_core[dut.victim_snoop_target_q] &&
-            line_align(dut.victim_addr_q) == line_align(addr)) begin
+        if (!snoop_seen &&
+            ((monitor_snoop_accept_valid[0] &&
+              line_align(monitor_snoop_accept_addr[0]) == line_align(addr)) ||
+             (monitor_snoop_accept_valid[1] &&
+              line_align(monitor_snoop_accept_addr[1]) == line_align(addr)))) begin
           snoop_seen = 1'b1;
           snoop_start_cycle = operation_cycles;
         end
@@ -1214,16 +1248,11 @@ module CoherentCacheSubsystem_tb;
       for (cycles = 0; cycles < 1000; cycles = cycles + 1) begin
         @(posedge clock);
         operation_cycles = operation_cycles + 1;
-        if (!snoop_seen && dut.dir_snoop_valid && dut.dir_snoop_ready &&
-            line_align(dut.dir_snoop_addr) == line_align(addr)) begin
-          snoop_seen = 1'b1;
-          snoop_start_cycle = operation_cycles;
-        end
-        if (!snoop_seen && dut.victim_snoop_active &&
-            (dut.engine_state_q == TB_ENGINE_VICTIM_SNOOP_SEND) &&
-            dut.snoop_valid_core[dut.victim_snoop_target_q] &&
-            dut.snoop_ready_core[dut.victim_snoop_target_q] &&
-            line_align(dut.victim_addr_q) == line_align(addr)) begin
+        if (!snoop_seen &&
+            ((monitor_snoop_accept_valid[0] &&
+              line_align(monitor_snoop_accept_addr[0]) == line_align(addr)) ||
+             (monitor_snoop_accept_valid[1] &&
+              line_align(monitor_snoop_accept_addr[1]) == line_align(addr)))) begin
           snoop_seen = 1'b1;
           snoop_start_cycle = operation_cycles;
         end
@@ -1737,12 +1766,14 @@ module CoherentCacheSubsystem_tb;
              memory_read_count,
              dut.l1_cluster.cores[0].l1_array.cpu_lookup_hit,
              mmio_protocol_error);
+      coverage_mark("mmio.bypass", "na", "both", "MMIO", "none", "na", "MMIO", 0);
     $display("PASS: MMIO read/write bypasses L1, L2, and backing memory");
     expect_word(0, 32'h2FFF_FFF8, memory_word(32'h2FFF_FFC0, 3'd7));
     cpu_access(0, 32'h7FFF_FFF8, 1'b0, 8'h00, 64'b0, mmio_data);
     if (mmio_data !== mmio_initial_word(32'h7FFF_FFF8))
       $fatal(1, "upper MMIO boundary returned incorrect data");
     expect_word(0, 32'h8000_0000, memory_word(32'h8000_0000, 3'd0));
+      coverage_mark("mmio.address_boundaries", "na", "both", "MMIO_boundary", "none", "na", "MMIO", 0);
     $display("PASS: cacheable/MMIO address-domain boundary cases");
 
     // Exercise external request/response stalls while the CPU response is
@@ -1778,6 +1809,7 @@ module CoherentCacheSubsystem_tb;
     // Some simulator versions retain a forced value on optimized array ports;
     // explicitly restore READY for portable behavior.
     force dut.l2_array.line_wr_ready = 1'b1;
+      coverage_mark("backpressure.mem_refill", "I", "0", "GetS", "none", "E", "memory", 8);
     $display("PASS: refill MSHR absorbs the memory line while the L2 fill port is stalled");
     for (cycles = 0; cycles < 1000; cycles = cycles + 1) begin
       if (cpu_resp_valid[0])
@@ -1794,6 +1826,7 @@ module CoherentCacheSubsystem_tb;
     // independent transaction and changing the backpressure pattern.
     @(posedge clock);
     @(negedge clock);
+      coverage_mark("backpressure.independent_channels", "mixed", "both", "GetS+GetM", "none", "mixed", "memory", 8);
     $display("PASS: memory request/refill and CPU response survive independent stalls");
 
     stall_mmio_req = 1'b1;
@@ -1821,10 +1854,12 @@ module CoherentCacheSubsystem_tb;
     cpu_resp_ready[0] = 1'b1;
     cpu_response_only(0, 32'h3000_0100, 1'b0, 8'h00, 64'b0, stalled_data);
     inject_periodic_stalls = 1'b0;
+      coverage_mark("backpressure.mmio", "na", "0", "MMIO", "none", "na", "MMIO", 0);
     $display("PASS: MMIO request and response payloads remain stable under backpressure");
 
     expect_word(0, word_addr, initial_word);
     expect_protocol_state(MESI_E, MESI_I, DIR_U, 2'b00, 1'b0);
+      coverage_mark("mesi.gets_cold_refill", "I", "0", "GetS", "none", "E", "memory", 8);
     $display("PASS: Core0 GetS refill from backing memory");
 
     // Hold an E->M CPU write response while the other core requests the same
@@ -1864,6 +1899,7 @@ module CoherentCacheSubsystem_tb;
     if (snoop_write_race_readback !== snoop_write_race_data)
       $fatal(1, "same-line snoop returned stale data during local E-to-M write");
     expect_protocol_state(MESI_S, MESI_S, DIR_S, 2'b11, 1'b0);
+      coverage_mark("mesi.snoop_waits_store_commit", "E", "1", "GetS+StoreCommit", "0", "S", "L1_owner", 8);
     $display("PASS: same-line SnoopRead waits for local E-to-M write commit");
     cpu_resp_ready[0] = 1'b1;
     cpu_resp_ready[1] = 1'b1;
@@ -1873,16 +1909,19 @@ module CoherentCacheSubsystem_tb;
     cpu_req_addr[1] = word_addr;
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_line_with_word_override(0, line_addr, 3, value4);
+      coverage_mark("mesi.e_to_m_silent", "E", "0", "Store", "none", "M", "local_L1", 0);
     $display("PASS: E-to-M local write is silent and preserves the full line");
 
     expect_word(1, word_addr, value4);
     expect_protocol_state(MESI_S, MESI_S, DIR_S, 2'b11, 1'b0);
     expect_line_with_word_override(1, line_addr, 3, value4);
+      coverage_mark("mesi.gets_share_m_owner", "M", "1", "GetS", "0", "S", "remote_owner", 8);
     $display("PASS: Core1 GetS shares the full latest line from the M owner");
 
     cpu_access(0, word_addr, 1'b1, 8'hFF, value0, ignored);
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_word(1, word_addr, value0);
+      coverage_mark("mesi.getm_upgrade_s", "S", "0", "GetM", "1", "M", "L1_peer", 0);
     $display("PASS: shared-to-exclusive upgrade invalidates peer; remote read sees M data");
 
     cpu_access(1, word_addr, 1'b1, 8'hFF, value1, ignored);
@@ -1891,6 +1930,7 @@ module CoherentCacheSubsystem_tb;
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_word(1, word_addr, value2);
     expect_line_with_word_override(1, line_addr, 3, value2);
+      coverage_mark("mesi.getm_remote_owner", "M", "0", "GetM", "1", "M", "remote_owner", 8);
     $display("PASS: remote GetM invalidates an M owner and preserves its latest data");
 
     masked_value = (value2 & 64'hFFFF_FFFF_0000_0000) |
@@ -1898,6 +1938,7 @@ module CoherentCacheSubsystem_tb;
     cpu_access(0, word_addr, 1'b1, 8'h0F, value3, ignored);
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_word(1, word_addr, masked_value);
+      coverage_mark("mesi.masked_owner_write", "M", "1", "GetS_after_MaskedStore", "0", "S", "remote_owner", 8);
     $display("PASS: byte-masked write is visible after remote owner intervention");
 
     // Both cores miss on one line together, then race for write permission.
@@ -1923,6 +1964,7 @@ module CoherentCacheSubsystem_tb;
     cpu_access(1, shared_addr, 1'b1, 8'h00, 64'hFFFF_FFFF_FFFF_FFFF, ignored);
     reference_get(shared_addr, masked_value);
     expect_word(0, shared_addr, masked_value);
+      coverage_mark("cpu_pair.same_line", "mixed", "both", "GetS+GetM", "both", "M", "mixed", 8);
     $display("PASS: same-line simultaneous GetS/GetM and byte-mask corner cases");
 
     cpu_pair_access(32'h0000_D000, 1'b0, 8'h00, 64'b0,
@@ -1931,6 +1973,7 @@ module CoherentCacheSubsystem_tb;
     if (concurrent_data0 !== memory_word(32'h0000_D000, 3'd0) ||
         concurrent_data1 !== memory_word(32'h0000_E000, 3'd7))
       $fatal(1, "different-line concurrent misses returned incorrect data");
+      coverage_mark("cpu_pair.different_lines", "I", "both", "GetS", "none", "E", "memory", 8);
     $display("PASS: different-address concurrent misses route to the correct cores");
 
     expect_word(1, clean_owner_word_addr,
@@ -1942,6 +1985,7 @@ module CoherentCacheSubsystem_tb;
     expect_protocol_state(MESI_M, MESI_I, DIR_U, 2'b00, 1'b0);
     expect_line_with_word_override(0, clean_owner_line, 3,
                                    clean_owner_value);
+      coverage_mark("mesi.getm_remote_clean_e", "E", "0", "GetM", "1", "M", "clean_L1_peer", 8);
     $display("PASS: remote GetM invalidates a clean E owner and receives all beats");
 
     // An unrelated SnoopInvalidate must still enter the independent Snoop
@@ -1975,6 +2019,7 @@ module CoherentCacheSubsystem_tb;
                       different_snoop_cpu_data, ignored);
     expect_word(0, different_snoop_target_addr, different_snoop_target_data);
     expect_word(1, different_snoop_cpu_addr, different_snoop_cpu_data);
+      coverage_mark("cpu_pair.snoop_progress", "S", "1", "GetM_Upgrade", "0", "M", "local_L1", 0);
     $display("PASS: different-line SnoopInvalidate progresses during a local CPU response stall");
     cpu_req_addr[0] = clean_owner_word_addr;
     cpu_req_addr[1] = clean_owner_word_addr;
@@ -1986,6 +2031,7 @@ module CoherentCacheSubsystem_tb;
       expect_word(0, eviction_word_addr, memory_word(eviction_line_addr, 3'd3));
     end
     expect_word(1, word_addr, value4);
+      coverage_mark("l1.putm", "M", "0", "PutM", "none", "I", "L1_owner", 8);
     $display("PASS: dirty M victim uses PutM, returns to L2, then refills by peer");
 
     for (line_number = 1; line_number <= 4; line_number = line_number + 1) begin
@@ -2003,6 +2049,7 @@ module CoherentCacheSubsystem_tb;
          dut.l1_cluster.cores[1].l1_array.tag_array[64][3] == 19'h0))
       $fatal(1, "PutE replacement left the evicted E line valid");
     expect_word(0, word_addr, value4);
+      coverage_mark("l1.pute", "E", "0", "PutE", "none", "I", "L2", 0);
     $display("PASS: clean E victim is removed with PutE; dirty L2 data is preserved");
 
     expect_word(1, 32'h0000_B018, snoop_write_race_data);
@@ -2016,6 +2063,7 @@ module CoherentCacheSubsystem_tb;
          dut.l1_cluster.cores[1].l1_array.tag_array[64][3] == 19'h1))
       $fatal(1, "PutS replacement left the evicted S line valid");
     expect_word(0, 32'h0000_3018, memory_word(32'h0000_3000, 3'd3));
+      coverage_mark("l1.puts", "S", "0", "PutS", "none", "I", "L2", 0);
     $display("PASS: shared S victim is removed with PutS while the peer retains its copy");
 
     l2_test_addr[0] = 32'h0000_4000;
@@ -2066,8 +2114,10 @@ module CoherentCacheSubsystem_tb;
         (dut.l1_cluster.cores[1].l1_array.valid_array[0][3] &&
          dut.l1_cluster.cores[1].l1_array.tag_array[0][3] == observed_l2_live_victim_q[31:13]))
       $fatal(1, "L2 live-victim back-invalidation left the old owner line valid");
+      coverage_mark("l2.live_u_victim", "M", "1", "L2_Evict", "1", "I", "L1_owner", 8);
     $display("PASS: L2 live victim back-invalidates an M owner and writes back its line");
     expect_word(0, observed_l2_live_victim_q + 32'd24, l2_dirty_value);
+      coverage_mark("l2.dirty_owner_writeback", "M", "1", "L2_Evict", "1", "I", "backing_memory", 8);
     $display("PASS: dirty owner data survives L2 eviction through backing memory");
 
     @(negedge clock);
@@ -2125,6 +2175,7 @@ module CoherentCacheSubsystem_tb;
         found_written_victim = 1'b1;
     if (!found_written_victim)
       $fatal(1, "dirty DIR_S victim data was not written back to memory");
+      coverage_mark("l2.shared_multisnoop", "S", "both", "L2_Evict", "both", "I", "L2_dirty", 8);
     $display("PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data");
 
     // A repeatable constrained-random phase concentrates traffic on one L2
@@ -2157,6 +2208,7 @@ module CoherentCacheSubsystem_tb;
                    64'b0, ignored);
     end
     inject_periodic_stalls = 1'b0;
+      coverage_mark("random.seeded_data", "mixed", "both", "random", "mixed", "mixed", "mixed", 8);
     $display("PASS: seeded 80-operation coherence/data scoreboard regression seed=%08x",
              random_seed);
 
@@ -2208,6 +2260,7 @@ module CoherentCacheSubsystem_tb;
         $fatal(1, "stale CPU response escaped after refill reset");
     end
     expect_word(0, 32'h000F_0000, memory_word(32'h000F_0000, 3'd0));
+      coverage_mark("reset.refill", "I", "0", "GetS+Reset", "none", "I", "memory", 0);
     $display("PASS: reset cancels an active refill without a stale response");
 
     // Hold an MMIO response at the peripheral boundary, then reset before it
@@ -2230,6 +2283,7 @@ module CoherentCacheSubsystem_tb;
       if (cpu_resp_valid[0] || mmio_resp_ready)
         $fatal(1, "stale MMIO response escaped after reset");
     end
+      coverage_mark("reset.mmio", "na", "0", "MMIO+Reset", "none", "na", "MMIO", 0);
     $display("PASS: reset cancels a backpressured MMIO response");
 
     // Finally assert reset while a valid cache response itself is stalled.
@@ -2254,6 +2308,7 @@ module CoherentCacheSubsystem_tb;
         l2_protocol_error || memory_adapter_protocol_error ||
         memory_adapter_error || mmio_protocol_error || fatal_error)
       $fatal(1, "protocol error after reset corner cases");
+      coverage_mark("reset.cpu_rsp", "E", "0", "GetS+Reset", "none", "I", "L1", 0);
     $display("PASS: reset cancels a stalled cache response without replay");
 
     // Reset after an M owner has started returning SnoopData to the L2 path.
@@ -2293,6 +2348,7 @@ module CoherentCacheSubsystem_tb;
         $fatal(1, "stale CPU response escaped after SnoopData reset");
     end
     expect_reference_word(0, l2_test_addr[0] + 32'd24);
+      coverage_mark("reset.snoop_data", "M", "0", "SnoopData+Reset", "1", "I", "L1_owner", 8);
     $display("PASS: reset cancels an active owner SnoopData stream");
 
     // Rebuild one full congruent L2 set with an M owner in the next victim
@@ -2342,6 +2398,7 @@ module CoherentCacheSubsystem_tb;
     if ((cover_reset_snoop_data == 0) || (cover_reset_mem_wr_data == 0))
       $fatal(1, "reset coverage hole: snoop_data=%0d mem_wr_data=%0d",
              cover_reset_snoop_data, cover_reset_mem_wr_data);
+      coverage_mark("reset.l2_writeback", "M", "1", "L2_Writeback+Reset", "1", "I", "backing_memory", 8);
     $display("PASS: reset cancels a stalled dirty L2 writeback beat");
 
     // A terminal backing-memory read error must fail-stop without returning
@@ -2371,6 +2428,7 @@ module CoherentCacheSubsystem_tb;
     if (cpu_req_ready[1])
       $fatal(1, "fatal_error did not block a new CPU request");
     cpu_req_valid[1] = 1'b0;
+      coverage_mark("error.mem_read", "I", "0", "GetS+MemError", "none", "I", "memory_error", 1);
     $display("PASS: terminal memory read error suppresses success and blocks new requests");
 
     // After a system reset, force a dirty live L2 victim and return a failed
@@ -2415,10 +2473,14 @@ module CoherentCacheSubsystem_tb;
              cpu_resp_valid[0], cpu_resp_valid[1], failed_victim_found,
              failed_victim_dirty, dut.victim_addr_q, mem_wr_rsp_valid,
              memory_write_response_error_q, dut.engine_state_q);
+      coverage_mark("error.mem_write", "M", "0", "L2_Writeback+MemError", "none", "M", "backing_memory", 8);
     $display("PASS: failed write response preserves the valid dirty L2 victim");
 
     if (performance_events_seen != 5'b11111)
       $fatal(1, "performance event coverage incomplete: %05b", performance_events_seen);
+    if ((metadata_commit_count == 0) || (metadata_snoop_commit_count == 0))
+      $fatal(1, "metadata commit monitor was not exercised: commits=%0d snoops=%0d",
+             metadata_commit_count, metadata_snoop_commit_count);
     $display("PASS: hit/miss/snoop/writeback and completed-access performance events observed");
     $display("BENCH: l1_hit_count=%0d l1_hit_avg_cycles=%0d l1_miss_count=%0d l1_miss_avg_cycles=%0d snoop_count=%0d snoop_avg_cycles=%0d",
              benchmark_hit_count,

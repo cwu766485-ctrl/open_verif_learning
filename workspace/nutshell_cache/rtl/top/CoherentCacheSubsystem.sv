@@ -93,7 +93,20 @@ module CoherentCacheSubsystem #(
   output logic [1:0] perf_snoop_event,
   output logic perf_dirty_writeback_event,
   output logic [1:0] perf_inflight,
-  output logic [1:0] perf_access_complete_event
+  output logic [1:0] perf_access_complete_event,
+
+  // Stable monitor port for accepted L1 metadata commits.
+  output logic metadata_commit_valid [0:1],
+  output logic [31:0] metadata_commit_line_addr [0:1],
+  output coherence_protocol_pkg::mesi_state_t metadata_commit_state [0:1],
+  output logic metadata_commit_is_snoop [0:1],
+
+  // Accepted L1 snoop requests, including Directory and inclusive-victim
+  // back-invalidations, for protocol monitors and transaction reference models.
+  output logic monitor_snoop_accept_valid [0:1],
+  output logic [31:0] monitor_snoop_accept_addr [0:1],
+  output coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode [0:1],
+  output logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1]
 );
   import coherence_protocol_pkg::*;
 
@@ -673,6 +686,13 @@ module CoherentCacheSubsystem #(
   assign l2_victim_dirty = l2_alloc_victim_dirty;
   assign l1_victim_valid[0] = l1_replace_valid_core[0];
   assign l1_victim_valid[1] = l1_replace_valid_core[1];
+  for (genvar snoop_core = 0; snoop_core < 2; snoop_core = snoop_core + 1) begin : gen_snoop_monitor
+    assign monitor_snoop_accept_valid[snoop_core] = !reset &&
+      snoop_valid_core[snoop_core] && snoop_ready_core[snoop_core];
+    assign monitor_snoop_accept_addr[snoop_core] = snoop_addr_core[snoop_core];
+    assign monitor_snoop_accept_opcode[snoop_core] = snoop_opcode_core[snoop_core];
+    assign monitor_snoop_accept_txn_id[snoop_core] = snoop_txn_id_core[snoop_core];
+  end
 
   DualL1MesiCluster #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) l1_cluster (
     .clock(clock), .reset(reset),
@@ -686,6 +706,10 @@ module CoherentCacheSubsystem #(
     .cpu_resp_txn_id(cluster_cpu_resp_txn_id),
     .cpu_hit_event(cluster_perf_hit_event),
     .cpu_miss_event(cluster_perf_miss_event),
+    .metadata_commit_valid(metadata_commit_valid),
+    .metadata_commit_line_addr(metadata_commit_line_addr),
+    .metadata_commit_state(metadata_commit_state),
+    .metadata_commit_is_snoop(metadata_commit_is_snoop),
     .dir_req_valid(cluster_dir_req_valid),
     .dir_req_ready_from_directory(dir_req_ready),
     .dir_req_src_id(cluster_dir_req_src_id),

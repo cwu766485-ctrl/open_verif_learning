@@ -20,6 +20,11 @@ module DualL1MesiCluster_tb;
   logic [TXN_ID_WIDTH-1:0] cpu_resp_txn_id [0:1];
   logic cpu_hit_event [0:1];
   logic cpu_miss_event [0:1];
+  logic metadata_commit_valid [0:1];
+  logic [31:0] metadata_commit_line_addr [0:1];
+  mesi_state_t metadata_commit_state [0:1];
+  logic metadata_commit_is_snoop [0:1];
+  logic [1:0] metadata_commit_seen = 2'b00;
 
   logic [1:0] dir_req_ready;
   logic dir_req_valid;
@@ -85,6 +90,21 @@ module DualL1MesiCluster_tb;
   logic [1:0] array_protocol_error;
 
   always #5 clock = ~clock;
+
+  always @(posedge clock) begin
+    if (!reset) begin
+      for (integer core_id = 0; core_id < 2; core_id++) begin
+        if (metadata_commit_valid[core_id]) begin
+          if (metadata_commit_line_addr[core_id][5:0] != 6'b0 ||
+              metadata_commit_state[core_id] != MESI_E || metadata_commit_is_snoop[core_id])
+            $fatal(1, "unexpected refill metadata commit core=%0d addr=%08x state=%0d snoop=%b",
+                   core_id, metadata_commit_line_addr[core_id],
+                   metadata_commit_state[core_id], metadata_commit_is_snoop[core_id]);
+          metadata_commit_seen[core_id] <= 1'b1;
+        end
+      end
+    end
+  end
 
   always_comb begin
     grant_valid[0] = grant_valid_drive[0];
@@ -301,6 +321,8 @@ module DualL1MesiCluster_tb;
 
     if (controller_protocol_error != 2'b00 || array_protocol_error != 2'b00)
       $fatal(1, "cluster raised a protocol error during independent refills");
+    if (metadata_commit_seen != 2'b11)
+      $fatal(1, "array metadata commit monitor missed refills: %b", metadata_commit_seen);
 
     $display("PASS DualL1MesiCluster_tb");
     $finish;

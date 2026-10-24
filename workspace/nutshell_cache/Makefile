@@ -140,11 +140,13 @@ coherence_regression: coherence_build
 	    +verilator+coverage+file+reports/coherence/seed_$$seed.dat 2>&1 | \
 	    tee reports/coherence/seed_$$seed.log || exit $$?; \
 	done
+	@set -o pipefail; $(MAKE) coherence_directory_mshr_bank 2>&1 | tee reports/coherence/directory_mshr_bank.log
 	@source $(ENV_SCRIPT); verilator_coverage --write reports/coherence/coverage.dat reports/coherence/*.dat
 	@source $(ENV_SCRIPT); verilator_coverage --write-info reports/coherence/coverage.info reports/coherence/coverage.dat
 	@source $(ENV_SCRIPT); cd rtl && genhtml ../reports/coherence/coverage.info --output-directory ../reports/coherence/code_html
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_closure \
 	  --log reports/coherence/smoke.log --log reports/coherence/multisnoop.log \
+	  --log reports/coherence/directory_mshr_bank.log \
 	  --log reports/coherence/seed_00000001.log --log reports/coherence/seed_00001234.log \
 	  --log reports/coherence/seed_5EEDC0DE.log --log reports/coherence/seed_DEADBEEF.log \
 	  --log reports/coherence/seed_2468ACE0.log --lcov reports/coherence/coverage.info
@@ -178,6 +180,13 @@ coherence_directory:
 	  --top-module DirectoryController_tb --Mdir ../reports/coherence/directory_obj \
 	  -f Coherence.files.f ../tests/directory/rtl/DirectoryController_tb.sv
 	@reports/coherence/directory_obj/VDirectoryController_tb
+
+coherence_directory_mshr_bank:
+	@mkdir -p reports/coherence/directory_mshr_bank_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module DirectoryMshrBank_tb --Mdir ../reports/coherence/directory_mshr_bank_obj \
+	  -f Coherence.files.f ../tests/directory/rtl/DirectoryMshrBank_tb.sv
+	@reports/coherence/directory_mshr_bank_obj/VDirectoryMshrBank_tb
 
 coherence_request_arbiter:
 	@mkdir -p reports/coherence/request_arbiter_obj
@@ -225,7 +234,7 @@ coherence_axi_e2e:
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
 
-coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
+coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
 	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression

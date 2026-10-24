@@ -34,10 +34,32 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
     spec = json.loads(map_path.read_text())
     contents = {p: p.read_text(errors="replace") for p in logs}
     combined = "\n".join(contents.values())
+    bins_by_id = {item["id"]: item for item in spec["bins"]}
+    coverage_events: dict[str, int] = {}
+    invalid_events: list[str] = []
+    for line_number, line in enumerate(combined.splitlines(), start=1):
+        if not line.startswith("COV_EVENT:"):
+            continue
+        fields = dict(re.findall(r"([a-zA-Z0-9_]+)=([^\s]+)", line))
+        ident = fields.get("id", "")
+        item = bins_by_id.get(ident)
+        if item is None:
+            invalid_events.append(f"unknown bin at combined log line {line_number}: {ident!r}")
+            continue
+        errors = []
+        if fields.get("checker") != "PASS":
+            errors.append("checker did not pass")
+        for key, value in item.get("expected_transaction", {}).items():
+            if fields.get(key) != str(value):
+                errors.append(f"{key}={fields.get(key)!r}, expected {value!r}")
+        if errors:
+            invalid_events.append(f"{ident} at log line {line_number}: " + "; ".join(errors))
+            continue
+        coverage_events[ident] = coverage_events.get(ident, 0) + 1
     bins = []
     misses = []
     for item in spec["bins"]:
-        hits = sum(text.count(item["testpoint"]) for text in contents.values())
+        hits = coverage_events.get(item["id"], 0)
         row = {**item, "test": spec.get("test", ""),
                "hits": hits, "status": "hit" if hits else "miss"}
         bins.append(row)
@@ -71,9 +93,9 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
     pass_markers = sum(len(re.findall(r"^PASS:", text, flags=re.MULTILINE))
                        for text in contents.values())
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "regression": spec["regression"],
-        "status": "PASS" if not misses and not missing_stalls else "FAIL",
+        "status": "PASS" if not misses and not missing_stalls and not invalid_events else "FAIL",
         "simulation_logs": [str(p) for p in logs],
         "test_pass_markers": pass_markers,
         "functional_coverage": {
@@ -81,6 +103,7 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
             "percent": 100.0 * (len(bins) - len(misses)) / max(1, len(bins)),
             "bins": bins, "missing": misses,
         },
+        "coverage_event_errors": invalid_events,
         "stall_counts": stall_counts,
         "missing_stall_bins": missing_stalls,
         "performance_proxy": bench,
@@ -103,12 +126,17 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
         f"({result['code_coverage']['percent']:.1f}%)" if code_total else
         "- **Code line coverage:** unavailable (no LCOV input)",
         f"- **Documented waivers:** {len(waivers)}",
-        "", "| Feature | Testpoint | Bin | Test | Hits | Status |",
+        "", "Functional bins close only from structured `COV_EVENT` records emitted "
+        "after the corresponding checker completes; PASS text is informational.",
+        "", "| Feature | Bin | Stimulus / checker | Expected transaction axes | Hits | Status |",
         "|---|---|---|---|---:|---|",
     ]
     for item in bins:
-        lines.append(f"| {item['feature']} | `{item['testpoint']}` | `{item['id']}` | "
-                     f"{item['test']} | {item['hits']} | {item['status']} |")
+        axes = item.get("expected_transaction", {})
+        axis_text = ", ".join(f"{key}={value}" for key, value in axes.items())
+        lines.append(f"| {item['feature']} | `{item['id']}` | "
+                     f"{item.get('stimulus', item['testpoint'])} / `{item.get('checker', 'n/a')}` | "
+                     f"`{axis_text}` | {item['hits']} | {item['status']} |")
     lines.extend(["", "## Backpressure closure", "",
                   "| Channel | Stalled cycles | Status |", "|---|---:|---|"])
     for key in spec.get("required_stall_bins", []):
@@ -130,8 +158,9 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
                   "or physical-design flow is configured, so this report does not claim "
                   "silicon area or static timing closure.", ""])
     out_md.write_text("\n".join(lines))
-    if misses or missing_stalls:
-        print(f"coherence coverage closure failed: bins={misses}, stalls={missing_stalls}", file=sys.stderr)
+    if misses or missing_stalls or invalid_events:
+        print(f"coherence coverage closure failed: bins={misses}, stalls={missing_stalls}, "
+              f"event_errors={invalid_events}", file=sys.stderr)
         return 1
     print(f"coherence functional coverage: {len(bins)}/{len(bins)} bins hit; report: {out_md}")
     return 0

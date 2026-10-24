@@ -164,7 +164,12 @@ module CoherentCacheAxiSubsystem #(
     .perf_snoop_event(perf_snoop_event),
     .perf_dirty_writeback_event(perf_dirty_writeback_event),
     .perf_inflight(perf_inflight),
-    .perf_access_complete_event(perf_access_complete_event)
+    .perf_access_complete_event(perf_access_complete_event),
+    .metadata_commit_valid(), .metadata_commit_line_addr(),
+    .metadata_commit_state(), .metadata_commit_is_snoop(),
+    .monitor_snoop_accept_valid(),
+    .monitor_snoop_accept_addr(), .monitor_snoop_accept_opcode(),
+    .monitor_snoop_accept_txn_id()
   );
 
   LineMemoryAxi4Adapter #(

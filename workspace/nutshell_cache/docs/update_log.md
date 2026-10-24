@@ -15,3 +15,11 @@ format:
 - 2026-10-24 23:17 +08：按功能重构 RTL，隔离 `legacy_l1`；将 SV bench 与 Python 用例归入 `tests/` 分类目录，并同步 Makefile、filelist、formal、coverage waiver 和文档路径。静态路径审计通过，未重跑仿真/formal。
 
 - 2026-10-24 23:17 +08：发现 `.gitignore` 仅放行 `tests/**/*.py`，迁入的 SV bench 会被忽略；补充 `.sv/.v` 例外并确认新目录文件可纳入提交。
+
+- 2026-10-24 23:36 +08：复现子系统仿真编译失败，根因是 TB 读取已拆分的 L1 私有 metadata 信号。增加顶层 Array metadata commit 监视端口；参考 MESI 状态不再从 DUT commit 状态回填，而由 CPU 请求、snoop/Put 事务推演。
+- 2026-10-24 23:36 +08：功能覆盖闭环改为按 checker 完成后输出的结构化 `COV_EVENT` 记录计数，覆盖表增加 stimulus/checker 与 MESI/请求者/snoop/data/beats 事务轴；旧 PASS 文本不再计 bin。
+- 2026-10-24 23:36 +08：`make coherence_formal` 全部目标通过；修复后的 RTL/TB 首轮 elaboration 已通过，正在重跑完整仿真回归。
+- 2026-10-24 23:43 +08：完整 verify 首次运行在 cluster bench `.*` 接口检查处失败；为 cluster bench 补接 metadata monitor 并断言两个 refill commit。模块测试通过。
+- 2026-10-24 23:43 +08：新增 `DirectoryMshrBank_tb`：验证四个不同地址并行上下文、同地址抑制、第五笔请求反压、逆序 refill 完成、目录写/Grant 反压、单上下文等待 snoop 时其余三笔进展，以及四上下文活动时 reset 取消；定向仿真通过。
+- 2026-10-24 23:47 +08：修复完整回归的第二处 monitor 缺口：参考模型漏记 L2 live victim 对 L1 的 back-invalidation，曾误报 Core1 残留 M 副本；改为按 core 导出已握手 snoop monitor，参考状态由协议事件推演，不采样 DUT 期望状态或 FSM 编码。
+- 2026-10-24 23:54 +08：修复 TB 旧层级 metadata 引用；完整 directed + 5 seeds、独立 4-context MSHR 压力仿真通过，结构化覆盖 34/34，RTL 行覆盖 93.1%；AXI lint/E2E 与 6 个 formal BMC/cover targets 全通过（有限深度）。顶层仍有非致命 `UNOPTFLAT`/未使用信号告警。

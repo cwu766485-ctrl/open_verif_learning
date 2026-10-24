@@ -21,6 +21,12 @@ module DualL1MesiCluster #(
   output logic [TXN_ID_WIDTH-1:0] cpu_resp_txn_id [0:1],
   output logic cpu_hit_event [0:1],
   output logic cpu_miss_event [0:1],
+  // Stable verification tap: reports metadata writes only after the L1 array
+  // accepts them, rather than exposing controller intent or private signals.
+  output logic metadata_commit_valid [0:1],
+  output logic [31:0] metadata_commit_line_addr [0:1],
+  output coherence_protocol_pkg::mesi_state_t metadata_commit_state [0:1],
+  output logic metadata_commit_is_snoop [0:1],
 
   output logic dir_req_valid,
   input  logic dir_req_ready_from_directory,
@@ -255,6 +261,14 @@ module DualL1MesiCluster #(
                                                 ctrl_cpu_meta_write_state;
     assign ctrl_cpu_meta_write_ready = array_cpu_meta_write_ready &&
                                        (replace_state_q != REPLACE_INVALIDATE);
+    assign metadata_commit_is_snoop[core] =
+      snoop_meta_write_valid && snoop_meta_write_ready;
+    assign metadata_commit_valid[core] = metadata_commit_is_snoop[core] ||
+      (array_cpu_meta_write_valid && array_cpu_meta_write_ready);
+    assign metadata_commit_line_addr[core] = metadata_commit_is_snoop[core] ?
+      snoop_meta_write_line_addr : array_cpu_meta_write_line_addr;
+    assign metadata_commit_state[core] = metadata_commit_is_snoop[core] ?
+      snoop_meta_write_state : array_cpu_meta_write_state;
 
     assign evict_line_rd_valid = (replace_state_q == REPLACE_READ_REQ);
     assign array_line_data_valid = array_rd_active_q && !array_rd_owner_evict_q &&
