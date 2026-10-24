@@ -2,7 +2,7 @@
 
 **文档版本**：v0.2（设计评审草案）  
 **日期**：2026-10-20  
-**设计状态**：双 L1 + 共享 L2/Directory 已接通 AXI4 line adapter 与 APB 性能 CSR；顶层及模块回归正在验证，仍需扩大系统级验证与 formal 范围
+**设计状态**：双 L1 + 共享 L2/Directory 已接通 AXI4 line adapter 与 APB 性能 CSR；AXI/APB 模块测试、MESI 子系统回归、bounded formal 基线和完整总线顶层 elaboration 已通过。AXI 总线端到端仿真、无界/全子系统 formal 与 PPA 仍未完成
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -498,7 +498,7 @@ SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为�
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
 | P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
-| P3 AXI/APB 外部集成 | 新增 `CoherentCacheAxiSubsystem`、64-bit 8-beat AXI4 line adapter、只读 APB performance CSR；模块测试与顶层 elaboration 已加入 Make/CI gate | 当前提交需完成模块定向运行和 AXI/APB 顶层检查；AXI 每类一个 outstanding，与阻塞式 Directory 匹配 |
+| P3 AXI/APB 外部集成 | 新增 `CoherentCacheAxiSubsystem`、64-bit 8-beat AXI4 line adapter、只读 APB performance CSR；模块测试与顶层 elaboration 已加入 Make/CI gate | `coherence_bus_blocks` 与 `coherence_axi_lint` 已通过；完整 AXI memory model 端到端事务仿真仍待补。AXI 每类一个 outstanding，与阻塞式 Directory 匹配 |
 | P4 签收强化 | 子系统随机/断言、arbiter formal、Directory/L1 bounded safety checks 已建立 | 仍需无界控制器/全 subsystem formal、更多 corner/mutation/覆盖率与性能基线 |
 | P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 
