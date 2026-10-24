@@ -2,7 +2,8 @@
 // inclusive shared L2 array, and line-oriented backing-memory ports. L2
 // victims are reclaimed only after their inclusive L1 copies are invalidated.
 module CoherentCacheSubsystem #(
-  parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH
+  parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH,
+  parameter int NUM_MSHRS = 4
 ) (
   input logic clock,
   input logic reset,
@@ -204,7 +205,12 @@ module CoherentCacheSubsystem #(
   logic [31:0] dir_grant_addr;
   logic [TXN_ID_WIDTH-1:0] dir_grant_txn_id;
   logic dir_grant_commit_valid, dir_grant_commit_ready;
+  logic dir_grant_commit_src_id;
   logic [TXN_ID_WIDTH-1:0] dir_grant_commit_txn_id;
+  localparam int MSHR_ID_WIDTH = (NUM_MSHRS < 2) ? 1 : $clog2(NUM_MSHRS);
+  logic [MSHR_ID_WIDTH-1:0] dir_xfer_context_id;
+  logic [MSHR_ID_WIDTH-1:0] dir_xfer_done_context_id;
+  logic [MSHR_ID_WIDTH-1:0] engine_context_q;
   logic dir_snoop_data_to_l2;
   logic victim_snoop_active, victim_snoop_data_to_l2;
   logic victim_snoop_rsp_fire;
@@ -253,7 +259,6 @@ module CoherentCacheSubsystem #(
     ENGINE_VICTIM_INVALIDATE,
     ENGINE_PUTM_STREAM,
     ENGINE_MEM_REQ,
-    ENGINE_MEM_STREAM,
     ENGINE_XFER_DONE,
     ENGINE_GRANT_READ,
     ENGINE_GRANT_STREAM,
@@ -273,6 +278,80 @@ module CoherentCacheSubsystem #(
   logic [31:0] grant_addr_q;
   logic [TXN_ID_WIDTH-1:0] grant_txn_q;
   logic [1:0] perf_inflight_q;
+
+  logic [NUM_MSHRS-1:0] mem_mshr_valid_q;
+  logic [NUM_MSHRS-1:0] mem_mshr_full_q;
+  logic [NUM_MSHRS-1:0] mem_mshr_written_q;
+  logic [31:0] mem_mshr_addr_q [0:NUM_MSHRS-1];
+  logic [MSHR_ID_WIDTH-1:0] mem_mshr_context_q [0:NUM_MSHRS-1];
+  logic [2:0] mem_mshr_expected_q [0:NUM_MSHRS-1];
+  logic [63:0] mem_mshr_data_q [0:NUM_MSHRS-1][0:7];
+  logic mem_mshr_alloc_found, mem_mshr_fill_found, mem_mshr_done_found;
+  logic [MSHR_ID_WIDTH-1:0] mem_mshr_alloc_sel, mem_mshr_fill_sel;
+  logic [MSHR_ID_WIDTH-1:0] mem_mshr_done_sel, mem_mshr_done_rr_q;
+  logic [MSHR_ID_WIDTH-1:0] mem_mshr_fill_rr_q;
+  logic mem_mshr_r_match;
+  logic mem_r_protocol_bad;
+  logic [MSHR_ID_WIDTH-1:0] mem_mshr_r_sel;
+  logic mem_fill_writer_active_q;
+  logic [MSHR_ID_WIDTH-1:0] mem_fill_writer_sel_q;
+  logic [2:0] mem_fill_writer_beat_q;
+  logic mshr_set_conflict, snoop_set_conflict;
+
+  always_comb begin : mem_mshr_decode
+    integer i;
+    integer idx;
+    integer selected;
+    mem_mshr_alloc_found = 1'b0;
+    mem_mshr_alloc_sel = '0;
+    mem_mshr_fill_found = 1'b0;
+    mem_mshr_fill_sel = '0;
+    mem_mshr_r_match = 1'b0;
+    mem_r_protocol_bad = 1'b0;
+    mem_mshr_r_sel = '0;
+    mshr_set_conflict = 1'b0;
+    snoop_set_conflict = 1'b0;
+    selected = -1;
+    for (i = 0; i < NUM_MSHRS; i = i + 1) begin
+      if (!mem_mshr_valid_q[i] && !mem_mshr_alloc_found) begin
+        mem_mshr_alloc_found = 1'b1;
+        mem_mshr_alloc_sel = MSHR_ID_WIDTH'(i);
+      end
+      if (mem_rd_data_txn_id == TXN_ID_WIDTH'(i)) begin
+        mem_mshr_r_sel = MSHR_ID_WIDTH'(i);
+        mem_mshr_r_match = mem_mshr_valid_q[i] && !mem_mshr_full_q[i];
+      end
+      if (mem_mshr_valid_q[i] &&
+          (mem_mshr_addr_q[i][14:6] == dir_xfer_addr[14:6]))
+        mshr_set_conflict = 1'b1;
+      if (mem_mshr_valid_q[i] &&
+          (mem_mshr_addr_q[i][14:6] == dir_snoop_addr[14:6]))
+        snoop_set_conflict = 1'b1;
+    end
+    selected = -1;
+    for (i = 0; i < NUM_MSHRS; i = i + 1) begin
+      idx = (int'(mem_mshr_fill_rr_q) + i) % NUM_MSHRS;
+      if ((selected < 0) && mem_mshr_valid_q[idx] &&
+          mem_mshr_full_q[idx] && !mem_mshr_written_q[idx]) selected = idx;
+    end
+    mem_mshr_fill_found = (selected >= 0);
+    mem_mshr_fill_sel = mem_mshr_fill_found ?
+                        MSHR_ID_WIDTH'(selected) : '0;
+    selected = -1;
+    for (i = 0; i < NUM_MSHRS; i = i + 1) begin
+      idx = (int'(mem_mshr_done_rr_q) + i) % NUM_MSHRS;
+      if ((selected < 0) && mem_mshr_valid_q[idx] &&
+          mem_mshr_written_q[idx]) selected = idx;
+    end
+    mem_mshr_done_found = (selected >= 0);
+    mem_mshr_done_sel = mem_mshr_done_found ?
+                        MSHR_ID_WIDTH'(selected) : '0;
+    mem_r_protocol_bad = mem_rd_data_valid && mem_rd_data_ready &&
+      (!mem_mshr_r_match ||
+       (mem_rd_data_error ? !mem_rd_data_last :
+        ((mem_rd_data_beat_idx != mem_mshr_expected_q[mem_mshr_r_sel]) ||
+         (mem_rd_data_last != (mem_rd_data_beat_idx == 3'd7)))));
+  end
 
   for (genvar perf_core = 0; perf_core < 2; perf_core = perf_core + 1) begin : perf_events
     assign perf_hit_event[perf_core] = cluster_perf_hit_event[perf_core];
@@ -396,7 +475,9 @@ module CoherentCacheSubsystem #(
   end
 
   always_comb begin
-    dir_xfer_start_ready = (engine_state_q == ENGINE_IDLE);
+    dir_xfer_start_ready = (engine_state_q == ENGINE_IDLE) &&
+                           !mem_fill_writer_active_q &&
+                           !mshr_set_conflict;
     snoop_valid_core[0] = 1'b0;
     snoop_valid_core[1] = 1'b0;
     put_xfer_start_core[0] = 1'b0;
@@ -430,7 +511,9 @@ module CoherentCacheSubsystem #(
         (dir_xfer_kind == XFER_PUTM_TO_L2))
       put_xfer_start_core[dir_xfer_src] = 1'b1;
     dir_snoop_ready = victim_snoop_active ? 1'b0 :
-                      snoop_ready_core[dir_snoop_target];
+                      (snoop_ready_core[dir_snoop_target] &&
+                       !mem_fill_writer_active_q &&
+                       !snoop_set_conflict);
 
     dir_snoop_rsp_valid = victim_snoop_active ? 1'b0 :
                           snoop_rsp_valid_core[dir_snoop_target];
@@ -456,17 +539,26 @@ module CoherentCacheSubsystem #(
     grant_txn_id_core[0] = dir_grant_txn_id;
     grant_txn_id_core[1] = dir_grant_txn_id;
     if (dir_grant_dst)
-      grant_valid_core[1] = dir_grant_valid;
+      grant_valid_core[1] = dir_grant_valid &&
+                            (!dir_grant_has_data ||
+                             (engine_state_q == ENGINE_IDLE));
     else
-      grant_valid_core[0] = dir_grant_valid;
-    dir_grant_ready = grant_ready_core[dir_grant_dst];
+      grant_valid_core[0] = dir_grant_valid &&
+                            (!dir_grant_has_data ||
+                             (engine_state_q == ENGINE_IDLE));
+    dir_grant_ready = grant_ready_core[dir_grant_dst] &&
+                      (!dir_grant_has_data ||
+                       (engine_state_q == ENGINE_IDLE));
 
     dir_grant_commit_valid = grant_commit_valid_core[0] |
                              grant_commit_valid_core[1];
+    dir_grant_commit_src_id = grant_commit_valid_core[0] ? 1'b0 : 1'b1;
     dir_grant_commit_txn_id = grant_commit_valid_core[0] ?
       grant_commit_txn_id_core[0] : grant_commit_txn_id_core[1];
-    grant_commit_ready_core[0] = dir_grant_commit_ready;
-    grant_commit_ready_core[1] = dir_grant_commit_ready;
+    grant_commit_ready_core[0] = dir_grant_commit_ready &&
+                                 !dir_grant_commit_src_id;
+    grant_commit_ready_core[1] = dir_grant_commit_ready &&
+                                 dir_grant_commit_src_id;
 
     grant_data_valid_core[0] = 1'b0;
     grant_data_valid_core[1] = 1'b0;
@@ -495,20 +587,22 @@ module CoherentCacheSubsystem #(
                        (engine_state_q == ENGINE_VICTIM_READ);
     l2_line_rd_addr = (engine_state_q == ENGINE_VICTIM_READ) ?
                       victim_addr_q : grant_addr_q;
-    dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE);
+    dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE) ||
+                          ((engine_state_q != ENGINE_XFER_DONE) &&
+                           mem_mshr_done_found);
     dir_xfer_done_txn_id = engine_txn_q;
+    dir_xfer_done_context_id = (engine_state_q == ENGINE_XFER_DONE) ?
+                               engine_context_q :
+                               mem_mshr_context_q[mem_mshr_done_sel];
 
     mem_rd_req_valid = !reset && !fatal_error &&
-                       (engine_state_q == ENGINE_MEM_REQ);
+                       (engine_state_q == ENGINE_MEM_REQ) &&
+                       mem_mshr_alloc_found;
     mem_rd_req_addr = engine_addr_q;
-    mem_rd_req_txn_id = engine_txn_q;
-    // Accept unexpected responses so the adapter can flag them instead of
-    // silently wedging the external response channel. A valid refill beat is
-    // backpressured by the L2 array; terminal errors and stale IDs are drained.
-    mem_rd_data_ready = !reset && !fatal_error &&
-                        ((engine_state_q != ENGINE_MEM_STREAM) ||
-                         (mem_rd_data_txn_id != engine_txn_q) ||
-                         mem_rd_data_error || l2_line_wr_ready);
+    mem_rd_req_txn_id = TXN_ID_WIDTH'(mem_mshr_alloc_sel);
+    // Responses are accepted by ID into per-MSHR line buffers. A malformed
+    // or unknown ID is also drained and raised as a protocol error below.
+    mem_rd_data_ready = !reset && !fatal_error;
     mem_wr_rsp_ready = !reset && !fatal_error;
 
     mem_wr_req_valid = !reset &&
@@ -538,16 +632,7 @@ module CoherentCacheSubsystem #(
     l2_line_wr_last = 1'b0;
     snoop_data_ready_core[0] = 1'b0;
     snoop_data_ready_core[1] = 1'b0;
-    if (engine_state_q == ENGINE_MEM_STREAM) begin
-      l2_line_wr_valid = mem_rd_data_valid &&
-                         (mem_rd_data_txn_id == engine_txn_q) &&
-                         !mem_rd_data_error;
-      l2_line_wr_addr = engine_addr_q;
-      l2_line_wr_dirty = 1'b0;
-      l2_line_wr_beat_idx = mem_rd_data_beat_idx;
-      l2_line_wr_data = mem_rd_data;
-      l2_line_wr_last = mem_rd_data_last;
-    end else if (engine_state_q == ENGINE_PUTM_STREAM) begin
+    if (engine_state_q == ENGINE_PUTM_STREAM) begin
       l2_line_wr_valid = put_data_valid_core[engine_src_q];
       l2_line_wr_addr = engine_addr_q;
       l2_line_wr_dirty = 1'b1;
@@ -571,6 +656,14 @@ module CoherentCacheSubsystem #(
       l2_line_wr_data = snoop_data_core[dir_snoop_target];
       l2_line_wr_last = snoop_data_last_core[dir_snoop_target];
       snoop_data_ready_core[dir_snoop_target] = l2_line_wr_ready;
+    end else if (mem_fill_writer_active_q) begin
+      l2_line_wr_valid = 1'b1;
+      l2_line_wr_addr = mem_mshr_addr_q[mem_fill_writer_sel_q];
+      l2_line_wr_dirty = 1'b0;
+      l2_line_wr_beat_idx = mem_fill_writer_beat_q;
+      l2_line_wr_data =
+        mem_mshr_data_q[mem_fill_writer_sel_q][mem_fill_writer_beat_q];
+      l2_line_wr_last = (mem_fill_writer_beat_q == 3'd7);
     end
 
   end
@@ -637,7 +730,9 @@ module CoherentCacheSubsystem #(
     .array_protocol_error(l1_array_protocol_error)
   );
 
-  DirectoryController #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) directory_controller (
+  DirectoryMshrBank #(
+    .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)
+  ) directory_controller (
     .clock(clock), .reset(reset),
     .req_valid(cluster_dir_req_valid), .req_ready(dir_req_ready),
     .req_src_id(cluster_dir_req_src_id), .req_opcode(cluster_dir_req_opcode),
@@ -657,15 +752,17 @@ module CoherentCacheSubsystem #(
     .line_xfer_start_ready(dir_xfer_start_ready), .line_xfer_kind(dir_xfer_kind),
     .line_xfer_addr(dir_xfer_addr), .line_xfer_src_id(dir_xfer_src),
     .line_xfer_txn_id(dir_xfer_txn_id),
+    .line_xfer_context_id(dir_xfer_context_id),
     .line_xfer_done_valid(dir_xfer_done_valid),
     .line_xfer_done_ready(dir_xfer_done_ready),
-    .line_xfer_done_txn_id(dir_xfer_done_txn_id),
+    .line_xfer_done_context_id(dir_xfer_done_context_id),
     .grant_valid(dir_grant_valid), .grant_ready(dir_grant_ready),
     .grant_dst_id(dir_grant_dst), .grant_opcode(dir_grant_opcode),
     .grant_has_data(dir_grant_has_data), .grant_line_addr(dir_grant_addr),
     .grant_txn_id(dir_grant_txn_id),
     .grant_commit_valid(dir_grant_commit_valid),
     .grant_commit_ready(dir_grant_commit_ready),
+    .grant_commit_src_id(dir_grant_commit_src_id),
     .grant_commit_txn_id(dir_grant_commit_txn_id),
     .snoop_data_to_l2(dir_snoop_data_to_l2),
     .protocol_error(directory_protocol_error)
@@ -766,11 +863,87 @@ module CoherentCacheSubsystem #(
     end
   end
 
+  always_ff @(posedge clock) begin : memory_mshr_table
+    if (reset) begin
+      mem_mshr_valid_q <= '0;
+      mem_mshr_full_q <= '0;
+      mem_mshr_written_q <= '0;
+      mem_mshr_done_rr_q <= '0;
+      mem_mshr_fill_rr_q <= '0;
+      mem_fill_writer_active_q <= 1'b0;
+      mem_fill_writer_sel_q <= '0;
+      mem_fill_writer_beat_q <= '0;
+      for (integer i = 0; i < NUM_MSHRS; i = i + 1) begin
+        mem_mshr_addr_q[i] <= '0;
+        mem_mshr_context_q[i] <= '0;
+        mem_mshr_expected_q[i] <= '0;
+      end
+    end else begin
+      if ((engine_state_q == ENGINE_MEM_REQ) &&
+          mem_rd_req_valid && mem_rd_req_ready) begin
+        mem_mshr_valid_q[mem_mshr_alloc_sel] <= 1'b1;
+        mem_mshr_full_q[mem_mshr_alloc_sel] <= 1'b0;
+        mem_mshr_written_q[mem_mshr_alloc_sel] <= 1'b0;
+        mem_mshr_addr_q[mem_mshr_alloc_sel] <= engine_addr_q;
+        mem_mshr_context_q[mem_mshr_alloc_sel] <= engine_context_q;
+        mem_mshr_expected_q[mem_mshr_alloc_sel] <= '0;
+      end
+
+      if (mem_rd_data_valid && mem_rd_data_ready && mem_mshr_r_match &&
+          !mem_rd_data_error &&
+          (mem_rd_data_beat_idx == mem_mshr_expected_q[mem_mshr_r_sel]) &&
+          (mem_rd_data_last == (mem_rd_data_beat_idx == 3'd7))) begin
+        mem_mshr_data_q[mem_mshr_r_sel][mem_rd_data_beat_idx] <= mem_rd_data;
+        if (mem_rd_data_beat_idx == 3'd7)
+          mem_mshr_full_q[mem_mshr_r_sel] <= 1'b1;
+        else
+          mem_mshr_expected_q[mem_mshr_r_sel] <=
+            mem_mshr_expected_q[mem_mshr_r_sel] + 1'b1;
+      end
+
+      if (!mem_fill_writer_active_q && mem_mshr_fill_found &&
+          !victim_snoop_active &&
+          !(dir_snoop_data_to_l2 && !dir_snoop_valid) &&
+          !(dir_snoop_valid && !snoop_set_conflict) &&
+          ((engine_state_q == ENGINE_IDLE &&
+            !(dir_xfer_start_valid && dir_xfer_start_ready)) ||
+           (engine_state_q == ENGINE_GRANT_READ) ||
+           (engine_state_q == ENGINE_GRANT_STREAM))) begin
+        mem_fill_writer_active_q <= 1'b1;
+        mem_fill_writer_sel_q <= mem_mshr_fill_sel;
+        mem_fill_writer_beat_q <= '0;
+      end else if (mem_fill_writer_active_q && l2_line_wr_valid &&
+                   l2_line_wr_ready) begin
+        if (mem_fill_writer_beat_q == 3'd7) begin
+          mem_fill_writer_active_q <= 1'b0;
+          mem_fill_writer_beat_q <= '0;
+          mem_mshr_written_q[mem_fill_writer_sel_q] <= 1'b1;
+          mem_mshr_fill_rr_q <=
+            (mem_fill_writer_sel_q == MSHR_ID_WIDTH'(NUM_MSHRS-1)) ? '0 :
+            mem_fill_writer_sel_q + 1'b1;
+        end else begin
+          mem_fill_writer_beat_q <= mem_fill_writer_beat_q + 1'b1;
+        end
+      end
+
+      if ((engine_state_q != ENGINE_XFER_DONE) && mem_mshr_done_found &&
+          dir_xfer_done_valid && dir_xfer_done_ready) begin
+        mem_mshr_valid_q[mem_mshr_done_sel] <= 1'b0;
+        mem_mshr_full_q[mem_mshr_done_sel] <= 1'b0;
+        mem_mshr_written_q[mem_mshr_done_sel] <= 1'b0;
+        mem_mshr_done_rr_q <=
+          (mem_mshr_done_sel == MSHR_ID_WIDTH'(NUM_MSHRS-1)) ? '0 :
+          mem_mshr_done_sel + 1'b1;
+      end
+    end
+  end
+
   always_ff @(posedge clock) begin
     if (reset) begin
       engine_state_q <= ENGINE_IDLE;
       engine_addr_q <= '0;
       engine_txn_q <= '0;
+      engine_context_q <= '0;
       engine_src_q <= 1'b0;
       mem_expected_beat_q <= '0;
       victim_expected_beat_q <= '0;
@@ -786,10 +959,15 @@ module CoherentCacheSubsystem #(
       memory_adapter_protocol_error <= 1'b0;
       memory_adapter_error <= 1'b0;
     end else begin
-      if ((mem_rd_data_valid && mem_rd_data_ready &&
-           (engine_state_q != ENGINE_MEM_STREAM)) ||
-          (mem_wr_rsp_valid && mem_wr_rsp_ready &&
-           (engine_state_q != ENGINE_VICTIM_WRITE_WAIT_RSP))) begin
+      if (mem_r_protocol_bad) begin
+        memory_adapter_protocol_error <= 1'b1;
+        engine_state_q <= ENGINE_ERROR;
+      end else if (mem_rd_data_valid && mem_rd_data_ready &&
+                   mem_mshr_r_match && mem_rd_data_error) begin
+        memory_adapter_error <= 1'b1;
+        engine_state_q <= ENGINE_ERROR;
+      end else if (mem_wr_rsp_valid && mem_wr_rsp_ready &&
+                   (engine_state_q != ENGINE_VICTIM_WRITE_WAIT_RSP)) begin
         memory_adapter_protocol_error <= 1'b1;
         engine_state_q <= ENGINE_ERROR;
       end else case (engine_state_q)
@@ -797,6 +975,7 @@ module CoherentCacheSubsystem #(
           if (dir_xfer_start_valid && dir_xfer_start_ready) begin
             engine_addr_q <= line_align(dir_xfer_addr);
             engine_txn_q <= dir_xfer_txn_id;
+            engine_context_q <= dir_xfer_context_id;
             mem_expected_beat_q <= '0;
             if (dir_xfer_kind == XFER_L2_REFILL) begin
               if (l2_lookup_hit)
@@ -963,30 +1142,7 @@ module CoherentCacheSubsystem #(
 
         ENGINE_MEM_REQ: begin
           if (mem_rd_req_valid && mem_rd_req_ready)
-            engine_state_q <= ENGINE_MEM_STREAM;
-        end
-
-        ENGINE_MEM_STREAM: begin
-          if (mem_rd_data_valid && mem_rd_data_ready) begin
-            if ((mem_rd_data_txn_id != engine_txn_q) ||
-                (mem_rd_data_beat_idx != mem_expected_beat_q)) begin
-              memory_adapter_protocol_error <= 1'b1;
-              engine_state_q <= ENGINE_ERROR;
-            end else if (mem_rd_data_error) begin
-              if (!mem_rd_data_last)
-                memory_adapter_protocol_error <= 1'b1;
-              memory_adapter_error <= 1'b1;
-              engine_state_q <= ENGINE_ERROR;
-            end else if (mem_rd_data_last !=
-                         (mem_rd_data_beat_idx == 3'd7)) begin
-              memory_adapter_protocol_error <= 1'b1;
-              engine_state_q <= ENGINE_ERROR;
-            end else if (mem_rd_data_beat_idx == 3'd7) begin
-              engine_state_q <= ENGINE_XFER_DONE;
-            end else begin
-              mem_expected_beat_q <= mem_expected_beat_q + 1'b1;
-            end
-          end
+            engine_state_q <= ENGINE_IDLE;
         end
 
         ENGINE_PUTM_STREAM: begin

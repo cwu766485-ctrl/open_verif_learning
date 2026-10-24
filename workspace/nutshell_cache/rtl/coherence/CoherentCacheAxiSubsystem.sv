@@ -3,7 +3,8 @@
 // line-memory ports to an AXI4 64-bit master adapter.
 module CoherentCacheAxiSubsystem #(
   parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH,
-  parameter int AXI_MAX_OUTSTANDING = 4
+  parameter int AXI_MAX_OUTSTANDING = 4,
+  parameter int NUM_MSHRS = AXI_MAX_OUTSTANDING
 ) (
   input logic clock,
   input logic reset,
@@ -120,7 +121,9 @@ module CoherentCacheAxiSubsystem #(
   logic [4:0] perf_error_status;
   logic protocol_error_status;
 
-  CoherentCacheSubsystem #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) cache_core (
+  CoherentCacheSubsystem #(
+    .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)
+  ) cache_core (
     .clock(clock), .reset(reset),
     .external_fatal_error(axi_adapter_protocol_error),
     .cpu_req_valid(cpu_req_valid), .cpu_req_ready(cpu_req_ready),

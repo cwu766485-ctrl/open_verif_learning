@@ -124,6 +124,7 @@ module CoherentCacheAxiSubsystem_tb;
   integer aw_forced_stall_cycles_q;
   logic aw_forced_stall_done_q;
   integer accepted_ar_count_q, returned_r_beat_count_q;
+  integer peak_read_outstanding_q;
   integer accepted_aw_count_q, accepted_w_beat_count_q, returned_b_count_q;
   integer ar_stall_count_q, aw_stall_count_q, w_stall_count_q;
   integer r_stall_count_q, b_stall_count_q;
@@ -145,6 +146,8 @@ module CoherentCacheAxiSubsystem_tb;
   end
 
   always_ff @(posedge clock) begin : axi_memory_model
+    integer active_rd_count;
+    integer next_rd_count;
     integer free_rd;
     integer free_b;
     integer existing_mem;
@@ -172,6 +175,7 @@ module CoherentCacheAxiSubsystem_tb;
       aw_forced_stall_cycles_q <= 0;
       aw_forced_stall_done_q <= 1'b0;
       accepted_ar_count_q <= 0;
+      peak_read_outstanding_q <= 0;
       returned_r_beat_count_q <= 0;
       accepted_aw_count_q <= 0;
       accepted_w_beat_count_q <= 0;
@@ -201,6 +205,15 @@ module CoherentCacheAxiSubsystem_tb;
       end
     end else begin
       cycle_count_q <= cycle_count_q + 1;
+      active_rd_count = 0;
+      for (integer i = 0; i < MODEL_SLOTS; i = i + 1)
+        if (rd_active_q[i]) active_rd_count = active_rd_count + 1;
+      next_rd_count = active_rd_count;
+      if (axi_arvalid && axi_arready) next_rd_count = next_rd_count + 1;
+      if (r_hold_valid_q && axi_rready && (r_hold_beat_q == 3'd7))
+        next_rd_count = next_rd_count - 1;
+      if (next_rd_count > peak_read_outstanding_q)
+        peak_read_outstanding_q <= next_rd_count;
       if (axi_awvalid && !aw_forced_stall_done_q) begin
         if (aw_forced_stall_cycles_q == 2)
           aw_forced_stall_done_q <= 1'b1;
@@ -502,8 +515,7 @@ module CoherentCacheAxiSubsystem_tb;
       end
     end
 
-    // Both LSU ports may present independent requests together; the Directory
-    // serializes coherence while each CPU response remains associated.
+    // Independent different-set misses should overlap in the memory refill path.
     fork
       cpu_access(0, 1'b0, 32'h0000_6000, '0, 1'b1,
                  expected_word(32'h0000_6000));
@@ -521,6 +533,9 @@ module CoherentCacheAxiSubsystem_tb;
         (returned_r_beat_count_q != accepted_ar_count_q * 8))
       $fatal(1, "AXI read burst accounting mismatch AR=%0d R=%0d",
              accepted_ar_count_q, returned_r_beat_count_q);
+    if (peak_read_outstanding_q < 2)
+      $fatal(1, "parallel refill coverage missing: peak AXI reads=%0d",
+             peak_read_outstanding_q);
     if ((accepted_aw_count_q == 0) ||
         (accepted_w_beat_count_q != accepted_aw_count_q * 8) ||
         (returned_b_count_q != accepted_aw_count_q))
@@ -540,8 +555,9 @@ module CoherentCacheAxiSubsystem_tb;
     apb_read(32'h10, csr_value);
     if (csr_value != 0) $fatal(1, "APB protocol/error status is not clear: %08x", csr_value);
 
-    $display("AXI RAM: AR=%0d R-beats=%0d AW=%0d W-beats=%0d B=%0d stalls(ar/aw/w)=%0d/%0d/%0d",
+    $display("AXI RAM: AR=%0d R-beats=%0d peak-RD=%0d AW=%0d W-beats=%0d B=%0d stalls(ar/aw/w)=%0d/%0d/%0d",
              accepted_ar_count_q, returned_r_beat_count_q,
+             peak_read_outstanding_q,
              accepted_aw_count_q, accepted_w_beat_count_q,
              returned_b_count_q, ar_stall_count_q, aw_stall_count_q,
              w_stall_count_q);

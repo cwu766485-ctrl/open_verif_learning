@@ -3,7 +3,7 @@
   "regression": "dual_l1_shared_l2_mesi",
   "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
   "required_stall_bins": [
-    "cpu_resp", "mmio_req", "mmio_resp", "mem_rd_req", "mem_rd_data",
+    "cpu_resp", "mmio_req", "mmio_resp", "mem_rd_req", "l2_fill",
     "mem_wr_req", "mem_wr_data", "dir_req"
   ],
   "bins": [
@@ -26,7 +26,7 @@
     {"id":"l2.shared_multisnoop", "feature":"L2 shared victim multi-snoop", "testpoint":"PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data"},
     {"id":"mmio.bypass", "feature":"MMIO isolation", "testpoint":"PASS: MMIO read/write bypasses L1, L2, and backing memory"},
     {"id":"mmio.address_boundaries", "feature":"MMIO address decode", "testpoint":"PASS: cacheable/MMIO address-domain boundary cases"},
-    {"id":"backpressure.mem_refill", "feature":"Backpressure", "testpoint":"PASS: valid memory refill beat is held under L2 receiver backpressure"},
+    {"id":"backpressure.mem_refill", "feature":"Backpressure", "testpoint":"PASS: refill MSHR absorbs the memory line while the L2 fill port is stalled"},
     {"id":"backpressure.independent_channels", "feature":"Backpressure", "testpoint":"PASS: memory request/refill and CPU response survive independent stalls"},
     {"id":"backpressure.mmio", "feature":"Backpressure", "testpoint":"PASS: MMIO request and response payloads remain stable under backpressure"},
     {"id":"reset.refill", "feature":"Reset cancellation", "testpoint":"PASS: reset cancels an active refill without a stale response"},

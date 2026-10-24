@@ -12,8 +12,12 @@ does not change the legacy `rtl/Cache.files.f` single-L1 baseline.
 - `MesiL1Controller.sv`: one blocking LSU request FSM plus an independent
   snoop FSM. Same-line work is serialized, Snoop wins idle-cycle conflicts,
   and unrelated Snoop traffic can progress while the CPU FSM is busy.
-- `DirectoryController.sv`: one globally serialized directory transaction;
-  it handles GetS/GetM/Upgrade and PutS/PutE/PutM control sequencing.
+- `DirectoryController.sv`: one MESI directory transaction context; it handles
+  GetS/GetM/Upgrade and PutS/PutE/PutM control sequencing.
+- `DirectoryMshrBank.sv`: four independent DirectoryController contexts by
+  default, with same-line duplicate suppression and fair arbitration of shared
+  metadata writes, snoops, line transfers, and grants. Completion IDs route
+  each refill back to its owning context.
 - `MesiL1Array.sv`: parameterized tag/data/MESI array. The configured geometry
   is 128 sets × 4 ways × 64 bytes = 32 KiB. It has an LSU lookup port, separate
   CPU/snoop metadata writes, byte-masked M-state stores, refill sequencing,
@@ -30,9 +34,11 @@ does not change the legacy `rtl/Cache.files.f` single-L1 baseline.
   L1 arrays, and the shared request arbiter. CPU read data and masked stores
   connect to the arrays. Directory-facing request/snoop/grant channels and
   owner data streams are exposed for an upper Directory/L2 line adapter.
-- `CoherentCacheSubsystem.sv`: composes the dual-L1 cluster, serialized
-  Directory controller, and shared L2 array. It routes snoops and owner data,
-  refills L2 from an eight-beat backing-memory read interface, and returns L2
+- `CoherentCacheSubsystem.sv`: composes the dual-L1 cluster, four-context
+  Directory bank, and shared L2 array. Four read-refill MSHRs capture AXI line
+  responses independently by ID; completed lines are then written through the
+  single shared L2 fill port. It routes snoops and owner data, refills L2 from
+  an eight-beat backing-memory read interface, and returns L2
   lines to the selected L1. Dirty, unshared L2 victims use an eight-beat
   memory writeback interface and wait for its response before invalidation. NutShell MMIO
   addresses in `[0x3000_0000, 0x8000_0000)` use an independent, serialized
@@ -90,11 +96,11 @@ make coherence_verify         # all above plus AXI end-to-end and subsystem regr
 | Per-L1 CPU/Snoop arbitration | `MesiL1SnoopArbiter` | Directed same-line/different-line cases and independent SymbiYosys properties | Progress is checked under the documented valid/ready contract; no liveness proof without fairness assumptions |
 | L1 storage | `MesiL1Array` | Refill, lookup, masked store, Snoop metadata, line-read stalls, replacement, malformed beat | Reduced geometry in the bench; production geometry is checked by elaboration/integration |
 | L1 protocol control | `MesiL1Controller` | GetS/GetM/Upgrade, E-to-M, SnoopInvalidate, channel stalls, active reset; 16-step bounded formal checks | Formal harness is controller-level, not a proof of the array/controller composition |
-| Directory control | `DirectoryController` | GetS/GetM/Upgrade, PutS/PutE/PutM, owner Snoop, channel stalls, active reset; 16-step bounded formal checks | One globally serialized Directory transaction |
+| Directory control | `DirectoryMshrBank` + `DirectoryController` | Per-context GetS/GetM/Upgrade, PutS/PutE/PutM, owner Snoop, channel stalls, active reset; leaf controller has 16-step bounded formal checks | Four contexts arbitrate shared ports; no unbounded whole-bank proof |
 | Shared L2 storage | `SharedL2DirectoryArray` | Tag/directory metadata, full-line transfers, stalls, dirty victim reporting and reclaim, malformed beat | Live-victim recovery is additionally checked at subsystem level |
 | Dual-L1 cluster | `DualL1MesiCluster` | Simultaneous independent L1 misses, request-source ordering, transaction routing, two full refills and CPU response-data checks | Snoop ownership between the two L1s and eviction interaction are covered at subsystem level |
 | Memory/MMIO adapters | Subsystem memory/MMIO paths and AXI4 line adapter | Four outstanding reads/writes, interleaved R beats, reordered B responses, burst/backpressure/error checks, plus APB CSR and line-memory reset/error tests | AXI adapter proof is simulation-based; it has no separate formal job |
-| AXI-integrated subsystem | `CoherentCacheAxiSubsystem` | Full dual-L1 MESI path connected to AXI RAM model; read/write stress, data scoreboard, conflict-driven dirty L2 eviction/writeback/refill, APB counters, and address/data backpressure | Directory still serializes coherent line transfers, so normal cache requests do not fill all four adapter slots |
+| AXI-integrated subsystem | `CoherentCacheAxiSubsystem` | Full dual-L1 MESI path connected to AXI RAM model; read/write stress, data scoreboard, peak overlapping refill check, conflict-driven dirty L2 eviction/writeback/refill, APB counters, and address/data backpressure | Each L1 remains blocking; L2 fill/grant, Snoop, and writeback are shared resources; same-set misses serialize |
 | Integrated subsystem | `CoherentCacheSubsystem` | Directed MESI/victim/error/reset/concurrency tests, scoreboard, assertions, multisnoop case, and fixed-seed randomized operations | No unbounded proof of the complete subsystem |
 
 `make coherence_modules` runs six leaf-module benches plus the dual-L1 cluster
@@ -182,13 +188,18 @@ independent channels; because AXI4 W has no WID, the adapter buffers line data
 by ID and emits W bursts in AW acceptance order. B is accepted only after the
 matching burst's final W beat.
 
-The adapter exposes four outstanding slots per direction for a multi-request
-line-memory client. The current coherence Directory still serializes line
-transfers, so the MESI subsystem itself issues at most one active line read or
-write at a time and cannot yet use all four slots. Exploiting four concurrent
-cache misses requires multiple MSHRs and corresponding Directory/L2 transaction
-contexts. A shared reset must also reset the attached AXI memory
-model/interconnect because AXI has no transaction-cancel channel.
+The adapter exposes four outstanding slots per direction. The MESI subsystem
+now defaults to four Directory contexts and four read-refill MSHRs. AXI R beats
+for different IDs can be captured while other refills are in flight; completed
+lines wait for the single L2 fill port, then their Directory context can grant
+the request. The L2 data/grant engine, snoops, Put/writeback, and L2 fill port
+remain shared serialized resources. A same-set pending refill blocks another
+miss to that set to protect replacement allocation. Since each of the two L1
+controllers still allows only one blocking CPU miss, the current LSU front end
+can originate at most two simultaneous misses; four occupied MSHRs require
+future nonblocking L1 miss queues or additional requesters. A shared reset must
+also reset the attached AXI memory model/interconnect because AXI has no
+transaction-cancel channel.
 
 The APB block is read-only and uses 32-bit accesses at these byte offsets:
 
@@ -249,9 +260,9 @@ The SymbiYosys checks cover `CoherenceRequestArbiterCore` selection/source
 retention, the combinational per-L1 same-line CPU/Snoop arbitration rules, and
 bounded Directory/L1 controller safety properties. They do not prove L2
 replacement or the complete subsystem. The integrated directed test forces
-the L2 refill receiver to stall a valid memory beat and checks payload
-stability; memory read/write error paths and local CPU/Snoop progress have
-dedicated directed cases.
+the L2 fill port while the refill MSHR buffers a complete memory line; it checks
+that the L2 write beat remains stable until accepted. The memory read/write
+error paths and local CPU/Snoop progress have dedicated directed cases.
 
 Run the directed/default-seed suite with `make coherence_smoke`, the five-seed
 suite with `make coherence_random`, and the local formal checks with

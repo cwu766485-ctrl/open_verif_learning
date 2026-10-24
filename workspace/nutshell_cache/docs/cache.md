@@ -2,7 +2,7 @@
 
 **文档版本**：v0.2（设计评审草案）  
 **日期**：2026-10-20  
-**设计状态**：双 L1 + 共享 L2/Directory 已接通支持四笔 outstanding 的 AXI4 line adapter 与 APB 性能 CSR；AXI memory model 端到端回归、四笔事务 ID/交错 R/乱序 B 模块测试、MESI 子系统回归、bounded formal 基线和完整总线顶层 elaboration 已通过。当前 Directory 仍串行处理 coherent line transfer；无界/全子系统 formal 与 PPA 仍未完成
+**设计状态**：双 L1 + 共享 L2/Directory 已接通四个 Directory 事务上下文、四个读 refill MSHR、支持四笔 outstanding 的 AXI4 line adapter 与 APB 性能 CSR；端到端回归检查不同地址 refill 重叠。每份 L1 仍是 blocking；L2 fill/grant、Snoop 和 writeback 资源仍共享串行；无界/全子系统 formal 与 PPA 仍未完成
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -64,7 +64,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 ### 1.2 暂不实现（v1）
 
 - 两个真实 CPU Core、Instruction-side MESI、自修改代码缓存失效、DMA/I/O Coherence。
-- LR/SC、AMO、多事务乱序完成、多个 MSHR、跨 Directory Bank 高并发、Prefetch。
+- LR/SC、AMO、每份 L1 多 miss、跨 Directory Bank 高并发、Prefetch。
 - 完整 AXI ACE / CHI 兼容、全系统 RISC-V Memory Model 形式证明。
 - 真实芯片 Fmax、PPA 收敛保证。所有性能对比先限定在相同仿真环境的 RTL 周期。
 
@@ -123,7 +123,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 
 **Inclusive 设计规则**：v1 采用 L2 **Tag/Directory Inclusion**。若任何 L1 持有 Line A，L2 必须保留 A 的目录和 Tag；但 **L2 Data 不一定最新**（L1 的 M Owner 可以具有最新副本）。L2 驱逐 A 时必须先完成对 L1 的 Back-Invalidation / Dirty Owner 数据回收。
 
-**首版事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；全局 Directory 最多处理 1 笔事务。Snoop 与本地 CPU 事务按第 6.2 节的同址/异址规则仲裁；协议保证无内部循环等待，外部响应反压则要求最终解除。
+**当前事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR，可让不同 L2 set 的 memory read 同时 outstanding。L2 fill/grant、Snoop、Put 和 writeback 使用共享串行资源；同一 L2 set 的待处理 refill 会互相阻塞。Snoop 与本地 CPU 事务按第 6.2 节的同址/异址规则仲裁；进展仍假设外部响应反压最终解除。
 
 ---
 
@@ -279,7 +279,7 @@ Core1 Write A -> GetM -> SnoopInvalidate(Core0)
 3. **Byte Mask**：CPU 写只更新指定 Byte；远程 Snoop 需要返回修改后的完整 64 B。
 4. **完整 Transfer**：每次整行数据恰好 8 拍，beat index 正确、不重复、不丢失、`last` 仅在最终拍。
 5. **Ready/Valid**：在所有 Channel Stall 期间保持 Valid/Payload；Beat Counter 只在握手时推进。
-6. **Snoop 进度**：本地 CPU miss/refill 与 Snoop 的同址交错按第 6.2 节序列化；异址 Snoop 可独立接收。Directory 全局串行，外部 CPU response ready 和 Snoop response ready 最终解除是进展假设。
+6. **Snoop 进度**：本地 CPU miss/refill 与 Snoop 的同址交错按第 6.2 节序列化；异址 Snoop 可独立接收。不同 Directory context 可并行推进到共享端口仲裁点；同址请求抑制，L2 fill、Snoop 和 grant 资源仍串行，外部 response ready 最终解除是进展假设。
 7. **Reset 协调**：初版系统同步 Reset 清除所有暂态、目录所有权和旧 Response；旧请求不得在 Reset 后再次完成。Reset 后需重新初始化目录和 Meta Array。
 8. **Eviction**：L1 M→PutM 写回最新数据；L2 Inclusive Victim 必须先处理任何 L1 Sharer/Owner，再驱逐目录 Tag。
 9. **MMIO**：地址 `[0x3000_0000, 0x8000_0000)` 依 NutShell 现有译码走
@@ -335,8 +335,8 @@ RTL 数组采用以下逻辑组织，实际 FPGA BRAM/ASIC SRAM 宏由目标工�
 |---|---|---|---|
 | 每份 L1 data | 8 个 64-bit beat bank；每 bank 512 行（128 set × 4 way），总 32 KiB | 与数据分开 | 1 个 CPU word-read、1 个串行 Snoop line-read、1 个 64-bit write 端口；CPU store 与 refill 写按 L1 FSM 串行，Snoop line-read 可与异址 CPU lookup 并行 |
 | 每份 L1 tag/state | 4 way × 128 set；每行 tag、valid、MESI | replacement pointer 每 set 独立小寄存器 | CPU 与 Snoop 两个 lookup 读口、一个 metadata 写口；同周期写冲突由 Snoop 优先，CPU 等待；reset 清 valid/state 可见元数据，不要求清 data RAM |
-| Shared L2 data | 8 个 64-bit beat bank；每 bank 4096 行（512 set × 8 way），总 256 KiB | 与数据分开 | 1 个串行整行读端口 + 1 个整行写端口；全局 Directory/line engine 串行化 line read/write，memory beat 与 owner beat 共用 write port |
-| Shared L2 directory/tag | 8 way × 512 set；每行 tag、valid、DIR、sharers、owner、dirty | 与 L2 tag 同步更新 | 每周期一个 lookup/victim 读操作及一个更新操作；v1 Directory 全局串行；reset 清 valid，invalid 行的 tag/state 不参与 lookup |
+| Shared L2 data | 8 个 64-bit beat bank；每 bank 4096 行（512 set × 8 way），总 256 KiB | 与数据分开 | 1 个串行整行读端口 + 1 个整行写端口；4 个 refill MSHR 可收集不同 AXI ID 的返回，随后仲裁单一 L2 fill 写端口；owner beat/内存写回与 fill 仍需共享端口仲裁 |
+| Shared L2 directory/tag | 8 way × 512 set；每行 tag、valid、DIR、sharers、owner、dirty | 与 L2 tag 同步更新 | Directory 有 4 个事务上下文；共享元数据写口、Snoop、line transfer 和 grant 由仲裁器串行服务；reset 清 valid，invalid 行的 tag/state 不参与 lookup |
 
 每份 L1 的 data 总量为 8×512×64 bit=32 KiB；共享 L2 为
 8×4096×64 bit=256 KiB。现有多维 `logic` 数组是可执行行为模型，不是已选定的
@@ -355,11 +355,13 @@ reset 和优先级映射，不包含具体 macro 名称、时序角、面积或 
 该 burst 剩余 beat。BRESP/RRESP 及返回 ID 错误会传到 cache 错误状态。
 
 AXI 适配器读写通道各支持最多四笔 outstanding line transaction，使用不同活动
-ID 区分请求。R beat 根据 RID 回送，允许不同 ID 的 beat 交错；B 根据 BID 关联，
+ID 区分请求。MESI 子系统也配置四个 Directory context 和四个读 refill MSHR，
+不同地址的 refill 可以同时 outstanding，R beat 按 ID 分别收集；B 根据 BID 关联，
 允许不同 ID 的写响应乱序。AXI4 W 通道没有 WID，因此适配器按 AW 握手顺序缓存并
-发送完整 W burst。当前 Directory 仍一次只处理一笔 line transfer，故 MESI 顶层
-暂时不能同时发出四笔 refill；要让 cache miss 真正并行，需要后续增加多个 MSHR
-以及并行 Directory/L2 事务上下文。系统级 reset 必须同时作用于 AXI
+发送完整 W burst。L2 fill/grant、Snoop、Put 和 writeback 仍是共享串行资源；同一
+L2 set 上有未完成 refill 时会阻止新的该 set miss，避免替换 way 冲突。两个 L1
+控制器各自仍只允许一个 blocking CPU miss，因此当前双 LSU 最多同时产生两笔 CPU
+miss；四个 MSHR 为更高并发请求源预留容量。系统级 reset 必须同时作用于 AXI
 memory/interconnect，因为 AXI 本身没有取消已接受事务的通道。
 
 APB3 performance CSR 是只读寄存器窗口：`0x00` hit、`0x04` miss、`0x08` snoop、
@@ -506,9 +508,9 @@ SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为�
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
 | P2 双 L1 Coherence 子系统 | 双 L1、仲裁、Directory、L2 和阻塞式 Memory adapter 已连通；PutS/PutE/PutM 替换与 miss 重放已接入 | GetS/GetM/Upgrade、Owner Snoop、M/S/E replacement、并发、主要通道反压和 reset 定向用例通过 |
-| P3 AXI/APB 外部集成 | `CoherentCacheAxiSubsystem`、四笔 outstanding 的 64-bit 8-beat AXI4 adapter、只读 APB CSR；四笔事务适配器测试和 AXI RAM model 端到端读写压力回归加入 Make/CI | `coherence_bus_blocks`、`coherence_axi_e2e` 与 `coherence_axi_lint` 通过；adapter 每方向容量 4，MESI Directory 目前仍是单事务串行 |
+| P3 AXI/APB 外部集成 | `CoherentCacheAxiSubsystem`、四笔 outstanding 的 64-bit 8-beat AXI4 adapter、只读 APB CSR；四笔事务 adapter 测试和带并发 refill 检查的 AXI RAM model 端到端压力回归加入 Make/CI | `coherence_bus_blocks`、`coherence_axi_e2e` 与 `coherence_axi_lint` 通过；Directory 与读 MSHR 容量 4，L1 仍 blocking |
 | P4 签收强化 | 子系统随机/断言、arbiter formal、Directory/L1 bounded safety checks 已建立 | 仍需无界控制器/全 subsystem formal、更多 corner/mutation/覆盖率与性能基线 |
-| P5 可选优化 | 多 MSHR/并行 Directory/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
+| P5 可选优化 | 每份 L1 多 MSHR/ICache/DMA/真实双核 | 新增 Spec、各级 Regression 与性能对照 |
 
 ---
 
@@ -526,7 +528,7 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 
 - Directory 使用 I/S/U，兼容 L1 的 E→M 静默升级。
 - L2 保留 inclusive Tag/Directory；驱逐 live victim 前先反失效 L1，dirty owner 数据先回收。
-- 每个 L1 只有一个阻塞式 miss，Directory 全局串行；L1 Snoop 有独立 FSM。同址
+- 每个 L1 只有一个阻塞式 miss，Directory 有四个事务上下文，读 refill 有四个 MSHR；L1 Snoop 有独立 FSM。同址
   Snoop/CPU 依阶段仲裁，异址 Snoop 可并行推进；同址 E→M stall、过期 Upgrade 和
   异址 Snoop stall 场景已加入定向回归，后续仍可扩大压力组合与 liveness 验证。
 - 同址 CPU/Snoop 逐行串行，idle 同周期冲突由 Snoop 获胜；异址 Snoop 可在 CPU FSM 活跃时接收。CPU/Snoop response ready 最终解除是进度假设。

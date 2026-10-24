@@ -61,9 +61,12 @@ The coherent subsystem architecture, external bus contract, APB register map,
 outstanding-transaction limit and remaining formal/physical-design boundaries
 are documented in [`rtl/coherence/README.md`](rtl/coherence/README.md) and
 [`docs/cache.md`](docs/cache.md). The AXI adapter supports four active requests
-per direction, but the current serialized Directory issues only one coherent
-line transfer at a time. `make coherence_axi_e2e` runs the full cache through
-a burst-capable AXI RAM model. The APB block does not implement a JTAG TAP.
+per direction. The coherent subsystem now has four Directory contexts and four
+read-refill MSHRs, allowing independent different-set refills to overlap on
+AXI. Each L1 remains blocking, and L2 fill/grant, Snoop, and writeback
+resources are still shared. `make coherence_axi_e2e` checks overlapping
+refills through a burst-capable AXI RAM model. The APB block does not implement
+a JTAG TAP.
 
 ## Performance baseline
 

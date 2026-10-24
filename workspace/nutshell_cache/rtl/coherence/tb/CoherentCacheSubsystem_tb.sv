@@ -3,6 +3,7 @@
 module CoherentCacheSubsystem_tb;
   import coherence_protocol_pkg::*;
   localparam logic [4:0] TB_ENGINE_VICTIM_SNOOP_SEND = 5'd13;
+  localparam int MODEL_SLOTS = 4;
 
   logic clock = 1'b0;
   logic reset;
@@ -91,11 +92,17 @@ module CoherentCacheSubsystem_tb;
     if (|perf_access_complete_event) performance_events_seen[4] <= 1'b1;
   end
 
-  logic memory_active_q;
+  logic [3:0] memory_active_q;
   logic memory_read_valid_held_q;
-  logic [2:0] memory_beat_q;
-  logic [31:0] memory_line_addr_q;
-  logic [TXN_ID_WIDTH-1:0] memory_txn_q;
+  integer memory_read_hold_slot_q;
+  integer memory_read_pick_q;
+  logic [2:0] memory_beat_q [0:3];
+  logic [31:0] memory_line_addr_q [0:3];
+  logic [TXN_ID_WIDTH-1:0] memory_txn_q [0:3];
+  logic memory_error_q [0:3];
+  integer memory_response_slot;
+  integer memory_free_slot;
+  integer memory_read_candidate;
   logic memory_write_response_pending_q;
   logic [TXN_ID_WIDTH-1:0] memory_write_response_txn_q;
   logic memory_write_response_error_q;
@@ -200,7 +207,7 @@ module CoherentCacheSubsystem_tb;
   integer cover_mmio_req_stall = 0;
   integer cover_mmio_resp_stall = 0;
   integer cover_mem_rd_req_stall = 0;
-  integer cover_mem_rd_data_stall = 0;
+  integer cover_l2_fill_stall = 0;
   integer cover_mem_wr_req_stall = 0;
   integer cover_mem_wr_data_stall = 0;
   integer cover_dir_req_stall = 0;
@@ -398,8 +405,8 @@ module CoherentCacheSubsystem_tb;
         cover_mmio_resp_stall <= cover_mmio_resp_stall + 1;
       if (mem_rd_req_valid && !mem_rd_req_ready)
         cover_mem_rd_req_stall <= cover_mem_rd_req_stall + 1;
-      if (mem_rd_data_valid && !mem_rd_data_ready)
-        cover_mem_rd_data_stall <= cover_mem_rd_data_stall + 1;
+      if (dut.mem_fill_writer_active_q && !dut.l2_line_wr_ready)
+        cover_l2_fill_stall <= cover_l2_fill_stall + 1;
       if (mem_wr_req_valid && !mem_wr_req_ready)
         cover_mem_wr_req_stall <= cover_mem_wr_req_stall + 1;
       if (mem_wr_data_valid && !mem_wr_data_ready)
@@ -526,21 +533,47 @@ module CoherentCacheSubsystem_tb;
   endfunction
 
   always_comb begin
-    mem_rd_req_ready = !stall_mem_rd_req &&
+    memory_response_slot = -1;
+    memory_free_slot = -1;
+    memory_read_candidate = 0;
+    if (memory_read_valid_held_q)
+      memory_response_slot = memory_read_hold_slot_q;
+    else begin
+      for (integer offset = 0; offset < MODEL_SLOTS; offset = offset + 1) begin
+        memory_read_candidate = (memory_read_pick_q + offset) % MODEL_SLOTS;
+        if ((memory_response_slot < 0) &&
+            memory_active_q[memory_read_candidate])
+          memory_response_slot = memory_read_candidate;
+      end
+    end
+    for (integer slot = 0; slot < MODEL_SLOTS; slot = slot + 1)
+      if (!memory_active_q[slot] && (memory_free_slot < 0))
+        memory_free_slot = slot;
+
+    mem_rd_req_ready = !stall_mem_rd_req && (memory_free_slot >= 0) &&
                        (!inject_periodic_stalls || (cycle_count % 4 != 0));
-    mem_rd_data_valid = memory_active_q &&
+    mem_rd_data_valid = (memory_response_slot >= 0) &&
                         (memory_read_valid_held_q ||
                          !inject_periodic_stalls || (cycle_count % 3 != 0));
-    mem_rd_data_txn_id = memory_txn_q;
-    mem_rd_data_beat_idx = memory_beat_q;
-    mem_rd_data = memory_word(memory_line_addr_q, memory_beat_q);
-    for (integer slot = 0; slot < 128; slot = slot + 1)
-      if (memory_slot_valid[slot] &&
-          (memory_slot_addr[slot] == memory_line_addr_q))
-        mem_rd_data = backing_store[slot][memory_beat_q];
-    mem_rd_data_error = inject_next_mem_rd_error && memory_active_q &&
-                        (memory_beat_q == 3'd0);
-    mem_rd_data_last = mem_rd_data_error || (memory_beat_q == 3'd7);
+    mem_rd_data_txn_id = '0;
+    mem_rd_data_beat_idx = '0;
+    mem_rd_data = '0;
+    mem_rd_data_error = 1'b0;
+    mem_rd_data_last = 1'b0;
+    if (memory_response_slot >= 0) begin
+      mem_rd_data_txn_id = memory_txn_q[memory_response_slot];
+      mem_rd_data_beat_idx = memory_beat_q[memory_response_slot];
+      mem_rd_data = memory_word(memory_line_addr_q[memory_response_slot],
+                                memory_beat_q[memory_response_slot]);
+      for (integer slot = 0; slot < 128; slot = slot + 1)
+        if (memory_slot_valid[slot] &&
+            (memory_slot_addr[slot] == memory_line_addr_q[memory_response_slot]))
+          mem_rd_data = backing_store[slot][memory_beat_q[memory_response_slot]];
+      mem_rd_data_error = memory_error_q[memory_response_slot] &&
+                          (memory_beat_q[memory_response_slot] == 3'd0);
+      mem_rd_data_last = mem_rd_data_error ||
+                         (memory_beat_q[memory_response_slot] == 3'd7);
+    end
 
     mem_wr_req_ready = !stall_mem_wr_req &&
                        (!inject_periodic_stalls || (cycle_count % 3 != 0));
@@ -557,12 +590,12 @@ module CoherentCacheSubsystem_tb;
 
   always_ff @(posedge clock) begin : backing_memory_model
     integer write_slot;
+    integer free_read_slot;
     if (reset) begin
-      memory_active_q <= 1'b0;
+      memory_active_q <= '0;
       memory_read_valid_held_q <= 1'b0;
-      memory_beat_q <= 3'b0;
-      memory_line_addr_q <= 32'b0;
-      memory_txn_q <= '0;
+      memory_read_hold_slot_q <= 0;
+      memory_read_pick_q <= 0;
       memory_write_slot_q <= '0;
       memory_write_txn_q <= '0;
       memory_write_addr_q <= '0;
@@ -578,6 +611,12 @@ module CoherentCacheSubsystem_tb;
       cycle_count <= 0;
       mmio_request_count <= 0;
       memory_read_count <= 0;
+      for (integer slot = 0; slot < MODEL_SLOTS; slot = slot + 1) begin
+        memory_beat_q[slot] <= '0;
+        memory_line_addr_q[slot] <= '0;
+        memory_txn_q[slot] <= '0;
+        memory_error_q[slot] <= 1'b0;
+      end
     end else begin
       cycle_count <= cycle_count + 1;
       if (mmio_response_delay_q > 0)
@@ -586,28 +625,36 @@ module CoherentCacheSubsystem_tb;
         mmio_response_delay_q <= -1;
 
       if (mem_rd_req_valid && mem_rd_req_ready) begin
-        if (memory_active_q)
-          $fatal(1, "memory received a second request during an active line read");
-        memory_active_q <= 1'b1;
-        memory_read_valid_held_q <= 1'b0;
+        free_read_slot = -1;
+        for (integer slot = 0; slot < MODEL_SLOTS; slot = slot + 1)
+          if (!memory_active_q[slot] && (free_read_slot < 0))
+            free_read_slot = slot;
+        if (free_read_slot < 0)
+          $fatal(1, "memory accepted a read without a free response slot");
+        memory_active_q[free_read_slot] <= 1'b1;
+        memory_error_q[free_read_slot] <= inject_next_mem_rd_error;
         memory_read_count <= memory_read_count + 1;
-        memory_beat_q <= 3'b0;
-        memory_line_addr_q <= mem_rd_req_addr;
-        memory_txn_q <= mem_rd_req_txn_id;
-      end else begin
-        if (mem_rd_data_valid)
-          memory_read_valid_held_q <= !mem_rd_data_ready;
-        else
-          memory_read_valid_held_q <= 1'b0;
-        if (memory_active_q && mem_rd_data_valid && mem_rd_data_ready) begin
-          if (mem_rd_data_error) begin
-            memory_active_q <= 1'b0;
-            memory_beat_q <= '0;
-          end else if (memory_beat_q == 3'd7)
-            memory_active_q <= 1'b0;
-          else
-            memory_beat_q <= memory_beat_q + 1'b1;
+        memory_beat_q[free_read_slot] <= '0;
+        memory_line_addr_q[free_read_slot] <= mem_rd_req_addr;
+        memory_txn_q[free_read_slot] <= mem_rd_req_txn_id;
+      end
+
+      if (mem_rd_data_valid && mem_rd_data_ready) begin
+        memory_read_valid_held_q <= 1'b0;
+        memory_read_pick_q <= (memory_response_slot + 1) % MODEL_SLOTS;
+        if (mem_rd_data_error || (memory_beat_q[memory_response_slot] == 3'd7)) begin
+          memory_active_q[memory_response_slot] <= 1'b0;
+          memory_beat_q[memory_response_slot] <= '0;
+          memory_error_q[memory_response_slot] <= 1'b0;
+        end else begin
+          memory_beat_q[memory_response_slot] <=
+            memory_beat_q[memory_response_slot] + 1'b1;
         end
+      end else if (mem_rd_data_valid && !mem_rd_data_ready) begin
+        memory_read_valid_held_q <= 1'b1;
+        memory_read_hold_slot_q <= memory_response_slot;
+      end else if (!memory_read_valid_held_q) begin
+        memory_read_valid_held_q <= 1'b0;
       end
 
       if (mem_wr_req_valid && mem_wr_req_ready) begin
@@ -1716,19 +1763,22 @@ module CoherentCacheSubsystem_tb;
     @(negedge clock);
     force dut.l2_array.line_wr_ready = 1'b0;
     stall_mem_rd_req = 1'b0;
-    wait (mem_rd_data_valid);
+    wait (dut.mem_mshr_full_q[0]);
+    wait (dut.mem_fill_writer_active_q);
     #1;
-    if (!mem_rd_data_valid || mem_rd_data_ready || mem_rd_data_beat_idx != 3'd0)
-      $fatal(1, "L2 receiver stall failed: valid=%b mem_ready=%b array_ready=%b engine=%0d error=%b",
-             mem_rd_data_valid, mem_rd_data_ready, dut.l2_line_wr_ready,
-             dut.engine_state_q, mem_rd_data_error);
+    if (!dut.mem_mshr_full_q[0] || !dut.mem_fill_writer_active_q ||
+        dut.l2_line_wr_ready || (dut.mem_fill_writer_beat_q != 3'd0))
+      $fatal(1, "MSHR did not decouple AXI refill from a stalled L2 fill port: full=%b writer=%b ready=%b beat=%0d",
+             dut.mem_mshr_full_q[0], dut.mem_fill_writer_active_q,
+             dut.l2_line_wr_ready, dut.mem_fill_writer_beat_q);
     repeat (3) @(posedge clock);
-    if (!mem_rd_data_valid || mem_rd_data_ready || mem_rd_data_beat_idx != 3'd0)
-      $fatal(1, "memory refill beat did not remain stable under L2 backpressure");
+    if (!dut.mem_fill_writer_active_q ||
+        (dut.mem_fill_writer_beat_q != 3'd0) || cpu_resp_valid[0])
+      $fatal(1, "stalled L2 fill did not hold its buffered line and block CPU completion");
     // Some simulator versions retain a forced value on optimized array ports;
     // explicitly restore READY for portable behavior.
     force dut.l2_array.line_wr_ready = 1'b1;
-    $display("PASS: valid memory refill beat is held under L2 receiver backpressure");
+    $display("PASS: refill MSHR absorbs the memory line while the L2 fill port is stalled");
     for (cycles = 0; cycles < 1000; cycles = cycles + 1) begin
       if (cpu_resp_valid[0])
         break;
@@ -2112,17 +2162,17 @@ module CoherentCacheSubsystem_tb;
 
     if ((cover_cpu_resp_stall == 0) || (cover_mmio_req_stall == 0) ||
         (cover_mmio_resp_stall == 0) || (cover_mem_rd_req_stall == 0) ||
-        (cover_mem_rd_data_stall == 0) || (cover_mem_wr_req_stall == 0) ||
+        (cover_l2_fill_stall == 0) || (cover_mem_wr_req_stall == 0) ||
         (cover_mem_wr_data_stall == 0) ||
         (cover_dir_req_stall == 0))
-      $fatal(1, "backpressure coverage hole: cpu_resp=%0d mmio_req=%0d mmio_resp=%0d mem_rd_req=%0d mem_rd_data=%0d mem_wr_req=%0d mem_wr_data=%0d dir_req=%0d",
+      $fatal(1, "backpressure coverage hole: cpu_resp=%0d mmio_req=%0d mmio_resp=%0d mem_rd_req=%0d l2_fill=%0d mem_wr_req=%0d mem_wr_data=%0d dir_req=%0d",
              cover_cpu_resp_stall, cover_mmio_req_stall,
-             cover_mmio_resp_stall, cover_mem_rd_req_stall, cover_mem_rd_data_stall,
+             cover_mmio_resp_stall, cover_mem_rd_req_stall, cover_l2_fill_stall,
              cover_mem_wr_req_stall, cover_mem_wr_data_stall,
              cover_dir_req_stall);
-    $display("COVER: stalled cpu_resp=%0d mmio_req=%0d mmio_resp=%0d mem_rd_req=%0d mem_rd_data=%0d mem_wr_req=%0d mem_wr_data=%0d dir_req=%0d",
+    $display("COVER: stalled cpu_resp=%0d mmio_req=%0d mmio_resp=%0d mem_rd_req=%0d l2_fill=%0d mem_wr_req=%0d mem_wr_data=%0d dir_req=%0d",
              cover_cpu_resp_stall, cover_mmio_req_stall,
-             cover_mmio_resp_stall, cover_mem_rd_req_stall, cover_mem_rd_data_stall,
+             cover_mmio_resp_stall, cover_mem_rd_req_stall, cover_l2_fill_stall,
              cover_mem_wr_req_stall, cover_mem_wr_data_stall,
              cover_dir_req_stall);
 
