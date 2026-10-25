@@ -54,6 +54,10 @@ class CoherenceCoverage:
             raise ValueError("coverage event count cannot be negative")
         self.features[event] += count
 
+    def sample_interleaving(self, key):
+        """Record a concurrent case after its independent checker passes."""
+        self.cross_state_opcode_core_source[f"interleaving:{key}"] += 1
+
     def require(self, *events):
         missing = [event for event in events if not self.features[event]]
         if missing:

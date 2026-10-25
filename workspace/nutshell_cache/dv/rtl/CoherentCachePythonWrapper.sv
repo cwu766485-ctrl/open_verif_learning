@@ -34,6 +34,20 @@ module CoherentCachePythonWrapper (
   output logic [2:0] monitor_owner_data_beat_idx,
   output logic [63:0] monitor_owner_data,
   output logic monitor_owner_data_last,
+  output logic monitor_dir_lookup_conflict_valid,
+  output logic [31:0] monitor_dir_lookup_conflict_incoming_addr,
+  output logic [31:0] monitor_dir_lookup_conflict_active_addr,
+  output logic monitor_dir_lookup_conflict_is_transfer,
+  output logic monitor_dir_transfer_grant_conflict_valid,
+  output logic [31:0] monitor_dir_transfer_grant_conflict_lookup_addr,
+  output logic [31:0] monitor_dir_transfer_grant_conflict_grant_addr,
+  output logic monitor_dir_req_accept_valid,
+  output logic [31:0] monitor_dir_req_accept_addr,
+  output logic monitor_l2_lookup_valid,
+  output logic [31:0] monitor_l2_lookup_addr,
+  output logic monitor_l2_lookup_hit,
+  output logic monitor_dir_grant_accept_valid,
+  output logic [31:0] monitor_dir_grant_accept_addr,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -181,6 +195,26 @@ module CoherentCachePythonWrapper (
     .monitor_owner_data_addr(monitor_owner_data_addr),
     .monitor_owner_data_beat_idx(monitor_owner_data_beat_idx),
     .monitor_owner_data(monitor_owner_data),
-    .monitor_owner_data_last(monitor_owner_data_last)
+    .monitor_owner_data_last(monitor_owner_data_last),
+    .monitor_dir_lookup_conflict_valid(monitor_dir_lookup_conflict_valid),
+    .monitor_dir_lookup_conflict_incoming_addr(
+      monitor_dir_lookup_conflict_incoming_addr),
+    .monitor_dir_lookup_conflict_active_addr(
+      monitor_dir_lookup_conflict_active_addr),
+    .monitor_dir_lookup_conflict_is_transfer(
+      monitor_dir_lookup_conflict_is_transfer),
+    .monitor_dir_transfer_grant_conflict_valid(
+      monitor_dir_transfer_grant_conflict_valid),
+    .monitor_dir_transfer_grant_conflict_lookup_addr(
+      monitor_dir_transfer_grant_conflict_lookup_addr),
+    .monitor_dir_transfer_grant_conflict_grant_addr(
+      monitor_dir_transfer_grant_conflict_grant_addr),
+    .monitor_dir_req_accept_valid(monitor_dir_req_accept_valid),
+    .monitor_dir_req_accept_addr(monitor_dir_req_accept_addr),
+    .monitor_l2_lookup_valid(monitor_l2_lookup_valid),
+    .monitor_l2_lookup_addr(monitor_l2_lookup_addr),
+    .monitor_l2_lookup_hit(monitor_l2_lookup_hit),
+    .monitor_dir_grant_accept_valid(monitor_dir_grant_accept_valid),
+    .monitor_dir_grant_accept_addr(monitor_dir_grant_accept_addr)
   );
 endmodule

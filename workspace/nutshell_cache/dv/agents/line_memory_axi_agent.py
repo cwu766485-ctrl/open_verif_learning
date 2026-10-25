@@ -32,6 +32,7 @@ class LineMemoryAxiAgent:
             if channel != "read_data" or period < 2:
                 raise ValueError(f"unsupported response gap: {channel}={period}")
         self.read_requests = []
+        self.read_completions = []
         self.write_requests = []
         self.write_responses = []
         self.read_beats = 0
@@ -171,6 +172,7 @@ class LineMemoryAxiAgent:
                 idx = reads.index(active_read)
                 due, addr, txn_id, beat = reads[idx]
                 if beat == self.BEATS_PER_LINE - 1:
+                    self.read_completions.append((addr, txn_id, self.cycle))
                     del reads[idx]
                 else:
                     reads[idx] = (due, addr, txn_id, beat + 1)

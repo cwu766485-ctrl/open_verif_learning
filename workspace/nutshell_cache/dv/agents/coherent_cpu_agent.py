@@ -27,6 +27,7 @@ class DualCoreCpuDriver:
         self.latencies = {0: [], 1: []}
         self.request_stall_cycles = {0: 0, 1: 0}
         self.response_stall_cycles = {0: 0, 1: 0}
+        self.last_pair_accepted_at = {}
 
     @staticmethod
     def _pack(reqs):
@@ -45,39 +46,58 @@ class DualCoreCpuDriver:
     async def access_pair(self, core0: CpuRequest | None,
                           core1: CpuRequest | None,
                           *, max_cycles: int = 1000,
-                          response_stall_cycles: int = 0):
+                          response_stall_cycles: int = 0,
+                          request_delay_cycles: dict[int, int] | None = None):
         if response_stall_cycles < 0:
             raise ValueError("response_stall_cycles must be non-negative")
         reqs = (core0, core1)
         desired, write, mask, addr, data = self._pack(reqs)
         if not desired:
             raise ValueError("access_pair requires at least one request")
+        delays = request_delay_cycles or {}
+        if any(core not in (0, 1) or reqs[core] is None or delay < 0
+               for core, delay in delays.items()):
+            raise ValueError("request delays must name present cores and be non-negative")
+        delays = {core: delays.get(core, 0) for core in range(2)}
         d = self.dut
         d.cpu_resp_ready.value = 0
         d.cpu_req_addr.value = addr
         d.cpu_req_write.value = write
         d.cpu_req_wmask.value = mask
         d.cpu_req_wdata.value = data
-        d.cpu_req_valid.value = desired
+        offered = sum(1 << core for core, req in enumerate(reqs)
+                      if req is not None and delays[core] == 0)
+        d.cpu_req_valid.value = offered
         accepted = 0
         accepted_at = {}
+        request_phase_responses = []
 
-        for _ in range(max_cycles):
+        for cycle in range(max_cycles):
             await ClockCycles(d, 1)
             self.cycle += 1
+            early_valid = int(d.cpu_resp_valid.value) & desired
+            if early_valid:
+                request_phase_responses.append((
+                    self.cycle, early_valid, int(d.cpu_resp_ready.value),
+                    int(d.cpu_resp_addr.value), int(d.cpu_resp_write.value),
+                ))
             ready = int(d.cpu_req_ready.value)
             for core in range(2):
                 bit = 1 << core
                 if (desired & bit) and not (accepted & bit) and not (ready & bit):
                     self.request_stall_cycles[core] += 1
-            newly = desired & ~accepted & ready
+            newly = offered & ~accepted & ready
             for core in range(2):
                 if newly & (1 << core):
                     accepted_at[core] = self.cycle
             accepted |= newly
-            d.cpu_req_valid.value = desired & ~accepted
             if accepted == desired:
                 break
+            next_cycle = cycle + 1
+            offered = sum(1 << core for core, req in enumerate(reqs)
+                          if req is not None and not (accepted & (1 << core))
+                          and delays[core] <= next_cycle)
+            d.cpu_req_valid.value = offered
         else:
             d.cpu_req_valid.value = 0
             raise TimeoutError(
@@ -85,21 +105,32 @@ class DualCoreCpuDriver:
                 f"ready={int(d.cpu_req_ready.value):02b}"
             )
         d.cpu_req_valid.value = 0
+        self.last_pair_accepted_at = dict(accepted_at)
 
         results = [None, None]
         latched = 0
         held_payload = {}
         stall_remaining = {}
+        response_trace = []
+        seen_valid = 0
         for _ in range(max_cycles):
             await ClockCycles(d, 1)
             self.cycle += 1
             valid = int(d.cpu_resp_valid.value) & desired
+            seen_valid |= valid
+            response_trace.append((
+                self.cycle, valid, int(d.cpu_resp_ready.value),
+                int(d.cpu_resp_addr.value), int(d.cpu_resp_write.value),
+            ))
+            if len(response_trace) > 16:
+                response_trace.pop(0)
             ready_mask = 0
             packed_data = int(d.cpu_resp_rdata.value)
             packed_addr = int(d.cpu_resp_addr.value)
             packed_write = int(d.cpu_resp_write.value)
             for core in held_payload:
-                if not (valid & (1 << core)):
+                if ((latched & (1 << core)) == 0 and
+                        not (valid & (1 << core))):
                     raise AssertionError(
                         f"core{core} response valid dropped while ready was low"
                     )
@@ -132,6 +163,8 @@ class DualCoreCpuDriver:
                 results[core] = got_data
                 self.latencies[core].append(self.cycle - accepted_at[core])
                 ready_mask |= bit
+                held_payload.pop(core, None)
+                stall_remaining.pop(core, None)
             latched |= ready_mask
             d.cpu_resp_ready.value = ready_mask
             if latched == desired:
@@ -142,7 +175,10 @@ class DualCoreCpuDriver:
         d.cpu_resp_ready.value = 0
         raise TimeoutError(
             f"CPU response timeout for mask={desired:02b}; valid="
-            f"{int(d.cpu_resp_valid.value):02b} protocol_error={int(d.protocol_error.value)}"
+            f"{int(d.cpu_resp_valid.value):02b} accepted={accepted:02b} "
+            f"latched={latched:02b} seen={seen_valid:02b} "
+            f"protocol_error={int(d.protocol_error.value)} "
+            f"trace={response_trace} early_responses={request_phase_responses}"
         )
 
     async def access(self, core: int, addr: int, *, write: bool = False,

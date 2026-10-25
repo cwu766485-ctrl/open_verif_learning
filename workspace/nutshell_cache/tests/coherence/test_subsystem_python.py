@@ -232,7 +232,7 @@ async def test_python_masked_stores_to_modified_line(coherent_env):
 
 @case
 async def test_python_memory_and_cpu_backpressure(coherent_env):
-    dut, memory, _ = await coherent_env(
+    dut, memory, perf = await coherent_env(
         response_delay=3,
         response_gap_periods={"read_data": 5},
     )
@@ -339,12 +339,188 @@ async def test_python_reset_cancels_active_refill(coherent_env):
     _record_model(model)
 
 
+@pytest.mark.parametrize("seed", [0x7319, 0xD1A6, 0xA11CE, 0xBADC0DE])
+@case
+async def test_owner_transfer_and_cold_grant_under_backpressure(coherent_env, seed):
+    """Check transfer/grant data correctness under memory backpressure."""
+    ready_period = 3 + seed % 5
+    response_gap = 4 + seed % 4
+    dut, memory, perf = await coherent_env(
+        response_delay=seed % 5 + 1,
+        backpressure_periods={"read_req": ready_period},
+        response_gap_periods={"read_data": response_gap},
+    )
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    owner_addr = 0x0240_0000 + (seed & 0xFF) * 0x1000
+    model.seed_word(owner_addr,
+                    memory.word(owner_addr, (owner_addr >> 3) & 7))
+    # Guarantee each parameterized replay sees a request-channel stall even
+    # when its deterministic modulo phase would otherwise miss all valid cycles.
+    memory.arm_stall("read_req", cycles=1)
+
+    # Move ownership from Core1 to Core0 so the next Core1 read must retrieve
+    # the latest line through SnoopRead while another line requests an L2 grant.
+    value1 = 0xC010_0000_0000_0000 | seed
+    await cpu.access(1, owner_addr, write=True, data=value1)
+    model.observe(1, owner_addr, write=True, write_data=value1)
+    value0 = 0xFACE_0000_0000_0000 | seed
+    mask0 = 0x55
+    await cpu.access(0, owner_addr, write=True, data=value0, mask=mask0)
+    model.observe(0, owner_addr, write=True, write_data=value0,
+                  write_mask=mask0)
+    assert model.states[owner_addr & ~0x3F] == ["M", "I"]
+    memory.snoop_data.assert_directory_matches(model, owner_addr)
+    for pair_index in range(6):
+        grant_addr = 0x0300_0000 + (seed & 0xFF) * 0x10000 + pair_index * 64
+        model.seed_word(grant_addr,
+                        memory.word(grant_addr, (grant_addr >> 3) & 7))
+        snoop_cursor = len(memory.snoop_data.transfers)
+        snoop_req_cursor = len(memory.snoop_data.snoops)
+        read_cursor = len(memory.read_requests)
+        grant_result, owner_result = await cpu.access_pair(
+            CpuRequest(grant_addr), CpuRequest(owner_addr),
+            response_stall_cycles=1 + seed % 3,
+        )
+        assert grant_result == memory.word(grant_addr, (grant_addr >> 3) & 7)
+        model.observe(0, grant_addr, response_data=grant_result)
+        assert owner_result == model.word(owner_addr)
+        model.observe(1, owner_addr, response_data=owner_result)
+        assert len(memory.read_requests) == read_cursor + 1, (
+            "the cold grant must read backing memory once; owner transfer must "
+            "come from L1 without a second memory read"
+        )
+        owner_snoops = [item for item in
+                        memory.snoop_data.snoops[snoop_req_cursor:]
+                        if item["line"] == (owner_addr & ~0x3F) and
+                        item["core"] == 0]
+        assert owner_snoops and owner_snoops[-1]["opcode"] == 0, (
+            f"seed={seed:#x}: expected Core0 SnoopRead, got {owner_snoops}; "
+            f"all snoops={memory.snoop_data.snoops[snoop_req_cursor:]}; "
+            f"transfers={memory.snoop_data.transfers[snoop_cursor:]}"
+        )
+        expected_line = [
+            model.data.get((owner_addr & ~0x3F) + beat * 8,
+                           memory.word((owner_addr & ~0x3F) + beat * 8, beat))
+            for beat in range(8)
+        ]
+        memory.snoop_data.assert_line_data(owner_addr, expected_line,
+                                           since=snoop_cursor)
+        memory.snoop_data.assert_directory_matches(model, owner_addr)
+        memory.snoop_data.assert_directory_matches(model, grant_addr)
+        if pair_index < 5:
+            # Restore M ownership so each replay exercises a fresh owner
+            # transfer instead of an L1 S-state read hit on later iterations.
+            update = 0xBEEF_0000_0000_0000 | (seed << 4) | pair_index
+            await cpu.access(0, owner_addr, write=True, data=update, mask=0xAA)
+            model.observe(0, owner_addr, write=True, write_data=update,
+                          write_mask=0xAA)
+            memory.snoop_data.assert_directory_matches(model, owner_addr)
+
+    assert memory.stalls["read_req"] > 0
+    assert int(dut.protocol_error.value) == 0
+    _record_model(model)
+
+
+@case
+async def test_directory_lookup_grant_conflict_offset_sweep(coherent_env):
+    """Sweep request phase to replay a waiter during an active L2 grant."""
+    dut, memory, perf = await coherent_env(
+        response_delay=2, backpressure_periods={"read_req": 4},
+    )
+    grant_conflicts = []
+    cpu = DualCoreCpuDriver(dut)
+    # Sweep offsets around the short grant handshake window. Each grant line
+    # is deliberately L2-resident but absent from both L1s; the competing
+    # Core0 request is to a distinct cold line.
+    for attempt in range(4):
+        for offset in range(16):
+            grant_addr = 0x0440_0000 + (attempt * 16 + offset) * 64
+            await cpu.access(0, grant_addr)
+            for way in range(1, 5):
+                await cpu.access(0, grant_addr + way * 32768)
+            conflict_cursor = len(memory.snoop_data.transfer_grant_conflicts)
+            waiting_addr = grant_addr + 0x1000 + offset * 64
+            # Core1 launches the L2-resident refill. Core0 is offered after
+            # each phase offset while the grant is active. The shared driver
+            # owns both packed request lanes and checks both responses.
+            try:
+                await cpu.access_pair(
+                    CpuRequest(waiting_addr), CpuRequest(grant_addr),
+                    request_delay_cycles={0: offset},
+                )
+            except TimeoutError as error:
+                raise TimeoutError(
+                    f"offset={offset} grant={grant_addr:#x} waiting={waiting_addr:#x}; "
+                    f"memory_reads={memory.read_requests[-8:]}; "
+                    f"directory_commits={memory.snoop_data.directory_commits[-8:]}; "
+                    f"transfer_grant_conflicts="
+                    f"{memory.snoop_data.transfer_grant_conflicts[-8:]}; "
+                    f"recent_l2={perf.events['l2_lookups'][-8:]}; "
+                    f"recent_grants={perf.events['directory_grants'][-8:]}; {error}"
+                ) from error
+            conflicts = memory.snoop_data.transfer_grant_conflicts[conflict_cursor:]
+            grant_conflicts.extend(
+                item for item in conflicts
+                if item["lookup"] != item["grant"]
+            )
+            if grant_conflicts:
+                PYTHON_COVERAGE.sample_external("directory_lookup_conflict_grant")
+                PYTHON_COVERAGE.sample_interleaving(
+                    "active_grant_distinct_address_ready_stall")
+                _record_model(CoherenceScoreboard())
+                assert int(dut.protocol_error.value) == 0
+                return
+    raise AssertionError(
+        "offset sweep failed to overlap a distinct-address waiter with an "
+        f"active grant; observed conflicts={memory.snoop_data.lookup_conflicts}"
+    )
+
+
+@case
+async def test_python_same_line_dual_lane_requests(coherent_env):
+    dut, memory, _ = await coherent_env()
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    address = 0x0230_1280
+    initial = memory.word(address, (address >> 3) & 7)
+    model.seed_word(address, initial)
+
+    results = await cpu.access_pair(CpuRequest(address), CpuRequest(address))
+    assert results == (initial, initial)
+    model.observe(0, address, response_data=results[0])
+    model.observe(1, address, response_data=results[1])
+
+    value0, mask0 = 0x1122334455667788, 0x0F
+    value1, mask1 = 0xAABBCCDDEEFF0011, 0xF0
+    await cpu.access_pair(CpuRequest(address, True, value0, mask0),
+                          CpuRequest(address, True, value1, mask1))
+    model.observe(0, address, write=True, write_data=value0,
+                  write_mask=mask0)
+    model.observe(1, address, write=True, write_data=value1,
+                  write_mask=mask1)
+    expected = model.word(address)
+    readback = await cpu.access(0, address)
+    assert readback == expected
+    model.observe(0, address, response_data=readback)
+    memory.snoop_data.assert_directory_matches(model, address)
+    assert int(dut.protocol_error.value) == 0
+    PYTHON_COVERAGE.sample_external("same_line_dual_lane")
+    _record_model(model)
+
+
 @pytest.mark.parametrize("seed", [0x1A2B, 0x5EED, 0xC0FFEE, 0xD15EA5E])
 @case
 async def test_python_seeded_randomized_coherence(coherent_env, seed):
-    dut, memory, _ = await coherent_env(response_delay=seed % 5 + 1)
+    ready_period = 3 + seed % 5
+    dut, memory, _ = await coherent_env(
+        response_delay=seed % 5 + 1,
+        backpressure_periods={"read_req": ready_period},
+        response_gap_periods={"read_data": ready_period + 1},
+    )
     cpu = DualCoreCpuDriver(dut)
     model = CoherenceScoreboard()
+    lookup_conflict_cursor = len(memory.snoop_data.lookup_conflicts)
     rng = random.Random(seed)
     addresses = [0x0200_0000 + index * 64 for index in range(12)]
 
@@ -458,6 +634,25 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
     assert int(dut.protocol_error.value) == 0, f"protocol error for seed={seed:#x}"
     PYTHON_COVERAGE.sample_external("randomized_seeded_regression")
     PYTHON_COVERAGE.sample_external("randomized_cpu_operations", operations)
+    conflicts = memory.snoop_data.lookup_conflicts[lookup_conflict_cursor:]
+    distinct_conflicts = [item for item in conflicts
+                          if item["incoming"] != item["active"]]
+    transfer_conflicts = [item for item in distinct_conflicts
+                          if item["active_kind"] == "transfer"]
+    # This fixed seed is the minimized replay that consistently overlaps a
+    # different-address Directory request with the active owner-transfer
+    # lookup. All normal data, MESI, beat and directory checkers above remain
+    # enabled while request and R-beat backpressure are active.
+    if seed == 0x5EED:
+        assert transfer_conflicts, (
+            f"seed={seed:#x} failed to recreate a distinct-address transfer "
+            f"lookup race: {conflicts}"
+        )
+        assert memory.stalls["read_req"] > 0
+        PYTHON_COVERAGE.sample_external("directory_lookup_race_regression")
+        PYTHON_COVERAGE.sample_external("directory_lookup_conflict_transfer")
+        PYTHON_COVERAGE.sample_interleaving(
+            "active_transfer_distinct_address_ready_stall")
     _record_model(model)
 
 
@@ -472,6 +667,27 @@ def _rate(numerator, denominator):
     return numerator / denominator if denominator else None
 
 
+def _phase_samples(starts, ends, start_key="addr", end_key="addr"):
+    """Pair ordered same-line milestones and return non-negative cycle deltas."""
+    pending = {}
+    for item in sorted(starts, key=lambda event: event["cycle"]):
+        pending.setdefault(item[start_key], []).append(item["cycle"])
+    samples = []
+    for item in sorted(ends, key=lambda event: event["cycle"]):
+        queue = pending.get(item[end_key], [])
+        if queue and queue[0] <= item["cycle"]:
+            samples.append(item["cycle"] - queue.pop(0))
+    return samples
+
+
+def _phase_stats(samples):
+    return {
+        "transactions": len(samples),
+        "mean_cycles": (sum(samples) / len(samples) if samples else None),
+        "p95_cycles": _p95(samples),
+    }
+
+
 @pytest.mark.asyncio
 @case
 @pytest.mark.benchmark
@@ -484,21 +700,67 @@ async def test_coherence_benchmark_v2(coherent_env):
     async def measure(name, delay, initial_state, ops, workload):
         memory.response_delay = delay
         before_perf = perf.snapshot()
+        before_stage_events = perf.event_snapshot()
         before_read_req = len(memory.read_requests)
+        before_read_complete = len(memory.read_completions)
         before_write_req = len(memory.write_requests)
+        before_write_rsp = len(memory.write_responses)
         before_read_beats = memory.read_beats
         before_write_beats = memory.write_beats
         before_latencies = (len(cpu.latencies[0]), len(cpu.latencies[1]))
         await workload()
         after_perf = perf.snapshot()
         after_read_req = len(memory.read_requests)
+        after_read_complete = len(memory.read_completions)
         after_write_req = len(memory.write_requests)
+        after_write_rsp = len(memory.write_responses)
         after_read_beats = memory.read_beats
         after_write_beats = memory.write_beats
         samples = (cpu.latencies[0][before_latencies[0]:] +
                    cpu.latencies[1][before_latencies[1]:])
         delta = {key: after_perf[key] - before_perf[key]
                  for key in before_perf}
+        stage_events = perf.events_since(before_stage_events)
+        dir_to_lookup = _phase_samples(
+            stage_events["directory_accepts"], stage_events["l2_lookups"]
+        )
+        l1_to_dir = _phase_samples(
+            stage_events["l1_misses"], stage_events["directory_accepts"]
+        )
+        memory_read_requests = [
+            {"addr": addr, "id": txn_id, "cycle": cycle}
+            for addr, txn_id, cycle in memory.read_requests[before_read_req:]
+        ]
+        memory_read_completions = [
+            {"addr": addr, "id": txn_id, "cycle": cycle}
+            for addr, txn_id, cycle in memory.read_completions[before_read_complete:]
+        ]
+        memory_write_requests = [
+            {"addr": addr, "id": txn_id, "cycle": cycle}
+            for addr, txn_id, cycle in memory.write_requests[before_write_req:]
+        ]
+        memory_write_responses = [
+            {"id": txn_id, "cycle": cycle}
+            for txn_id, cycle in memory.write_responses[before_write_rsp:]
+        ]
+        l2_hit_events = [event for event in stage_events["l2_lookups"]
+                         if event["hit"]]
+        l2_miss_events = [event for event in stage_events["l2_lookups"]
+                          if not event["hit"]]
+        l2_hit_to_grant = _phase_samples(
+            l2_hit_events, stage_events["directory_grants"]
+        )
+        l2_miss_to_memory = _phase_samples(
+            l2_miss_events, memory_read_requests
+        )
+        memory_read_service = _phase_samples(
+            memory_read_requests, memory_read_completions,
+            start_key="id", end_key="id"
+        )
+        memory_write_service = _phase_samples(
+            memory_write_requests, memory_write_responses,
+            start_key="id", end_key="id"
+        )
         cycles = delta["cycles"]
         l1_hits = delta["l1_hit_core0"] + delta["l1_hit_core1"]
         l1_misses = delta["l1_miss_core0"] + delta["l1_miss_core1"]
@@ -520,6 +782,14 @@ async def test_coherence_benchmark_v2(coherent_env):
                                         if samples else None),
             "p95_req_to_resp_cycles": _p95(samples),
             "ops_per_cycle": _rate(ops, cycles),
+            "phase_cycles": {
+                "l1_miss_to_directory_accept": _phase_stats(l1_to_dir),
+                "directory_accept_to_l2_lookup": _phase_stats(dir_to_lookup),
+                "l2_hit_lookup_to_grant": _phase_stats(l2_hit_to_grant),
+                "l2_miss_lookup_to_memory_request": _phase_stats(l2_miss_to_memory),
+                "memory_read_request_to_last_beat": _phase_stats(memory_read_service),
+                "memory_write_request_to_response": _phase_stats(memory_write_service),
+            },
             "l1_hit_count": l1_hits,
             "l1_miss_count": l1_misses,
             "l1_hit_rate": _rate(l1_hits, l1_hits + l1_misses),
@@ -652,7 +922,7 @@ async def test_coherence_benchmark_v2(coherent_env):
     json_path = result_dir / "coherence_benchmark_v2.json"
     csv_path = result_dir / "coherence_benchmark_v2.csv"
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "dut": "CoherentCacheSubsystem via Picker/Verilator",
         "clock_period_ns": 10,
         "memory_model": "64-byte writable line model; response delay is a simulation parameter",
@@ -661,6 +931,7 @@ async def test_coherence_benchmark_v2(coherent_env):
             "l2_refill_hit_miss": "accepted Directory L2 refill lookup; not a count of all metadata probes",
             "memory_bandwidth": "accepted 64-bit R/W line beats times eight bytes, divided by benchmark cycles",
             "ops_per_cycle": "completed CPU operations divided by the measured window cycles",
+            "phase_cycles": "observed same-line milestone deltas: L1 miss to Directory acceptance, Directory acceptance to L2 refill lookup, L2 hit to grant or L2 miss to backing-memory request, and accepted memory request to final response beat/write response; L2 metadata lookup itself is combinational",
         },
         "results": rows,
     }

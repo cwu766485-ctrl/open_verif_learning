@@ -23,6 +23,10 @@
     {"id": "backpressure.memory_write_request", "feature": "memory_write_request_backpressure", "testpoint": "Dirty victim write request holds through deterministic memory-ready stalls", "checker": "Accepted write-request queue and ready/valid stall counter"},
     {"id": "backpressure.memory_write_data", "feature": "memory_write_data_backpressure", "testpoint": "All eight dirty-victim beats survive deterministic write-data stalls", "checker": "Beat-index checker, writable memory model and ready/valid stall counter"},
     {"id": "memory.read_response_gaps", "feature": "memory_read_response_gaps", "testpoint": "Read refill beats complete with deterministic response-valid gaps", "checker": "ID/beat-aware memory queue and returned architectural data"},
+    {"id": "directory.lookup_race_regression", "feature": "directory_lookup_race_regression", "testpoint": "Different-address owner transfer and cold grant contend for the L2 lookup", "checker": "Blocked-lookup monitor plus independent data, snoop-beat, and Directory scoreboard checks"},
+    {"id": "directory.lookup_conflict_transfer", "feature": "directory_lookup_conflict_transfer", "testpoint": "A waiting request is held while an active owner-transfer lookup uses the shared port", "checker": "Accepted transfer address remains distinct from blocked incoming request"},
+    {"id": "directory.lookup_conflict_grant", "feature": "directory_lookup_conflict_grant", "testpoint": "A waiting request is held while an active grant lookup uses the shared port", "checker": "Accepted grant address remains distinct from blocked incoming request"},
+    {"id": "cpu.same_line_dual_lane", "feature": "same_line_dual_lane", "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently", "checker": "Independent byte-accurate scoreboard and final readback"},
     {"id": "cpu.seeded_random", "feature": "randomized_seeded_regression", "testpoint": "Four reproducible mixed read/write seeds pass the independent model", "checker": "Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output"},
     {"id": "cpu.random_dual_lane", "feature": "random_dual_lane_pairs", "testpoint": "Seeded regression issues independent requests on both packed CPU lanes", "checker": "Single dual-core driver and per-core response matching"}
   ],
@@ -32,6 +36,8 @@
     {"id": "cross.remote_m_owner_read_core1", "key": "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8", "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context"},
     {"id": "cross.shared_upgrade_snoop", "key": "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0", "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer"},
     {"id": "cross.modified_hit_masked_store", "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0", "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"},
-    {"id": "cross.l2_hit_after_l1_eviction", "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8", "testpoint": "L1-evicted line refills from shared L2 without a snoop"}
+    {"id": "cross.l2_hit_after_l1_eviction", "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8", "testpoint": "L1-evicted line refills from shared L2 without a snoop"},
+    {"id": "cross.lookup_conflict_during_transfer", "key": "interleaving:active_transfer_distinct_address_ready_stall", "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active"},
+    {"id": "cross.lookup_conflict_during_grant", "key": "interleaving:active_grant_distinct_address_ready_stall", "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"}
   ]
 }

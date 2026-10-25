@@ -124,7 +124,27 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_owner_data_addr,
   output logic [2:0] monitor_owner_data_beat_idx,
   output logic [63:0] monitor_owner_data,
-  output logic monitor_owner_data_last
+  output logic monitor_owner_data_last,
+  // Requests blocked because an active Directory context owns the shared
+  // L2 lookup mux. These taps make the lookup-race regression observable.
+  output logic monitor_dir_lookup_conflict_valid,
+  output logic [31:0] monitor_dir_lookup_conflict_incoming_addr,
+  output logic [31:0] monitor_dir_lookup_conflict_active_addr,
+  output logic monitor_dir_lookup_conflict_is_transfer,
+  // An already allocated refill lookup and a data-bearing grant can become
+  // eligible together. The refill owns the shared lookup/engine slot first.
+  output logic monitor_dir_transfer_grant_conflict_valid,
+  output logic [31:0] monitor_dir_transfer_grant_conflict_lookup_addr,
+  output logic [31:0] monitor_dir_transfer_grant_conflict_grant_addr,
+  // Cycle markers for Python benchmark stage attribution. Directory metadata
+  // lookup occurs in the transfer-start cycle; these pins expose its boundary.
+  output logic monitor_dir_req_accept_valid,
+  output logic [31:0] monitor_dir_req_accept_addr,
+  output logic monitor_l2_lookup_valid,
+  output logic [31:0] monitor_l2_lookup_addr,
+  output logic monitor_l2_lookup_hit,
+  output logic monitor_dir_grant_accept_valid,
+  output logic [31:0] monitor_dir_grant_accept_addr
 );
   import coherence_protocol_pkg::*;
 
@@ -455,11 +475,39 @@ module CoherentCacheSubsystem #(
                                 !dir_grant_valid;
   assign dir_req_ready = dir_bank_req_ready && dir_lookup_available;
   assign l2_alloc_addr = dir_xfer_start_valid ? dir_xfer_addr : engine_addr_q;
+  assign monitor_dir_lookup_conflict_valid = !reset && cluster_dir_req_valid &&
+    dir_bank_req_ready && (dir_xfer_start_valid || dir_grant_valid);
+  assign monitor_dir_lookup_conflict_incoming_addr = cluster_dir_req_addr;
+  assign monitor_dir_lookup_conflict_active_addr = l2_lookup_addr;
+  assign monitor_dir_lookup_conflict_is_transfer = dir_xfer_start_valid;
+  assign monitor_dir_transfer_grant_conflict_valid = !reset &&
+    dir_xfer_start_valid && dir_xfer_start_ready && dir_grant_valid &&
+    dir_grant_has_data;
+  assign monitor_dir_transfer_grant_conflict_lookup_addr = dir_xfer_addr;
+  assign monitor_dir_transfer_grant_conflict_grant_addr = dir_grant_addr;
+  assign monitor_dir_req_accept_valid = !reset && cluster_dir_req_valid &&
+                                        dir_req_ready;
+  assign monitor_dir_req_accept_addr = cluster_dir_req_addr;
+  assign monitor_l2_lookup_valid = !reset && dir_xfer_start_valid &&
+                                   dir_xfer_start_ready &&
+                                   (dir_xfer_kind == XFER_L2_REFILL);
+  assign monitor_l2_lookup_addr = dir_xfer_addr;
+  assign monitor_l2_lookup_hit = l2_lookup_hit;
+  assign monitor_dir_grant_accept_valid = !reset && dir_grant_valid &&
+                                          dir_grant_ready;
+  assign monitor_dir_grant_accept_addr = dir_grant_addr;
 
   always_ff @(posedge clock) begin
     if (!reset && cluster_dir_req_valid && dir_req_ready) begin
       assert (l2_lookup_addr == cluster_dir_req_addr)
         else $error("Directory accepted a request with a mismatched L2 lookup");
+    end
+    if (!reset && dir_xfer_start_valid && dir_xfer_start_ready &&
+        dir_grant_valid && dir_grant_has_data) begin
+      assert (!dir_grant_ready)
+        else $error("data grant accepted while a refill owned the shared engine");
+      assert (!grant_valid_core[dir_grant_dst])
+        else $error("data grant leaked to an L1 while refill owned the engine");
     end
   end
 
@@ -597,14 +645,17 @@ module CoherentCacheSubsystem #(
     if (dir_grant_dst)
       grant_valid_core[1] = dir_grant_valid &&
                             (!dir_grant_has_data ||
-                             (engine_state_q == ENGINE_IDLE));
+                             ((engine_state_q == ENGINE_IDLE) &&
+                              !dir_xfer_start_valid));
     else
       grant_valid_core[0] = dir_grant_valid &&
                             (!dir_grant_has_data ||
-                             (engine_state_q == ENGINE_IDLE));
+                             ((engine_state_q == ENGINE_IDLE) &&
+                              !dir_xfer_start_valid));
     dir_grant_ready = grant_ready_core[dir_grant_dst] &&
                       (!dir_grant_has_data ||
-                       (engine_state_q == ENGINE_IDLE));
+                       ((engine_state_q == ENGINE_IDLE) &&
+                        !dir_xfer_start_valid));
 
     dir_grant_commit_valid = grant_commit_valid_core[0] |
                              grant_commit_valid_core[1];

@@ -175,7 +175,18 @@ module CoherentCacheAxiSubsystem #(
     .monitor_dir_commit_owner(),
     .monitor_owner_data_valid(), .monitor_owner_data_core(),
     .monitor_owner_data_addr(), .monitor_owner_data_beat_idx(),
-    .monitor_owner_data(), .monitor_owner_data_last()
+    .monitor_owner_data(), .monitor_owner_data_last(),
+    .monitor_dir_lookup_conflict_valid(),
+    .monitor_dir_lookup_conflict_incoming_addr(),
+    .monitor_dir_lookup_conflict_active_addr(),
+    .monitor_dir_lookup_conflict_is_transfer(),
+    .monitor_dir_transfer_grant_conflict_valid(),
+    .monitor_dir_transfer_grant_conflict_lookup_addr(),
+    .monitor_dir_transfer_grant_conflict_grant_addr(),
+    .monitor_dir_req_accept_valid(), .monitor_dir_req_accept_addr(),
+    .monitor_l2_lookup_valid(), .monitor_l2_lookup_addr(),
+    .monitor_l2_lookup_hit(), .monitor_dir_grant_accept_valid(),
+    .monitor_dir_grant_accept_addr()
   );
 
   LineMemoryAxi4Adapter #(

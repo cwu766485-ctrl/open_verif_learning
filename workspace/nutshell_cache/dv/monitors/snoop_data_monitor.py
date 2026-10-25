@@ -14,6 +14,8 @@ class SnoopDataMonitor:
         self.transfers = []
         self.snoops = []
         self.directory_commits = []
+        self.lookup_conflicts = []
+        self.transfer_grant_conflicts = []
         self.beat_errors = []
 
     async def run(self):
@@ -36,6 +38,25 @@ class SnoopDataMonitor:
                     "state": int(d.monitor_dir_commit_state.value),
                     "sharers": int(d.monitor_dir_commit_sharers.value),
                     "owner": int(d.monitor_dir_commit_owner.value),
+                })
+            if int(d.monitor_dir_lookup_conflict_valid.value):
+                self.lookup_conflicts.append({
+                    "incoming": int(d.monitor_dir_lookup_conflict_incoming_addr.value) &
+                                0xFFFFFFC0,
+                    "active": int(d.monitor_dir_lookup_conflict_active_addr.value) &
+                              0xFFFFFFC0,
+                    "active_kind": ("transfer" if int(
+                        d.monitor_dir_lookup_conflict_is_transfer.value)
+                                    else "grant"),
+                })
+            if int(d.monitor_dir_transfer_grant_conflict_valid.value):
+                self.transfer_grant_conflicts.append({
+                    "lookup": int(
+                        d.monitor_dir_transfer_grant_conflict_lookup_addr.value
+                    ) & 0xFFFFFFC0,
+                    "grant": int(
+                        d.monitor_dir_transfer_grant_conflict_grant_addr.value
+                    ) & 0xFFFFFFC0,
                 })
             if int(d.reset.value):
                 await ClockCycles(d, 1)

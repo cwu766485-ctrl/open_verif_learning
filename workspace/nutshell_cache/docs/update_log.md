@@ -39,3 +39,7 @@ format:
 - 2026-10-25 15:10 +08：随机回归复现共享 L2 查找口竞争：Transfer/Grant 查找期间新 Directory context 采到错误行的旧目录状态。用 `dir_lookup_available` 同时门控 MSHR 输入 valid 与上游 ready，阻止错误分配；增加查找地址断言及握手后的 snoop/data/目录监视。
 - 2026-10-25 15:15 +08：Python/Toffee 端到端 10 项通过；SV directed、5 随机种子及四 Context MSHR 压力回归通过，功能覆盖 34/34、RTL 行覆盖 93.1%。Formal 全目标正在重跑。
 - 2026-10-25 15:19 +08：`make COHERENCE_JOBS=2 coherence_formal` 全目标通过，含仲裁器、Directory、MSHR bank 与 L1 Controller 检查；其中 BMC/覆盖深度有限，不作为无界证明。
+- 2026-10-25 19:19 +08：Grant 竞争定向复现出第二层握手 bug：仅压低 Directory ready 未压低 L1 Grant valid，L1 已消费 Grant 但顶层引擎没有启动对应数据流，导致响应永久等待。现对 valid/ready 同步仲裁并加断言；相位扫描命中 transfer/grant 冲突后，两路响应及独立数据检查通过。
+- 2026-10-25 19:19 +08：修正 Benchmark 阶段采样：L1 miss 以内部握手事件为准，避免 wrapper ready 采样相位丢失 L1→Directory 样本；给固定随机种子加入确定的一周期内存请求反压。Python/Toffee 16/16、功能 bins 26/26、cross 8/8，AXI4 五通道压力测试 1/1；完整 formal 与 SV 回归待重跑。
+- 2026-10-25 19:25 +08：修复后的顶层 directed + 5-seed SV coherence 回归通过，功能覆盖 34/34、RTL 行覆盖 93.1%；四 Context MSHR 压力、逆序 refill、snoop 独立进展和活动 reset 均通过。
+- 2026-10-25 19:25 +08：`make COHERENCE_JOBS=2 coherence_formal` 全部目标通过；Python/Toffee 16/16、Python 功能/cross 覆盖 26/26 与 8/8、AXI4 Python 五通道压力 1/1。Formal 为有界/组件级证据；GitHub Actions 全量 CI 待本次推送后确认，PPA 未运行。

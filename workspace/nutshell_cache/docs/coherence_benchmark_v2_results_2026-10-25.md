@@ -8,6 +8,10 @@ per-row counters are in
 [`coherence_benchmark_v2.json`](../benchmarks/results/coherence_benchmark_v2.json)
 and CSV form.
 
+The latest rerun also records per-phase transaction counts, mean, and P95 in
+the schema-v3 JSON/CSV. This is monitor-based RTL-cycle attribution; an empty
+phase means that workload did not exercise that stage.
+
 ## Per-level cache behavior
 
 | Workload | L1 result | L2 refill result | Other |
@@ -39,6 +43,28 @@ bandwidth match and write bandwidth is zero.
 The paired workload lets the two blocking L1 controllers overlap misses to
 different lines. It demonstrates two-core overlap, not simultaneous use of all
 four Directory contexts or four refill MSHRs.
+
+## Pipeline phase attribution
+
+Observed mean cycles from the schema-v3 run (empty phases are not applicable):
+
+| Workload / memory delay | L1 miss → Directory accept | Directory accept → L2 lookup | L2 hit lookup → grant | L2 miss lookup → memory request | Memory read request → last beat | Memory write request → response |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| L2 hit after L1 replacement / 2 | 8 | 1 | 3 | — | — | — |
+| Serialized cold misses / 2 | 2 | 1 | — | 1 | 9 | — |
+| Paired cold misses / 2 | 3 | 1 | — | 1 | 14.5 | — |
+| Serialized cold misses / 20 | 2.375 | 1 | — | 1 | 27 | — |
+| Paired cold misses / 20 | 3.375 | 1 | — | 1 | 31.8125 | — |
+| Serialized cold misses / 50 | 5 | 1 | — | 1 | 57 | — |
+| Paired cold misses / 50 | 6 | 1 | — | 1 | 57 | — |
+| Serialized cold misses / 100 | 5 | 1 | — | 1 | 107 | — |
+| Paired cold misses / 100 | 6 | 1 | — | 1 | 107 | — |
+| Dirty L2 victim / 100 | 2 | 1 | — | 126 | 107 | 108 |
+
+Directory-to-L2 measures the accepted refill request to the refill lookup
+boundary; it does not imply a one-cycle physical SRAM access. The dirty-victim
+L2-miss-to-memory interval includes victim back-invalidation and writeback
+work, so it is not directly comparable to a cold refill.
 
 The dirty-victim workload runs last to keep its intentional backing-memory
 write and resident dirty state from changing the initial conditions of the

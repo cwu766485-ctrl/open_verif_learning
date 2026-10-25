@@ -47,6 +47,13 @@ not a claim about real DRAM timing. The RTL simulation clock period is 10 ns.
 - Mean and nearest-rank P95 latency span CPU request acceptance through response
   capture by the driver. `ops_per_cycle` is completed CPU operations divided by
   the measured window.
+- `phase_cycles` pairs same-line monitor events and reports transaction count,
+  mean, and P95 for L1 miss→Directory acceptance, Directory acceptance→L2
+  refill lookup, L2 hit lookup→grant, L2 miss lookup→memory request, memory
+  read request→last beat, and memory write request→write response. A phase with
+  no transactions is `null`/N/A. The L2 lookup is combinational, so the metric
+  starts at the Directory refill-start boundary rather than claiming an SRAM
+  access latency.
 - Memory bandwidth counts accepted 64-bit R/W data beats, converts them to
   bytes, and divides by window cycles. Read, write, and aggregate BW are reported
   in bytes/cycle and MiB/s at the 100 MHz simulation clock. These are
