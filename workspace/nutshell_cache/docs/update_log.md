@@ -43,3 +43,9 @@ format:
 - 2026-10-25 19:19 +08：修正 Benchmark 阶段采样：L1 miss 以内部握手事件为准，避免 wrapper ready 采样相位丢失 L1→Directory 样本；给固定随机种子加入确定的一周期内存请求反压。Python/Toffee 16/16、功能 bins 26/26、cross 8/8，AXI4 五通道压力测试 1/1；完整 formal 与 SV 回归待重跑。
 - 2026-10-25 19:25 +08：修复后的顶层 directed + 5-seed SV coherence 回归通过，功能覆盖 34/34、RTL 行覆盖 93.1%；四 Context MSHR 压力、逆序 refill、snoop 独立进展和活动 reset 均通过。
 - 2026-10-25 19:25 +08：`make COHERENCE_JOBS=2 coherence_formal` 全部目标通过；Python/Toffee 16/16、Python 功能/cross 覆盖 26/26 与 8/8、AXI4 Python 五通道压力 1/1。Formal 为有界/组件级证据；GitHub Actions 全量 CI 待本次推送后确认，PPA 未运行。
+
+## 2026-10-25（新加坡时间）
+- 20:52：Benchmark v3 增至 32 个独立 L2 hit 样本和五个 Python mixed seed；AXI 子系统顶层增加五种子 burst/反压/吞吐采样，JSON/CSV 与 baseline 一并保存。
+- 20:52：A/B 优化在 data Grant 接受时预发 L2 line read；32 次 L2 hit 从 23 降至 22 cycles，mixed workload 数据 scoreboard、AXI 顶层五种子和 P3 定向对照通过。
+- 20:52：补齐 v1.0 冻结清单、Benchmark v3 报告，并将 Legacy 与 Coherence 分成独立 CI jobs；本机 `make gen_dut && make test` 为 46 passed，`make coherence_verify` 全目标通过（SV 34/34、Python 16/16、Python bins 26/26、6 个 bounded formal targets、AXI adapter 1/1）。
+- 20:53：给 v3 加入交付门槛断言（32 个 L2 hit、五个 seed、零后备内存读）；Picker/Verilator 定向重跑 1 passed。

@@ -128,6 +128,8 @@ module CoherentCacheAxiSubsystem_tb;
   integer accepted_aw_count_q, accepted_w_beat_count_q, returned_b_count_q;
   integer ar_stall_count_q, aw_stall_count_q, w_stall_count_q;
   integer r_stall_count_q, b_stall_count_q;
+  integer cpu_latency_count_q [0:1];
+  integer cpu_latency_samples_q [0:1][0:255];
 
   always_comb begin
     axi_arready = !reset && ((cycle_count_q % 7) != 0) &&
@@ -390,6 +392,7 @@ module CoherentCacheAxiSubsystem_tb;
                             input logic [63:0] expected);
     logic request_accepted;
     logic response_seen;
+    integer latency_cycles;
     begin
       @(negedge clock);
       cpu_req_valid[core] = 1'b1;
@@ -405,8 +408,10 @@ module CoherentCacheAxiSubsystem_tb;
       @(negedge clock);
       cpu_req_valid[core] = 1'b0;
       response_seen = 1'b0;
+      latency_cycles = 0;
       while (!response_seen) begin
         @(posedge clock);
+        latency_cycles = latency_cycles + 1;
         if (cpu_resp_valid[core] && cpu_resp_ready[core]) begin
           if (cpu_resp_addr[core] != addr)
             $fatal(1, "core %0d response address mismatch", core);
@@ -416,6 +421,10 @@ module CoherentCacheAxiSubsystem_tb;
           response_seen = 1'b1;
         end
       end
+      if (cpu_latency_count_q[core] >= 256)
+        $fatal(1, "CPU latency sample array overflow for core %0d", core);
+      cpu_latency_samples_q[core][cpu_latency_count_q[core]] = latency_cycles;
+      cpu_latency_count_q[core] = cpu_latency_count_q[core] + 1;
     end
   endtask
 
@@ -448,6 +457,23 @@ module CoherentCacheAxiSubsystem_tb;
     logic [31:0] csr_value;
     logic [31:0] first_conflict_address;
     logic [63:0] first_conflict_data;
+    integer benchmark_seed;
+    integer random_state;
+    integer total_ops;
+    integer latency_count;
+    integer sorted_latency [0:511];
+    integer latency_temp;
+    integer latency_p95;
+    real mean_latency;
+    real ops_per_cycle;
+    real read_bytes_per_cycle;
+    real write_bytes_per_cycle;
+    real total_bytes_per_cycle;
+
+    if (!$value$plusargs("seed=%d", benchmark_seed)) benchmark_seed = 1;
+    random_state = benchmark_seed;
+    cpu_latency_count_q[0] = 0;
+    cpu_latency_count_q[1] = 0;
 
     cpu_req_valid[0] = 1'b0;
     cpu_req_valid[1] = 1'b0;
@@ -503,14 +529,16 @@ module CoherentCacheAxiSubsystem_tb;
 
     // Exercise additional read/write hits and misses across both LSU ports.
     for (operation = 0; operation < 48; operation = operation + 1) begin
-      selector = (operation * 5 + 2) % 9;
+      random_state = random_state * 1664525 + 1013904223;
+      selector = ((random_state >> 8) & 32'h7fff_ffff) % 9;
       address = first_conflict_address + selector * 32'h0000_8000;
-      if ((operation % 3) == 0) begin
-        value = 64'hbabe_0000_0000_0000 + operation;
-        cpu_access(operation & 1, 1'b1, address, value, 1'b0, '0);
+      if (((random_state >> 4) & 3) == 0) begin
+        value = 64'hbabe_0000_0000_0000 ^
+                {32'b0, benchmark_seed[31:0]} ^ operation;
+        cpu_access(random_state & 1, 1'b1, address, value, 1'b0, '0);
         update_reference(address, value);
       end else begin
-        cpu_access(operation & 1, 1'b0, address, '0, 1'b1,
+        cpu_access(random_state & 1, 1'b0, address, '0, 1'b1,
                    expected_word(address));
       end
     end
@@ -555,12 +583,53 @@ module CoherentCacheAxiSubsystem_tb;
     apb_read(32'h10, csr_value);
     if (csr_value != 0) $fatal(1, "APB protocol/error status is not clear: %08x", csr_value);
 
+    total_ops = cpu_latency_count_q[0] + cpu_latency_count_q[1];
+    latency_count = 0;
+    mean_latency = 0.0;
+    for (i = 0; i < cpu_latency_count_q[0]; i = i + 1) begin
+      sorted_latency[latency_count] = cpu_latency_samples_q[0][i];
+      mean_latency = mean_latency + $itor(cpu_latency_samples_q[0][i]);
+      latency_count = latency_count + 1;
+    end
+    for (i = 0; i < cpu_latency_count_q[1]; i = i + 1) begin
+      sorted_latency[latency_count] = cpu_latency_samples_q[1][i];
+      mean_latency = mean_latency + $itor(cpu_latency_samples_q[1][i]);
+      latency_count = latency_count + 1;
+    end
+    if (latency_count != total_ops || total_ops == 0 || cycle_count_q == 0)
+      $fatal(1, "invalid CPU benchmark accounting");
+    for (i = 1; i < latency_count; i = i + 1) begin
+      latency_temp = sorted_latency[i];
+      selector = i;
+      while ((selector > 0) &&
+             (sorted_latency[selector-1] > latency_temp)) begin
+        sorted_latency[selector] = sorted_latency[selector-1];
+        selector = selector - 1;
+      end
+      sorted_latency[selector] = latency_temp;
+    end
+    mean_latency = mean_latency / $itor(total_ops);
+    latency_p95 = sorted_latency[((95 * latency_count + 99) / 100) - 1];
+    ops_per_cycle = $itor(total_ops) / $itor(cycle_count_q);
+    read_bytes_per_cycle = $itor(returned_r_beat_count_q * 8) /
+                           $itor(cycle_count_q);
+    write_bytes_per_cycle = $itor(accepted_w_beat_count_q * 8) /
+                            $itor(cycle_count_q);
+    total_bytes_per_cycle = read_bytes_per_cycle + write_bytes_per_cycle;
+
     $display("AXI RAM: AR=%0d R-beats=%0d peak-RD=%0d AW=%0d W-beats=%0d B=%0d stalls(ar/aw/w)=%0d/%0d/%0d",
              accepted_ar_count_q, returned_r_beat_count_q,
              peak_read_outstanding_q,
              accepted_aw_count_q, accepted_w_beat_count_q,
              returned_b_count_q, ar_stall_count_q, aw_stall_count_q,
              w_stall_count_q);
+    $display("AXI_TOP_BENCH,{\"seed\":%0d,\"cycles\":%0d,\"ops\":%0d,\"mean_latency_cycles\":%0.6f,\"p95_latency_cycles\":%0d,\"ops_per_cycle\":%0.8f,\"read_beats\":%0d,\"write_beats\":%0d,\"read_bytes_per_cycle\":%0.8f,\"write_bytes_per_cycle\":%0.8f,\"total_bytes_per_cycle\":%0.8f,\"peak_read_outstanding\":%0d,\"ar_stalls\":%0d,\"aw_stalls\":%0d,\"w_stalls\":%0d,\"r_stalls\":%0d,\"b_stalls\":%0d}",
+             benchmark_seed, cycle_count_q, total_ops, mean_latency,
+             latency_p95, ops_per_cycle, returned_r_beat_count_q,
+             accepted_w_beat_count_q, read_bytes_per_cycle,
+             write_bytes_per_cycle, total_bytes_per_cycle,
+             peak_read_outstanding_q, ar_stall_count_q, aw_stall_count_q,
+             w_stall_count_q, r_stall_count_q, b_stall_count_q);
     $display("PASS: AXI memory-model end-to-end MESI read/write stress");
     $finish;
   end

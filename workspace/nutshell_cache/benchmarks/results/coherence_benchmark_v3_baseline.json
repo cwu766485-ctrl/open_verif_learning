@@ -1,0 +1,3689 @@
+{
+  "schema_version": 4,
+  "benchmark_version": 3,
+  "dut": "CoherentCacheSubsystem via Picker/Verilator",
+  "clock_period_ns": 10,
+  "memory_model": "64-byte writable line model; response delay is a simulation parameter",
+  "metric_definitions": {
+    "l1_hit_miss": "accepted CPU request classified by L1 MESI state; S-store is a miss/upgrade",
+    "l2_refill_hit_miss": "accepted Directory L2 refill lookup; not a count of all metadata probes",
+    "memory_bandwidth": "accepted 64-bit R/W line beats times eight bytes, divided by benchmark cycles",
+    "ops_per_cycle": "completed CPU operations divided by the measured window cycles",
+    "phase_cycles": "observed same-line milestone deltas: L1 miss to Directory acceptance, Directory acceptance to L2 refill lookup, L2 hit to grant or L2 miss to backing-memory request, and accepted memory request to final response beat/write response; L2 metadata lookup itself is combinational",
+    "seeded_mixed_dual_core": "five fixed seeds, dual-core paired and single-lane reads/writes, independent architectural scoreboards, final readback of all target lines"
+  },
+  "results": [
+    {
+      "workload": "warm_l1_reads",
+      "memory_response_latency_cycles": 2,
+      "seed": 0,
+      "initial_cache_state": "Core0 line resident before the 64 measured reads",
+      "ops": 64,
+      "window_cycles": 256,
+      "mean_req_to_resp_cycles": 2.0,
+      "p95_req_to_resp_cycles": 2,
+      "ops_per_cycle": 0.25,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 64,
+      "l1_miss_count": 0,
+      "l1_hit_rate": 1.0,
+      "l1_miss_rate": 0.0,
+      "l1_core0_hit_count": 64,
+      "l1_core0_miss_count": 0,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 2,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "serialized_cold_misses",
+      "memory_response_latency_cycles": 2,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
+      "ops": 16,
+      "window_cycles": 608,
+      "mean_req_to_resp_cycles": 36.0,
+      "p95_req_to_resp_cycles": 36,
+      "ops_per_cycle": 0.02631578947368421,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 9.0,
+          "p95_cycles": 9
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 16,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 1.6842105263157894,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 1.6842105263157894,
+      "memory_read_mib_per_second": 160.6188322368421,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 160.6188322368421,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "parallel_dual_l1_cold_misses",
+      "memory_response_latency_cycles": 2,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
+      "ops": 16,
+      "window_cycles": 424,
+      "mean_req_to_resp_cycles": 46.0,
+      "p95_req_to_resp_cycles": 51,
+      "ops_per_cycle": 0.03773584905660377,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 3.0,
+          "p95_cycles": 4
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 14.5,
+          "p95_cycles": 15
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 8,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 2.4150943396226414,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 2.4150943396226414,
+      "memory_read_mib_per_second": 230.32134433962264,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 230.32134433962264,
+      "paired_vs_serialized_speedup": 1.4339622641509433
+    },
+    {
+      "workload": "ownership_write_ping_pong",
+      "memory_response_latency_cycles": 2,
+      "seed": 0,
+      "initial_cache_state": "Core0 owns the line in M before alternating core stores",
+      "ops": 16,
+      "window_cycles": 439,
+      "mean_req_to_resp_cycles": 25.4375,
+      "p95_req_to_resp_cycles": 27,
+      "ops_per_cycle": 0.03644646924829157,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 15,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 1,
+      "l1_miss_count": 15,
+      "l1_hit_rate": 0.0625,
+      "l1_miss_rate": 0.9375,
+      "l1_core0_hit_count": 1,
+      "l1_core0_miss_count": 7,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 15,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "warm_l1_reads",
+      "memory_response_latency_cycles": 20,
+      "seed": 0,
+      "initial_cache_state": "Core0 line resident before the 64 measured reads",
+      "ops": 64,
+      "window_cycles": 256,
+      "mean_req_to_resp_cycles": 2.0,
+      "p95_req_to_resp_cycles": 2,
+      "ops_per_cycle": 0.25,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 64,
+      "l1_miss_count": 0,
+      "l1_hit_rate": 1.0,
+      "l1_miss_rate": 0.0,
+      "l1_core0_hit_count": 64,
+      "l1_core0_miss_count": 0,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 20,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "serialized_cold_misses",
+      "memory_response_latency_cycles": 20,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
+      "ops": 16,
+      "window_cycles": 902,
+      "mean_req_to_resp_cycles": 54.375,
+      "p95_req_to_resp_cycles": 60,
+      "ops_per_cycle": 0.017738359201773836,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 2.375,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 27.0,
+          "p95_cycles": 27
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 16,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 1.1352549889135255,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 1.1352549889135255,
+      "memory_read_mib_per_second": 108.26635254988913,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 108.26635254988913,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "parallel_dual_l1_cold_misses",
+      "memory_response_latency_cycles": 20,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
+      "ops": 16,
+      "window_cycles": 563,
+      "mean_req_to_resp_cycles": 63.375,
+      "p95_req_to_resp_cycles": 69,
+      "ops_per_cycle": 0.028419182948490232,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 3.375,
+          "p95_cycles": 10
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 31.8125,
+          "p95_cycles": 33
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 8,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 1.8188277087033748,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 1.8188277087033748,
+      "memory_read_mib_per_second": 173.4569271758437,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 173.4569271758437,
+      "paired_vs_serialized_speedup": 1.6021314387211367
+    },
+    {
+      "workload": "ownership_write_ping_pong",
+      "memory_response_latency_cycles": 20,
+      "seed": 0,
+      "initial_cache_state": "Core0 owns the line in M before alternating core stores",
+      "ops": 16,
+      "window_cycles": 439,
+      "mean_req_to_resp_cycles": 25.4375,
+      "p95_req_to_resp_cycles": 27,
+      "ops_per_cycle": 0.03644646924829157,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 15,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 1,
+      "l1_miss_count": 15,
+      "l1_hit_rate": 0.0625,
+      "l1_miss_rate": 0.9375,
+      "l1_core0_hit_count": 1,
+      "l1_core0_miss_count": 7,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 15,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "warm_l1_reads",
+      "memory_response_latency_cycles": 50,
+      "seed": 0,
+      "initial_cache_state": "Core0 line resident before the 64 measured reads",
+      "ops": 64,
+      "window_cycles": 256,
+      "mean_req_to_resp_cycles": 2.0,
+      "p95_req_to_resp_cycles": 2,
+      "ops_per_cycle": 0.25,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 64,
+      "l1_miss_count": 0,
+      "l1_hit_rate": 1.0,
+      "l1_miss_rate": 0.0,
+      "l1_core0_hit_count": 64,
+      "l1_core0_miss_count": 0,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 50,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "serialized_cold_misses",
+      "memory_response_latency_cycles": 50,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
+      "ops": 16,
+      "window_cycles": 1424,
+      "mean_req_to_resp_cycles": 87.0,
+      "p95_req_to_resp_cycles": 90,
+      "ops_per_cycle": 0.011235955056179775,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 5.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 57.0,
+          "p95_cycles": 57
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 16,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.7191011235955056,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.7191011235955056,
+      "memory_read_mib_per_second": 68.57882724719101,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 68.57882724719101,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "parallel_dual_l1_cold_misses",
+      "memory_response_latency_cycles": 50,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
+      "ops": 16,
+      "window_cycles": 768,
+      "mean_req_to_resp_cycles": 89.0,
+      "p95_req_to_resp_cycles": 94,
+      "ops_per_cycle": 0.020833333333333332,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 6.0,
+          "p95_cycles": 10
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 57.0,
+          "p95_cycles": 57
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 8,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 1.3333333333333333,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 1.3333333333333333,
+      "memory_read_mib_per_second": 127.15657552083333,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 127.15657552083333,
+      "paired_vs_serialized_speedup": 1.8541666666666667
+    },
+    {
+      "workload": "ownership_write_ping_pong",
+      "memory_response_latency_cycles": 50,
+      "seed": 0,
+      "initial_cache_state": "Core0 owns the line in M before alternating core stores",
+      "ops": 16,
+      "window_cycles": 439,
+      "mean_req_to_resp_cycles": 25.4375,
+      "p95_req_to_resp_cycles": 27,
+      "ops_per_cycle": 0.03644646924829157,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 15,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 1,
+      "l1_miss_count": 15,
+      "l1_hit_rate": 0.0625,
+      "l1_miss_rate": 0.9375,
+      "l1_core0_hit_count": 1,
+      "l1_core0_miss_count": 7,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 15,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "warm_l1_reads",
+      "memory_response_latency_cycles": 100,
+      "seed": 0,
+      "initial_cache_state": "Core0 line resident before the 64 measured reads",
+      "ops": 64,
+      "window_cycles": 256,
+      "mean_req_to_resp_cycles": 2.0,
+      "p95_req_to_resp_cycles": 2,
+      "ops_per_cycle": 0.25,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 64,
+      "l1_miss_count": 0,
+      "l1_hit_rate": 1.0,
+      "l1_miss_rate": 0.0,
+      "l1_core0_hit_count": 64,
+      "l1_core0_miss_count": 0,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 12648430,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 195936478,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 219540062,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 6699,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "l2_hit_after_l1_replacement",
+      "memory_response_latency_cycles": 100,
+      "seed": 24301,
+      "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+      "ops": 1,
+      "window_cycles": 25,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
+      "ops_per_cycle": 0.04,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 8.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 1,
+          "mean_cycles": 3.0,
+          "p95_cycles": 3
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 1,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": 1.0,
+      "l2_refill_miss_rate": 0.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "serialized_cold_misses",
+      "memory_response_latency_cycles": 100,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
+      "ops": 16,
+      "window_cycles": 2224,
+      "mean_req_to_resp_cycles": 137.0,
+      "p95_req_to_resp_cycles": 140,
+      "ops_per_cycle": 0.007194244604316547,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 5.0,
+          "p95_cycles": 8
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 107.0,
+          "p95_cycles": 107
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 16,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.460431654676259,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.460431654676259,
+      "memory_read_mib_per_second": 43.91018435251799,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 43.91018435251799,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "parallel_dual_l1_cold_misses",
+      "memory_response_latency_cycles": 100,
+      "seed": 0,
+      "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
+      "ops": 16,
+      "window_cycles": 1168,
+      "mean_req_to_resp_cycles": 139.0,
+      "p95_req_to_resp_cycles": 144,
+      "ops_per_cycle": 0.0136986301369863,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 16,
+          "mean_cycles": 6.0,
+          "p95_cycles": 10
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 16,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 16,
+          "mean_cycles": 107.0,
+          "p95_cycles": 107
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 16,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 8,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 16,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 0,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 16,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 1024,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.8767123287671232,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.8767123287671232,
+      "memory_read_mib_per_second": 83.60980308219177,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 83.60980308219177,
+      "paired_vs_serialized_speedup": 1.904109589041096
+    },
+    {
+      "workload": "ownership_write_ping_pong",
+      "memory_response_latency_cycles": 100,
+      "seed": 0,
+      "initial_cache_state": "Core0 owns the line in M before alternating core stores",
+      "ops": 16,
+      "window_cycles": 439,
+      "mean_req_to_resp_cycles": 25.4375,
+      "p95_req_to_resp_cycles": 27,
+      "ops_per_cycle": 0.03644646924829157,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 15,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 1,
+      "l1_miss_count": 15,
+      "l1_hit_rate": 0.0625,
+      "l1_miss_rate": 0.9375,
+      "l1_core0_hit_count": 1,
+      "l1_core0_miss_count": 7,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 8,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 0,
+      "l2_refill_hit_rate": null,
+      "l2_refill_miss_rate": null,
+      "snoops": 15,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 0,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.0,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.0,
+      "memory_read_mib_per_second": 0.0,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 0.0,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "dirty_l2_victim_writeback",
+      "memory_response_latency_cycles": 100,
+      "seed": 0,
+      "initial_cache_state": "Eight same-set M lines live across both L1s; ninth line triggers L2 victim writeback",
+      "ops": 1,
+      "window_cycles": 261,
+      "mean_req_to_resp_cycles": 259.0,
+      "p95_req_to_resp_cycles": 259,
+      "ops_per_cycle": 0.0038314176245210726,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 1,
+          "mean_cycles": 2.0,
+          "p95_cycles": 2
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 1,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 1,
+          "mean_cycles": 126.0,
+          "p95_cycles": 126
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 1,
+          "mean_cycles": 107.0,
+          "p95_cycles": 107
+        },
+        "memory_write_request_to_response": {
+          "transactions": 1,
+          "mean_cycles": 108.0,
+          "p95_cycles": 108
+        }
+      },
+      "l1_hit_count": 0,
+      "l1_miss_count": 1,
+      "l1_hit_rate": 0.0,
+      "l1_miss_rate": 1.0,
+      "l1_core0_hit_count": 0,
+      "l1_core0_miss_count": 1,
+      "l1_core1_hit_count": 0,
+      "l1_core1_miss_count": 0,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 1,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 1,
+      "dirty_writebacks": 1,
+      "memory_read_lines": 1,
+      "memory_write_lines": 1,
+      "memory_read_bytes": 64,
+      "memory_write_bytes": 64,
+      "memory_read_bytes_per_cycle": 0.24521072796934865,
+      "memory_write_bytes_per_cycle": 0.24521072796934865,
+      "memory_total_bytes_per_cycle": 0.4904214559386973,
+      "memory_read_mib_per_second": 23.38511733716475,
+      "memory_write_mib_per_second": 23.38511733716475,
+      "memory_total_mib_per_second": 46.7702346743295,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "seeded_mixed_dual_core",
+      "memory_response_latency_cycles": 20,
+      "seed": 6699,
+      "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
+      "ops": 56,
+      "window_cycles": 1028,
+      "mean_req_to_resp_cycles": 15.882352941176471,
+      "p95_req_to_resp_cycles": 60,
+      "ops_per_cycle": 0.054474708171206226,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 27,
+          "mean_cycles": 5.296296296296297,
+          "p95_cycles": 10
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 8,
+          "mean_cycles": 28.375,
+          "p95_cycles": 33
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 41,
+      "l1_miss_count": 27,
+      "l1_hit_rate": 0.6029411764705882,
+      "l1_miss_rate": 0.39705882352941174,
+      "l1_core0_hit_count": 24,
+      "l1_core0_miss_count": 14,
+      "l1_core1_hit_count": 17,
+      "l1_core1_miss_count": 13,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 8,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 19,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 8,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 512,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.4980544747081712,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.4980544747081712,
+      "memory_read_mib_per_second": 47.49817607003891,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 47.49817607003891,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "seeded_mixed_dual_core",
+      "memory_response_latency_cycles": 20,
+      "seed": 24301,
+      "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
+      "ops": 56,
+      "window_cycles": 1230,
+      "mean_req_to_resp_cycles": 17.941176470588236,
+      "p95_req_to_resp_cycles": 60,
+      "ops_per_cycle": 0.04552845528455285,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 36,
+          "mean_cycles": 4.694444444444445,
+          "p95_cycles": 19
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 8,
+          "mean_cycles": 27.0,
+          "p95_cycles": 27
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 32,
+      "l1_miss_count": 36,
+      "l1_hit_rate": 0.47058823529411764,
+      "l1_miss_rate": 0.5294117647058824,
+      "l1_core0_hit_count": 20,
+      "l1_core0_miss_count": 19,
+      "l1_core1_hit_count": 12,
+      "l1_core1_miss_count": 17,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 8,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 28,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 8,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 512,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.416260162601626,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.416260162601626,
+      "memory_read_mib_per_second": 39.697662601626014,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 39.697662601626014,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "seeded_mixed_dual_core",
+      "memory_response_latency_cycles": 20,
+      "seed": 12648430,
+      "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
+      "ops": 56,
+      "window_cycles": 1175,
+      "mean_req_to_resp_cycles": 18.044117647058822,
+      "p95_req_to_resp_cycles": 60,
+      "ops_per_cycle": 0.04765957446808511,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 35,
+          "mean_cycles": 5.0,
+          "p95_cycles": 19
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 8,
+          "mean_cycles": 1.375,
+          "p95_cycles": 4
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 8,
+          "mean_cycles": 27.375,
+          "p95_cycles": 29
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 33,
+      "l1_miss_count": 35,
+      "l1_hit_rate": 0.4852941176470588,
+      "l1_miss_rate": 0.5147058823529411,
+      "l1_core0_hit_count": 23,
+      "l1_core0_miss_count": 19,
+      "l1_core1_hit_count": 10,
+      "l1_core1_miss_count": 16,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 8,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 27,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 8,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 512,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.4357446808510638,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.4357446808510638,
+      "memory_read_mib_per_second": 41.555851063829785,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 41.555851063829785,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "seeded_mixed_dual_core",
+      "memory_response_latency_cycles": 20,
+      "seed": 195936478,
+      "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
+      "ops": 56,
+      "window_cycles": 1179,
+      "mean_req_to_resp_cycles": 17.279411764705884,
+      "p95_req_to_resp_cycles": 60,
+      "ops_per_cycle": 0.04749787955894826,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 32,
+          "mean_cycles": 5.0625,
+          "p95_cycles": 19
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 8,
+          "mean_cycles": 27.0,
+          "p95_cycles": 27
+        },
+        "memory_write_request_to_response": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        }
+      },
+      "l1_hit_count": 36,
+      "l1_miss_count": 32,
+      "l1_hit_rate": 0.5294117647058824,
+      "l1_miss_rate": 0.47058823529411764,
+      "l1_core0_hit_count": 22,
+      "l1_core0_miss_count": 17,
+      "l1_core1_hit_count": 14,
+      "l1_core1_miss_count": 15,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 8,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 24,
+      "dirty_writebacks": 0,
+      "memory_read_lines": 8,
+      "memory_write_lines": 0,
+      "memory_read_bytes": 512,
+      "memory_write_bytes": 0,
+      "memory_read_bytes_per_cycle": 0.4342663273960984,
+      "memory_write_bytes_per_cycle": 0.0,
+      "memory_total_bytes_per_cycle": 0.4342663273960984,
+      "memory_read_mib_per_second": 41.41486429177269,
+      "memory_write_mib_per_second": 0.0,
+      "memory_total_mib_per_second": 41.41486429177269,
+      "paired_vs_serialized_speedup": null
+    },
+    {
+      "workload": "seeded_mixed_dual_core",
+      "memory_response_latency_cycles": 20,
+      "seed": 219540062,
+      "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
+      "ops": 56,
+      "window_cycles": 1165,
+      "mean_req_to_resp_cycles": 18.544117647058822,
+      "p95_req_to_resp_cycles": 64,
+      "ops_per_cycle": 0.048068669527897,
+      "phase_cycles": {
+        "l1_miss_to_directory_accept": {
+          "transactions": 34,
+          "mean_cycles": 4.647058823529412,
+          "p95_cycles": 10
+        },
+        "directory_accept_to_l2_lookup": {
+          "transactions": 8,
+          "mean_cycles": 1.0,
+          "p95_cycles": 1
+        },
+        "l2_hit_lookup_to_grant": {
+          "transactions": 0,
+          "mean_cycles": null,
+          "p95_cycles": null
+        },
+        "l2_miss_lookup_to_memory_request": {
+          "transactions": 8,
+          "mean_cycles": 5.875,
+          "p95_cycles": 40
+        },
+        "memory_read_request_to_last_beat": {
+          "transactions": 8,
+          "mean_cycles": 28.375,
+          "p95_cycles": 33
+        },
+        "memory_write_request_to_response": {
+          "transactions": 1,
+          "mean_cycles": 28.0,
+          "p95_cycles": 28
+        }
+      },
+      "l1_hit_count": 34,
+      "l1_miss_count": 34,
+      "l1_hit_rate": 0.5,
+      "l1_miss_rate": 0.5,
+      "l1_core0_hit_count": 22,
+      "l1_core0_miss_count": 19,
+      "l1_core1_hit_count": 12,
+      "l1_core1_miss_count": 15,
+      "l2_refill_hit_count": 0,
+      "l2_refill_miss_count": 8,
+      "l2_refill_hit_rate": 0.0,
+      "l2_refill_miss_rate": 1.0,
+      "snoops": 28,
+      "dirty_writebacks": 1,
+      "memory_read_lines": 8,
+      "memory_write_lines": 1,
+      "memory_read_bytes": 512,
+      "memory_write_bytes": 64,
+      "memory_read_bytes_per_cycle": 0.4394849785407725,
+      "memory_write_bytes_per_cycle": 0.054935622317596564,
+      "memory_total_bytes_per_cycle": 0.4944206008583691,
+      "memory_read_mib_per_second": 41.912553648068666,
+      "memory_write_mib_per_second": 5.239069206008583,
+      "memory_total_mib_per_second": 47.15162285407725,
+      "paired_vs_serialized_speedup": null
+    }
+  ]
+}

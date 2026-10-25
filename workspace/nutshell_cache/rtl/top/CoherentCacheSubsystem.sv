@@ -509,6 +509,11 @@ module CoherentCacheSubsystem #(
       assert (!grant_valid_core[dir_grant_dst])
         else $error("data grant leaked to an L1 while refill owned the engine");
     end
+    if (!reset && dir_grant_valid && dir_grant_ready && dir_grant_has_data) begin
+      assert (l2_line_rd_valid &&
+              (l2_line_rd_addr == line_align(dir_grant_addr)))
+        else $error("accepted data grant did not prefetch its L2 line");
+    end
   end
 
   assign mmio_owner_pending = (mmio_state_q != MMIO_IDLE);
@@ -691,9 +696,17 @@ module CoherentCacheSubsystem #(
       l2_line_data_ready = 1'b0;
 
     l2_line_rd_valid = (engine_state_q == ENGINE_GRANT_READ) ||
-                       (engine_state_q == ENGINE_VICTIM_READ);
-    l2_line_rd_addr = (engine_state_q == ENGINE_VICTIM_READ) ?
-                      victim_addr_q : grant_addr_q;
+                       (engine_state_q == ENGINE_VICTIM_READ) ||
+                       ((engine_state_q == ENGINE_IDLE) &&
+                        dir_grant_valid && dir_grant_ready &&
+                        dir_grant_has_data);
+    if (engine_state_q == ENGINE_VICTIM_READ)
+      l2_line_rd_addr = victim_addr_q;
+    else if ((engine_state_q == ENGINE_IDLE) && dir_grant_valid &&
+             dir_grant_ready && dir_grant_has_data)
+      l2_line_rd_addr = line_align(dir_grant_addr);
+    else
+      l2_line_rd_addr = grant_addr_q;
     dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE) ||
                           ((engine_state_q != ENGINE_XFER_DONE) &&
                            mem_mshr_done_found);
@@ -1171,7 +1184,16 @@ module CoherentCacheSubsystem #(
             grant_dst_q <= dir_grant_dst;
             grant_addr_q <= line_align(dir_grant_addr);
             grant_txn_q <= dir_grant_txn_id;
-            engine_state_q <= ENGINE_GRANT_READ;
+            if (l2_line_rd_valid && l2_line_rd_ready) begin
+              if (l2_line_rd_hit)
+                engine_state_q <= ENGINE_GRANT_STREAM;
+              else begin
+                memory_adapter_protocol_error <= 1'b1;
+                engine_state_q <= ENGINE_ERROR;
+              end
+            end else begin
+              engine_state_q <= ENGINE_GRANT_READ;
+            end
           end
         end
 

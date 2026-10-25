@@ -28,6 +28,7 @@ make coherence_bus_blocks  # Check AXI line bursts and APB performance CSRs
 make coherence_axi_e2e     # Run the MESI subsystem against an AXI RAM model
 make coherence_axi_lint    # Elaborate the AXI/APB cache subsystem top
 make coherence_verify      # Run coherence modules, bounded formal and subsystem regression
+make coherence_benchmark_v3 # Generate seeded cache and mixed-workload benchmark JSON/CSV
 ```
 
 Run these commands from Ubuntu/WSL. The Makefile sources `scripts/env.sh`,
@@ -56,6 +57,10 @@ current coverage numbers and closure gaps are documented in `dv/README.md`.
 
 The architecture and verification plan are documented in
 `docs/cache_spec_and_verification_plan.md`.
+
+The current freeze manifest and the v3 cache/AXI benchmark results are in
+[`docs/releases/v1.0.md`](docs/releases/v1.0.md) and
+[`docs/coherence_benchmark_v3_results_2026-10-25.md`](docs/coherence_benchmark_v3_results_2026-10-25.md).
 
 ## Repository layout
 

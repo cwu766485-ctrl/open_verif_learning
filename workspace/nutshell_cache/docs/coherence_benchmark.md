@@ -1,66 +1,69 @@
-# Dual-L1 MESI Benchmark v2
+# Dual-L1 MESI Benchmark v3
 
-Benchmark v2 runs as a Python/Toffee test against the packed
-`CoherentCacheSubsystem` wrapper. It does not patch a SystemVerilog testbench.
-The single dual-core driver owns the packed request/response pins, and the
-writable 64-byte memory model preserves data across dirty writebacks.
+Benchmark v3 measures the Python/Toffee `CoherentCacheSubsystem` and the
+independent AXI-integrated `CoherentCacheAxiSubsystem` testbench. It keeps the
+v2 workloads, adds 32 separately checked L2-hit samples, five seeded mixed
+dual-core workloads, and five seeded AXI-top runs. JSON and CSV are checked in
+under `benchmarks/results/`; baseline and optimized measurements are retained
+as separate files for the L2-grant A/B comparison.
 
-## Run
+## Reproduce
 
 ```bash
-make coherence_benchmark_v2
+make COHERENCE_JOBS=2 coherence_benchmark_v3
+make COHERENCE_JOBS=2 coherence_axi_e2e
 ```
 
-The target exports the wrapper with Picker, compiles it with Verilator, and
-runs the deterministic tests at memory response delays of 2, 20, 50, and 100
-cycles. Results are written to
-[`../benchmarks/results/coherence_benchmark_v2.json`](../benchmarks/results/coherence_benchmark_v2.json)
-and the matching CSV. To run the Python functional suite and benchmark in one
-clean export, use `make coherence_python_verify`.
-The checked-in run summary and limitations are in
-[`coherence_benchmark_v2_results_2026-10-25.md`](coherence_benchmark_v2_results_2026-10-25.md).
+`coherence_benchmark_v3` exports the Picker wrapper and drives the RTL through
+the shared Python CPU driver, writable line-memory agent, protocol monitors,
+and independent MESI/data scoreboard. `coherence_axi_e2e` separately drives
+the full AXI subsystem through its five AXI channels and a writable 64-byte
+burst memory model, once for each fixed seed. Both suites use a 10 ns
+simulation clock. Memory response latency is a controllable model parameter,
+not a claim about physical DRAM.
 
-## Workloads
+`make coherence_verify` includes the Python benchmark and the AXI top-level
+simulation in the full regression. The direct 4-outstanding AXI adapter stress
+is a separate test: the integrated dual-L1 CPU workload currently peaks at two
+simultaneous read bursts because each L1 controller is blocking.
+
+## Workloads and checks
 
 - 64 warm L1 reads.
-- An L1 replacement followed by a shared-L2 refill hit. The test checks that
-  no backing-memory line read occurs in the measured access.
-- Sixteen serialized cold misses versus sixteen cold misses sent as eight
-  two-core request pairs.
-- Alternating stores to one M-owned line to measure ownership-transfer snoops.
-- Eight M-owned lines kept live across both L1s, followed by a ninth same-set
-  line to measure back-invalidation, dirty owner data, and memory writeback.
-- The functional suite separately checks byte-masked stores, independent cold
-  misses, dirty inclusive-L2 eviction, all eight writeback beats, and the write
-  response before the evicted line is read again.
-
-Each workload declares its initial cache state. Fixed addresses and seed zero
-make the runs repeatable. The benchmark uses a configurable response delay,
-not a claim about real DRAM timing. The RTL simulation clock period is 10 ns.
+- 32 L2 hits after the target line has been evicted from L1 by four
+  same-index lines. Each sample checks returned data and verifies zero backing
+  memory reads. Samples span 2, 20, 50, and 100 cycle memory response settings.
+- Sixteen serialized cold misses versus sixteen cold misses issued as eight
+  dual-core pairs, at each memory delay.
+- Alternating stores to an M-owned line.
+- A dirty inclusive L2 victim that exercises snoops, dirty data recovery, and
+  backing-memory write response.
+- Five fixed-seed mixed workloads, each containing 48 randomized single-lane
+  and dual-core paired reads/writes plus readback of all eight target lines.
+  Each seed has a separate architectural scoreboard and address range.
+- Five AXI top-level runs, each with 64 CPU requests, a seeded mixed read/write
+  workload, burst/accounting checks, forced and periodic AR/AW/W backpressure,
+  and an independent writable AXI RAM model. The direct adapter suite checks
+  four outstanding IDs and all five channel backpressure paths.
 
 ## Metrics
 
-- L1 hit/miss counts and rates are sampled on accepted CPU requests. A store
-  from S is an upgrade miss; E/M stores are hits.
-- L2 hit/miss counts describe accepted Directory refill lookups against the
-  shared L2 data array. They do not count every Directory metadata probe.
-- Mean and nearest-rank P95 latency span CPU request acceptance through response
-  capture by the driver. `ops_per_cycle` is completed CPU operations divided by
-  the measured window.
-- `phase_cycles` pairs same-line monitor events and reports transaction count,
-  mean, and P95 for L1 miss→Directory acceptance, Directory acceptance→L2
-  refill lookup, L2 hit lookup→grant, L2 miss lookup→memory request, memory
-  read request→last beat, and memory write request→write response. A phase with
-  no transactions is `null`/N/A. The L2 lookup is combinational, so the metric
-  starts at the Directory refill-start boundary rather than claiming an SRAM
-  access latency.
-- Memory bandwidth counts accepted 64-bit R/W data beats, converts them to
-  bytes, and divides by window cycles. Read, write, and aggregate BW are reported
-  in bytes/cycle and MiB/s at the 100 MHz simulation clock. These are
-  line-memory interface measurements, not physical DRAM bandwidth.
+- L1 hit/miss is classified at accepted CPU requests; a store from S is an
+  upgrade miss. L2 hit/miss counts accepted Directory refill lookups, rather
+  than all metadata probes.
+- Mean and nearest-rank P95 CPU latency run from request acceptance to response
+  capture. `ops_per_cycle` counts completed operations in the measured window.
+- Read, write, and aggregate memory bandwidth count accepted 64-bit data beats
+  as eight bytes each and divide by measured simulation cycles. Python reports
+  bytes/cycle and MiB/s at 100 MHz; AXI reports bytes/cycle.
+- The Python phase counters pair observed same-line Directory/L2/memory
+  milestones. The L2 tag lookup is combinational; the L2 hit latency is
+  measured end-to-end at the CPU request/response boundary.
+- The AXI top-level row includes seed, simulation cycles, operation count,
+  mean/P95 latency, operations/cycle, read/write beats, read/write/aggregate
+  bandwidth, peak outstanding reads, and AR/AW/W/R/B stall counts.
 
-The current two-L1 RTL can overlap at most two CPU-originated misses because
-each L1 controller is blocking. The benchmark therefore measures dual-core
-overlap; it does not establish utilization of all four Directory contexts or
-four refill MSHRs. The AXI adapter's independent 4-outstanding stress test is
-kept separate from this two-core CPU workload.
+The detailed v3 results, A/B method, and interpretation are in
+[`coherence_benchmark_v3_results_2026-10-25.md`](coherence_benchmark_v3_results_2026-10-25.md).
+The previous v2 measurements remain documented in
+[`coherence_benchmark_v2_results_2026-10-25.md`](coherence_benchmark_v2_results_2026-10-25.md).

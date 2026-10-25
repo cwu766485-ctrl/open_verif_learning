@@ -691,13 +691,14 @@ def _phase_stats(samples):
 @pytest.mark.asyncio
 @case
 @pytest.mark.benchmark
-async def test_coherence_benchmark_v2(coherent_env):
-    """Run deterministic dual-core workloads at 2/20/50/100-cycle memory delay."""
+async def test_coherence_benchmark_v3(coherent_env):
+    """Run repeatable cache, mixed-traffic, and latency-sweep workloads."""
     dut, memory, perf = await coherent_env()
     cpu = DualCoreCpuDriver(dut)
     rows = []
+    benchmark_seeds = (0x1A2B, 0x5EED, 0xC0FFEE, 0xBADC0DE, 0xD15EA5E)
 
-    async def measure(name, delay, initial_state, ops, workload):
+    async def measure(name, delay, initial_state, ops, workload, seed=0):
         memory.response_delay = delay
         before_perf = perf.snapshot()
         before_stage_events = perf.event_snapshot()
@@ -774,7 +775,7 @@ async def test_coherence_benchmark_v2(coherent_env):
         row = {
             "workload": name,
             "memory_response_latency_cycles": delay,
-            "seed": 0,
+            "seed": seed,
             "initial_cache_state": initial_state,
             "ops": ops,
             "window_cycles": cycles,
@@ -826,7 +827,7 @@ async def test_coherence_benchmark_v2(coherent_env):
             "paired_vs_serialized_speedup": None,
         }
         rows.append(row)
-        print("COHERENCE_BENCHMARK_V2," + json.dumps(row, sort_keys=True))
+        print("COHERENCE_BENCHMARK_V3," + json.dumps(row, sort_keys=True))
 
     for latency_index, delay in enumerate((2, 20, 50, 100)):
         # Use separate L2 set ranges per latency point so earlier delay runs
@@ -842,15 +843,29 @@ async def test_coherence_benchmark_v2(coherent_env):
                       "Core0 line resident before the 64 measured reads", 64,
                       warm_reads)
 
-        l2_addr = base + 0x1000
-        await cpu.access(0, l2_addr)
-        for way in range(1, 5):
-            await cpu.access(0, l2_addr + way * 32768)
-        async def l2_read(addr=l2_addr):
-            await cpu.access(0, addr)
-        await measure("l2_hit_after_l1_replacement", delay,
-                      "L1 line replaced by four same-index lines; inclusive L2 copy retained",
-                      1, l2_read)
+        # Eight independent same-set samples per memory-delay point provide
+        # 32 L2-hit observations while keeping each target in a separate L2
+        # set. Shuffle the four L1 conflict lines from a fixed seed.
+        for sample_index in range(8):
+            seed = benchmark_seeds[(latency_index * 8 + sample_index) %
+                                   len(benchmark_seeds)]
+            rng = random.Random(seed)
+            l2_addr = base + 0x1000 + sample_index * 64
+            await cpu.access(0, l2_addr)
+            eviction_ways = list(range(1, 5))
+            rng.shuffle(eviction_ways)
+            for way in eviction_ways:
+                await cpu.access(0, l2_addr + way * 32768)
+
+            async def l2_read(addr=l2_addr):
+                result = await cpu.access(0, addr)
+                assert result == memory.word(addr, (addr >> 3) & 7)
+
+            await measure(
+                "l2_hit_after_l1_replacement", delay,
+                "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
+                1, l2_read, seed=seed,
+            )
 
         serial_base = base + 0x40000
         async def serialized_cold():
@@ -905,6 +920,92 @@ async def test_coherence_benchmark_v2(coherent_env):
                   "Eight same-set M lines live across both L1s; ninth line triggers L2 victim writeback",
                   1, dirty_l2_victim)
 
+    # Mixed reads/writes and dual-core pairs use five reproducible seeds. Each
+    # seed owns a disjoint address range and an independent architectural
+    # reference model; every final line is read back through the DUT.
+    for seed_index, seed in enumerate(benchmark_seeds):
+        rng = random.Random(seed)
+        mixed_base = 0x20000000 + seed_index * 0x01000000
+        mixed_addresses = [mixed_base + line * 64 + (line % 8) * 8
+                           for line in range(8)]
+        model = CoherenceScoreboard()
+
+        def seed_line(address):
+            if (address & ~0x7) not in model.data:
+                model.seed_word(
+                    address, memory.word(address, (address >> 3) & 7)
+                )
+
+        async def mixed_workload(addresses=mixed_addresses, reference=model,
+                                 randomizer=rng):
+            for operation in range(48):
+                if operation % 4 == 0:
+                    first, second = randomizer.sample(addresses, 2)
+                    requests = []
+                    for address in (first, second):
+                        seed_line(address)
+                        write = randomizer.random() < 0.35
+                        requests.append(CpuRequest(
+                            address, write=write,
+                            data=randomizer.getrandbits(64) if write else 0,
+                            mask=randomizer.randrange(1, 256) if write else 0xFF,
+                        ))
+                    result0, result1 = await cpu.access_pair(
+                        requests[0], requests[1]
+                    )
+                    for core, request, result in (
+                            (0, requests[0], result0),
+                            (1, requests[1], result1)):
+                        expected = reference.word(request.addr)
+                        if not request.write:
+                            assert result == expected, (
+                                f"seed={seed:#x} op={operation} "
+                                f"addr={request.addr:#x}: {result:#x} != {expected:#x}"
+                            )
+                        reference.observe(
+                            core, request.addr, write=request.write,
+                            write_data=request.data, write_mask=request.mask,
+                            response_data=result,
+                        )
+                else:
+                    address = randomizer.choice(addresses)
+                    seed_line(address)
+                    core = randomizer.randrange(2)
+                    write = randomizer.random() < 0.35
+                    value = randomizer.getrandbits(64) if write else 0
+                    mask = randomizer.randrange(1, 256) if write else 0xFF
+                    result = await cpu.access(
+                        core, address, write=write, data=value, mask=mask
+                    )
+                    expected = reference.word(address)
+                    if not write:
+                        assert result == expected, (
+                            f"seed={seed:#x} op={operation} "
+                            f"addr={address:#x}: {result:#x} != {expected:#x}"
+                        )
+                    reference.observe(
+                        core, address, write=write, write_data=value,
+                        write_mask=mask, response_data=result,
+                    )
+
+            for address in addresses:
+                expected = reference.word(address)
+                result = await cpu.access(0, address)
+                assert result == expected, (
+                    f"seed={seed:#x} final read {address:#x}: "
+                    f"{result:#x} != {expected:#x}"
+                )
+                reference.observe(0, address, response_data=result)
+
+        await measure(
+            "seeded_mixed_dual_core", 20,
+            "Eight target lines absent from both L1s and L2; disjoint region per seed",
+            56, mixed_workload, seed=seed,
+        )
+        assert int(dut.protocol_error.value) == 0, (
+            f"protocol error in mixed benchmark seed {seed:#x}"
+        )
+
     # The serialized and paired runs carry the same 16 cold misses per latency
     # point. Report the measured overlap benefit without assuming a speedup.
     by_key = {(r["memory_response_latency_cycles"], r["workload"]): r
@@ -919,10 +1020,11 @@ async def test_coherence_benchmark_v2(coherent_env):
 
     result_dir = Path(__file__).resolve().parents[2] / "benchmarks" / "results"
     result_dir.mkdir(parents=True, exist_ok=True)
-    json_path = result_dir / "coherence_benchmark_v2.json"
-    csv_path = result_dir / "coherence_benchmark_v2.csv"
+    json_path = result_dir / "coherence_benchmark_v3.json"
+    csv_path = result_dir / "coherence_benchmark_v3.csv"
     payload = {
-        "schema_version": 3,
+        "schema_version": 4,
+        "benchmark_version": 3,
         "dut": "CoherentCacheSubsystem via Picker/Verilator",
         "clock_period_ns": 10,
         "memory_model": "64-byte writable line model; response delay is a simulation parameter",
@@ -932,6 +1034,7 @@ async def test_coherence_benchmark_v2(coherent_env):
             "memory_bandwidth": "accepted 64-bit R/W line beats times eight bytes, divided by benchmark cycles",
             "ops_per_cycle": "completed CPU operations divided by the measured window cycles",
             "phase_cycles": "observed same-line milestone deltas: L1 miss to Directory acceptance, Directory acceptance to L2 refill lookup, L2 hit to grant or L2 miss to backing-memory request, and accepted memory request to final response beat/write response; L2 metadata lookup itself is combinational",
+            "seeded_mixed_dual_core": "five fixed seeds, dual-core paired and single-lane reads/writes, independent architectural scoreboards, final readback of all target lines",
         },
         "results": rows,
     }
@@ -948,9 +1051,21 @@ async def test_coherence_benchmark_v2(coherent_env):
             assert row["l1_miss_count"] == 1
             assert row["l2_refill_hit_count"] >= 1
             assert row["memory_read_lines"] == 0
+        if row["workload"] == "seeded_mixed_dual_core":
+            assert row["ops"] == 56
+            assert row["l1_hit_count"] + row["l1_miss_count"] >= row["ops"]
         if row["workload"] == "ownership_write_ping_pong":
             assert row["snoops"] > 0
         if row["workload"] == "dirty_l2_victim_writeback":
             assert row["snoops"] > 0
             assert row["dirty_writebacks"] > 0
             assert row["memory_write_lines"] > 0
+    l2_samples = [row for row in rows
+                  if row["workload"] == "l2_hit_after_l1_replacement"]
+    mixed_samples = [row for row in rows
+                     if row["workload"] == "seeded_mixed_dual_core"]
+    assert len(l2_samples) == 32, f"expected 32 independent L2-hit samples, got {len(l2_samples)}"
+    assert sum(row["l2_refill_hit_count"] for row in l2_samples) == 32
+    assert sum(row["memory_read_lines"] for row in l2_samples) == 0
+    assert len(mixed_samples) == len(benchmark_seeds)
+    assert {row["seed"] for row in mixed_samples} == set(benchmark_seeds)

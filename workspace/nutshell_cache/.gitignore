@@ -42,6 +42,8 @@
 !src/**/*.py
 !docs/
 !docs/*.md
+!docs/releases/
+!docs/releases/*.md
 !benchmarks/
 !benchmarks/**/
 !benchmarks/*.py
