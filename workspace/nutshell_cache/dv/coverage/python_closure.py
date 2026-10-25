@@ -19,16 +19,28 @@ def close(map_path: Path, coverage_path: Path, json_path: Path,
         bins.append({**item, "test": spec["test"], "hits": count,
                      "status": "hit" if count else "miss"})
     missing = [item["id"] for item in bins if item["hits"] == 0]
+    cross_counts = coverage.get("cross_state_opcode_core_source", {})
+    cross_bins = []
+    for item in spec.get("cross_bins", []):
+        count = int(cross_counts.get(item["key"], 0))
+        cross_bins.append({**item, "hits": count,
+                           "status": "hit" if count else "miss"})
+    missing_cross = [item["id"] for item in cross_bins if item["hits"] == 0]
     result = {
-        "schema_version": 1,
+        "schema_version": 3,
         "regression": spec["regression"],
-        "status": "FAIL" if missing else "PASS",
+        "status": "FAIL" if missing or missing_cross else "PASS",
         "functional_coverage": {
             "hit": len(bins) - len(missing), "total": len(bins),
             "percent": 100.0 * (len(bins) - len(missing)) / max(1, len(bins)),
             "missing": missing, "bins": bins,
         },
         "sampled_features": features,
+        "cross_coverage": {
+            "hit": len(cross_bins) - len(missing_cross),
+            "total": len(cross_bins), "missing": missing_cross,
+            "bins": cross_bins,
+        },
         "cross_state_opcode_core_source": coverage.get(
             "cross_state_opcode_core_source", {}),
         "l1_evictions": coverage.get("l1_evictions", 0),
@@ -43,17 +55,28 @@ def close(map_path: Path, coverage_path: Path, json_path: Path,
         f"- Mapped bins: **{len(bins) - len(missing)}/{len(bins)}**",
         f"- L1 evictions: {result['l1_evictions']}",
         f"- Live inclusive L2 evictions: {result['l2_live_evictions']}",
+        f"- MESI/op/core/source/snoop/transfer crosses: "
+        f"{len(cross_bins) - len(missing_cross)}/{len(cross_bins)}",
         "", "| Feature | Testpoint | Checker | Hits | Status |",
         "| --- | --- | --- | ---: | --- |",
     ]
     for item in bins:
         lines.append(f"| `{item['feature']}` | {item['testpoint']} | "
                      f"{item['checker']} | {item['hits']} | {item['status']} |")
-    if missing:
-        lines.extend(["", "Missing bins: " + ", ".join(f"`{x}`" for x in missing)])
+    if cross_bins:
+        lines.extend(["", "## Cross coverage", "",
+                      "| Cross | Observed transaction | Hits | Status |",
+                      "| --- | --- | ---: | --- |"])
+        for item in cross_bins:
+            lines.append(f"| `{item['id']}` | {item['testpoint']} | "
+                         f"{item['hits']} | {item['status']} |")
+    if missing or missing_cross:
+        lines.extend(["", "Missing bins: " +
+                      ", ".join(f"`{x}`" for x in missing + missing_cross)])
     markdown_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    if missing:
-        print("Python coherence coverage closure failed: " + ", ".join(missing),
+    if missing or missing_cross:
+        print("Python coherence coverage closure failed: " +
+              ", ".join(missing + missing_cross),
               file=sys.stderr)
         return 1
     print(f"Python coherence coverage: {len(bins)}/{len(bins)} bins hit")

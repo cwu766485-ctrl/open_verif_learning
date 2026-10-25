@@ -110,7 +110,21 @@ module CoherentCacheSubsystem #(
   output logic monitor_snoop_accept_valid [0:1],
   output logic [31:0] monitor_snoop_accept_addr [0:1],
   output coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode [0:1],
-  output logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1]
+  output logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1],
+  // Accepted directory metadata updates for independent DV/reference models.
+  output logic monitor_dir_commit_valid,
+  output logic [31:0] monitor_dir_commit_addr,
+  output logic [1:0] monitor_dir_commit_state,
+  output logic [1:0] monitor_dir_commit_sharers,
+  output logic monitor_dir_commit_owner,
+  // Accepted owner-data beats written into the inclusive L2. These taps let
+  // an independent DV monitor check the transferred line payload.
+  output logic monitor_owner_data_valid,
+  output logic monitor_owner_data_core,
+  output logic [31:0] monitor_owner_data_addr,
+  output logic [2:0] monitor_owner_data_beat_idx,
+  output logic [63:0] monitor_owner_data,
+  output logic monitor_owner_data_last
 );
   import coherence_protocol_pkg::*;
 
@@ -190,7 +204,7 @@ module CoherentCacheSubsystem #(
   logic [63:0] put_data_core [0:1];
   logic put_data_last_core [0:1];
 
-  logic dir_req_ready;
+  logic dir_req_ready, dir_bank_req_ready, dir_lookup_available;
   logic dir_write_valid, dir_write_ready;
   logic l2_dir_write_valid, l2_dir_write_ready;
   logic [31:0] l2_dir_write_addr;
@@ -434,7 +448,20 @@ module CoherentCacheSubsystem #(
                           dir_grant_valid ? dir_grant_addr :
                           cluster_dir_req_valid ? cluster_dir_req_addr :
                           engine_addr_q;
+  // The L2 metadata lookup is shared. Do not allocate a new Directory
+  // context while a transfer-start or grant lookup owns that port, or the
+  // newly accepted request can capture another line's owner/sharer state.
+  assign dir_lookup_available = !reset && !dir_xfer_start_valid &&
+                                !dir_grant_valid;
+  assign dir_req_ready = dir_bank_req_ready && dir_lookup_available;
   assign l2_alloc_addr = dir_xfer_start_valid ? dir_xfer_addr : engine_addr_q;
+
+  always_ff @(posedge clock) begin
+    if (!reset && cluster_dir_req_valid && dir_req_ready) begin
+      assert (l2_lookup_addr == cluster_dir_req_addr)
+        else $error("Directory accepted a request with a mismatched L2 lookup");
+    end
+  end
 
   assign mmio_owner_pending = (mmio_state_q != MMIO_IDLE);
 
@@ -658,6 +685,12 @@ module CoherentCacheSubsystem #(
     l2_line_wr_beat_idx = 3'b0;
     l2_line_wr_data = 64'b0;
     l2_line_wr_last = 1'b0;
+    monitor_owner_data_valid = 1'b0;
+    monitor_owner_data_core = 1'b0;
+    monitor_owner_data_addr = 32'b0;
+    monitor_owner_data_beat_idx = 3'b0;
+    monitor_owner_data = 64'b0;
+    monitor_owner_data_last = 1'b0;
     snoop_data_ready_core[0] = 1'b0;
     snoop_data_ready_core[1] = 1'b0;
     if (engine_state_q == ENGINE_PUTM_STREAM) begin
@@ -676,6 +709,14 @@ module CoherentCacheSubsystem #(
       l2_line_wr_data = snoop_data_core[victim_snoop_target_q];
       l2_line_wr_last = snoop_data_last_core[victim_snoop_target_q];
       snoop_data_ready_core[victim_snoop_target_q] = l2_line_wr_ready;
+      monitor_owner_data_valid = snoop_data_valid_core[victim_snoop_target_q] &&
+                                 l2_line_wr_ready;
+      monitor_owner_data_core = victim_snoop_target_q;
+      monitor_owner_data_addr = victim_addr_q;
+      monitor_owner_data_beat_idx =
+        snoop_data_beat_idx_core[victim_snoop_target_q];
+      monitor_owner_data = snoop_data_core[victim_snoop_target_q];
+      monitor_owner_data_last = snoop_data_last_core[victim_snoop_target_q];
     end else if (dir_snoop_data_to_l2) begin
       l2_line_wr_valid = snoop_data_valid_core[dir_snoop_target];
       l2_line_wr_addr = dir_snoop_addr;
@@ -684,6 +725,13 @@ module CoherentCacheSubsystem #(
       l2_line_wr_data = snoop_data_core[dir_snoop_target];
       l2_line_wr_last = snoop_data_last_core[dir_snoop_target];
       snoop_data_ready_core[dir_snoop_target] = l2_line_wr_ready;
+      monitor_owner_data_valid = snoop_data_valid_core[dir_snoop_target] &&
+                                 l2_line_wr_ready;
+      monitor_owner_data_core = dir_snoop_target;
+      monitor_owner_data_addr = dir_snoop_addr;
+      monitor_owner_data_beat_idx = snoop_data_beat_idx_core[dir_snoop_target];
+      monitor_owner_data = snoop_data_core[dir_snoop_target];
+      monitor_owner_data_last = snoop_data_last_core[dir_snoop_target];
     end else if (mem_fill_writer_active_q) begin
       l2_line_wr_valid = 1'b1;
       l2_line_wr_addr = mem_mshr_addr_q[mem_fill_writer_sel_q];
@@ -702,6 +750,12 @@ module CoherentCacheSubsystem #(
   assign l2_victim_sharers = l2_alloc_victim_sharers;
   assign l2_victim_owner_id = l2_alloc_victim_owner;
   assign l2_victim_dirty = l2_alloc_victim_dirty;
+  assign monitor_dir_commit_valid = !reset && l2_dir_write_valid &&
+                                    l2_dir_write_ready;
+  assign monitor_dir_commit_addr = l2_dir_write_addr;
+  assign monitor_dir_commit_state = l2_dir_write_state;
+  assign monitor_dir_commit_sharers = l2_dir_write_sharers;
+  assign monitor_dir_commit_owner = l2_dir_write_owner;
   assign l1_victim_valid[0] = l1_replace_valid_core[0];
   assign l1_victim_valid[1] = l1_replace_valid_core[1];
   for (genvar snoop_core = 0; snoop_core < 2; snoop_core = snoop_core + 1) begin : gen_snoop_monitor
@@ -773,7 +827,8 @@ module CoherentCacheSubsystem #(
     .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)
   ) directory_controller (
     .clock(clock), .reset(reset),
-    .req_valid(cluster_dir_req_valid), .req_ready(dir_req_ready),
+    .req_valid(cluster_dir_req_valid && dir_lookup_available),
+    .req_ready(dir_bank_req_ready),
     .req_src_id(cluster_dir_req_src_id), .req_opcode(cluster_dir_req_opcode),
     .req_line_addr(cluster_dir_req_addr), .req_txn_id(cluster_dir_req_txn_id),
     .lookup_dir_state(l2_lookup_state), .lookup_sharers(l2_lookup_sharers),

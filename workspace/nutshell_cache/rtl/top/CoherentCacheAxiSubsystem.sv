@@ -169,7 +169,13 @@ module CoherentCacheAxiSubsystem #(
     .metadata_commit_state(), .metadata_commit_is_snoop(),
     .monitor_snoop_accept_valid(),
     .monitor_snoop_accept_addr(), .monitor_snoop_accept_opcode(),
-    .monitor_snoop_accept_txn_id()
+    .monitor_snoop_accept_txn_id(),
+    .monitor_dir_commit_valid(), .monitor_dir_commit_addr(),
+    .monitor_dir_commit_state(), .monitor_dir_commit_sharers(),
+    .monitor_dir_commit_owner(),
+    .monitor_owner_data_valid(), .monitor_owner_data_core(),
+    .monitor_owner_data_addr(), .monitor_owner_data_beat_idx(),
+    .monitor_owner_data(), .monitor_owner_data_last()
   );
 
   LineMemoryAxi4Adapter #(

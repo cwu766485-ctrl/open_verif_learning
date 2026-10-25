@@ -26,6 +26,31 @@ two CPU agents share a line-memory agent, and an independent
 subsystem benches remain cross-check baselines until the corresponding Python
 scenarios, protocol checks, and coverage bins have replacements.
 
+### Dual-L1 MESI migration status
+
+The Python/Toffee subsystem suite is now the independent system-level checker.
+It covers owner transfers and shared upgrades, masked stores, independent
+parallel misses, dirty inclusive-L2 victims, memory and CPU response
+backpressure, reset during refill, and fixed-seed mixed traffic. Its scoreboard
+derives MESI and directory owner/sharer state from accepted CPU transactions;
+monitors independently check accepted directory commits, snoop targets, and
+eight-beat owner-data transfers. Functional coverage crosses prior MESI state,
+operation, core, modeled data source, refill result, snoop target, and transfer
+length.
+
+| Validation layer | Current role | Migration status |
+| --- | --- | --- |
+| Python/Toffee subsystem | Independent data/MESI/directory checking and end-to-end traffic | Primary system regression; run by `make coherence_python_verify` and CI |
+| SystemVerilog directed benches | Detailed module and legacy scenario cross-checks | Retained while each corresponding Python checker/bin is established |
+| SymbiYosys harnesses | Bounded safety and module invariants | Remain separate; Python simulation does not replace formal proofs |
+
+Next migration slices are randomized concurrent-context stress with stronger
+latency/backpressure crosses, then moving remaining subsystem-only SV directed
+scenarios into Python. Module-specific SV benches and formal harnesses stay in
+the regression until equivalent Python checker and coverage evidence has been
+reviewed. Formal harnesses continue to cover properties that simulation cannot
+establish.
+
 `agents/` implements bus drivers and monitors; `protocol/` and `common/`
 define interfaces and transactions; `models/` contains the reference and RAM
 models; `env/` binds bus roles to DUT ports; `testbench/` composes the

@@ -20,6 +20,20 @@ module CoherentCachePythonWrapper (
   output logic perf_l2_refill_miss_event,
   output logic [1:0] perf_snoop_event,
   output logic perf_dirty_writeback_event,
+  output logic [1:0] monitor_snoop_accept_valid,
+  output logic [63:0] monitor_snoop_accept_addr,
+  output logic [1:0] monitor_snoop_accept_opcode,
+  output logic monitor_dir_commit_valid,
+  output logic [31:0] monitor_dir_commit_addr,
+  output logic [1:0] monitor_dir_commit_state,
+  output logic [1:0] monitor_dir_commit_sharers,
+  output logic monitor_dir_commit_owner,
+  output logic monitor_owner_data_valid,
+  output logic monitor_owner_data_core,
+  output logic [31:0] monitor_owner_data_addr,
+  output logic [2:0] monitor_owner_data_beat_idx,
+  output logic [63:0] monitor_owner_data,
+  output logic monitor_owner_data_last,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -61,6 +75,10 @@ module CoherentCachePythonWrapper (
   logic cpu_resp_write_u [0:1];
   logic [63:0] cpu_resp_rdata_u [0:1];
   logic [2:0] cpu_resp_txn_id_u [0:1];
+  logic monitor_snoop_accept_valid_u [0:1];
+  logic [31:0] monitor_snoop_accept_addr_u [0:1];
+  coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode_u [0:1];
+  logic [2:0] monitor_snoop_accept_txn_id_u [0:1];
 
   logic mmio_req_valid;
   logic [31:0] mmio_req_addr;
@@ -91,6 +109,11 @@ module CoherentCachePythonWrapper (
       cpu_resp_addr[core*32 +: 32] = cpu_resp_addr_u[core];
       cpu_resp_write[core] = cpu_resp_write_u[core];
       cpu_resp_rdata[core*64 +: 64] = cpu_resp_rdata_u[core];
+      monitor_snoop_accept_valid[core] = monitor_snoop_accept_valid_u[core];
+      monitor_snoop_accept_addr[core*32 +: 32] =
+        monitor_snoop_accept_addr_u[core];
+      monitor_snoop_accept_opcode[core] =
+        monitor_snoop_accept_opcode_u[core];
     end
   end
 
@@ -143,8 +166,21 @@ module CoherentCachePythonWrapper (
     .perf_l2_refill_hit_event(perf_l2_refill_hit_event),
     .perf_l2_refill_miss_event(perf_l2_refill_miss_event),
     .metadata_commit_line_addr(), .metadata_commit_state(),
-    .metadata_commit_is_snoop(), .monitor_snoop_accept_valid(),
-    .monitor_snoop_accept_addr(), .monitor_snoop_accept_opcode(),
-    .monitor_snoop_accept_txn_id()
+    .metadata_commit_is_snoop(),
+    .monitor_snoop_accept_valid(monitor_snoop_accept_valid_u),
+    .monitor_snoop_accept_addr(monitor_snoop_accept_addr_u),
+    .monitor_snoop_accept_opcode(monitor_snoop_accept_opcode_u),
+    .monitor_snoop_accept_txn_id(monitor_snoop_accept_txn_id_u),
+    .monitor_dir_commit_valid(monitor_dir_commit_valid),
+    .monitor_dir_commit_addr(monitor_dir_commit_addr),
+    .monitor_dir_commit_state(monitor_dir_commit_state),
+    .monitor_dir_commit_sharers(monitor_dir_commit_sharers),
+    .monitor_dir_commit_owner(monitor_dir_commit_owner),
+    .monitor_owner_data_valid(monitor_owner_data_valid),
+    .monitor_owner_data_core(monitor_owner_data_core),
+    .monitor_owner_data_addr(monitor_owner_data_addr),
+    .monitor_owner_data_beat_idx(monitor_owner_data_beat_idx),
+    .monitor_owner_data(monitor_owner_data),
+    .monitor_owner_data_last(monitor_owner_data_last)
   );
 endmodule

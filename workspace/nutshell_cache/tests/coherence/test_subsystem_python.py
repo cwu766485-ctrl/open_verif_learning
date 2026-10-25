@@ -3,6 +3,7 @@
 import csv
 import json
 import math
+import random
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from dv.agents.coherent_cpu_agent import CpuRequest, DualCoreCpuDriver
 from dv.agents.line_memory_axi_agent import LineMemoryAxiAgent
 from dv.coverage.coherence_coverage import CoherenceCoverage
 from dv.monitors.cache_perf_monitor import CachePerfMonitor
+from dv.monitors.snoop_data_monitor import SnoopDataMonitor
 from dv.scoreboard.coherence_scoreboard import CoherenceScoreboard
 
 try:
@@ -20,15 +22,32 @@ try:
 except ImportError:
     DUTCoherentCachePythonWrapper = None
 
+PYTHON_COVERAGE = CoherenceCoverage()
+COVERAGE_PATH = (Path(__file__).resolve().parents[2] / "benchmarks" /
+                 "results" / "coherence_python_functional_coverage.json")
+
+
+def _record_model(model):
+    PYTHON_COVERAGE.observe_model(model)
+    COVERAGE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    COVERAGE_PATH.write_text(json.dumps(PYTHON_COVERAGE.to_dict(), indent=2) + "\n",
+                             encoding="utf-8")
+
 
 @fixture
 async def coherent_env(toffee_request: ToffeeRequest):
     if DUTCoherentCachePythonWrapper is None:
         pytest.skip("run make coherence_python_build before the subsystem Python test")
     dut = toffee_request.create_dut(DUTCoherentCachePythonWrapper, "clock")
-    async def start(response_delay=2):
-        memory = LineMemoryAxiAgent(dut, response_delay=response_delay)
+    async def start(response_delay=2, *, backpressure_periods=None,
+                    response_gap_periods=None):
+        memory = LineMemoryAxiAgent(
+            dut, response_delay=response_delay,
+            backpressure_periods=backpressure_periods,
+            response_gap_periods=response_gap_periods,
+        )
         perf = CachePerfMonitor(dut)
+        snoop_data = SnoopDataMonitor(dut)
         dut.reset.AsImmWrite()
         dut.reset.value = 1
         dut.reset.AsRiseWrite()
@@ -45,6 +64,8 @@ async def coherent_env(toffee_request: ToffeeRequest):
         async with Executor(exit="none") as executor:
             executor(memory.run(), sche_group="line_memory")
             executor(perf.run(), sche_group="perf_monitor")
+            executor(snoop_data.run(), sche_group="snoop_data_monitor")
+        memory.snoop_data = snoop_data
         return dut, memory, perf
 
     return start
@@ -79,6 +100,7 @@ async def test_dual_core_owner_transfer_and_data_visibility(coherent_env):
                               "shared_upgrade", "remote_read_from_M")
     assert len(memory.read_requests) == 1
     assert int(dut.protocol_error.value) == 0
+    _record_model(scoreboard)
 
 
 @case
@@ -86,13 +108,12 @@ async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     dut, memory, perf = await coherent_env()
     cpu = DualCoreCpuDriver(dut)
     model = CoherenceScoreboard()
-    coverage = CoherenceCoverage()
 
     # One packed driver accepts two independent cold misses in the same window.
     parallel = await cpu.access_pair(
         CpuRequest(0x0020_4100), CpuRequest(0x0020_8100)
     )
-    coverage.sample_external("parallel_cold_miss_pair")
+    PYTHON_COVERAGE.sample_external("parallel_cold_miss_pair")
     for core, addr, result in ((0, 0x0020_4100, parallel[0]),
                                (1, 0x0020_8100, parallel[1])):
         expected = memory.word(addr, (addr >> 3) & 7)
@@ -114,7 +135,7 @@ async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     response = await cpu.access(1, addr)
     model.observe(1, addr, response_data=response)
     assert response == merged and response != old_word
-    coverage.sample_external("byte_mask_write")
+    PYTHON_COVERAGE.sample_external("byte_mask_write")
 
     # Five addresses share L1 and L2 set indices. The L1 copy of the first
     # line is replaced while its inclusive L2 copy remains available.
@@ -163,20 +184,281 @@ async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     assert result == expected_values[first]
     assert len(memory.read_requests) > reads_before
     assert len(memory.write_responses) == len(memory.write_requests)
-    coverage.sample_external("dirty_writeback", len(memory.write_requests))
-    coverage.sample_external("write_response", len(memory.write_responses))
+    PYTHON_COVERAGE.sample_external("dirty_writeback", len(memory.write_requests))
+    PYTHON_COVERAGE.sample_external("write_response", len(memory.write_responses))
 
-    coverage.observe_model(model)
-    coverage.require("cold_read", "remote_read_from_E", "shared_upgrade",
-                     "remote_read_from_M", "l2_refill_hit", "l2_refill_miss",
-                     "l1_eviction", "l2_live_eviction", "parallel_cold_miss_pair",
-                     "byte_mask_write", "dirty_writeback", "write_response")
-    assert coverage.l2_live_evictions >= 1, "live inclusive L2 eviction was not modeled"
-    coverage_path = (Path(__file__).resolve().parents[2] / "benchmarks" /
-                     "results" / "coherence_python_functional_coverage.json")
-    coverage_path.parent.mkdir(parents=True, exist_ok=True)
-    coverage_path.write_text(json.dumps(coverage.to_dict(), indent=2) + "\n",
-                             encoding="utf-8")
+    _record_model(model)
+    assert PYTHON_COVERAGE.l2_live_evictions >= 1, "live inclusive L2 eviction was not modeled"
+
+
+@case
+async def test_python_masked_stores_to_modified_line(coherent_env):
+    dut, memory, _ = await coherent_env()
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    address = 0x0020_0100
+    model.seed_word(address, memory.word(address, (address >> 3) & 7))
+
+    # The first partial store allocates the line with GetM; the second exercises
+    # the silent M-hit store path and checks that untouched bytes are preserved.
+    for value, mask in ((0xA5869770CC27FDBA, 0x3F),
+                        (0xCD388E7C56F288BF, 0x40)):
+        await cpu.access(0, address, write=True, data=value, mask=mask)
+        model.observe(0, address, write=True, write_data=value,
+                      write_mask=mask)
+    independent_address = address + 0x40
+    model.seed_word(independent_address,
+                    memory.word(independent_address, (independent_address >> 3) & 7))
+    snoop_cursor = len(memory.snoop_data.transfers)
+    snoop_req_cursor = len(memory.snoop_data.snoops)
+    result0, result1 = await cpu.access_pair(
+        CpuRequest(independent_address), CpuRequest(address)
+    )
+    model.observe(0, independent_address, response_data=result0)
+    memory.snoop_data.assert_directory_matches(model, independent_address)
+    model.observe(1, address, response_data=result1)
+    assert result1 == model.word(address)
+    line = address & ~0x3F
+    expected_line = [model.data.get(line + 8 * beat, memory.word(line, beat))
+                     for beat in range(8)]
+    assert any(item["line"] == line and item["core"] == 0 and item["opcode"] == 0
+               for item in memory.snoop_data.snoops[snoop_req_cursor:])
+    memory.snoop_data.assert_line_data(address, expected_line, since=snoop_cursor)
+    memory.snoop_data.assert_directory_matches(model, address)
+    assert int(dut.protocol_error.value) == 0
+    PYTHON_COVERAGE.sample_external("byte_mask_m_hit")
+    _record_model(model)
+
+
+@case
+async def test_python_memory_and_cpu_backpressure(coherent_env):
+    dut, memory, _ = await coherent_env(
+        response_delay=3,
+        response_gap_periods={"read_data": 5},
+    )
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+
+    # Stall a CPU response after it becomes valid and verify the held payload.
+    address = 0x0012_3450
+    model.seed_word(address, memory.word(address, (address >> 3) & 7))
+    memory.arm_stall("read_req", 2)
+    result = await cpu.access(0, address, response_stall_cycles=4)
+    model.observe(0, address, response_data=result)
+    assert cpu.response_stall_cycles[0] >= 4
+
+    # Dirty eight lines in one L2 set, then force a live inclusive victim.
+    # Periodic ready deassertion stalls the line request and write-data paths.
+    dirty_base = 0x0080_6000
+    for index in range(8):
+        line = dirty_base + index * 32768
+        value = 0xBACC000000000000 | index
+        core = 0 if index < 4 or index == 8 else 1
+        model.seed_word(line, memory.word(line, 0))
+        await cpu.access(core, line, write=True, data=value)
+        model.observe(core, line, write=True, write_data=value,
+                      write_mask=0xFF)
+
+    # Arm two-cycle stalls before the ninth line causes the live dirty victim
+    # write request and eight-beat write data stream.
+    memory.arm_stall("write_req", 2)
+    memory.arm_stall("write_data", 2)
+    line = dirty_base + 8 * 32768
+    value = 0xBACC000000000008
+    model.seed_word(line, memory.word(line, 0))
+    await cpu.access(0, line, write=True, data=value)
+    model.observe(0, line, write=True, write_data=value, write_mask=0xFF)
+
+    assert memory.stalls["read_req"] > 0
+    assert memory.stalls["write_req"] > 0
+    assert memory.stalls["write_data"] > 0
+    assert memory.response_gaps["read_data"] > 0
+    assert memory.write_beats >= 8
+    assert len(memory.write_responses) == len(memory.write_requests)
+    assert int(dut.protocol_error.value) == 0
+
+    PYTHON_COVERAGE.sample_external("cpu_response_backpressure",
+                                    cpu.response_stall_cycles[0])
+    PYTHON_COVERAGE.sample_external("memory_read_request_backpressure",
+                                    memory.stalls["read_req"])
+    PYTHON_COVERAGE.sample_external("memory_write_request_backpressure",
+                                    memory.stalls["write_req"])
+    PYTHON_COVERAGE.sample_external("memory_write_data_backpressure",
+                                    memory.stalls["write_data"])
+    PYTHON_COVERAGE.sample_external("memory_read_response_gaps",
+                                    memory.response_gaps["read_data"])
+    _record_model(model)
+
+
+@case
+async def test_python_reset_cancels_active_refill(coherent_env):
+    dut, memory, _ = await coherent_env(response_delay=80)
+    cpu = DualCoreCpuDriver(dut)
+    address = 0x0018_9020
+    prior_requests = len(memory.read_requests)
+
+    # Submit a cold miss and wait for the memory agent to accept its line read.
+    dut.cpu_req_addr.value = address
+    dut.cpu_req_write.value = 0
+    dut.cpu_req_wmask.value = 0xFF
+    dut.cpu_req_wdata.value = 0
+    dut.cpu_resp_ready.value = 0
+    dut.cpu_req_valid.value = 1
+    accepted = False
+    for _ in range(40):
+        await ClockCycles(dut, 1)
+        if int(dut.cpu_req_ready.value) & 1:
+            accepted = True
+            break
+    dut.cpu_req_valid.value = 0
+    assert accepted, "cold miss was not accepted before reset"
+    for _ in range(40):
+        if len(memory.read_requests) > prior_requests:
+            break
+        await ClockCycles(dut, 1)
+    assert len(memory.read_requests) > prior_requests, "refill did not reach memory"
+
+    dut.reset.value = 1
+    await ClockCycles(dut, 3)
+    dut.reset.value = 0
+    assert memory.reset_cancelled["reads"] > 0
+    await ClockCycles(dut, 140)
+    for _ in range(5):
+        await ClockCycles(dut, 1)
+        assert int(dut.cpu_resp_valid.value) == 0, "reset leaked a stale CPU response"
+
+    # The reset canceled the cache transaction, not backing-memory contents or
+    # the ability to issue the same line again.
+    model = CoherenceScoreboard()
+    model.seed_word(address, memory.word(address, (address >> 3) & 7))
+    result = await cpu.access(0, address)
+    model.observe(0, address, response_data=result)
+    assert result == memory.word(address, (address >> 3) & 7)
+    assert int(dut.protocol_error.value) == 0
+    PYTHON_COVERAGE.sample_external("reset_during_refill")
+    _record_model(model)
+
+
+@pytest.mark.parametrize("seed", [0x1A2B, 0x5EED, 0xC0FFEE, 0xD15EA5E])
+@case
+async def test_python_seeded_randomized_coherence(coherent_env, seed):
+    dut, memory, _ = await coherent_env(response_delay=seed % 5 + 1)
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    rng = random.Random(seed)
+    addresses = [0x0200_0000 + index * 64 for index in range(12)]
+
+    def request_for(address):
+        write = rng.random() < 0.4
+        return CpuRequest(
+            address, write=write,
+            data=rng.getrandbits(64) if write else 0,
+            mask=rng.randrange(1, 256) if write else 0xFF,
+        )
+
+    def seed_if_needed(address):
+        word_address = address & ~0x7
+        if word_address not in model.data:
+            model.seed_word(address, memory.word(address, (address >> 3) & 7))
+
+    operations = 36
+    history = []
+    for index in range(operations):
+        if index % 6 == 5:
+            # Distinct lines allow the two lanes to be checked independently
+            # even if the subsystem retires their responses out of order.
+            first, second = rng.sample(addresses, 2)
+            req0, req1 = request_for(first), request_for(second)
+            seed_if_needed(first)
+            seed_if_needed(second)
+            if (not req1.write and model.states[req1.addr & ~0x3F][0] == "M"):
+                # Check the latest owner word locally before exercising a
+                # simultaneous independent miss and remote GetS.
+                owner_data = await cpu.access(0, req1.addr)
+                model.observe(0, req1.addr, response_data=owner_data)
+            snoop_cursor = len(memory.snoop_data.transfers)
+            snoop_req_cursor = len(memory.snoop_data.snoops)
+            dir_commit_cursor = len(memory.snoop_data.directory_commits)
+            result0, result1 = await cpu.access_pair(req0, req1)
+            if (not req1.write and
+                    model.states[req1.addr & ~0x3F][0] == "M"):
+                line = req1.addr & ~0x3F
+                expected_line = [model.data.get(
+                    line + 8 * beat, memory.word(line, beat))
+                    for beat in range(8)]
+                owner_snoops = [
+                    item for item in memory.snoop_data.snoops[snoop_req_cursor:]
+                    if item["line"] == line and item["core"] == 0
+                ]
+                assert owner_snoops and owner_snoops[-1]["opcode"] == 0, (
+                    f"remote read of Core0 M line {line:#x} must issue SnoopRead; "
+                    f"observed {owner_snoops}"
+                )
+                memory.snoop_data.assert_line_data(
+                    req1.addr, expected_line, since=snoop_cursor)
+            for core, req, result in ((0, req0, result0), (1, req1, result1)):
+                history.append((index, core, req.addr, req.write, req.data,
+                                req.mask, result))
+                try:
+                    model.observe(core, req.addr, write=req.write,
+                                  write_data=req.data, write_mask=req.mask,
+                                  response_data=result)
+                    memory.snoop_data.assert_directory_matches(model, req.addr)
+                except AssertionError as error:
+                    line_snoops = [
+                        item for item in memory.snoop_data.snoops
+                        if item["line"] == (req.addr & ~0x3F)
+                    ]
+                    line_commits = [
+                        item for item in memory.snoop_data.directory_commits
+                        if item["line"] == (req.addr & ~0x3F)
+                    ]
+                    raise AssertionError(
+                        f"seed={seed:#x}, recent operations={history[-12:]}, "
+                        f"new snoops={memory.snoop_data.snoops[snoop_req_cursor:]}, "
+                        f"new dir commits="
+                        f"{memory.snoop_data.directory_commits[dir_commit_cursor:]}, "
+                        f"line snoops={line_snoops}, "
+                        f"line commits={line_commits}, "
+                        f"new owner-data={memory.snoop_data.transfers[snoop_cursor:]}"
+                    ) from error
+                if req.write:
+                    readback = await cpu.access(core, req.addr)
+                    history.append((index, core, req.addr, False, 0, 0xFF,
+                                    readback))
+                    model.observe(core, req.addr, response_data=readback)
+                    memory.snoop_data.assert_directory_matches(model, req.addr)
+            PYTHON_COVERAGE.sample_external("random_dual_lane_pairs")
+        else:
+            core = rng.randrange(2)
+            address = rng.choice(addresses)
+            req = request_for(address)
+            seed_if_needed(address)
+            result = await cpu.access(core, req.addr, write=req.write,
+                                      data=req.data, mask=req.mask)
+            history.append((index, core, req.addr, req.write, req.data,
+                            req.mask, result))
+            try:
+                model.observe(core, req.addr, write=req.write,
+                              write_data=req.data, write_mask=req.mask,
+                              response_data=result)
+                memory.snoop_data.assert_directory_matches(model, req.addr)
+            except AssertionError as error:
+                raise AssertionError(
+                    f"seed={seed:#x}, recent operations={history[-12:]}"
+                ) from error
+            if req.write:
+                readback = await cpu.access(core, req.addr)
+                history.append((index, core, req.addr, False, 0, 0xFF,
+                                readback))
+                model.observe(core, req.addr, response_data=readback)
+                memory.snoop_data.assert_directory_matches(model, req.addr)
+
+    model.assert_covered("cold_read", "cold_write", "read_hit", "write_hit")
+    assert int(dut.protocol_error.value) == 0, f"protocol error for seed={seed:#x}"
+    PYTHON_COVERAGE.sample_external("randomized_seeded_regression")
+    PYTHON_COVERAGE.sample_external("randomized_cpu_operations", operations)
+    _record_model(model)
 
 
 def _p95(samples):

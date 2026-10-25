@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "regression": "python_dual_l1_shared_l2_mesi",
   "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
   "bins": [
@@ -14,7 +14,24 @@
     {"id": "l2.live_victim", "feature": "l2_live_eviction", "testpoint": "Ninth same-set line evicts a line still owned by the other L1", "checker": "Directory/L1 reference state plus snoop, owner data, and L2 victim model"},
     {"id": "cpu.dual_miss_overlap", "feature": "parallel_cold_miss_pair", "testpoint": "Both CPU lanes present independent cold misses together", "checker": "Single packed DualCoreCpuDriver handshakes and matches each response"},
     {"id": "cpu.byte_mask", "feature": "byte_mask_write", "testpoint": "Masked store followed by remote read", "checker": "Architectural byte-lane merge comparison"},
+    {"id": "cpu.byte_mask_m_hit", "feature": "byte_mask_m_hit", "testpoint": "Second byte-masked store hits a Modified line", "checker": "Independent byte-merge model and local/remote data checks"},
     {"id": "memory.dirty_writeback", "feature": "dirty_writeback", "testpoint": "Dirty inclusive L2 victim writes all eight beats", "checker": "Writable memory contents, beat count, and later victim reload"},
-    {"id": "memory.write_response", "feature": "write_response", "testpoint": "CPU transaction completes after memory write response", "checker": "ID-matched write response handshake count"}
+    {"id": "memory.write_response", "feature": "write_response", "testpoint": "CPU transaction completes after memory write response", "checker": "ID-matched write response handshake count"},
+    {"id": "reset.active_refill", "feature": "reset_during_refill", "testpoint": "Reset cancels a memory-accepted refill without a stale CPU response; the same line works after recovery", "checker": "CPU response monitor, reset-aware line memory and post-reset data scoreboard"},
+    {"id": "backpressure.cpu_response", "feature": "cpu_response_backpressure", "testpoint": "CPU response payload remains stable while ready is held low", "checker": "Packed-lane driver checks address, operation and data through the stall"},
+    {"id": "backpressure.memory_read_request", "feature": "memory_read_request_backpressure", "testpoint": "Cold refill request holds through deterministic memory-ready stalls", "checker": "Accepted line-request queue and ready/valid stall counter"},
+    {"id": "backpressure.memory_write_request", "feature": "memory_write_request_backpressure", "testpoint": "Dirty victim write request holds through deterministic memory-ready stalls", "checker": "Accepted write-request queue and ready/valid stall counter"},
+    {"id": "backpressure.memory_write_data", "feature": "memory_write_data_backpressure", "testpoint": "All eight dirty-victim beats survive deterministic write-data stalls", "checker": "Beat-index checker, writable memory model and ready/valid stall counter"},
+    {"id": "memory.read_response_gaps", "feature": "memory_read_response_gaps", "testpoint": "Read refill beats complete with deterministic response-valid gaps", "checker": "ID/beat-aware memory queue and returned architectural data"},
+    {"id": "cpu.seeded_random", "feature": "randomized_seeded_regression", "testpoint": "Four reproducible mixed read/write seeds pass the independent model", "checker": "Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output"},
+    {"id": "cpu.random_dual_lane", "feature": "random_dual_lane_pairs", "testpoint": "Seeded regression issues independent requests on both packed CPU lanes", "checker": "Single dual-core driver and per-core response matching"}
+  ],
+  "cross_bins": [
+    {"id": "cross.cold_read_from_memory", "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8", "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer"},
+    {"id": "cross.remote_m_owner_read", "key": "I:from_M:read:core0:source_remote_owner:l2_hit:snoop_core1:beats_8", "testpoint": "Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer"},
+    {"id": "cross.remote_m_owner_read_core1", "key": "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8", "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context"},
+    {"id": "cross.shared_upgrade_snoop", "key": "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0", "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer"},
+    {"id": "cross.modified_hit_masked_store", "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0", "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"},
+    {"id": "cross.l2_hit_after_l1_eviction", "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8", "testpoint": "L1-evicted line refills from shared L2 without a snoop"}
   ]
 }

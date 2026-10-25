@@ -231,8 +231,8 @@ coherence_axi_e2e:
 	  -f Coherence.files.f ../tests/subsystem/rtl/CoherentCacheAxiSubsystem_tb.sv
 	@reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb
 
-# Picker-exported Python DUT wrapper and the first two-core Toffee coherence
-# smoke test. SV module tests remain as migration baselines for now.
+# Picker-exported packed-port DUT and the independent Python/Toffee dual-L1
+# MESI regression (directed, reset, backpressure, seeded random, and benchmark).
 coherence_python_build:
 	@rm -rf .tooling/coherent_python
 	@source $(ENV_SCRIPT); cd rtl && $(PICKER) export --autobuild=true \
@@ -247,7 +247,7 @@ coherence_python_test: coherence_python_build
 coherence_benchmark_v2: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m benchmark tests/coherence/test_subsystem_python.py
 
-# One clean Picker export, then Python functional DV and Benchmark v2 together.
+# One clean Picker export, then the Python functional DV and Benchmark v2.
 coherence_python_verify: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py && \
 	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure

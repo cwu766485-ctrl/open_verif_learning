@@ -217,6 +217,17 @@ class CoherenceScoreboard:
             l2_was_present = self._ensure_l2_line(line)
             l2_refill = "hit" if l2_was_present else "miss"
 
+        if own != "I":
+            data_source = "l1"
+        elif other in ("M", "E"):
+            data_source = "remote_owner"
+        elif other == "S" or l2_refill == "hit":
+            data_source = "shared_l2"
+        else:
+            data_source = "memory"
+        snoop_target = 1 - core if other != "I" else None
+        line_transfer_beats = 8 if own == "I" else 0
+
         if write:
             self.states[line][core] = "M"
             self.states[line][1 - core] = "I"
@@ -242,6 +253,8 @@ class CoherenceScoreboard:
             "old_state": old_states, "new_state": tuple(self.states[line]),
             "event": event, "write_mask": write_mask if write else 0,
             "l2_refill": l2_refill,
+            "data_source": data_source, "snoop_target": snoop_target,
+            "line_transfer_beats": line_transfer_beats,
         })
         self._assert_line_invariants(line)
         return expected, event
