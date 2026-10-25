@@ -49,3 +49,7 @@ format:
 - 20:52：A/B 优化在 data Grant 接受时预发 L2 line read；32 次 L2 hit 从 23 降至 22 cycles，mixed workload 数据 scoreboard、AXI 顶层五种子和 P3 定向对照通过。
 - 20:52：补齐 v1.0 冻结清单、Benchmark v3 报告，并将 Legacy 与 Coherence 分成独立 CI jobs；本机 `make gen_dut && make test` 为 46 passed，`make coherence_verify` 全目标通过（SV 34/34、Python 16/16、Python bins 26/26、6 个 bounded formal targets、AXI adapter 1/1）。
 - 20:53：给 v3 加入交付门槛断言（32 个 L2 hit、五个 seed、零后备内存读）；Picker/Verilator 定向重跑 1 passed。
+
+- 2026-10-25 23:03 +08：并发 refill/Store 定向测试复现 ready/valid 分歧：Directory 因 L2 fill 拉低 ready，但 Snoop valid 仍到达 L1；L1 接收、Directory 未接收，响应永久无法匹配。统一 Snoop valid/ready 准入条件并加入握手断言；随后允许不需回收 owner data 的 clean invalidation 与 refill 重叠，owner-data 事务仍等待共享 L2 写端口。
+- 2026-10-25 23:03 +08：同一固定 workload A/B 通过数据和 Directory 独立检查；clean Snoop 并行后，Store 响应 14→10 cycles（减少 28.6%），Snoop 接受提前 4 cycles，refill 仍为 36 cycles。原始 JSON/CSV 与方法写入 `benchmarks/results/p2_clean_snoop_fill_ab.*` 和 Benchmark v3 说明。
+- 2026-10-25 23:03 +08：重写最终综合报告为 MESI v1.0，加入双 L1/共享 L2+Directory/AXI/APB 架构、验证平台、已知限制、回归结果和 P2 A/B 数据；补充 Markdown-to-PDF 构建器。PPA/SRAM 与更深压力测试按本次范围继续排除。

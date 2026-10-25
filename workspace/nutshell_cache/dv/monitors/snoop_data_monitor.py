@@ -13,10 +13,13 @@ class SnoopDataMonitor:
         self.partial = {}
         self.transfers = []
         self.snoops = []
+        self.snoop_response_cycles = []
+        self.directory_snoop_response_cycles = []
         self.directory_commits = []
         self.lookup_conflicts = []
         self.transfer_grant_conflicts = []
         self.beat_errors = []
+        self.cycle = 0
 
     async def run(self):
         d = self.dut
@@ -24,6 +27,25 @@ class SnoopDataMonitor:
             # Observe the combinational accepted-beat event before the next
             # rising edge; state machines may deassert valid at that edge.
             snoop_valid = int(d.monitor_snoop_accept_valid.value)
+            rsp_valid = int(d.monitor_snoop_rsp_valid.value)
+            rsp_ready = int(d.monitor_snoop_rsp_ready.value)
+            if rsp_valid or rsp_ready:
+                self.snoop_response_cycles.append({
+                    "cycle": self.cycle, "valid": rsp_valid, "ready": rsp_ready,
+                    "fill": bool(int(d.monitor_l2_fill_active.value)),
+                    "txn": int(d.monitor_snoop_rsp_txn_id.value),
+                    "opcode": int(d.monitor_snoop_rsp_opcode.value),
+                })
+            if (int(d.monitor_dir_snoop_rsp_valid.value) or
+                    int(d.monitor_dir_snoop_rsp_ready.value)):
+                self.directory_snoop_response_cycles.append({
+                    "cycle": self.cycle,
+                    "valid": int(d.monitor_dir_snoop_rsp_valid.value),
+                    "ready": int(d.monitor_dir_snoop_rsp_ready.value),
+                    "fill": bool(int(d.monitor_l2_fill_active.value)),
+                    "target": int(d.monitor_dir_snoop_target.value),
+                    "txn": int(d.monitor_dir_snoop_txn_id.value),
+                })
             for core in range(2):
                 if snoop_valid & (1 << core):
                     self.snoops.append({
@@ -31,6 +53,8 @@ class SnoopDataMonitor:
                         "line": (int(d.monitor_snoop_accept_addr.value) >> (32 * core)) &
                                 0xFFFFFFC0,
                         "opcode": (int(d.monitor_snoop_accept_opcode.value) >> core) & 1,
+                        "cycle": self.cycle,
+                        "during_l2_fill": bool(int(d.monitor_l2_fill_active.value)),
                     })
             if int(d.monitor_dir_commit_valid.value):
                 self.directory_commits.append({
@@ -60,6 +84,7 @@ class SnoopDataMonitor:
                 })
             if int(d.reset.value):
                 await ClockCycles(d, 1)
+                self.cycle += 1
                 continue
             if int(d.monitor_owner_data_valid.value):
                 core = int(d.monitor_owner_data_core.value)
@@ -84,6 +109,7 @@ class SnoopDataMonitor:
                                            "words": tuple(words)})
                     del self.partial[key]
             await ClockCycles(d, 1)
+            self.cycle += 1
 
     def assert_line_data(self, addr, expected_words, *, since=0):
         line = addr & ~0x3F

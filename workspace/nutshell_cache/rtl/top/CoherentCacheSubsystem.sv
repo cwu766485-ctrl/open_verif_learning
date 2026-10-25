@@ -111,6 +111,14 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_snoop_accept_addr [0:1],
   output coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode [0:1],
   output logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1],
+  output logic [1:0] monitor_snoop_rsp_valid,
+  output logic [1:0] monitor_snoop_rsp_ready,
+  output logic [TXN_ID_WIDTH-1:0] monitor_snoop_rsp_txn_id [0:1],
+  output coherence_protocol_pkg::snoop_response_t monitor_snoop_rsp_opcode [0:1],
+  output logic monitor_dir_snoop_target,
+  output logic [TXN_ID_WIDTH-1:0] monitor_dir_snoop_txn_id,
+  output logic monitor_dir_snoop_rsp_valid,
+  output logic monitor_dir_snoop_rsp_ready,
   // Accepted directory metadata updates for independent DV/reference models.
   output logic monitor_dir_commit_valid,
   output logic [31:0] monitor_dir_commit_addr,
@@ -144,7 +152,10 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_l2_lookup_addr,
   output logic monitor_l2_lookup_hit,
   output logic monitor_dir_grant_accept_valid,
-  output logic [31:0] monitor_dir_grant_accept_addr
+  output logic [31:0] monitor_dir_grant_accept_addr,
+  // Observable for resource-contention regression; asserted during the
+  // eight-beat refill stream into the shared L2 data array.
+  output logic monitor_l2_fill_active
 );
   import coherence_protocol_pkg::*;
 
@@ -345,7 +356,7 @@ module CoherentCacheSubsystem #(
   logic mem_fill_writer_active_q;
   logic [MSHR_ID_WIDTH-1:0] mem_fill_writer_sel_q;
   logic [2:0] mem_fill_writer_beat_q;
-  logic mshr_set_conflict, snoop_set_conflict;
+  logic mshr_set_conflict, snoop_set_conflict, dir_snoop_issue_enable;
 
   always_comb begin : mem_mshr_decode
     integer i;
@@ -496,8 +507,19 @@ module CoherentCacheSubsystem #(
   assign monitor_dir_grant_accept_valid = !reset && dir_grant_valid &&
                                           dir_grant_ready;
   assign monitor_dir_grant_accept_addr = dir_grant_addr;
+  assign monitor_l2_fill_active = mem_fill_writer_active_q;
+  assign monitor_dir_snoop_rsp_valid = dir_snoop_rsp_valid;
+  assign monitor_dir_snoop_rsp_ready = dir_snoop_rsp_ready;
+  assign monitor_dir_snoop_target = dir_snoop_target;
+  assign monitor_dir_snoop_txn_id = dir_snoop_txn_id;
 
   always_ff @(posedge clock) begin
+    if (!reset && !victim_snoop_active &&
+        snoop_valid_core[dir_snoop_target] &&
+        snoop_ready_core[dir_snoop_target]) begin
+      assert (dir_snoop_valid && dir_snoop_ready)
+        else $error("L1 accepted a Snoop not accepted by the Directory bank");
+    end
     if (!reset && cluster_dir_req_valid && dir_req_ready) begin
       assert (l2_lookup_addr == cluster_dir_req_addr)
         else $error("Directory accepted a request with a mismatched L2 lookup");
@@ -513,6 +535,11 @@ module CoherentCacheSubsystem #(
       assert (l2_line_rd_valid &&
               (l2_line_rd_addr == line_align(dir_grant_addr)))
         else $error("accepted data grant did not prefetch its L2 line");
+    end
+    if (!reset && mem_fill_writer_active_q && dir_snoop_valid &&
+        dir_snoop_ready) begin
+      assert (!dir_snoop_data_to_l2)
+        else $error("owner-data snoop overlapped the shared L2 fill writer");
     end
   end
 
@@ -603,6 +630,10 @@ module CoherentCacheSubsystem #(
     snoop_opcode_core[1] = dir_snoop_opcode;
     snoop_txn_id_core[0] = dir_snoop_txn_id;
     snoop_txn_id_core[1] = dir_snoop_txn_id;
+    // Keep request valid and ready coupled: otherwise an L1 could consume a
+    // Snoop while the Directory MSHR did not accept the same request.
+    dir_snoop_issue_enable = !victim_snoop_active && !snoop_set_conflict &&
+      (!mem_fill_writer_active_q || !dir_snoop_data_to_l2);
     if (victim_snoop_active) begin
       snoop_addr_core[0] = victim_addr_q;
       snoop_addr_core[1] = victim_addr_q;
@@ -613,16 +644,15 @@ module CoherentCacheSubsystem #(
       if (engine_state_q == ENGINE_VICTIM_SNOOP_SEND)
         snoop_valid_core[victim_snoop_target_q] = 1'b1;
     end else if (dir_snoop_target)
-      snoop_valid_core[1] = dir_snoop_valid;
+      snoop_valid_core[1] = dir_snoop_valid && dir_snoop_issue_enable;
     else
-      snoop_valid_core[0] = dir_snoop_valid;
+      snoop_valid_core[0] = dir_snoop_valid && dir_snoop_issue_enable;
     if (dir_xfer_start_valid && dir_xfer_start_ready &&
         (dir_xfer_kind == XFER_PUTM_TO_L2))
       put_xfer_start_core[dir_xfer_src] = 1'b1;
     dir_snoop_ready = victim_snoop_active ? 1'b0 :
                       (snoop_ready_core[dir_snoop_target] &&
-                       !mem_fill_writer_active_q &&
-                       !snoop_set_conflict);
+                       dir_snoop_issue_enable);
 
     dir_snoop_rsp_valid = victim_snoop_active ? 1'b0 :
                           snoop_rsp_valid_core[dir_snoop_target];
@@ -828,6 +858,10 @@ module CoherentCacheSubsystem #(
     assign monitor_snoop_accept_addr[snoop_core] = snoop_addr_core[snoop_core];
     assign monitor_snoop_accept_opcode[snoop_core] = snoop_opcode_core[snoop_core];
     assign monitor_snoop_accept_txn_id[snoop_core] = snoop_txn_id_core[snoop_core];
+    assign monitor_snoop_rsp_valid[snoop_core] = snoop_rsp_valid_core[snoop_core];
+    assign monitor_snoop_rsp_ready[snoop_core] = snoop_rsp_ready_core[snoop_core];
+    assign monitor_snoop_rsp_txn_id[snoop_core] = snoop_rsp_txn_id_core[snoop_core];
+    assign monitor_snoop_rsp_opcode[snoop_core] = snoop_rsp_opcode_core[snoop_core];
   end
 
   DualL1MesiCluster #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) l1_cluster (

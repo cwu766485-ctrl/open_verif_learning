@@ -1,0 +1,3 @@
+workload,variant,seed,fill_start_to_snoop_accept_cycles,store_request_to_snoop_accept_cycles,store_request_to_response_cycles,refill_request_to_response_cycles,fill_snoop_overlap,data_check,directory_check
+clean_snoop_during_l2_fill,conservative_serialized,3253362413,9,8,14,36,false,PASS,PASS
+clean_snoop_during_l2_fill,clean_snoop_overlap,3253362413,5,4,10,36,true,PASS,PASS

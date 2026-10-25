@@ -1,77 +1,84 @@
-# NutShell L1 DCache 开源验证报告
+# NutShell MESI Cache v1.0 — 综合技术与验证报告
 
-更新日期：2026-10-10
-验证对象：NutShell RISC-V SoC 的 L1 DCache，SimpleBus 模块边界
-验证工具：Python、Toffee、Picker、Verilator、pytest、Yosys、SymbiYosys
+更新日期：2026-10-25  
+适用分支：`cache_coherence`  版本基线：MESI v1.0（`release/v1.0`）  
+项目：双核 MESI Cache 子系统，包含私有 L1、共享 L2/Directory、内存 AXI4 适配器及 APB 性能 CSR。
 
-## 1. 目标与结论
+## 1. 执行摘要
 
-本项目面向嵌入式/边缘 RISC-V 工作负载，构建一套可复现、无需商业仿真器的 Cache 模块级验证环境。当前回归通过 **39/39 个 pytest cases**，命中 **37/37 个功能覆盖目标**；维护 RTL 原始行覆盖率为 **98.0%（845/862）**。经审查的 waiver 调整后为 **100%（845/845）**。这些结果代表开源工具链下的高质量回归，不等同于商业 sign-off 或等价性签核。
+当前交付已经从旧的单核 L1 DCache 学习验证项目演进为双核自定义 MESI 一致性缓存子系统。报告、验证入口与性能数据均以当前 MESI RTL 为对象；旧 L1 验证保留为独立回归，不再充当 MESI 的验证依据。
 
-## 2. DUT 与验证架构
+本次更新修复了一处共享 refill 与 Snoop 竞争中的 ready/valid 协议缺陷，并启用无数据 clean invalidation 与 L2 refill 并行。相同定向 workload 下，Core1 Store 请求到响应由 14 cycles 降至 10 cycles；数据、目录状态与协议错误检查均通过。PPA/SRAM 实现评估按当前计划暂不包含。
 
-验证配置为 **32-KiB、4-way set-associative、64-byte cache line、64-bit datapath**，共 128 组。验证环境在 SimpleBus 边界组合 CPU、memory、MMIO 和 coherence 事务角色，由 monitor、checker、reference model、scoreboard 及功能覆盖采样器协同工作。
+## 2. 硬件架构
 
-参考模型分为 CPU 可见稀疏内存模型和独立 set-associative tag 状态模型。后者跟踪 tag、valid、dirty 状态，独立预测 hit/miss、invalid-first refill way 和精确 LFSR victim way。Scoreboard 对照返回数据、响应命令、下游路由、dirty victim 地址，以及 writeback 的八个数据 beat、mask、命令和 burst 地址。
+- 两个私有 L1 Data Cache，每个 32 KiB、4-way、64-byte line；各自连接 LSU/CPU 请求接口。
+- 自定义 MESI 协议连接 L1 与共享 Directory，不依赖外部标准一致性协议。
+- 共享 256 KiB、8-way L2 与 inclusive Directory；Directory 使用四个事务上下文，内存 refill 路径有四个 MSHR。
+- L2 refill、Grant、Snoop 和 dirty writeback 仍共享部分阵列/数据通路资源；L1 控制器仍是 blocking。
+- Line Memory AXI4 Adapter 支持带 ID 的 burst 请求和多笔 outstanding；完整 cache top 的 CPU miss 并行度仍受 blocking L1 与 Directory/共享资源约束。
+- APB Performance CSR 暴露 hit、miss、snoop、dirty writeback 与协议错误等软件可读统计。
 
-Ready/valid checker 检查 stalled payload 稳定；协议 checker 检查响应缺失、重复、过期及非法命令；DUT property checker 统计已接收、完成和 reset-abort 的事务并检查替换选择器不变量。
+## 3. 验证平台
 
-## 3. 测试计划
+新 MESI 验证使用 Python/pytest、Toffee、Picker 和 Verilator。Python CPU 与内存 agent 通过 packed-port wrapper 驱动 RTL；协议 monitor 采集已握手的请求、Grant、Snoop、目录提交和数据 beat。Reference model 根据 CPU 操作及协议事务推演每个 Core 的行数据和 MESI 权限，scoreboard 检查返回数据、跨核可见性、目录权限及 owner 数据传输。
 
-回归覆盖以下场景：
+功能覆盖由 testcase 在 checker 成功后产生结构化事件，再对 feature、requester、MESI 状态、opcode、owner/source 与传输 beat 等维度做 closure。SV directed/random 回归保留为 RTL 集成基线；Python/Toffee 正在逐步接管独立功能验证。Legacy 单 L1 测试继续独立运行。
 
-- Read/write hit、miss、8-bit byte mask、same-word forwarding 和跨 cache-line 访问；
-- 空/部分/满 set 占用、clean/dirty victim，以及同一 set 的 4-way 冲突替换；
-- 八拍 refill/writeback、下游和 CPU 侧 backpressure、排队 miss；
-- MMIO bypass、coherence probe/release、复位中止 refill 和复位后恢复；
-- 六个固定 seed 的随机混合事务，每个 seed 64 笔，共 **384 笔随机操作**。
+Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲裁器、Directory、MSHR bank、L1 controller 等局部安全性与可达性。结果是有界/局部证据，不代表完整子系统无界证明。
 
-功能覆盖计划将 set occupancy、hit/miss、partial write、victim 类型、backpressure channel、probe/release、reset cancellation 和 forwarding 列为 closure goals。`make report` 在任一目标未命中时失败。
+## 4. 本次缺陷与优化
 
-## 4. 回归、覆盖率与故障注入
+**故障现象：** refill 写入共享 L2 时，Directory bank 因共享资源拉低 Snoop `ready`，但顶层仍将 `valid` 直接送给 L1。L1 接收了失效请求，Directory context 没有接受同一笔事务，随后 L1 响应无法匹配活动 Directory context，Store 卡住且没有协议错误标志。
 
-| 指标 | 结果 |
-| --- | ---: |
-| pytest cases | 39/39 通过 |
-| 功能覆盖目标 | 37/37（100%） |
-| 维护 RTL 原始行覆盖率 | 98.0%（845/862） |
-| 维护 RTL waiver-adjusted statement coverage | 100%（845/845） |
-| RTL + generated DUT/wrapper 全源行覆盖率 | 95.1%（1423/1496） |
-| checker fault injection | 4/4 个代表性错误被捕获 |
+**修复：** 将下游 Snoop `valid` 与 Directory `ready` 统一使用同一个准入条件，避免 L1 与 Directory 对握手是否发生产生分歧；加入断言，任何 L1 已接收的 Snoop 必须同时被 Directory bank 接收。Owner-data Snoop 仍等待 refill 数据写端口空闲；只让不需回收数据的 clean invalidation 与 refill 重叠。
 
-覆盖 waiver 仅用于明确的非目标或不可达代码：断言失败诊断、复位后不可自然到达的 LFSR 零状态恢复、DCache 禁用的 flush 路径、CPU 不支持的 burst 请求路径，以及两个 LCOV 控制行记录。waiver 不替代原始覆盖率；简历与报告均保留 raw coverage 数字。
+**同一 workload A/B：** Core0 发起不同 L2 set 的 cold refill 时，Core1 对双方均为 S 的另一条 line 执行 Store，触发 clean invalidation。固定 seed `0xC1EA5EED`，相同请求顺序、内存模型和状态检查。
 
-CI 在干净 Ubuntu runner 上重新安装工具链、生成 DUT、运行形式检查及覆盖率闭环，并额外执行两个固定 seed；每次 CI 共 **8 个固定 seed、512 笔随机操作**。最新状态与历史运行记录见 [GitHub Actions](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml)。
+| 指标 | 保守串行基线 | clean Snoop 并行 | 变化 |
+| --- | ---: | ---: | ---: |
+| refill 开始到 Snoop 被接受 | 9 cycles | 5 cycles | 提前 4 cycles |
+| Store 请求到 Snoop 被接受 | 8 cycles | 4 cycles | 提前 4 cycles |
+| Store 请求到响应 | 14 cycles | 10 cycles | 减少 4 cycles（28.6%） |
+| refill 请求到响应 | 36 cycles | 36 cycles | 不变 |
+| 返回数据/Directory 检查 | PASS | PASS | — |
 
-## 5. 形式验证范围
+此优化只针对 clean invalidation 与 refill 数据流的资源重叠，不宣称提升物理频率、面积、SRAM 推断质量或 DRAM 带宽。原 Benchmark v3 的隔离 L2 hit 优化数据仍保留：32 个样本平均响应由 23 降至 22 cycles，详见 [`coherence_benchmark_v3_results_2026-10-25.md`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)。
 
-`make formal` 包含三个 SymbiYosys gate 和一个有界 Yosys SAT 检查：
+## 5. 回归与验收结果
 
-| 检查 | 范围与约束 |
-| --- | --- |
-| Replacement selector | 检查 LFSR recurrence 及非零 reset state |
-| Cache way selector | 检查 replacement/refill one-hot 选择；使用 unique-tag invariant |
-| Cache Stage2 | 检查 backpressure 下 request payload 稳定 |
-| Cache Stage3 | 8-cycle bounded SAT，检查 response provenance/duplicate retirement、reset cancellation 和 stalled response valid/command stability；data arrays 抽象为常量 |
+以下表格记录本报告对应源码的最新本地回归结果；推送后 GitHub Actions 的 Legacy 与 Coherence job 结果以该提交页面为准。
 
-Stage3 检查是**有界安全性检查**，不是无界响应生命周期证明。完整 response data-payload 稳定由仿真 checker 检查；无界端到端响应生命周期证明和 full-cache reset proof 仍是明确的后续方向。CPU 接口约束为稳定保持至完成的单拍 `READ`/`WRITE`，外部 memory 的 refill/writeback 使用八拍 burst；不把 CPU 端不支持的 `READBST` 当作合法请求。
+| 验证目标 | 结果 | 边界说明 |
+| --- | --- | --- |
+| Legacy L1 regression | 46 passed; 17 skipped; 3 deselected | 独立保留的单 L1 兼容测试 |
+| Coherence SV regression | smoke + multisnoop + 5 seeds PASS; 34/34 功能 bins; 92.7% 行覆盖 | 模块、集成 directed 与固定随机 seed |
+| Python/Toffee MESI | 17 passed; 26/26 功能 bins | 独立数据/权限 scoreboard 与功能覆盖 |
+| AXI adapter / AXI subsystem | adapter 1 passed; AXI top 5 seeds PASS | adapter 五通道压力 + 集成 burst 测试 |
+| Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度 |
+| PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
-非 gate 的形式探索记录保存在本地 `reports/formal/experimental/`，与 `make formal` 正式 gate 分离。某些探索因 SMT solver `BrokenPipeError` 或未解析的 `SRAMTemplate` blackbox 在求解前结束；这些是 harness/tool setup 失败，不是 property counterexample，也不计为通过的形式证明。分类说明见 [`formal/README.md`](../formal/README.md)。
+## 6. 性能数据与复现
 
-## 6. 复现方式
-
-在 Ubuntu/WSL 或 GitHub Actions runner 上，从仓库根目录执行：
+性能 workload 固定 seed、初始 cache 状态和可配置内存响应延迟。基准输出 latency、P95、ops/cycle、L1/L2 refill hit/miss、Snoop、dirty writeback、AXI 读写 line/byte 数与 bytes/cycle。模拟周期数据只比较同一仿真配置下的设计行为。
 
 ```bash
-cd workspace/nutshell_cache
 source scripts/env.sh
-make gen_dut
-make formal
-make report
+make gen_dut && make test
+make COHERENCE_JOBS=2 coherence_verify
+make COHERENCE_JOBS=2 coherence_benchmark_v3
 ```
 
-`make formal` 生成 SBY/Yosys 日志；`make report` 运行回归、合并每个 Toffee test 的 Verilator `.dat`、检查 RTL waiver 和 37 项功能 closure，并运行 fault injection。HTML、覆盖率原始数据、波形及生成 DUT 位于本地 `reports/`、`Cache/` 等目录，不作为源码提交；CI 会上传可检查的报告 artifact。
+主要产物：
 
-## 7. 范围说明
+- [`MESI v1.0 验证计划`](../../docs/cache_spec_and_verification_plan.md)
+- [`Benchmark v3 测量与定义`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)
+- [`clean Snoop/refill A/B 原始结果`](../../benchmarks/results/p2_clean_snoop_fill_ab.json)
+- [`更新日志`](../../docs/update_log.md)
 
-本项目验证 NutShell DCache 模块边界，不声称验证整个 SoC、真实工作负载性能或流片 sign-off。当前 RTL 的 DCache flush 会触发其设计断言，因此不作为通过用例；shared Stage3 内部保留的 hierarchy-specific burst 分支也不等同于 CPU 端合法接口。项目重点是展示 Python 驱动的自检环境、独立参考模型、协议/时序检查、覆盖率闭环、开源仿真与可解释的形式属性。
+## 7. 当前限制与后续
+
+- 本次明确跳过 P1：PPA、真实 SRAM macro 映射/面积与时序签核，以及更深长随机冲突压力。当前 Verilator 仿真数据不是物理实现结果。
+- L1 仍为 blocking，完整系统 CPU 请求不能持续产生四个 outstanding miss；四个 Directory context/MHSR 的局部容量不等于四个 CPU 端到端并行 miss。
+- Formal 尚未覆盖整个双核 cache 的无界数据正确性与所有并发事务；当前结论限于组件有界证明及仿真回归。
+- `release/v1.0` 是冻结的 MESI v1.0 基线；本次 P2 优化与报告更新提交到开发分支，后续可单独形成维护版本。

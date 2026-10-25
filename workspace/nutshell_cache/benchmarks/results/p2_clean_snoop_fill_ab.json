@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "benchmark": "clean_snoop_during_l2_fill",
+  "date": "2026-10-25",
+  "dut": "CoherentCacheSubsystem via Picker/Verilator",
+  "clock_period_ns": 10,
+  "seed": 3253362413,
+  "initial_state": "Core0 and Core1 hold the target line in S; a distinct Core0 cold miss has started an L2 refill before Core1 stores to the shared target line",
+  "memory_model": "same deterministic 64-byte writable-line model in both runs",
+  "comparison": "Conservative serialization versus clean invalidation allowed during an active L2 fill; both use the ready/valid handshake fix",
+  "checks": {
+    "returned_data": "PASS",
+    "directory_state": "PASS",
+    "protocol_error": 0,
+    "refill_completion": "PASS"
+  },
+  "results": [
+    {
+      "variant": "conservative_serialized",
+      "fill_start_to_snoop_accept_cycles": 9,
+      "store_request_to_snoop_accept_cycles": 8,
+      "store_request_to_response_cycles": 14,
+      "refill_request_to_response_cycles": 36,
+      "fill_snoop_overlap": false
+    },
+    {
+      "variant": "clean_snoop_overlap",
+      "fill_start_to_snoop_accept_cycles": 5,
+      "store_request_to_snoop_accept_cycles": 4,
+      "store_request_to_response_cycles": 10,
+      "refill_request_to_response_cycles": 36,
+      "fill_snoop_overlap": true
+    }
+  ],
+  "derived": {
+    "store_latency_cycles_saved": 4,
+    "store_latency_percent_reduction": 28.5714285714,
+    "refill_latency_cycles_saved": 0
+  },
+  "limits": [
+    "Single fixed-seed targeted contention experiment; it isolates the selected resource overlap but is not a broad workload distribution.",
+    "RTL simulation cycle counts do not measure physical frequency, area, SRAM implementation, or DRAM bandwidth.",
+    "Owner-data Snoop and L2 refill writes remain serialized because both require the shared L2 line-data write port."
+  ]
+}

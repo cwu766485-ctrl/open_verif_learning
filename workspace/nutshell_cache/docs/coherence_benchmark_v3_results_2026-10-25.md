@@ -77,6 +77,37 @@ improving. Randomized traffic and phase-dependent channel readiness make the
 tail sensitive to seed scheduling; the top-level experiment supports the mean
 trend but is not evidence of a universal P95 improvement.
 
+## P2 resource-contention optimization: clean Snoop during refill
+
+The contention regression also exposed a ready/valid protocol defect. During
+an L2 fill, the top level could deassert Directory `ready` while leaving
+Snoop `valid` visible to the target L1. The L1 then consumed an invalidation
+that the Directory context had not accepted, so the response could never
+complete the Directory transaction. Snoop `valid` and Directory `ready` now
+share the same admission condition, and an assertion checks that an L1
+handshake is also a Directory handshake.
+
+The optimized admission rule allows clean invalidations, which only change L1
+and Directory metadata, to overlap the eight-beat L2 refill writer. Snoop
+transactions that return owner data still wait for the shared L2 data write
+port. The same one-seed directed workload and initial cache state were used
+for both A/B runs; both versions include the handshake fix, with the optimized
+version differing only in whether clean Snoop may overlap the fill.
+
+| Metric | Serialized baseline | Clean Snoop overlap | Change |
+| --- | ---: | ---: | ---: |
+| Fill start to Snoop acceptance | 9 cycles | 5 cycles | 4 cycles earlier |
+| Store request to Snoop acceptance | 8 cycles | 4 cycles | 4 cycles earlier |
+| Store request to response | 14 cycles | 10 cycles | 4 cycles lower (28.6%) |
+| Refill request to response | 36 cycles | 36 cycles | unchanged |
+
+Data, final Directory metadata, refill completion, and protocol-error checks
+passed in both variants. The raw samples are in
+[`p2_clean_snoop_fill_ab.json`](../benchmarks/results/p2_clean_snoop_fill_ab.json)
+and [`p2_clean_snoop_fill_ab.csv`](../benchmarks/results/p2_clean_snoop_fill_ab.csv).
+This targeted result demonstrates the selected overlap; it is not a broad
+workload average or a physical performance estimate.
+
 ## Limits and interpretation
 
 - The performance change removes a registered wait cycle in the simulated

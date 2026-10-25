@@ -23,6 +23,14 @@ module CoherentCachePythonWrapper (
   output logic [1:0] monitor_snoop_accept_valid,
   output logic [63:0] monitor_snoop_accept_addr,
   output logic [1:0] monitor_snoop_accept_opcode,
+  output logic [1:0] monitor_snoop_rsp_valid,
+  output logic [1:0] monitor_snoop_rsp_ready,
+  output logic [5:0] monitor_snoop_rsp_txn_id,
+  output logic [3:0] monitor_snoop_rsp_opcode,
+  output logic monitor_dir_snoop_rsp_valid,
+  output logic monitor_dir_snoop_rsp_ready,
+  output logic monitor_dir_snoop_target,
+  output logic [2:0] monitor_dir_snoop_txn_id,
   output logic monitor_dir_commit_valid,
   output logic [31:0] monitor_dir_commit_addr,
   output logic [1:0] monitor_dir_commit_state,
@@ -48,6 +56,7 @@ module CoherentCachePythonWrapper (
   output logic monitor_l2_lookup_hit,
   output logic monitor_dir_grant_accept_valid,
   output logic [31:0] monitor_dir_grant_accept_addr,
+  output logic monitor_l2_fill_active,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -93,6 +102,8 @@ module CoherentCachePythonWrapper (
   logic [31:0] monitor_snoop_accept_addr_u [0:1];
   coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode_u [0:1];
   logic [2:0] monitor_snoop_accept_txn_id_u [0:1];
+  logic [2:0] monitor_snoop_rsp_txn_id_u [0:1];
+  coherence_protocol_pkg::snoop_response_t monitor_snoop_rsp_opcode_u [0:1];
 
   logic mmio_req_valid;
   logic [31:0] mmio_req_addr;
@@ -128,6 +139,8 @@ module CoherentCachePythonWrapper (
         monitor_snoop_accept_addr_u[core];
       monitor_snoop_accept_opcode[core] =
         monitor_snoop_accept_opcode_u[core];
+      monitor_snoop_rsp_txn_id[core*3 +: 3] = monitor_snoop_rsp_txn_id_u[core];
+      monitor_snoop_rsp_opcode[core*2 +: 2] = monitor_snoop_rsp_opcode_u[core];
     end
   end
 
@@ -185,6 +198,14 @@ module CoherentCachePythonWrapper (
     .monitor_snoop_accept_addr(monitor_snoop_accept_addr_u),
     .monitor_snoop_accept_opcode(monitor_snoop_accept_opcode_u),
     .monitor_snoop_accept_txn_id(monitor_snoop_accept_txn_id_u),
+    .monitor_snoop_rsp_valid(monitor_snoop_rsp_valid),
+    .monitor_snoop_rsp_ready(monitor_snoop_rsp_ready),
+    .monitor_snoop_rsp_txn_id(monitor_snoop_rsp_txn_id_u),
+    .monitor_snoop_rsp_opcode(monitor_snoop_rsp_opcode_u),
+    .monitor_dir_snoop_rsp_valid(monitor_dir_snoop_rsp_valid),
+    .monitor_dir_snoop_rsp_ready(monitor_dir_snoop_rsp_ready),
+    .monitor_dir_snoop_target(monitor_dir_snoop_target),
+    .monitor_dir_snoop_txn_id(monitor_dir_snoop_txn_id),
     .monitor_dir_commit_valid(monitor_dir_commit_valid),
     .monitor_dir_commit_addr(monitor_dir_commit_addr),
     .monitor_dir_commit_state(monitor_dir_commit_state),
@@ -215,6 +236,7 @@ module CoherentCachePythonWrapper (
     .monitor_l2_lookup_addr(monitor_l2_lookup_addr),
     .monitor_l2_lookup_hit(monitor_l2_lookup_hit),
     .monitor_dir_grant_accept_valid(monitor_dir_grant_accept_valid),
-    .monitor_dir_grant_accept_addr(monitor_dir_grant_accept_addr)
+    .monitor_dir_grant_accept_addr(monitor_dir_grant_accept_addr),
+    .monitor_l2_fill_active(monitor_l2_fill_active)
   );
 endmodule
