@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "regression": "python_dual_l1_shared_l2_mesi",
+  "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+  "bins": [
+    {"id": "mesi.cold_read", "feature": "cold_read", "testpoint": "Independent cold GetS data check", "checker": "CoherenceScoreboard response/data model"},
+    {"id": "mesi.cold_write", "feature": "cold_write", "testpoint": "Cold GetM stores to the dual-core set-pressure sequence", "checker": "CoherenceScoreboard byte-accurate data and MESI invariants"},
+    {"id": "mesi.remote_read_e", "feature": "remote_read_from_E", "testpoint": "Core1 reads Core0 E line", "checker": "Independent MESI state transition and returned data"},
+    {"id": "mesi.remote_read_m", "feature": "remote_read_from_M", "testpoint": "Remote read observes latest M-owner data", "checker": "Independent MESI state transition and returned data"},
+    {"id": "mesi.shared_upgrade", "feature": "shared_upgrade", "testpoint": "Core0 byte-masked S-to-M store", "checker": "Byte-merge data comparison and MESI transition"},
+    {"id": "l1.replacement", "feature": "l1_eviction", "testpoint": "Five same-index lines exceed one L1 set capacity", "checker": "Independent 4-way L1 replacement model"},
+    {"id": "l2.refill_hit", "feature": "l2_refill_hit", "testpoint": "Re-read L1-evicted line retained in shared L2", "checker": "DUT L2 event and no backing-memory read"},
+    {"id": "l2.refill_miss", "feature": "l2_refill_miss", "testpoint": "Cold line refill absent from shared L2", "checker": "DUT L2 event and backing-memory read"},
+    {"id": "l2.live_victim", "feature": "l2_live_eviction", "testpoint": "Ninth same-set line evicts a line still owned by the other L1", "checker": "Directory/L1 reference state plus snoop, owner data, and L2 victim model"},
+    {"id": "cpu.dual_miss_overlap", "feature": "parallel_cold_miss_pair", "testpoint": "Both CPU lanes present independent cold misses together", "checker": "Single packed DualCoreCpuDriver handshakes and matches each response"},
+    {"id": "cpu.byte_mask", "feature": "byte_mask_write", "testpoint": "Masked store followed by remote read", "checker": "Architectural byte-lane merge comparison"},
+    {"id": "memory.dirty_writeback", "feature": "dirty_writeback", "testpoint": "Dirty inclusive L2 victim writes all eight beats", "checker": "Writable memory contents, beat count, and later victim reload"},
+    {"id": "memory.write_response", "feature": "write_response", "testpoint": "CPU transaction completes after memory write response", "checker": "ID-matched write response handshake count"}
+  ]
+}

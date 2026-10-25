@@ -1,0 +1,34 @@
+{
+  "features": {
+    "byte_mask_write": 1,
+    "cold_read": 9,
+    "cold_write": 9,
+    "dirty_writeback": 2,
+    "l1_eviction": 3,
+    "l2_live_eviction": 2,
+    "l2_refill_hit": 3,
+    "l2_refill_miss": 17,
+    "parallel_cold_miss_pair": 1,
+    "remote_read_from_E": 1,
+    "remote_read_from_M": 1,
+    "shared_upgrade": 1,
+    "write_response": 2
+  },
+  "l1_evictions": 3,
+  "l2_live_evictions": 2,
+  "cross_state_opcode_core_source": {
+    "I:read:core0:cold_read": 7,
+    "I:read:core0:l2_hit": 1,
+    "I:read:core0:l2_miss": 6,
+    "I:read:core1:cold_read": 2,
+    "I:read:core1:l2_hit": 2,
+    "I:read:core1:l2_miss": 2,
+    "I:read:core1:remote_read_from_E": 1,
+    "I:read:core1:remote_read_from_M": 1,
+    "I:write:core0:cold_write": 5,
+    "I:write:core0:l2_miss": 5,
+    "I:write:core1:cold_write": 4,
+    "I:write:core1:l2_miss": 4,
+    "S:write:core0:shared_upgrade": 1
+  }
+}

@@ -94,6 +94,10 @@ module CoherentCacheSubsystem #(
   output logic perf_dirty_writeback_event,
   output logic [1:0] perf_inflight,
   output logic [1:0] perf_access_complete_event,
+  // A refill lookup is counted at the shared L2 data-array decision point.
+  // These are refill hits/misses, not all directory metadata probes.
+  output logic perf_l2_refill_hit_event,
+  output logic perf_l2_refill_miss_event,
 
   // Stable monitor port for accepted L1 metadata commits.
   output logic metadata_commit_valid [0:1],
@@ -378,6 +382,20 @@ module CoherentCacheSubsystem #(
     (engine_state_q == ENGINE_VICTIM_WRITE_WAIT_RSP) &&
     mem_wr_rsp_valid && mem_wr_rsp_ready &&
     (mem_wr_rsp_txn_id == engine_txn_q) && !mem_wr_rsp_error;
+
+  always_ff @(posedge clock) begin
+    if (reset) begin
+      perf_l2_refill_hit_event <= 1'b0;
+      perf_l2_refill_miss_event <= 1'b0;
+    end else begin
+      perf_l2_refill_hit_event <= dir_xfer_start_valid &&
+        dir_xfer_start_ready && (dir_xfer_kind == XFER_L2_REFILL) &&
+        l2_lookup_hit;
+      perf_l2_refill_miss_event <= dir_xfer_start_valid &&
+        dir_xfer_start_ready && (dir_xfer_kind == XFER_L2_REFILL) &&
+        !l2_lookup_hit;
+    end
+  end
 
   always_comb begin
     fatal_error = external_fatal_error ||

@@ -205,6 +205,9 @@ module DualL1MesiCluster #(
                                              cpu_req_write[core];
     assign lookup_addr = ctrl_resp_valid ? ctrl_resp_addr : ctrl_cpu_req_addr;
     assign request_needs_replace = !lookup_hit && replace_valid[core];
+    // Keep controller valid driven only by registered replacement state.
+    // A hit or cold miss with a free way skips CHECK but is replayed one cycle
+    // later, shortening the path without forming a ready/valid loop.
     assign ctrl_cpu_req_valid = (replace_state_q == REPLACE_REPLAY);
     assign cpu_req_ready[core] = (replace_state_q == REPLACE_IDLE) &&
                                  ctrl_cpu_req_ready;
@@ -323,7 +326,15 @@ module DualL1MesiCluster #(
         pending_cpu_write_q <= cpu_req_write[core];
         store_wmask_q <= cpu_req_wmask[core];
         store_wdata_q <= cpu_req_wdata[core];
-        replace_state_q <= REPLACE_CHECK;
+        if (request_needs_replace) begin
+          replace_state_q <= REPLACE_CHECK;
+        end else begin
+          // A hit or a cold miss with a free way skips REPLACE_CHECK. Capture
+          // the allocation way now; the registered REPLAY state submits the
+          // request to the controller on the next cycle.
+          allocation_way_q <= replace_way_int;
+          replace_state_q <= REPLACE_REPLAY;
+        end
       end else begin
         if (!array_rd_active_q && array_line_rd_valid && array_line_rd_ready) begin
           array_rd_active_q <= 1'b1;

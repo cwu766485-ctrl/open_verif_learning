@@ -27,6 +27,16 @@ The active Python environment is under `dv/`, with scenario tests in `tests/`.
 `Cache/`, waveform, coverage and Python cache files are disposable and removed
 by `make clean`.
 
+The coherent subsystem has a separate Python/Toffee path through
+`dv/rtl/CoherentCachePythonWrapper.sv`. One `DualCoreCpuDriver` owns both packed
+CPU lanes, while `LineMemoryAxiAgent` models the DUT's custom line-memory
+boundary (not AXI's five-channel protocol): writable 64-byte lines, IDs,
+read/write bursts, and write responses. `CoherenceScoreboard` independently
+models byte-accurate data, MESI permissions, L1 ways, and inclusive L2 directory
+ownership. `CachePerfMonitor` samples the RTL's accepted L1 and L2 refill events.
+Run `make coherence_python_test` for functional checks or
+`make coherence_python_verify` for those checks plus Benchmark v2.
+
 The project targets an open simulator/tool flow and does not depend on a
 commercial simulator or SystemVerilog UVM. Verification roles are implemented
 with Python/Toffee agents, pytest, and Verilator; UVM is not the comparison
@@ -56,3 +66,18 @@ resume, hit forwarding, dirty eviction, MMIO isolation and probe release.
 4. Scoreboard/reference model: compare CPU responses and downstream memory side
    effects, including old data returned by writes.
 5. Structural metrics: Verilator line coverage and transaction counters.
+
+## Dual-L1 Python/Toffee verification
+
+The Python subsystem suite currently covers the dual-core owner-transfer path,
+paired independent cold misses, byte-masked stores, an L1 replacement that
+hits in shared L2, and dirty L2 victim writeback/re-read. Benchmark v2 records
+per-core and aggregate L1 hit/miss rates, Directory L2 refill hit/miss rates,
+mean/P95 CPU latency, operations per cycle, snoops, writebacks, and backing
+memory read/write bytes and bandwidth. JSON and CSV outputs are generated under
+`benchmarks/results/`.
+
+These tests complement the SystemVerilog subsystem benches; they do not yet
+replace every SV scenario. The Python model follows architectural requests and
+responses, and its replacement/directory state is predicted independently of
+DUT MESI state outputs. Formal remains a separate SymbiYosys flow.

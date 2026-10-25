@@ -47,6 +47,7 @@
 !benchmarks/*.py
 !benchmarks/*.md
 !benchmarks/results/*.json
+!benchmarks/results/*.csv
 !rtl/
 !rtl/*.v
 !rtl/

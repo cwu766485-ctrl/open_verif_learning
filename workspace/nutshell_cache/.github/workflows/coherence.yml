@@ -1,0 +1,58 @@
+name: Cache coherence RTL
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  coherence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up RTL and formal tools
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          version: '2026-10-21'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ make python3 python3-dev python3-venv cmake swig4.0 git
+
+      - name: Bootstrap Python/Toffee and pinned Picker
+        env:
+          PICKER_REF: c100874936aad4030d3bc4c8425ab652f2fbc7ad
+          XCOMM_REF: 23ba5c47310a74dab1567a4ca54ad85dec4512cb
+        run: |
+          set -euo pipefail
+          tooling_root="$(realpath -m "$GITHUB_WORKSPACE/../../.tooling")"
+          mkdir -p "$tooling_root"
+          python3 -m venv "$tooling_root/venv"
+          source "$tooling_root/venv/bin/activate"
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dv.txt
+
+          git init -q "$tooling_root/picker"
+          git -C "$tooling_root/picker" remote add origin https://github.com/XS-MLVP/picker.git
+          git -C "$tooling_root/picker" fetch --depth=1 origin "$PICKER_REF"
+          git -C "$tooling_root/picker" checkout --detach FETCH_HEAD
+          mkdir -p "$tooling_root/picker/dependence"
+          git init -q "$tooling_root/picker/dependence/xcomm"
+          git -C "$tooling_root/picker/dependence/xcomm" remote add origin https://github.com/XS-MLVP/xcomm.git
+          git -C "$tooling_root/picker/dependence/xcomm" fetch --depth=1 origin "$XCOMM_REF"
+          git -C "$tooling_root/picker/dependence/xcomm" checkout --detach FETCH_HEAD
+          XCOMM_SKIP_ALIGN=1 make -C "$tooling_root/picker" NPROC=2 init
+          make -C "$tooling_root/picker" NPROC=2 build \
+            ARGS="-DCMAKE_INSTALL_PREFIX=$tooling_root/picker-install"
+          make -C "$tooling_root/picker" NPROC=2 install \
+            ARGS="-DCMAKE_INSTALL_PREFIX=$tooling_root/picker-install"
+
+      - name: Run modular, formal, fanout, and subsystem regressions
+        run: make COHERENCE_JOBS=2 coherence_verify

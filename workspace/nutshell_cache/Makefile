@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_benchmark_v2 coherence_python_verify coherence_python_coverage_close clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -241,7 +241,19 @@ coherence_python_build:
 	  --lang python --sim verilator -e -c
 
 coherence_python_test: coherence_python_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark" tests/coherence/test_subsystem_python.py && \
+	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
+
+coherence_benchmark_v2: coherence_python_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m benchmark tests/coherence/test_subsystem_python.py
+
+# One clean Picker export, then Python functional DV and Benchmark v2 together.
+coherence_python_verify: coherence_python_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py && \
+	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
+
+coherence_python_coverage_close:
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
 
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
@@ -249,7 +261,7 @@ coherence_multisnoop: coherence_build
 coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
-	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression
+	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify
 
 # Remove transient build and per-test trace artifacts. Keep consolidated
 # coverage reports, formal proof logs, and experimental formal records.
