@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+LEGACY_RTL_ROOT = PROJECT_ROOT / "rtl" / "legacy_l1"
 OUTPUT_DIR = PROJECT_ROOT / "reports" / "formal" / "mutations"
 
 
@@ -56,7 +57,7 @@ def _mutate(source: str, mutation: Mutation) -> str:
 
 
 def _run_one(mutation: Mutation) -> dict[str, object]:
-    rtl_path = PROJECT_ROOT / "rtl" / "pipeline" / "CacheStage3.v"
+    rtl_path = LEGACY_RTL_ROOT / "pipeline" / "CacheStage3.v"
     original_source = rtl_path.read_text(encoding="utf-8")
     mutated_source = _mutate(original_source, mutation)
     log_path = OUTPUT_DIR / f"{mutation.name}.log"
@@ -65,11 +66,11 @@ def _run_one(mutation: Mutation) -> dict[str, object]:
         work = Path(tmp)
         (work / "CacheStage3.v").write_text(mutated_source, encoding="utf-8")
         shutil.copyfile(
-            PROJECT_ROOT / "rtl" / "control" / "MetaWriteArbiter.v",
+            LEGACY_RTL_ROOT / "control" / "MetaWriteArbiter.v",
             work / "MetaWriteArbiter.v",
         )
         shutil.copyfile(
-            PROJECT_ROOT / "rtl" / "control" / "DataWriteArbiter.v",
+            LEGACY_RTL_ROOT / "control" / "DataWriteArbiter.v",
             work / "DataWriteArbiter.v",
         )
         shutil.copyfile(

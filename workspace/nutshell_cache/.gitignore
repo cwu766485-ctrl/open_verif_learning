@@ -18,6 +18,8 @@
 !dv/**/*.py
 !dv/**/*.md
 !dv/**/*.json
+!dv/**/*.sv
+!dv/**/*.v
 !tests/
 !tests/**/
 !tests/**/*.py

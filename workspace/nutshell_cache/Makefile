@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -230,6 +230,18 @@ coherence_axi_e2e:
 	  --top-module CoherentCacheAxiSubsystem_tb --Mdir ../reports/coherence/axi_e2e_obj \
 	  -f Coherence.files.f ../tests/subsystem/rtl/CoherentCacheAxiSubsystem_tb.sv
 	@reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb
+
+# Picker-exported Python DUT wrapper and the first two-core Toffee coherence
+# smoke test. SV module tests remain as migration baselines for now.
+coherence_python_build:
+	@rm -rf .tooling/coherent_python
+	@source $(ENV_SCRIPT); cd rtl && $(PICKER) export --autobuild=true \
+	  --fs Coherence.files.f ../dv/rtl/CoherentCachePythonWrapper.sv \
+	  --sname CoherentCachePythonWrapper --tdir ../.tooling/coherent_python \
+	  --lang python --sim verilator -e -c
+
+coherence_python_test: coherence_python_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py
 
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only

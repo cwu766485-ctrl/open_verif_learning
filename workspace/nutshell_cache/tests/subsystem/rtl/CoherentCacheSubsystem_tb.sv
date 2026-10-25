@@ -166,10 +166,23 @@ module CoherentCacheSubsystem_tb;
   logic [31:0] state_model_line [0:STATE_MODEL_ENTRIES-1];
   mesi_state_t state_model_mesi [0:STATE_MODEL_ENTRIES-1][0:1];
   integer state_model_entries_used = 0;
-  integer benchmark_hit_count = 0;
-  integer benchmark_hit_cycles = 0;
-  integer benchmark_miss_count = 0;
-  integer benchmark_miss_cycles = 0;
+  logic benchmark_accept_pending [0:1];
+  logic benchmark_accept_write [0:1];
+  mesi_state_t benchmark_accept_state [0:1];
+  integer benchmark_accept_cycle [0:1];
+  integer benchmark_read_hit_count = 0;
+  integer benchmark_read_hit_cycles = 0;
+  integer benchmark_write_hit_count = 0;
+  integer benchmark_write_hit_cycles = 0;
+  integer benchmark_upgrade_count = 0;
+  integer benchmark_upgrade_cycles = 0;
+  integer benchmark_l1_miss_count = 0;
+  integer benchmark_l1_miss_cycles = 0;
+  integer benchmark_request_ready_stall_cycles = 0;
+  integer benchmark_model_accept_hit_count = 0;
+  integer benchmark_model_accept_miss_count = 0;
+  integer benchmark_rtl_hit_count = 0;
+  integer benchmark_rtl_miss_count = 0;
   integer benchmark_snoop_count = 0;
   integer benchmark_snoop_cycles = 0;
   logic [1:0] stalled_cpu_req_q;
@@ -931,6 +944,60 @@ module CoherentCacheSubsystem_tb;
     end
   endtask
 
+  task automatic benchmark_observe_cpu_handshakes;
+    mesi_state_t accepted_state;
+    integer latency;
+    begin
+      for (integer core = 0; core < 2; core = core + 1) begin
+        if (cpu_req_valid[core] && !cpu_req_ready[core] &&
+            ((cpu_req_addr[core] < 32'h3000_0000) ||
+             (cpu_req_addr[core] >= 32'h8000_0000)))
+          benchmark_request_ready_stall_cycles =
+            benchmark_request_ready_stall_cycles + 1;
+
+        if (cpu_req_valid[core] && cpu_req_ready[core] &&
+            ((cpu_req_addr[core] < 32'h3000_0000) ||
+             (cpu_req_addr[core] >= 32'h8000_0000))) begin
+          state_model_get(cpu_req_addr[core], core, accepted_state);
+          if ((!cpu_req_write[core] && (accepted_state != MESI_I)) ||
+              (cpu_req_write[core] &&
+               ((accepted_state == MESI_E) || (accepted_state == MESI_M))))
+            benchmark_model_accept_hit_count =
+              benchmark_model_accept_hit_count + 1;
+          else
+            benchmark_model_accept_miss_count =
+              benchmark_model_accept_miss_count + 1;
+          benchmark_accept_state[core] = accepted_state;
+          benchmark_accept_write[core] = cpu_req_write[core];
+          benchmark_accept_cycle[core] = cycle_count;
+          benchmark_accept_pending[core] = 1'b1;
+        end
+
+        if (cpu_resp_valid[core] && cpu_resp_ready[core] &&
+            benchmark_accept_pending[core]) begin
+          latency = cycle_count - benchmark_accept_cycle[core];
+          if (benchmark_accept_state[core] == MESI_I) begin
+            benchmark_l1_miss_count = benchmark_l1_miss_count + 1;
+            benchmark_l1_miss_cycles = benchmark_l1_miss_cycles + latency;
+          end else if (benchmark_accept_write[core] &&
+                       (benchmark_accept_state[core] == MESI_S)) begin
+            benchmark_upgrade_count = benchmark_upgrade_count + 1;
+            benchmark_upgrade_cycles = benchmark_upgrade_cycles + latency;
+          end else if (benchmark_accept_write[core] &&
+                       ((benchmark_accept_state[core] == MESI_E) ||
+                        (benchmark_accept_state[core] == MESI_M))) begin
+            benchmark_write_hit_count = benchmark_write_hit_count + 1;
+            benchmark_write_hit_cycles = benchmark_write_hit_cycles + latency;
+          end else if (!benchmark_accept_write[core]) begin
+            benchmark_read_hit_count = benchmark_read_hit_count + 1;
+            benchmark_read_hit_cycles = benchmark_read_hit_cycles + latency;
+          end
+          benchmark_accept_pending[core] = 1'b0;
+        end
+      end
+    end
+  endtask
+
   task automatic state_model_set(
     input logic [31:0] addr,
     input integer core,
@@ -1008,8 +1075,19 @@ module CoherentCacheSubsystem_tb;
   // Procedural tasks resume after the edge and can otherwise miss a one-cycle
   // valid/ready pulse that the DUT has already advanced past.
   always @(posedge clock) begin : state_model_protocol_monitor
-    if (!reset)
+    if (!reset) begin
+      benchmark_observe_cpu_handshakes();
+      for (integer core = 0; core < 2; core = core + 1) begin
+        if (perf_hit_event[core])
+          benchmark_rtl_hit_count = benchmark_rtl_hit_count + 1;
+        if (perf_miss_event[core])
+          benchmark_rtl_miss_count = benchmark_rtl_miss_count + 1;
+      end
       state_model_observe_protocol();
+    end else begin
+      benchmark_accept_pending[0] = 1'b0;
+      benchmark_accept_pending[1] = 1'b0;
+    end
   end
 
   task automatic state_model_apply_cpu(
@@ -1205,12 +1283,10 @@ module CoherentCacheSubsystem_tb;
     logic request_accepted;
     logic response_received;
     logic [63:0] expected_read;
-    mesi_state_t own_state_at_start;
     integer operation_cycles;
     integer snoop_start_cycle;
     logic snoop_seen;
     begin
-      state_model_get(addr, core, own_state_at_start);
       operation_cycles = 0;
       snoop_start_cycle = 0;
       snoop_seen = 1'b0;
@@ -1274,13 +1350,6 @@ module CoherentCacheSubsystem_tb;
         reference_write(addr, wmask, wdata);
       state_model_apply_cpu(core, addr, is_write);
       if ((addr < 32'h3000_0000) || (addr >= 32'h8000_0000)) begin
-        if (own_state_at_start != MESI_I) begin
-          benchmark_hit_count = benchmark_hit_count + 1;
-          benchmark_hit_cycles = benchmark_hit_cycles + operation_cycles;
-        end else begin
-          benchmark_miss_count = benchmark_miss_count + 1;
-          benchmark_miss_cycles = benchmark_miss_cycles + operation_cycles;
-        end
         if (snoop_seen) begin
           benchmark_snoop_count = benchmark_snoop_count + 1;
           benchmark_snoop_cycles = benchmark_snoop_cycles + (operation_cycles - snoop_start_cycle);
@@ -1633,6 +1702,25 @@ module CoherentCacheSubsystem_tb;
     inject_next_mem_rd_error = 1'b0;
     inject_next_mem_wr_error = 1'b0;
     cycle_count = 0;
+    benchmark_read_hit_count = 0;
+    benchmark_read_hit_cycles = 0;
+    benchmark_write_hit_count = 0;
+    benchmark_write_hit_cycles = 0;
+    benchmark_upgrade_count = 0;
+    benchmark_upgrade_cycles = 0;
+    benchmark_l1_miss_count = 0;
+    benchmark_l1_miss_cycles = 0;
+    benchmark_request_ready_stall_cycles = 0;
+    benchmark_model_accept_hit_count = 0;
+    benchmark_model_accept_miss_count = 0;
+    benchmark_rtl_hit_count = 0;
+    benchmark_rtl_miss_count = 0;
+    for (integer core = 0; core < 2; core = core + 1) begin
+      benchmark_accept_pending[core] = 1'b0;
+      benchmark_accept_write[core] = 1'b0;
+      benchmark_accept_state[core] = MESI_I;
+      benchmark_accept_cycle[core] = 0;
+    end
     reference_entries = 0;
     for (integer entry = 0; entry < DATA_MODEL_ENTRIES; entry = entry + 1) begin
       reference_valid[entry] = 1'b0;
@@ -2481,12 +2569,33 @@ module CoherentCacheSubsystem_tb;
     if ((metadata_commit_count == 0) || (metadata_snoop_commit_count == 0))
       $fatal(1, "metadata commit monitor was not exercised: commits=%0d snoops=%0d",
              metadata_commit_count, metadata_snoop_commit_count);
+    if ((benchmark_model_accept_hit_count != benchmark_rtl_hit_count) ||
+        (benchmark_model_accept_miss_count != benchmark_rtl_miss_count))
+      $fatal(1, "accepted hit/miss classification differs from RTL: model=%0d/%0d RTL=%0d/%0d; completed=%0d/%0d",
+             benchmark_model_accept_hit_count,
+             benchmark_model_accept_miss_count,
+             benchmark_rtl_hit_count, benchmark_rtl_miss_count,
+             benchmark_read_hit_count + benchmark_write_hit_count,
+             benchmark_upgrade_count + benchmark_l1_miss_count);
     $display("PASS: hit/miss/snoop/writeback and completed-access performance events observed");
-    $display("BENCH: l1_hit_count=%0d l1_hit_avg_cycles=%0d l1_miss_count=%0d l1_miss_avg_cycles=%0d snoop_count=%0d snoop_avg_cycles=%0d",
-             benchmark_hit_count,
-             (benchmark_hit_count == 0) ? 0 : benchmark_hit_cycles / benchmark_hit_count,
-             benchmark_miss_count,
-             (benchmark_miss_count == 0) ? 0 : benchmark_miss_cycles / benchmark_miss_count,
+    $display("BENCH: l1_hit_count=%0d l1_hit_avg_cycles=%0d l1_miss_count=%0d l1_miss_avg_cycles=%0d read_hit_count=%0d read_hit_avg_cycles=%0d write_hit_count=%0d write_hit_avg_cycles=%0d upgrade_count=%0d upgrade_avg_cycles=%0d l1_cold_miss_count=%0d l1_cold_miss_avg_cycles=%0d cpu_req_ready_stall_cycles=%0d snoop_count=%0d snoop_avg_cycles=%0d",
+             benchmark_read_hit_count + benchmark_write_hit_count,
+             ((benchmark_read_hit_count + benchmark_write_hit_count) == 0) ? 0 :
+               (benchmark_read_hit_cycles + benchmark_write_hit_cycles) /
+                 (benchmark_read_hit_count + benchmark_write_hit_count),
+             benchmark_l1_miss_count + benchmark_upgrade_count,
+             ((benchmark_l1_miss_count + benchmark_upgrade_count) == 0) ? 0 :
+               (benchmark_l1_miss_cycles + benchmark_upgrade_cycles) /
+                 (benchmark_l1_miss_count + benchmark_upgrade_count),
+             benchmark_read_hit_count,
+             (benchmark_read_hit_count == 0) ? 0 : benchmark_read_hit_cycles / benchmark_read_hit_count,
+             benchmark_write_hit_count,
+             (benchmark_write_hit_count == 0) ? 0 : benchmark_write_hit_cycles / benchmark_write_hit_count,
+             benchmark_upgrade_count,
+             (benchmark_upgrade_count == 0) ? 0 : benchmark_upgrade_cycles / benchmark_upgrade_count,
+             benchmark_l1_miss_count,
+             (benchmark_l1_miss_count == 0) ? 0 : benchmark_l1_miss_cycles / benchmark_l1_miss_count,
+             benchmark_request_ready_stall_cycles,
              benchmark_snoop_count,
              (benchmark_snoop_count == 0) ? 0 : benchmark_snoop_cycles / benchmark_snoop_count);
     $display("PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression");

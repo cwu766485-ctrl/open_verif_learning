@@ -1,0 +1,141 @@
+// Packed-port adapter for Picker/Toffee, which cannot export unpacked arrays
+// as Python pins. Core 0 occupies the least-significant packed lane.
+module CoherentCachePythonWrapper (
+  input  logic clock,
+  input  logic reset,
+  input  logic [1:0] cpu_req_valid,
+  output logic [1:0] cpu_req_ready,
+  input  logic [63:0] cpu_req_addr,
+  input  logic [1:0] cpu_req_write,
+  input  logic [15:0] cpu_req_wmask,
+  input  logic [127:0] cpu_req_wdata,
+  output logic [1:0] cpu_resp_valid,
+  input  logic [1:0] cpu_resp_ready,
+  output logic [63:0] cpu_resp_addr,
+  output logic [1:0] cpu_resp_write,
+  output logic [127:0] cpu_resp_rdata,
+
+  output logic mem_rd_req_valid,
+  input  logic mem_rd_req_ready,
+  output logic [31:0] mem_rd_req_addr,
+  output logic [2:0] mem_rd_req_txn_id,
+  input  logic mem_rd_data_valid,
+  output logic mem_rd_data_ready,
+  input  logic [2:0] mem_rd_data_txn_id,
+  input  logic [2:0] mem_rd_data_beat_idx,
+  input  logic [63:0] mem_rd_data,
+  input  logic mem_rd_data_last,
+  input  logic mem_rd_data_error,
+
+  output logic mem_wr_req_valid,
+  input  logic mem_wr_req_ready,
+  output logic [31:0] mem_wr_req_addr,
+  output logic [2:0] mem_wr_req_txn_id,
+  output logic mem_wr_data_valid,
+  input  logic mem_wr_data_ready,
+  output logic [2:0] mem_wr_data_txn_id,
+  output logic [2:0] mem_wr_data_beat_idx,
+  output logic [63:0] mem_wr_data,
+  output logic mem_wr_data_last,
+  input  logic mem_wr_rsp_valid,
+  output logic mem_wr_rsp_ready,
+  input  logic [2:0] mem_wr_rsp_txn_id,
+  input  logic mem_wr_rsp_error,
+  output logic protocol_error
+);
+  logic cpu_req_valid_u [0:1];
+  logic cpu_req_ready_u [0:1];
+  logic [31:0] cpu_req_addr_u [0:1];
+  logic cpu_req_write_u [0:1];
+  logic [7:0] cpu_req_wmask_u [0:1];
+  logic [63:0] cpu_req_wdata_u [0:1];
+  logic cpu_resp_valid_u [0:1];
+  logic cpu_resp_ready_u [0:1];
+  logic [31:0] cpu_resp_addr_u [0:1];
+  logic cpu_resp_write_u [0:1];
+  logic [63:0] cpu_resp_rdata_u [0:1];
+  logic [2:0] cpu_resp_txn_id_u [0:1];
+
+  logic mmio_req_valid;
+  logic [31:0] mmio_req_addr;
+  logic [2:0] mmio_req_size;
+  logic mmio_req_write;
+  logic [7:0] mmio_req_wmask;
+  logic [63:0] mmio_req_wdata;
+  logic mmio_resp_ready;
+  logic mmio_protocol_error;
+  logic [1:0] l1_controller_protocol_error;
+  logic [1:0] l1_array_protocol_error;
+  logic directory_protocol_error;
+  logic l2_protocol_error;
+  logic memory_adapter_protocol_error;
+  logic memory_adapter_error;
+  logic fatal_error;
+
+  always_comb begin
+    for (int core = 0; core < 2; core = core + 1) begin
+      cpu_req_valid_u[core] = cpu_req_valid[core];
+      cpu_req_addr_u[core] = cpu_req_addr[core*32 +: 32];
+      cpu_req_write_u[core] = cpu_req_write[core];
+      cpu_req_wmask_u[core] = cpu_req_wmask[core*8 +: 8];
+      cpu_req_wdata_u[core] = cpu_req_wdata[core*64 +: 64];
+      cpu_req_ready[core] = cpu_req_ready_u[core];
+      cpu_resp_valid[core] = cpu_resp_valid_u[core];
+      cpu_resp_ready_u[core] = cpu_resp_ready[core];
+      cpu_resp_addr[core*32 +: 32] = cpu_resp_addr_u[core];
+      cpu_resp_write[core] = cpu_resp_write_u[core];
+      cpu_resp_rdata[core*64 +: 64] = cpu_resp_rdata_u[core];
+    end
+  end
+
+  assign protocol_error = fatal_error || directory_protocol_error ||
+    l2_protocol_error || (|l1_controller_protocol_error) ||
+    (|l1_array_protocol_error) || memory_adapter_protocol_error ||
+    memory_adapter_error || mmio_protocol_error;
+
+  CoherentCacheSubsystem #(.TXN_ID_WIDTH(3), .NUM_MSHRS(4)) cache (
+    .clock(clock), .reset(reset), .external_fatal_error(1'b0),
+    .cpu_req_valid(cpu_req_valid_u), .cpu_req_ready(cpu_req_ready_u),
+    .cpu_req_addr(cpu_req_addr_u), .cpu_req_write(cpu_req_write_u),
+    .cpu_req_wmask(cpu_req_wmask_u), .cpu_req_wdata(cpu_req_wdata_u),
+    .cpu_resp_valid(cpu_resp_valid_u), .cpu_resp_ready(cpu_resp_ready_u),
+    .cpu_resp_addr(cpu_resp_addr_u), .cpu_resp_write(cpu_resp_write_u),
+    .cpu_resp_rdata(cpu_resp_rdata_u), .cpu_resp_txn_id(cpu_resp_txn_id_u),
+    .mmio_req_valid(mmio_req_valid), .mmio_req_ready(1'b1),
+    .mmio_req_addr(mmio_req_addr), .mmio_req_size(mmio_req_size),
+    .mmio_req_write(mmio_req_write), .mmio_req_wmask(mmio_req_wmask),
+    .mmio_req_wdata(mmio_req_wdata), .mmio_resp_valid(1'b0),
+    .mmio_resp_ready(mmio_resp_ready), .mmio_resp_rdata(64'b0),
+    .mem_rd_req_valid(mem_rd_req_valid), .mem_rd_req_ready(mem_rd_req_ready),
+    .mem_rd_req_addr(mem_rd_req_addr), .mem_rd_req_txn_id(mem_rd_req_txn_id),
+    .mem_rd_data_valid(mem_rd_data_valid), .mem_rd_data_ready(mem_rd_data_ready),
+    .mem_rd_data_txn_id(mem_rd_data_txn_id),
+    .mem_rd_data_beat_idx(mem_rd_data_beat_idx), .mem_rd_data(mem_rd_data),
+    .mem_rd_data_last(mem_rd_data_last), .mem_rd_data_error(mem_rd_data_error),
+    .mem_wr_req_valid(mem_wr_req_valid), .mem_wr_req_ready(mem_wr_req_ready),
+    .mem_wr_req_addr(mem_wr_req_addr), .mem_wr_req_txn_id(mem_wr_req_txn_id),
+    .mem_wr_data_valid(mem_wr_data_valid), .mem_wr_data_ready(mem_wr_data_ready),
+    .mem_wr_data_txn_id(mem_wr_data_txn_id),
+    .mem_wr_data_beat_idx(mem_wr_data_beat_idx), .mem_wr_data(mem_wr_data),
+    .mem_wr_data_last(mem_wr_data_last), .mem_wr_rsp_valid(mem_wr_rsp_valid),
+    .mem_wr_rsp_ready(mem_wr_rsp_ready), .mem_wr_rsp_txn_id(mem_wr_rsp_txn_id),
+    .mem_wr_rsp_error(mem_wr_rsp_error),
+    .l2_victim_valid(), .l2_victim_addr(), .l2_victim_dir_state(),
+    .l2_victim_sharers(), .l2_victim_owner_id(), .l2_victim_dirty(),
+    .l1_victim_valid(), .l1_victim_addr(), .l1_victim_state(),
+    .l1_controller_protocol_error(l1_controller_protocol_error),
+    .l1_array_protocol_error(l1_array_protocol_error),
+    .directory_protocol_error(directory_protocol_error),
+    .l2_protocol_error(l2_protocol_error),
+    .memory_adapter_protocol_error(memory_adapter_protocol_error),
+    .memory_adapter_error(memory_adapter_error), .fatal_error(fatal_error),
+    .mmio_protocol_error(mmio_protocol_error),
+    .perf_hit_event(), .perf_miss_event(), .perf_snoop_event(),
+    .perf_dirty_writeback_event(), .perf_inflight(),
+    .perf_access_complete_event(), .metadata_commit_valid(),
+    .metadata_commit_line_addr(), .metadata_commit_state(),
+    .metadata_commit_is_snoop(), .monitor_snoop_accept_valid(),
+    .monitor_snoop_accept_addr(), .monitor_snoop_accept_opcode(),
+    .monitor_snoop_accept_txn_id()
+  );
+endmodule

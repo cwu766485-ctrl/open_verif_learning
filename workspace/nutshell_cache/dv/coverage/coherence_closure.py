@@ -149,6 +149,16 @@ def summarize(map_path: Path, logs: list[Path], lcov: Path | None,
                   f"- L1 miss: {bench.get('l1_miss_avg_cycles', 0)} average cycles "
                   f"({bench.get('l1_miss_count', 0)} samples; "
                   f"{bench.get('l1_miss_penalty_cycles', 0)} cycle penalty vs. hit)",
+                  f"- Read hit: {bench.get('read_hit_avg_cycles', 0)} average cycles "
+                  f"({bench.get('read_hit_count', 0)} samples)",
+                  f"- Write hit (E/M): {bench.get('write_hit_avg_cycles', 0)} average cycles "
+                  f"({bench.get('write_hit_count', 0)} samples)",
+                  f"- S-to-M upgrade: {bench.get('upgrade_avg_cycles', 0)} average cycles "
+                  f"({bench.get('upgrade_count', 0)} samples)",
+                  f"- Cold L1 miss: {bench.get('l1_cold_miss_avg_cycles', 0)} average cycles "
+                  f"({bench.get('l1_cold_miss_count', 0)} samples)",
+                  f"- CPU request-ready stalled cycles: "
+                  f"{bench.get('cpu_req_ready_stall_cycles', 0)}",
                   f"- Remote snoop: {bench.get('snoop_avg_cycles', 0)} average cycles "
                   f"({bench.get('snoop_count', 0)} samples)",
                   f"- Configured data capacity: {bench['storage_capacity_kib']} KiB "

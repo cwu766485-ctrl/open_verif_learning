@@ -1,7 +1,8 @@
 # NutShell Cache open-source DV environment
 
-The active environment verifies the NutShell L1 DCache at its SimpleBus
-boundary. It uses Python/Toffee agents and checkers with pytest and
+The established environment verifies the NutShell L1 DCache at its SimpleBus
+boundary. A Picker-exported packed-port wrapper now also lets Python/Toffee
+drive the dual-L1 MESI subsystem. Both flows use agents and checkers with pytest and
 Picker/Verilator; the workflow does not depend on a commercial simulator.
 SystemVerilog UVM is not a project requirement. The goal is to build a
 reusable, inspectable verification flow on an open toolchain, while borrowing
@@ -18,6 +19,12 @@ tests/ stimulus and directed/random scenarios
      -> bus protocol + ready/valid checkers
      -> functional coverage collector -> JSON / HTML report
 ```
+
+The subsystem migration starts with `tests/coherence/test_subsystem_python.py`:
+two CPU agents share a line-memory agent, and an independent
+`CoherenceScoreboard` predicts data and MESI transitions. The existing SV
+subsystem benches remain cross-check baselines until the corresponding Python
+scenarios, protocol checks, and coverage bins have replacements.
 
 `agents/` implements bus drivers and monitors; `protocol/` and `common/`
 define interfaces and transactions; `models/` contains the reference and RAM

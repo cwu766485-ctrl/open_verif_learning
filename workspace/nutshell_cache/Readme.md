@@ -67,7 +67,7 @@ The architecture and verification plan are documented in
 
 The coherent subsystem architecture, external bus contract, APB register map,
 outstanding-transaction limit and remaining formal/physical-design boundaries
-are documented in [`rtl/coherence/README.md`](rtl/coherence/README.md) and
+are documented in [`docs/coherence_rtl.md`](docs/coherence_rtl.md) and
 [`docs/cache.md`](docs/cache.md). The AXI adapter supports four active requests
 per direction. The coherent subsystem now has four Directory contexts and four
 read-refill MSHRs, allowing independent different-set refills to overlap on
