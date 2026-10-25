@@ -42,7 +42,9 @@ def register_font():
 def inline(text):
     text = re.sub(r"\[([^]]+)\]\([^)]+\)", r"\1", text)
     text = escape(text, quote=False)
-    text = re.sub(r"`([^`]+)`", r"<font name='Courier'>\1</font>", text)
+    # Keep CJK characters in inline code/link labels renderable; Courier has
+    # no Chinese glyphs in the CJK font configuration used for this report.
+    text = re.sub(r"`([^`]+)`", r"<font name='CacheCJK'>\1</font>", text)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
     text = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<i>\1</i>", text)
     return text

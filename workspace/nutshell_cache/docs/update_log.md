@@ -53,3 +53,4 @@ format:
 - 2026-10-25 23:03 +08：并发 refill/Store 定向测试复现 ready/valid 分歧：Directory 因 L2 fill 拉低 ready，但 Snoop valid 仍到达 L1；L1 接收、Directory 未接收，响应永久无法匹配。统一 Snoop valid/ready 准入条件并加入握手断言；随后允许不需回收 owner data 的 clean invalidation 与 refill 重叠，owner-data 事务仍等待共享 L2 写端口。
 - 2026-10-25 23:03 +08：同一固定 workload A/B 通过数据和 Directory 独立检查；clean Snoop 并行后，Store 响应 14→10 cycles（减少 28.6%），Snoop 接受提前 4 cycles，refill 仍为 36 cycles。原始 JSON/CSV 与方法写入 `benchmarks/results/p2_clean_snoop_fill_ab.*` 和 Benchmark v3 说明。
 - 2026-10-25 23:03 +08：重写最终综合报告为 MESI v1.0，加入双 L1/共享 L2+Directory/AXI/APB 架构、验证平台、已知限制、回归结果和 P2 A/B 数据；补充 Markdown-to-PDF 构建器。PPA/SRAM 与更深压力测试按本次范围继续排除。
+- 2026-10-25 23:08 +08：PDF 页面检查发现中文链接标签使用 Courier 时缺字；改为 CJK 字体渲染后重新生成两页报告，并用 PDF reader 确认可正常提取全文。
