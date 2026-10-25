@@ -34,3 +34,4 @@ format:
 - 2026-10-25 13:51 +08：Benchmark v2 加入逐级 L1/L2 hit/miss rate 与读、写、总带宽；发现 dirty L2 victim workload 会污染后续读测试初态，将其移到全部延迟档位之后。四档主 workload 与 100-cycle dirty writeback 均通过，Python 3/3、覆盖闭合 13/13。
 - 2026-10-25 13:51 +08：重跑模块/AXI RTL、bounded Formal 与 coherence regression：均通过；34/34 功能覆盖、RTL 行覆盖 93.1%。顶层 testbench 仍有非致命 UNOPTFLAT 和 lint 提示。
 - 2026-10-25 13:53 +08：Picker/Verilator wrapper clean rebuild 后 `make coherence_python_verify` 通过，3/3 pytest、13/13 Python functional bins。
+- 2026-10-25 14:06 +08：GitHub Actions 中 RTL、Formal、SV regression 与 coverage 均通过，但 coherence job 的 Python 阶段因独立 runner 缺少 Picker 失败；给 root workflow 补装 pinned Picker 和 Python DV 依赖并重新触发 CI。
