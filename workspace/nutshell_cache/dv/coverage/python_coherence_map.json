@@ -28,7 +28,8 @@
     {"id": "directory.lookup_conflict_grant", "feature": "directory_lookup_conflict_grant", "testpoint": "A waiting request is held while an active grant lookup uses the shared port", "checker": "Accepted grant address remains distinct from blocked incoming request"},
     {"id": "cpu.same_line_dual_lane", "feature": "same_line_dual_lane", "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently", "checker": "Independent byte-accurate scoreboard and final readback"},
     {"id": "cpu.seeded_random", "feature": "randomized_seeded_regression", "testpoint": "Four reproducible mixed read/write seeds pass the independent model", "checker": "Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output"},
-    {"id": "cpu.random_dual_lane", "feature": "random_dual_lane_pairs", "testpoint": "Seeded regression issues independent requests on both packed CPU lanes", "checker": "Single dual-core driver and per-core response matching"}
+    {"id": "cpu.random_dual_lane", "feature": "random_dual_lane_pairs", "testpoint": "Seeded regression issues independent requests on both packed CPU lanes", "checker": "Single dual-core driver and per-core response matching"},
+    {"id": "coherence.dirty_owner_fill_port", "feature": "dirty_owner_snoop_during_l2_fill", "testpoint": "Both core directions transfer an M-owner line while an unrelated L2 refill is active", "checker": "Eight-beat owner-data scoreboard, independent Directory model, and shared L2 write-port collision monitor"}
   ],
   "cross_bins": [
     {"id": "cross.cold_read_from_memory", "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8", "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer"},
@@ -38,6 +39,7 @@
     {"id": "cross.modified_hit_masked_store", "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0", "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"},
     {"id": "cross.l2_hit_after_l1_eviction", "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8", "testpoint": "L1-evicted line refills from shared L2 without a snoop"},
     {"id": "cross.lookup_conflict_during_transfer", "key": "interleaving:active_transfer_distinct_address_ready_stall", "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active"},
-    {"id": "cross.lookup_conflict_during_grant", "key": "interleaving:active_grant_distinct_address_ready_stall", "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"}
+    {"id": "cross.lookup_conflict_during_grant", "key": "interleaving:active_grant_distinct_address_ready_stall", "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"},
+    {"id": "cross.dirty_owner_waits_for_fill_port", "key": "interleaving:dirty_owner_waits_for_l2_fill_port", "testpoint": "Dirty owner writeback waits until the refill releases the shared L2 array port"}
   ]
 }

@@ -54,3 +54,8 @@ format:
 - 2026-10-25 23:03 +08：同一固定 workload A/B 通过数据和 Directory 独立检查；clean Snoop 并行后，Store 响应 14→10 cycles（减少 28.6%），Snoop 接受提前 4 cycles，refill 仍为 36 cycles。原始 JSON/CSV 与方法写入 `benchmarks/results/p2_clean_snoop_fill_ab.*` 和 Benchmark v3 说明。
 - 2026-10-25 23:03 +08：重写最终综合报告为 MESI v1.0，加入双 L1/共享 L2+Directory/AXI/APB 架构、验证平台、已知限制、回归结果和 P2 A/B 数据；补充 Markdown-to-PDF 构建器。PPA/SRAM 与更深压力测试按本次范围继续排除。
 - 2026-10-25 23:08 +08：PDF 页面检查发现中文链接标签使用 Courier 时缺字；改为 CJK 字体渲染后重新生成两页报告，并用 PDF reader 确认可正常提取全文。
+
+## 2026-10-26（新加坡时间）
+- 19:28：20-seed/4,000 笔 Python/Toffee 随机回归发现 refill 与 dirty-owner SnoopRead 争用 L2 写口形成死锁；调整为 refill 独占完成整条 line 后再接收 SnoopRead，并暂停 L1 replacement 期间的 snoop 准入。加入写口保持断言。
+- 19:28：随机替换压力暴露参考模型预测 way 与并发失效后的真实替换顺序不一致；改由已握手 Put 事务更新 L1 副本记录，仍独立检查 MESI、Directory 和数据。修复后 `make coherence_stress` 20/20 seeds、4,000 笔通过；formal、Python fault injection（9/9）、功能覆盖（27/27）及 AXI Python（3/3）通过。
+- 19:34：全量 `make coherence_verify` 通过：RTL 模块/总线与系统回归、34/34 SV 功能 bins、92.7% RTL 行覆盖、6 个 bounded formal 目标、Python 20/20、故障注入 9/9、AXI 3/3、长随机 20/20。Verilator 仍报告顶层 snoop/写口 `UNOPTFLAT` 及空端口/未使用信号告警，作为后续 lint 收敛项记录。

@@ -16,9 +16,11 @@ class SnoopDataMonitor:
         self.snoop_response_cycles = []
         self.directory_snoop_response_cycles = []
         self.directory_commits = []
+        self.directory_requests = []
         self.lookup_conflicts = []
         self.transfer_grant_conflicts = []
         self.beat_errors = []
+        self.shared_write_conflicts = []
         self.cycle = 0
 
     async def run(self):
@@ -63,6 +65,13 @@ class SnoopDataMonitor:
                     "sharers": int(d.monitor_dir_commit_sharers.value),
                     "owner": int(d.monitor_dir_commit_owner.value),
                 })
+            if int(d.monitor_dir_req_accept_valid.value):
+                self.directory_requests.append({
+                    "line": int(d.monitor_dir_req_accept_addr.value) & 0xFFFFFFC0,
+                    "core": int(d.monitor_dir_req_accept_src_id.value),
+                    "opcode": int(d.monitor_dir_req_accept_opcode.value),
+                    "cycle": self.cycle,
+                })
             if int(d.monitor_dir_lookup_conflict_valid.value):
                 self.lookup_conflicts.append({
                     "incoming": int(d.monitor_dir_lookup_conflict_incoming_addr.value) &
@@ -92,6 +101,11 @@ class SnoopDataMonitor:
                 beat = int(d.monitor_owner_data_beat_idx.value)
                 data = int(d.monitor_owner_data.value)
                 last = int(d.monitor_owner_data_last.value)
+                if int(d.monitor_l2_fill_active.value):
+                    self.shared_write_conflicts.append({
+                        "cycle": self.cycle, "core": core, "line": addr,
+                        "beat": beat,
+                    })
                 key = (core, addr)
                 words = self.partial.setdefault(key, [])
                 expected_beat = len(words)
@@ -148,4 +162,11 @@ class SnoopDataMonitor:
             raise AssertionError(
                 f"directory metadata mismatch for {line:#x}: "
                 f"observed={observed}, expected={expected}"
+            )
+
+    def assert_no_shared_write_conflict(self):
+        if self.shared_write_conflicts:
+            raise AssertionError(
+                "L2 refill and owner-data write used the shared array port "
+                f"in the same cycle: {self.shared_write_conflicts}"
             )

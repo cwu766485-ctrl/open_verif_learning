@@ -3351,10 +3351,10 @@
       "seed": 6699,
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
-      "window_cycles": 1007,
-      "mean_req_to_resp_cycles": 15.544117647058824,
+      "window_cycles": 1013,
+      "mean_req_to_resp_cycles": 15.720588235294118,
       "p95_req_to_resp_cycles": 59,
-      "ops_per_cycle": 0.05561072492552135,
+      "ops_per_cycle": 0.055281342546890426,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
           "transactions": 27,
@@ -3405,12 +3405,12 @@
       "memory_write_lines": 0,
       "memory_read_bytes": 512,
       "memory_write_bytes": 0,
-      "memory_read_bytes_per_cycle": 0.5084409136047666,
+      "memory_read_bytes_per_cycle": 0.5054294175715696,
       "memory_write_bytes_per_cycle": 0.0,
-      "memory_total_bytes_per_cycle": 0.5084409136047666,
-      "memory_read_mib_per_second": 48.488704071499505,
+      "memory_total_bytes_per_cycle": 0.5054294175715696,
+      "memory_read_mib_per_second": 48.201505429417566,
       "memory_write_mib_per_second": 0.0,
-      "memory_total_mib_per_second": 48.488704071499505,
+      "memory_total_mib_per_second": 48.201505429417566,
       "paired_vs_serialized_speedup": null
     },
     {
@@ -3488,7 +3488,7 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1150,
-      "mean_req_to_resp_cycles": 17.63235294117647,
+      "mean_req_to_resp_cycles": 17.779411764705884,
       "p95_req_to_resp_cycles": 59,
       "ops_per_cycle": 0.04869565217391304,
       "phase_cycles": {
@@ -3623,10 +3623,10 @@
       "seed": 219540062,
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
-      "window_cycles": 1139,
-      "mean_req_to_resp_cycles": 18.11764705882353,
+      "window_cycles": 1145,
+      "mean_req_to_resp_cycles": 18.38235294117647,
       "p95_req_to_resp_cycles": 62,
-      "ops_per_cycle": 0.04916593503072871,
+      "ops_per_cycle": 0.04890829694323144,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
           "transactions": 34,
@@ -3677,12 +3677,12 @@
       "memory_write_lines": 1,
       "memory_read_bytes": 512,
       "memory_write_bytes": 64,
-      "memory_read_bytes_per_cycle": 0.4495171202809482,
-      "memory_write_bytes_per_cycle": 0.056189640035118525,
-      "memory_total_bytes_per_cycle": 0.5057067603160668,
-      "memory_read_mib_per_second": 42.869293239683934,
-      "memory_write_mib_per_second": 5.358661654960492,
-      "memory_total_mib_per_second": 48.22795489464443,
+      "memory_read_bytes_per_cycle": 0.44716157205240176,
+      "memory_write_bytes_per_cycle": 0.05589519650655022,
+      "memory_total_bytes_per_cycle": 0.503056768558952,
+      "memory_read_mib_per_second": 42.644650655021834,
+      "memory_write_mib_per_second": 5.330581331877729,
+      "memory_total_mib_per_second": 47.975231986899566,
       "paired_vs_serialized_speedup": null
     }
   ]

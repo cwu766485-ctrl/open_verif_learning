@@ -24,8 +24,23 @@ except ImportError:
     DUTCoherentCachePythonWrapper = None
 
 PYTHON_COVERAGE = CoherenceCoverage()
-COVERAGE_PATH = (Path(__file__).resolve().parents[2] / "benchmarks" /
-                 "results" / "coherence_python_functional_coverage.json")
+COVERAGE_PATH = Path(os.environ.get(
+    "COHERENCE_COVERAGE_PATH",
+    str(Path(__file__).resolve().parents[2] / "benchmarks" / "results" /
+        "coherence_python_functional_coverage.json"),
+))
+
+
+def _randomized_seeds():
+    count = int(os.environ.get("COHERENCE_STRESS_SEED_COUNT", "0"))
+    if count <= 0:
+        return (0x1A2B, 0x5EED, 0xC0FFEE, 0xD15EA5E)
+    if not 1 <= count <= 50:
+        raise ValueError("COHERENCE_STRESS_SEED_COUNT must be in [1, 50]")
+    # Keep the minimized Directory lookup race replay first, then add stable,
+    # independent seeds so a failing case can be replayed from its pytest ID.
+    return (0x5EED,) + tuple(0xA0000000 + index * 0x9E3779B9
+                             for index in range(count - 1))
 
 
 def _record_model(model):
@@ -192,21 +207,23 @@ async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     assert PYTHON_COVERAGE.l2_live_evictions >= 1, "live inclusive L2 eviction was not modeled"
 
 
+@pytest.mark.parametrize("owner_core", [0, 1])
 @case
-async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env):
+async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env, owner_core):
     """A clean invalidate on another set must not wait for the refill writer."""
     dut, memory, _ = await coherent_env(response_delay=2)
     cpu = DualCoreCpuDriver(dut)
     model = CoherenceScoreboard()
+    other_core = 1 - owner_core
     owner_addr = 0x0020_3000
     refill_addr = 0x0020_2000
     store_data = 0xC1EA_5EED_7654_3210
     model.seed_word(owner_addr, memory.word(owner_addr, (owner_addr >> 3) & 7))
 
-    first = await cpu.access(0, owner_addr)
+    first = await cpu.access(owner_core, owner_addr)
     assert first == model.word(owner_addr)
     model.observe(0, owner_addr, response_data=first)
-    second = await cpu.access(1, owner_addr)
+    second = await cpu.access(other_core, owner_addr)
     assert second == model.word(owner_addr)
     model.observe(1, owner_addr, response_data=second)
     memory.snoop_data.assert_directory_matches(model, owner_addr)
@@ -261,7 +278,7 @@ async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env):
 
     refill_expected = memory.word(refill_addr, (refill_addr >> 3) & 7)
     model.seed_word(refill_addr, refill_expected)
-    refill_accept_cycle = await issue(0, refill_addr)
+    refill_accept_cycle = await issue(owner_core, refill_addr)
     for _ in range(300):
         if int(d.monitor_l2_fill_active.value):
             break
@@ -270,10 +287,10 @@ async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env):
         raise TimeoutError("memory refill never entered the shared L2 fill stream")
     fill_start_cycle = memory.snoop_data.cycle
 
-    store_accept_cycle = await issue(1, owner_addr, write=True, data=store_data)
-    _, store_response_cycle = await response(1, owner_addr, write=True)
+    store_accept_cycle = await issue(other_core, owner_addr, write=True, data=store_data)
+    _, store_response_cycle = await response(other_core, owner_addr, write=True)
     _, refill_response_cycle = await response(
-        0, refill_addr, expected=refill_expected
+        owner_core, refill_addr, expected=refill_expected
     )
 
     invalidations = [
@@ -283,18 +300,19 @@ async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env):
     assert invalidations, "shared-line store did not issue a clean invalidation"
     overlapped = any(event["during_l2_fill"] for event in invalidations)
 
-    model.observe(1, owner_addr, write=True, write_data=store_data,
+    model.observe(other_core, owner_addr, write=True, write_data=store_data,
                   write_mask=0xFF)
-    model.observe(0, refill_addr, response_data=refill_expected)
-    updated = await cpu.access(0, owner_addr)
+    model.observe(owner_core, refill_addr, response_data=refill_expected)
+    updated = await cpu.access(owner_core, owner_addr)
     assert updated == store_data
-    model.observe(0, owner_addr, response_data=updated)
+    model.observe(owner_core, owner_addr, response_data=updated)
     memory.snoop_data.assert_directory_matches(model, owner_addr)
     memory.snoop_data.assert_directory_matches(model, refill_addr)
     assert int(d.protocol_error.value) == 0
 
     row = {
         "workload": "clean_snoop_during_l2_fill",
+        "owner_core": owner_core,
         "seed": 0xC1EA5EED,
         "fill_start_to_snoop_accept_cycles": invalidations[0]["cycle"] - fill_start_cycle,
         "store_request_to_snoop_accept_cycles": invalidations[0]["cycle"] - store_accept_cycle,
@@ -312,6 +330,74 @@ async def test_clean_snoop_overlaps_l2_fill_stream(coherent_env):
     assert overlapped == expect_overlap, (
         f"clean Snoop/refill overlap={overlapped}, expected {expect_overlap}"
     )
+
+
+@pytest.mark.parametrize("owner_core", [0, 1])
+@case
+async def test_dirty_owner_snoop_and_refill_share_l2_write_port_safely(
+        coherent_env, owner_core):
+    """Dirty owner data must wait while the L2 refill owns its write port."""
+    dut, memory, _ = await coherent_env(
+        response_delay=10, response_gap_periods={"read_data": 4},
+    )
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    requester = 1 - owner_core
+    owner_addr = 0x0060_3000
+    refill_addr = 0x0060_2000
+    model.seed_word(owner_addr,
+                    memory.word(owner_addr, (owner_addr >> 3) & 7))
+    dirty_value = 0xD17A_0000_0000_0000 | owner_core
+    await cpu.access(owner_core, owner_addr, write=True, data=dirty_value)
+    model.observe(owner_core, owner_addr, write=True, write_data=dirty_value)
+    assert model.states[owner_addr & ~0x3F][owner_core] == "M"
+
+    model.seed_word(refill_addr,
+                    memory.word(refill_addr, (refill_addr >> 3) & 7))
+    expected_owner_line = [
+        model.data.get((owner_addr & ~0x3F) + beat * 8,
+                       memory.word((owner_addr & ~0x3F) + beat * 8, beat))
+        for beat in range(8)
+    ]
+    read_cursor = len(memory.read_requests)
+    snoop_cursor = len(memory.snoop_data.snoops)
+    transfer_cursor = len(memory.snoop_data.transfers)
+    conflict_cursor = len(memory.snoop_data.shared_write_conflicts)
+
+    results = await cpu.access_pair(
+        CpuRequest(refill_addr), CpuRequest(owner_addr)
+    ) if owner_core == 0 else await cpu.access_pair(
+        CpuRequest(owner_addr), CpuRequest(refill_addr)
+    )
+    # access_pair returns by physical lane, so map the values back to requests.
+    if owner_core == 0:
+        refill_result, owner_result = results
+    else:
+        owner_result, refill_result = results
+
+    expected_refill = model.word(refill_addr)
+    assert refill_result == expected_refill
+    assert owner_result == dirty_value
+    model.observe(owner_core, refill_addr, response_data=refill_result)
+    model.observe(requester, owner_addr, response_data=owner_result)
+    memory.snoop_data.assert_line_data(
+        owner_addr, expected_owner_line, since=transfer_cursor)
+    memory.snoop_data.assert_directory_matches(model, refill_addr)
+    memory.snoop_data.assert_directory_matches(model, owner_addr)
+    memory.snoop_data.assert_no_shared_write_conflict()
+    owner_snoops = [
+        event for event in memory.snoop_data.snoops[snoop_cursor:]
+        if event["line"] == (owner_addr & ~0x3F) and event["core"] == owner_core
+    ]
+    assert owner_snoops and owner_snoops[-1]["opcode"] == 0
+    assert len(memory.read_requests) == read_cursor + 1, (
+        "dirty owner forwarding should not issue an extra memory read"
+    )
+    assert len(memory.snoop_data.shared_write_conflicts) == conflict_cursor
+    assert int(dut.protocol_error.value) == 0
+    PYTHON_COVERAGE.sample_external("dirty_owner_snoop_during_l2_fill")
+    PYTHON_COVERAGE.sample_interleaving("dirty_owner_waits_for_l2_fill_port")
+    _record_model(model)
 
 
 @case
@@ -632,7 +718,7 @@ async def test_python_same_line_dual_lane_requests(coherent_env):
     _record_model(model)
 
 
-@pytest.mark.parametrize("seed", [0x1A2B, 0x5EED, 0xC0FFEE, 0xD15EA5E])
+@pytest.mark.parametrize("seed", _randomized_seeds())
 @case
 async def test_python_seeded_randomized_coherence(coherent_env, seed):
     ready_period = 3 + seed % 5
@@ -643,9 +729,19 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
     )
     cpu = DualCoreCpuDriver(dut)
     model = CoherenceScoreboard()
+    # The randomized stress lets the DUT choose the actual victim way. The
+    # reference model tracks coherence from CPU requests and completed Put
+    # transactions, avoiding a second, potentially divergent way predictor.
+    model.track_l1_replacement = False
     lookup_conflict_cursor = len(memory.snoop_data.lookup_conflicts)
     rng = random.Random(seed)
-    addresses = [0x0200_0000 + index * 64 for index in range(12)]
+    if os.environ.get("COHERENCE_STRESS_SEED_COUNT"):
+        # Ten same-index lines exercise L1/L2 replacement and dirty ownership;
+        # the remaining addresses spread accesses over independent sets.
+        addresses = ([0x0200_0000 + index * 0x2000 for index in range(10)] +
+                     [0x1200_0000 + index * 64 for index in range(16)])
+    else:
+        addresses = [0x0200_0000 + index * 64 for index in range(12)]
 
     def request_for(address):
         write = rng.random() < 0.4
@@ -660,9 +756,68 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
         if word_address not in model.data:
             model.seed_word(address, memory.word(address, (address >> 3) & 7))
 
-    operations = 36
+    operations = int(os.environ.get("COHERENCE_STRESS_OPERATIONS", "36"))
+    if not 1 <= operations <= 500:
+        raise ValueError("COHERENCE_STRESS_OPERATIONS must be in [1, 500]")
     history = []
+
+    def apply_puts_since(cursor):
+        for event in memory.snoop_data.directory_requests[cursor:]:
+            if event["opcode"] in (0b011, 0b100, 0b101):
+                model.observe_l1_put(event["core"], event["line"],
+                                     event["opcode"])
+
+    async def checked_access(core, address, **kwargs):
+        put_cursor = len(memory.snoop_data.directory_requests)
+        try:
+            result = await cpu.access(core, address, **kwargs)
+            apply_puts_since(put_cursor)
+            return result
+        except TimeoutError as error:
+            raise TimeoutError(
+                f"seed={seed:#x}, operation={index}, core={core}, "
+                f"request={address:#x}, recent operations={history[-12:]}; {error}"
+            ) from error
+
+    async def checked_pair(req0, req1):
+        put_cursor = len(memory.snoop_data.directory_requests)
+        try:
+            result = await cpu.access_pair(req0, req1)
+            apply_puts_since(put_cursor)
+            return result
+        except TimeoutError as error:
+            raise TimeoutError(
+                f"seed={seed:#x}, operation={index}, pair=({req0}, {req1}), "
+                f"recent operations={history[-12:]}; fill="
+                f"{int(dut.monitor_l2_fill_active.value)}, "
+                f"line_wr=(valid={int(dut.monitor_l2_line_wr_valid.value)},"
+                f"ready={int(dut.monitor_l2_line_wr_ready.value)},"
+                f"addr={int(dut.monitor_l2_line_wr_addr.value):#x},"
+                f"beat={int(dut.monitor_l2_line_wr_beat.value)}), "
+                f"dir_snoop=(data={int(dut.monitor_dir_snoop_data_to_l2.value)},"
+                f"valid={int(dut.monitor_dir_snoop_valid.value)},"
+                f"set_conflict={int(dut.monitor_snoop_set_conflict.value)}), "
+                f"read_requests={memory.read_requests[-8:]}, "
+                f"write_requests={memory.write_requests[-8:]}, "
+                f"write_responses={memory.write_responses[-8:]}, "
+                f"memory_state={memory.debug_snapshot}, "
+                f"mem_rd=(valid={int(dut.mem_rd_data_valid.value)},"
+                f"ready={int(dut.mem_rd_data_ready.value)},"
+                f"id={int(dut.mem_rd_data_txn_id.value)},"
+                f"beat={int(dut.mem_rd_data_beat_idx.value)}), "
+                f"mem_req=(valid={int(dut.mem_rd_req_valid.value)},"
+                f"ready={int(dut.mem_rd_req_ready.value)},"
+                f"id={int(dut.mem_rd_req_txn_id.value)}), "
+                f"snoops={memory.snoop_data.snoops[-12:]}, "
+                f"snoop_responses={memory.snoop_data.snoop_response_cycles[-16:]}, "
+                f"dir_snoop_responses="
+                f"{memory.snoop_data.directory_snoop_response_cycles[-16:]}, "
+                f"dir_commits={memory.snoop_data.directory_commits[-12:]}, "
+                f"owner_partial={memory.snoop_data.partial}; {error}"
+            ) from error
+
     for index in range(operations):
+        model.operation_index = index
         if index % 6 == 5:
             # Distinct lines allow the two lanes to be checked independently
             # even if the subsystem retires their responses out of order.
@@ -673,12 +828,12 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
             if (not req1.write and model.states[req1.addr & ~0x3F][0] == "M"):
                 # Check the latest owner word locally before exercising a
                 # simultaneous independent miss and remote GetS.
-                owner_data = await cpu.access(0, req1.addr)
+                owner_data = await checked_access(0, req1.addr)
                 model.observe(0, req1.addr, response_data=owner_data)
             snoop_cursor = len(memory.snoop_data.transfers)
             snoop_req_cursor = len(memory.snoop_data.snoops)
             dir_commit_cursor = len(memory.snoop_data.directory_commits)
-            result0, result1 = await cpu.access_pair(req0, req1)
+            result0, result1 = await checked_pair(req0, req1)
             if (not req1.write and
                     model.states[req1.addr & ~0x3F][0] == "M"):
                 line = req1.addr & ~0x3F
@@ -722,7 +877,7 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
                         f"new owner-data={memory.snoop_data.transfers[snoop_cursor:]}"
                     ) from error
                 if req.write:
-                    readback = await cpu.access(core, req.addr)
+                    readback = await checked_access(core, req.addr)
                     history.append((index, core, req.addr, False, 0, 0xFF,
                                     readback))
                     model.observe(core, req.addr, response_data=readback)
@@ -733,8 +888,8 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
             address = rng.choice(addresses)
             req = request_for(address)
             seed_if_needed(address)
-            result = await cpu.access(core, req.addr, write=req.write,
-                                      data=req.data, mask=req.mask)
+            result = await checked_access(core, req.addr, write=req.write,
+                                          data=req.data, mask=req.mask)
             history.append((index, core, req.addr, req.write, req.data,
                             req.mask, result))
             try:
@@ -743,11 +898,28 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
                               response_data=result)
                 memory.snoop_data.assert_directory_matches(model, req.addr)
             except AssertionError as error:
+                line = req.addr & ~0x3F
+                line_commits = [
+                    item for item in memory.snoop_data.directory_commits
+                    if item["line"] == line
+                ]
+                line_snoops = [
+                    item for item in memory.snoop_data.snoops
+                    if item["line"] == line
+                ]
                 raise AssertionError(
-                    f"seed={seed:#x}, recent operations={history[-12:]}"
+                    f"seed={seed:#x}, recent operations={history[-12:]}, "
+                    f"line={line:#x}, modeled_states={model.states[line]}, "
+                    f"line_history={[item for item in history if item[2] & ~0x3F == line]}, "
+                    f"line_transitions={[item for item in model.transitions if item['line'] == line][-16:]}, "
+                    f"l1_ways=({model.l1_way_view(0, line)},"
+                    f"{model.l1_way_view(1, line)}), "
+                    f"model_l1_evictions={model.l1_evictions[-8:]}, "
+                    f"snoops={line_snoops[-8:]}, "
+                    f"directory_commits={line_commits[-12:]}"
                 ) from error
             if req.write:
-                readback = await cpu.access(core, req.addr)
+                readback = await checked_access(core, req.addr)
                 history.append((index, core, req.addr, False, 0, 0xFF,
                                 readback))
                 model.observe(core, req.addr, response_data=readback)

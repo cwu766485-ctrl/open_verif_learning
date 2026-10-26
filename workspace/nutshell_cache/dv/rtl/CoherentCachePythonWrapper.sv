@@ -51,12 +51,21 @@ module CoherentCachePythonWrapper (
   output logic [31:0] monitor_dir_transfer_grant_conflict_grant_addr,
   output logic monitor_dir_req_accept_valid,
   output logic [31:0] monitor_dir_req_accept_addr,
+  output logic monitor_dir_req_accept_src_id,
+  output logic [2:0] monitor_dir_req_accept_opcode,
   output logic monitor_l2_lookup_valid,
   output logic [31:0] monitor_l2_lookup_addr,
   output logic monitor_l2_lookup_hit,
   output logic monitor_dir_grant_accept_valid,
   output logic [31:0] monitor_dir_grant_accept_addr,
   output logic monitor_l2_fill_active,
+  output logic monitor_l2_line_wr_valid,
+  output logic monitor_l2_line_wr_ready,
+  output logic [31:0] monitor_l2_line_wr_addr,
+  output logic [2:0] monitor_l2_line_wr_beat,
+  output logic monitor_dir_snoop_data_to_l2,
+  output logic monitor_dir_snoop_valid,
+  output logic monitor_snoop_set_conflict,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -104,6 +113,7 @@ module CoherentCachePythonWrapper (
   logic [2:0] monitor_snoop_accept_txn_id_u [0:1];
   logic [2:0] monitor_snoop_rsp_txn_id_u [0:1];
   coherence_protocol_pkg::snoop_response_t monitor_snoop_rsp_opcode_u [0:1];
+  coherence_protocol_pkg::request_opcode_t monitor_dir_req_accept_opcode_pkg;
 
   logic mmio_req_valid;
   logic [31:0] mmio_req_addr;
@@ -232,11 +242,22 @@ module CoherentCachePythonWrapper (
       monitor_dir_transfer_grant_conflict_grant_addr),
     .monitor_dir_req_accept_valid(monitor_dir_req_accept_valid),
     .monitor_dir_req_accept_addr(monitor_dir_req_accept_addr),
+    .monitor_dir_req_accept_src_id(monitor_dir_req_accept_src_id),
+    .monitor_dir_req_accept_opcode(monitor_dir_req_accept_opcode_pkg),
     .monitor_l2_lookup_valid(monitor_l2_lookup_valid),
     .monitor_l2_lookup_addr(monitor_l2_lookup_addr),
     .monitor_l2_lookup_hit(monitor_l2_lookup_hit),
     .monitor_dir_grant_accept_valid(monitor_dir_grant_accept_valid),
     .monitor_dir_grant_accept_addr(monitor_dir_grant_accept_addr),
-    .monitor_l2_fill_active(monitor_l2_fill_active)
+    .monitor_l2_fill_active(monitor_l2_fill_active),
+    .monitor_l2_line_wr_valid(monitor_l2_line_wr_valid),
+    .monitor_l2_line_wr_ready(monitor_l2_line_wr_ready),
+    .monitor_l2_line_wr_addr(monitor_l2_line_wr_addr),
+    .monitor_l2_line_wr_beat(monitor_l2_line_wr_beat),
+    .monitor_dir_snoop_data_to_l2(monitor_dir_snoop_data_to_l2),
+    .monitor_dir_snoop_valid(monitor_dir_snoop_valid),
+    .monitor_snoop_set_conflict(monitor_snoop_set_conflict)
   );
+
+  assign monitor_dir_req_accept_opcode = monitor_dir_req_accept_opcode_pkg;
 endmodule

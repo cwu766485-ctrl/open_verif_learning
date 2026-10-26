@@ -169,6 +169,8 @@ module DualL1MesiCluster #(
     grant_opcode_t ctrl_grant_opcode;
     logic ctrl_grant_commit_valid;
     logic ctrl_grant_commit_ready;
+    logic ctrl_snoop_valid;
+    logic ctrl_snoop_ready;
     logic [TXN_ID_WIDTH-1:0] ctrl_grant_commit_txn_id;
     logic ctrl_cpu_meta_write_valid;
     logic ctrl_cpu_meta_write_ready;
@@ -252,6 +254,15 @@ module DualL1MesiCluster #(
     assign grant_commit_txn_id[core] =
       (replace_state_q == REPLACE_WAIT_COMMIT) ? replace_txn_q :
                                                  ctrl_grant_commit_txn_id;
+
+    // Replacement owns the per-core array read stream while it drains a
+    // victim. Do not accept a snoop into the controller during that window:
+    // its line read would wait behind the victim stream while the Directory
+    // could hold resources needed to complete the replacement.
+    assign ctrl_snoop_valid = snoop_valid[core] &&
+                              (replace_state_q == REPLACE_IDLE);
+    assign snoop_ready[core] = ctrl_snoop_ready &&
+                               (replace_state_q == REPLACE_IDLE);
 
     assign array_cpu_meta_write_valid =
       (replace_state_q == REPLACE_INVALIDATE) ? 1'b1 :
@@ -440,7 +451,7 @@ module DualL1MesiCluster #(
       .grant_commit_valid(ctrl_grant_commit_valid),
       .grant_commit_ready(ctrl_grant_commit_ready),
       .grant_commit_txn_id(ctrl_grant_commit_txn_id),
-      .snoop_valid(snoop_valid[core]), .snoop_ready(snoop_ready[core]),
+      .snoop_valid(ctrl_snoop_valid), .snoop_ready(ctrl_snoop_ready),
       .snoop_line_addr(snoop_line_addr[core]),
       .snoop_opcode(snoop_opcode[core]), .snoop_txn_id(snoop_txn_id[core]),
       .snoop_tag_hit(snoop_lookup_hit), .snoop_line_state(snoop_lookup_state),

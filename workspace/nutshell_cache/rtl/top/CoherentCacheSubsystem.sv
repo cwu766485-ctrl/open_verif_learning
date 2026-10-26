@@ -148,6 +148,8 @@ module CoherentCacheSubsystem #(
   // lookup occurs in the transfer-start cycle; these pins expose its boundary.
   output logic monitor_dir_req_accept_valid,
   output logic [31:0] monitor_dir_req_accept_addr,
+  output logic monitor_dir_req_accept_src_id,
+  output coherence_protocol_pkg::request_opcode_t monitor_dir_req_accept_opcode,
   output logic monitor_l2_lookup_valid,
   output logic [31:0] monitor_l2_lookup_addr,
   output logic monitor_l2_lookup_hit,
@@ -155,7 +157,14 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_dir_grant_accept_addr,
   // Observable for resource-contention regression; asserted during the
   // eight-beat refill stream into the shared L2 data array.
-  output logic monitor_l2_fill_active
+  output logic monitor_l2_fill_active,
+  output logic monitor_l2_line_wr_valid,
+  output logic monitor_l2_line_wr_ready,
+  output logic [31:0] monitor_l2_line_wr_addr,
+  output logic [2:0] monitor_l2_line_wr_beat,
+  output logic monitor_dir_snoop_data_to_l2,
+  output logic monitor_dir_snoop_valid,
+  output logic monitor_snoop_set_conflict
 );
   import coherence_protocol_pkg::*;
 
@@ -499,6 +508,8 @@ module CoherentCacheSubsystem #(
   assign monitor_dir_req_accept_valid = !reset && cluster_dir_req_valid &&
                                         dir_req_ready;
   assign monitor_dir_req_accept_addr = cluster_dir_req_addr;
+  assign monitor_dir_req_accept_src_id = cluster_dir_req_src_id;
+  assign monitor_dir_req_accept_opcode = cluster_dir_req_opcode;
   assign monitor_l2_lookup_valid = !reset && dir_xfer_start_valid &&
                                    dir_xfer_start_ready &&
                                    (dir_xfer_kind == XFER_L2_REFILL);
@@ -508,12 +519,25 @@ module CoherentCacheSubsystem #(
                                           dir_grant_ready;
   assign monitor_dir_grant_accept_addr = dir_grant_addr;
   assign monitor_l2_fill_active = mem_fill_writer_active_q;
+  assign monitor_l2_line_wr_valid = l2_line_wr_valid;
+  assign monitor_l2_line_wr_ready = l2_line_wr_ready;
+  assign monitor_l2_line_wr_addr = l2_line_wr_addr;
+  assign monitor_l2_line_wr_beat = l2_line_wr_beat_idx;
+  assign monitor_dir_snoop_data_to_l2 = dir_snoop_data_to_l2;
+  assign monitor_dir_snoop_valid = dir_snoop_valid;
+  assign monitor_snoop_set_conflict = snoop_set_conflict;
   assign monitor_dir_snoop_rsp_valid = dir_snoop_rsp_valid;
   assign monitor_dir_snoop_rsp_ready = dir_snoop_rsp_ready;
   assign monitor_dir_snoop_target = dir_snoop_target;
   assign monitor_dir_snoop_txn_id = dir_snoop_txn_id;
 
   always_ff @(posedge clock) begin
+    if (!reset && mem_fill_writer_active_q) begin
+      assert (l2_line_wr_valid &&
+              (l2_line_wr_addr == mem_mshr_addr_q[mem_fill_writer_sel_q]) &&
+              (l2_line_wr_beat_idx == mem_fill_writer_beat_q))
+        else $error("active L2 refill lost ownership of the shared line-write port");
+    end
     if (!reset && !victim_snoop_active &&
         snoop_valid_core[dir_snoop_target] &&
         snoop_ready_core[dir_snoop_target]) begin
@@ -811,6 +835,17 @@ module CoherentCacheSubsystem #(
         snoop_data_beat_idx_core[victim_snoop_target_q];
       monitor_owner_data = snoop_data_core[victim_snoop_target_q];
       monitor_owner_data_last = snoop_data_last_core[victim_snoop_target_q];
+    // A refill writer owns the shared L2 line-write port through beat 7.
+    // A pending owner-data SnoopRead is held off while that writer is active;
+    // keep the refill valid/beat sequence intact, then admit the snoop.
+    end else if (mem_fill_writer_active_q) begin
+      l2_line_wr_valid = 1'b1;
+      l2_line_wr_addr = mem_mshr_addr_q[mem_fill_writer_sel_q];
+      l2_line_wr_dirty = 1'b0;
+      l2_line_wr_beat_idx = mem_fill_writer_beat_q;
+      l2_line_wr_data =
+        mem_mshr_data_q[mem_fill_writer_sel_q][mem_fill_writer_beat_q];
+      l2_line_wr_last = (mem_fill_writer_beat_q == 3'd7);
     end else if (dir_snoop_data_to_l2) begin
       l2_line_wr_valid = snoop_data_valid_core[dir_snoop_target];
       l2_line_wr_addr = dir_snoop_addr;
@@ -826,14 +861,6 @@ module CoherentCacheSubsystem #(
       monitor_owner_data_beat_idx = snoop_data_beat_idx_core[dir_snoop_target];
       monitor_owner_data = snoop_data_core[dir_snoop_target];
       monitor_owner_data_last = snoop_data_last_core[dir_snoop_target];
-    end else if (mem_fill_writer_active_q) begin
-      l2_line_wr_valid = 1'b1;
-      l2_line_wr_addr = mem_mshr_addr_q[mem_fill_writer_sel_q];
-      l2_line_wr_dirty = 1'b0;
-      l2_line_wr_beat_idx = mem_fill_writer_beat_q;
-      l2_line_wr_data =
-        mem_mshr_data_q[mem_fill_writer_sel_q][mem_fill_writer_beat_q];
-      l2_line_wr_last = (mem_fill_writer_beat_q == 3'd7);
     end
 
   end

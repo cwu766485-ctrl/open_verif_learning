@@ -5,12 +5,15 @@ from pathlib import Path
 
 from dv.checkers.cache_protocol_checker import CacheProtocolChecker
 from dv.checkers.ready_valid_checker import ReadyValidChecker
+from dv.checkers.transaction_lifecycle_checker import TransactionLifecycleChecker
 from dv.common.transaction import SimpleBusRequest, SimpleBusResponse
 from dv.common.utils.cmd_code import (
     CMD_READ, CMD_READLST, CMD_WRITE, CMD_WRITEBST, CMD_WRITELST,
 )
 from dv.models.reference import CacheReferenceModel
 from dv.scoreboard.cache_scoreboard import CacheScoreboard
+from dv.scoreboard.coherence_scoreboard import CoherenceScoreboard
+from dv.monitors.snoop_data_monitor import SnoopDataMonitor
 
 
 def _request(addr, cmd=CMD_READ):
@@ -87,6 +90,51 @@ def _inject_duplicate_response():
     checker.write(response)
 
 
+def _inject_mesi_double_owner():
+    model = CoherenceScoreboard()
+    line = 0x8000
+    model.states[line] = ["M", "S"]
+    model.directory[line] = model.directory_view(line)
+    model._assert_line_invariants(line)
+
+
+def _inject_wrong_grant_id():
+    checker = TransactionLifecycleChecker("grant")
+    checker.accept(3, 0x9000, "GetM")
+    checker.complete(4, 0x9000, "GetM")
+
+
+def _inject_corrupt_owner_data():
+    monitor = object.__new__(SnoopDataMonitor)
+    line = 0xA000
+    monitor.beat_errors = []
+    monitor.transfers = [{
+        "core": 0, "line": line,
+        "words": tuple(range(7)) + (0xBAD,),
+    }]
+    monitor.partial = {}
+    monitor.assert_line_data(line, tuple(range(8)))
+
+
+def _inject_wrong_directory_sharer():
+    model = CoherenceScoreboard()
+    line = 0xB000
+    model.states[line] = ["S", "I"]
+    model.directory[line] = model.directory_view(line)
+    monitor = object.__new__(SnoopDataMonitor)
+    monitor.directory_commits = [{
+        "line": line, "state": 1, "owner": 0, "sharers": 0b10,
+    }]
+    monitor.assert_directory_matches(model, line)
+
+
+def _inject_duplicate_grant():
+    checker = TransactionLifecycleChecker("grant")
+    checker.accept(7, 0xC000, "GetM")
+    checker.complete(7, 0xC000, "GetM")
+    checker.complete(7, 0xC000, "GetM")
+
+
 def run_all(output_path="reports/checker_fault_injection.json"):
     records = [
         _expect_caught(
@@ -112,6 +160,36 @@ def run_all(output_path="reports/checker_fault_injection.json"):
             "CacheProtocolChecker response sequencing checker",
             "unexpected response",
             _inject_duplicate_response,
+        ),
+        _expect_caught(
+            "unnecessary invalidate leaves two exclusive MESI copies",
+            "CoherenceScoreboard MESI invariant checker",
+            "M coexists with another copy",
+            _inject_mesi_double_owner,
+        ),
+        _expect_caught(
+            "Grant response uses a different transaction ID",
+            "TransactionLifecycleChecker ID/address/opcode matcher",
+            "unknown or retired ID",
+            _inject_wrong_grant_id,
+        ),
+        _expect_caught(
+            "corrupted owner-data beat",
+            "SnoopDataMonitor owner-data scoreboard",
+            "expected",
+            _inject_corrupt_owner_data,
+        ),
+        _expect_caught(
+            "Directory retains the wrong sharer bit",
+            "SnoopDataMonitor Directory/reference-state checker",
+            "directory metadata mismatch",
+            _inject_wrong_directory_sharer,
+        ),
+        _expect_caught(
+            "duplicate Grant after transaction retirement",
+            "TransactionLifecycleChecker exactly-once lifecycle checker",
+            "unknown or retired ID",
+            _inject_duplicate_grant,
         ),
     ]
     report = {"status": "PASS", "caught": len(records), "injections": records}

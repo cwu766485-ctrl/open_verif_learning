@@ -27,6 +27,7 @@ class CoherenceScoreboard:
         self.directory = {}
         self.l1_evictions = []
         self.l2_evictions = []
+        self.track_l1_replacement = True
 
     def seed_word(self, addr: int, value: int):
         self.data[addr & ~0x7] = value & WORD_MASK
@@ -128,6 +129,8 @@ class CoherenceScoreboard:
             self.l2_next_way[set_index] = (way + 1) % 8
 
     def _allocate_l1(self, core: int, line: int):
+        if not self.track_l1_replacement:
+            return
         set_index = self._l1_set(line)
         ways = self.l1_ways[core][set_index]
         if line in ways:
@@ -144,10 +147,28 @@ class CoherenceScoreboard:
                 self._touch_l2_write(victim)
             self.states[victim][core] = "I"
             self.l1_evictions.append({"core": core, "line": victim,
-                                      "state": victim_state})
+                                      "state": victim_state,
+                                      "states_after": tuple(self.states[victim]),
+                                      "operation": getattr(self, "operation_index", None)})
             self.directory[victim] = self.directory_view(victim)
         ways[way] = line
         self.l1_next_way[core][set_index] = (way + 1) % 4
+
+    def observe_l1_put(self, core: int, addr: int, opcode: int):
+        """Apply a completed replacement observed on the Directory request port."""
+        if core not in (0, 1):
+            raise ValueError("core must be 0 or 1")
+        if opcode not in (0b011, 0b100, 0b101):
+            raise ValueError(f"not a Put request opcode: {opcode:#b}")
+        line = addr & ~0x3F
+        state = self.states[line][core]
+        self.states[line][core] = "I"
+        self._remove_l1_copy(core, line)
+        self.directory[line] = self.directory_view(line)
+        self.l1_evictions.append({
+            "core": core, "line": line, "state": state,
+            "source": "directory_put",
+        })
 
     def _ensure_l2_line(self, line: int) -> bool:
         """Ensure an inclusive L2 entry exists; return whether it was present."""

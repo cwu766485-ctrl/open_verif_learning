@@ -43,6 +43,7 @@ class LineMemoryAxiAgent:
         self.response_gaps = Counter()
         self.reset_cancelled = Counter()
         self._armed_stalls = {}
+        self.debug_snapshot = {}
 
     def _ready(self, channel, valid):
         if channel in self._armed_stalls:
@@ -157,6 +158,14 @@ class LineMemoryAxiAgent:
             else:
                 d.mem_rd_data_valid.value = 0
                 d.mem_rd_data_last.value = 0
+
+            self.debug_snapshot = {
+                "pending_reads": tuple(reads),
+                "active_read": active_read,
+                "send_read": send_read,
+                "pending_writes": tuple(writes),
+                "active_write_response": active_rsp,
+            }
 
             await ClockCycles(d, 1)
 

@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_benchmark_v2 coherence_benchmark_v3 coherence_python_verify coherence_axi_python_build coherence_axi_python_test coherence_python_coverage_close clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_benchmark_v2 coherence_benchmark_v3 coherence_python_verify coherence_stress coherence_axi_python_build coherence_axi_python_test coherence_python_coverage_close clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -258,7 +258,22 @@ coherence_benchmark_v3: coherence_python_build
 # One clean Picker export, then the Python functional DV and Benchmark v2.
 coherence_python_verify: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py && \
-	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
+	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure && \
+	 PYTHONPATH=.:./dv python3 -m dv.fault_injection.run
+
+# Opt-in extended constrained-random sweep. Every pytest case ID records its
+# seed; JUnit and seed configuration are retained for failure replay.
+coherence_stress:
+	@if [[ ! -f .tooling/coherent_python/_UT_CoherentCachePythonWrapper.so ]]; then \
+	  $(MAKE) coherence_python_build; \
+	fi
+	@mkdir -p reports/coherence/stress
+	@python3 -c 'import json; json.dump({"seed_count":20,"operations_per_seed":200,"seeds":[0x5eed]+[0xa0000000+i*0x9e3779b9 for i in range(19)],"address_pool":"10 same-index conflict lines + 16 spread lines"}, open("reports/coherence/stress/config.json", "w"), indent=2)'
+	@source $(ENV_SCRIPT); COHERENCE_STRESS_SEED_COUNT=20 COHERENCE_STRESS_OPERATIONS=200 \
+	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_stress_coverage.json \
+	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
+	 --junitxml=reports/coherence/stress/results.xml \
+	 'tests/coherence/test_subsystem_python.py::test_python_seeded_randomized_coherence'
 
 # Independent AXI5-channel Python agent against the line-to-AXI adapter.
 coherence_axi_python_build:
@@ -280,7 +295,7 @@ coherence_multisnoop: coherence_build
 coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
-	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify coherence_axi_python_test
+	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify coherence_axi_python_test coherence_stress
 
 # Remove transient build and per-test trace artifacts. Keep consolidated
 # coverage reports, formal proof logs, and experimental formal records.

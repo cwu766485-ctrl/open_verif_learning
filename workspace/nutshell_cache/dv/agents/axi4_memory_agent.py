@@ -19,7 +19,8 @@ class Axi4MemoryAgent:
 
     def __init__(self, dut, *, ar_stall_period=4, aw_stall_period=5,
                  w_stall_period=3, r_consumer_stall_period=6,
-                 b_consumer_stall_period=7):
+                 b_consumer_stall_period=7, read_error_beats=None,
+                 write_error_ids=()):
         self.dut = dut
         self.periods = {
             "ar": ar_stall_period,
@@ -30,6 +31,8 @@ class Axi4MemoryAgent:
         }
         if any(period < 2 for period in self.periods.values()):
             raise ValueError("all AXI stall periods must be at least two")
+        self.read_error_beats = dict(read_error_beats or {})
+        self.write_error_ids = set(write_error_ids)
         self.cycle = 0
         self.stalls = Counter()
         self.read_accepts = []
@@ -38,6 +41,9 @@ class Axi4MemoryAgent:
         self.write_address_accepts = []
         self.write_beat_accepts = []
         self.write_completion_order = []
+        self.line_read_errors = []
+        self.line_write_errors = []
+        self.reset_cancelled = {"reads": 0, "writes": 0}
         self.read_words = {}
         self.line_read_addr = {}
         self.line_read_next_beat = {}
@@ -78,6 +84,8 @@ class Axi4MemoryAgent:
         while True:
             self.cycle += 1
             if int(d.reset.value):
+                self.reset_cancelled["reads"] += len(reads)
+                self.reset_cancelled["writes"] += len(aw_meta)
                 reads.clear()
                 read_order = 0
                 read_rr = 0
@@ -88,6 +96,8 @@ class Axi4MemoryAgent:
                 w_beat = 0
                 active_b = None
                 b_pending.clear()
+                self.line_read_addr.clear()
+                self.line_read_next_beat.clear()
                 d.axi_arready.value = 0
                 d.axi_awready.value = 0
                 d.axi_wready.value = 0
@@ -129,7 +139,9 @@ class Axi4MemoryAgent:
                 d.axi_rid.value = txn_id
                 d.axi_rdata.value = self.read_words.get(
                     (addr, beat), self.read_word(addr, beat))
-                d.axi_rresp.value = 0
+                d.axi_rresp.value = (
+                    2 if self.read_error_beats.get(txn_id) == beat else 0
+                )
                 d.axi_rlast.value = int(beat == self.BEATS - 1)
 
             if active_b is None:
@@ -142,7 +154,7 @@ class Axi4MemoryAgent:
             else:
                 d.axi_bvalid.value = 1
                 d.axi_bid.value = active_b["id"]
-                d.axi_bresp.value = 0
+                d.axi_bresp.value = 2 if active_b["id"] in self.write_error_ids else 0
 
             # ClockCycles returns on the active edge before nonblocking state
             # updates, so the live pins still describe that edge's transfer.
@@ -170,7 +182,7 @@ class Axi4MemoryAgent:
             if active_r is not None:
                 r_payload = (
                     active_r[0], active_r[1], int(d.axi_rdata.value),
-                    int(d.axi_rlast.value),
+                    int(d.axi_rlast.value), int(d.axi_rresp.value),
                 )
             line_r_payload = (
                 int(d.line_rd_data_id.value), int(d.line_rd_data_beat.value),
@@ -199,6 +211,8 @@ class Axi4MemoryAgent:
                 shape = (arlen, arsize, arburst, addr & 0x3F)
                 if shape != (7, 3, 1, 0):
                     raise AssertionError(f"malformed AXI AR burst: {shape}, addr={addr:#x}")
+                if (addr & 0xFFF) + 64 > 0x1000:
+                    raise AssertionError(f"AXI AR burst crosses 4 KiB: addr={addr:#x}")
                 if txn_id in reads:
                     raise AssertionError(
                         f"read ID {txn_id} reused while outstanding at cycle "
@@ -218,16 +232,18 @@ class Axi4MemoryAgent:
                 self.peak_reads = max(self.peak_reads, len(reads))
 
             if r_fire and r_payload is not None:
-                txn_id, beat, data, r_last = r_payload
+                txn_id, beat, data, r_last, r_resp = r_payload
                 r_id = txn_id
                 data &= self.MASK64
                 addr = reads[txn_id]["addr"]
                 expected = self.read_words.get((addr, beat), self.read_word(addr, beat))
+                expected_resp = 2 if self.read_error_beats.get(txn_id) == beat else 0
                 if (r_id != txn_id or data != expected or
-                        r_last != int(beat == 7)):
+                        r_last != int(beat == 7) or r_resp != expected_resp):
                     raise AssertionError(
                         f"R payload mismatch ID={r_id} beat={beat}: "
-                        f"data={data:#x} expected={expected:#x}"
+                        f"data={data:#x}/{expected:#x}, last={r_last}, "
+                        f"resp={r_resp}/{expected_resp}"
                     )
                 self.read_beat_accepts.append((txn_id, beat, data, self.cycle))
                 if beat == 7:
@@ -248,15 +264,22 @@ class Axi4MemoryAgent:
                 expected = self.read_words.get(
                     (addr, expected_beat), self.read_word(addr, expected_beat)
                 )
-                expected_last = int(expected_beat == 7)
+                expected_error = int(
+                    self.read_error_beats.get(line_id) == expected_beat
+                )
+                expected_last = int(expected_error or expected_beat == 7)
                 if (line_beat, line_data, line_last, line_error) != (
-                        expected_beat, expected, expected_last, 0):
+                        expected_beat, expected, expected_last, expected_error):
                     raise AssertionError(
                         f"line R routing mismatch ID={line_id}: got "
                         f"{(line_beat, line_data, line_last, line_error)}, "
-                        f"expected {(expected_beat, expected, expected_last, 0)}"
+                        f"expected {(expected_beat, expected, expected_last, expected_error)}"
                     )
-                if expected_last:
+                if expected_error:
+                    self.line_read_errors.append((line_id, expected_beat, self.cycle))
+                    del self.line_read_addr[line_id]
+                    del self.line_read_next_beat[line_id]
+                elif expected_last:
                     del self.line_read_addr[line_id]
                     del self.line_read_next_beat[line_id]
                 else:
@@ -267,6 +290,8 @@ class Axi4MemoryAgent:
                 shape = (awlen, awsize, awburst, addr & 0x3F)
                 if shape != (7, 3, 1, 0):
                     raise AssertionError(f"malformed AXI AW burst: {shape}, addr={addr:#x}")
+                if (addr & 0xFFF) + 64 > 0x1000:
+                    raise AssertionError(f"AXI AW burst crosses 4 KiB: addr={addr:#x}")
                 if txn_id in aw_meta:
                     raise AssertionError(f"write ID {txn_id} reused while outstanding")
                 aw_meta[txn_id] = {"addr": addr, "order": len(aw_order), "beats": 0}
@@ -311,10 +336,13 @@ class Axi4MemoryAgent:
                     )
                 if txn_id not in aw_meta or aw_meta[txn_id]["beats"] != 8:
                     raise AssertionError(f"B response before complete W burst: ID={txn_id}")
-                if not line_b_fire or line_b_payload != (txn_id, 0):
+                expected_error = int(txn_id in self.write_error_ids)
+                if not line_b_fire or line_b_payload != (txn_id, expected_error):
                     raise AssertionError(
                         f"line B response was not correctly routed for ID={txn_id}"
                     )
+                if expected_error:
+                    self.line_write_errors.append((txn_id, self.cycle))
                 self.write_rsp_by_id[txn_id] = self.cycle
                 self.write_completion_order.append(txn_id)
                 del aw_meta[txn_id]

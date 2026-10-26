@@ -1,0 +1,60 @@
+{
+  "caught": 9,
+  "injections": [
+    {
+      "caught": true,
+      "checker": "CacheScoreboard tag/hit-miss checker",
+      "diagnostic": "scoreboard: tag model predicted miss at 0x00001000, but no backing-memory request was observed",
+      "fault": "false hit for a tag absent from the Refm"
+    },
+    {
+      "caught": true,
+      "checker": "CacheScoreboard writeback data checker",
+      "diagnostic": "scoreboard: writeback beat 3 at 0x00007018: expected 0x0000000200000003, got 0x0000000200000002",
+      "fault": "corrupted data on writeback beat 3"
+    },
+    {
+      "caught": true,
+      "checker": "ReadyValidChecker response stability checker",
+      "diagnostic": "fault-injection.rsp: valid/payload changed while stalled; expected valid=1 payload=(6, 165), got valid=0 payload=(6, 165)",
+      "fault": "response valid dropped before a stalled handshake"
+    },
+    {
+      "caught": true,
+      "checker": "CacheProtocolChecker response sequencing checker",
+      "diagnostic": "cpu protocol: unexpected response command 0x6",
+      "fault": "duplicate CPU response after request retirement"
+    },
+    {
+      "caught": true,
+      "checker": "CoherenceScoreboard MESI invariant checker",
+      "diagnostic": "M coexists with another copy on 0x8000: ['M', 'S']",
+      "fault": "unnecessary invalidate leaves two exclusive MESI copies"
+    },
+    {
+      "caught": true,
+      "checker": "TransactionLifecycleChecker ID/address/opcode matcher",
+      "diagnostic": "grant: response for unknown or retired ID 4",
+      "fault": "Grant response uses a different transaction ID"
+    },
+    {
+      "caught": true,
+      "checker": "SnoopDataMonitor owner-data scoreboard",
+      "diagnostic": "owner-data transfer for 0xa000 from core0 was ['0x0000000000000000', '0x0000000000000001', '0x0000000000000002', '0x0000000000000003', '0x0000000000000004', '0x0000000000000005', '0x0000000000000006', '0x0000000000000bad'], expected ['0x0000000000000000', '0x0000000000000001', '0x0000000000000002', '0x0000000000000003', '0x0000000000000004', '0x0000000000000005', '0x0000000000000006', '0x0000000000000007']",
+      "fault": "corrupted owner-data beat"
+    },
+    {
+      "caught": true,
+      "checker": "SnoopDataMonitor Directory/reference-state checker",
+      "diagnostic": "directory metadata mismatch for 0xb000: observed={'line': 45056, 'state': 1, 'owner': 0, 'sharers': 2}, expected={'state': 'S', 'owner': None, 'sharers': 1}",
+      "fault": "Directory retains the wrong sharer bit"
+    },
+    {
+      "caught": true,
+      "checker": "TransactionLifecycleChecker exactly-once lifecycle checker",
+      "diagnostic": "grant: response for unknown or retired ID 7",
+      "fault": "duplicate Grant after transaction retirement"
+    }
+  ],
+  "status": "PASS"
+}

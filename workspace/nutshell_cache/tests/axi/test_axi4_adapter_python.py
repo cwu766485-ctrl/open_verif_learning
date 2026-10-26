@@ -17,7 +17,7 @@ async def axi_adapter_env(toffee_request: ToffeeRequest):
     if DUTLineMemoryAxi4PythonWrapper is None:
         pytest.skip("run make coherence_axi_python_build before the AXI4 Python test")
 
-    async def start():
+    async def start(*, memory_options=None):
         dut = toffee_request.create_dut(DUTLineMemoryAxi4PythonWrapper, "clock")
         for name in (
             "line_rd_req_valid", "line_rd_req_addr", "line_rd_req_id",
@@ -33,7 +33,7 @@ async def axi_adapter_env(toffee_request: ToffeeRequest):
         start_clock(dut)
         await ClockCycles(dut, 4)
         dut.reset.value = 0
-        memory = Axi4MemoryAgent(dut)
+        memory = Axi4MemoryAgent(dut, **(memory_options or {}))
         async with Executor(exit="none") as executor:
             executor(memory.run(), sche_group="axi4_memory")
         return dut, memory
@@ -139,4 +139,94 @@ async def test_axi4_four_outstanding_bursts_id_ordering_and_backpressure(
     assert int(dut.mon_stability_error.value) == 0, (
         "AXI VALID/payload stability broke while a channel was stalled"
     )
+    assert int(dut.protocol_error.value) == 0
+
+
+@case
+async def test_axi4_error_responses_id_reuse_and_4k_boundary(axi_adapter_env):
+    dut, memory = await axi_adapter_env(memory_options={
+        "read_error_beats": {5: 3}, "write_error_ids": {6},
+    })
+
+    # The final 64-byte line of a 4 KiB page is legal: its eighth beat ends at
+    # the page boundary without crossing it.
+    await _send_read(dut, 0x2000_FFC0, 5)
+    await _send_read(dut, 0x2200_0040, 3)
+    for _ in range(180):
+        if set(memory.read_completion_order) == {3, 5}:
+            break
+        await ClockCycles(dut, 1)
+    assert set(memory.read_completion_order) == {3, 5}
+    assert memory.line_read_errors and memory.line_read_errors[0][:2] == (5, 3)
+    assert not memory.line_read_addr
+    assert memory.read_accepts[0][1] == 0x2000_FFC0
+
+    # IDs are legal to reuse once the prior transaction has retired.
+    await _send_read(dut, 0x2200_0080, 3)
+    for _ in range(100):
+        if memory.read_completion_order.count(3) == 2:
+            break
+        await ClockCycles(dut, 1)
+    assert memory.read_completion_order.count(3) == 2
+
+    txn_id = 6
+    address = 0x2100_FFC0
+    memory.expected_write_words[txn_id] = [
+        memory.write_word(txn_id, beat) for beat in range(8)
+    ]
+    await _send_write_req(dut, address, txn_id)
+    for beat, data in enumerate(memory.expected_write_words[txn_id]):
+        await _send_write_beat(dut, txn_id, beat, data)
+    for _ in range(500):
+        if memory.write_completion_order:
+            break
+        await ClockCycles(dut, 1)
+    assert memory.write_completion_order == [txn_id]
+    assert memory.line_write_errors and memory.line_write_errors[0][0] == txn_id
+    assert memory.write_address_accepts[0][1] == address
+    assert int(dut.protocol_error.value) == 0
+
+
+@case
+async def test_axi4_reset_cancels_outstanding_and_allows_id_reuse(axi_adapter_env):
+    dut, memory = await axi_adapter_env()
+    read_id, write_id = 9, 10
+    await _send_read(dut, 0x2300_1000, read_id)
+    for _ in range(100):
+        if any(item[0] == read_id for item in memory.read_accepts):
+            break
+        await ClockCycles(dut, 1)
+    assert any(item[0] == read_id for item in memory.read_accepts)
+
+    memory.expected_write_words[write_id] = [
+        memory.write_word(write_id, beat) for beat in range(8)
+    ]
+    await _send_write_req(dut, 0x2300_2000, write_id)
+    for beat, data in enumerate(memory.expected_write_words[write_id]):
+        await _send_write_beat(dut, write_id, beat, data)
+    for _ in range(100):
+        if (any(item[0] == write_id for item in memory.write_address_accepts) and
+                any(item[0] == write_id for item in memory.write_beat_accepts)
+                and sum(item[0] == write_id for item in memory.write_beat_accepts) == 8):
+            break
+        await ClockCycles(dut, 1)
+    assert any(item[0] == write_id for item in memory.write_address_accepts)
+    assert sum(item[0] == write_id for item in memory.write_beat_accepts) == 8
+    assert not memory.write_completion_order
+
+    dut.reset.value = 1
+    await ClockCycles(dut, 3)
+    dut.reset.value = 0
+    await ClockCycles(dut, 8)
+    assert memory.reset_cancelled == {"reads": 1, "writes": 1}
+    assert int(dut.line_rd_data_valid.value) == 0
+    assert int(dut.line_wr_rsp_valid.value) == 0
+
+    # The canceled read ID can be allocated again after reset and returns data.
+    await _send_read(dut, 0x2300_1000, read_id)
+    for _ in range(150):
+        if memory.read_completion_order:
+            break
+        await ClockCycles(dut, 1)
+    assert memory.read_completion_order == [read_id]
     assert int(dut.protocol_error.value) == 0
