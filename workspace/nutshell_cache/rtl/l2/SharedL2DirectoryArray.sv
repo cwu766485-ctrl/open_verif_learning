@@ -9,7 +9,10 @@ module SharedL2DirectoryArray #(
   input  logic clock,
   input  logic reset,
 
+  // These byte-address ports carry full-line operations; [5:0] is offset-only.
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] lookup_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic lookup_hit,
   output logic [$clog2(WAYS)-1:0] lookup_way,
   output coherence_protocol_pkg::directory_state_t lookup_dir_state,
@@ -19,7 +22,9 @@ module SharedL2DirectoryArray #(
   // Metadata writes may update an existing line or allocate an invalid way.
   input  logic dir_write_valid,
   output logic dir_write_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] dir_write_line_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   input  coherence_protocol_pkg::directory_state_t dir_write_state,
   input  logic [1:0] dir_write_sharers,
   input  logic dir_write_owner_id,
@@ -27,7 +32,9 @@ module SharedL2DirectoryArray #(
   // A miss allocator uses this information to request inclusion eviction.
   // No replacement occurs until the victim directory entry is explicitly
   // invalidated and its dirty owner data has been recovered.
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] alloc_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic alloc_victim_valid,
   output logic [$clog2(WAYS)-1:0] alloc_way,
   output logic [31:0] alloc_victim_addr,
@@ -40,15 +47,21 @@ module SharedL2DirectoryArray #(
   // been invalidated and any dirty owner line has been recovered.
   input  logic entry_invalidate_valid,
   output logic entry_invalidate_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] entry_invalidate_line_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   input  logic mark_clean_valid,
   output logic mark_clean_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] mark_clean_line_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
 
   // Full-line writes are used for memory fills and owner SnoopData.
   input  logic line_wr_valid,
   output logic line_wr_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] line_wr_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   input  logic line_wr_dirty,
   input  logic [2:0] line_wr_beat_idx,
   input  logic [63:0] line_wr_data,
@@ -57,7 +70,9 @@ module SharedL2DirectoryArray #(
   // Serialized full-line read port for L1 grant/refill.
   input  logic line_rd_valid,
   output logic line_rd_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] line_rd_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic line_rd_hit,
   output logic line_data_valid,
   input  logic line_data_ready,
@@ -101,7 +116,7 @@ module SharedL2DirectoryArray #(
   logic [WAY_WIDTH-1:0] line_rd_way_q;
   logic [2:0] line_rd_beat_q;
   logic line_wr_pending_q;
-  logic [31:0] line_wr_addr_q;
+  logic [31:6] line_wr_addr_q;
   logic [WAY_WIDTH-1:0] line_wr_way_q;
   logic line_wr_dirty_q;
   logic [2:0] line_wr_expected_beat_q;
@@ -289,7 +304,7 @@ module SharedL2DirectoryArray #(
           if (line_wr_beat_idx != 3'd0) begin
             protocol_error <= 1'b1;
           end else begin
-            line_wr_addr_q <= {line_wr_addr[31:6], 6'b0};
+            line_wr_addr_q <= line_wr_addr[31:6];
             line_wr_way_q <= line_wr_hit ? line_wr_way :
                              line_wr_free_found ? line_wr_way : '0;
             line_wr_dirty_q <= line_wr_dirty;

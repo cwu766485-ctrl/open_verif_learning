@@ -156,7 +156,6 @@ module DualL1MesiCluster #(
     logic array_line_rd_valid;
     logic array_line_rd_ready;
     logic [31:0] array_line_rd_addr;
-    logic array_line_rd_hit;
     logic snoop_line_rd_ready_int;
     logic evict_line_rd_valid;
     logic evict_line_rd_ready;
@@ -425,6 +424,7 @@ module DualL1MesiCluster #(
       end
     end
 
+    /* verilator lint_off PINCONNECTEMPTY */
     MesiL1Controller #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) l1_controller (
       .clock(clock), .reset(reset),
       .cpu_req_valid(ctrl_cpu_req_valid), .cpu_req_ready(ctrl_cpu_req_ready),
@@ -514,12 +514,13 @@ module DualL1MesiCluster #(
       .cpu_store_wdata(store_wdata_q),
       .line_rd_valid(array_line_rd_valid),
       .line_rd_ready(array_line_rd_ready), .line_rd_addr(array_line_rd_addr),
-      .line_rd_hit(array_line_rd_hit), .line_data_valid(array_line_data_valid_int),
+      .line_rd_hit(), .line_data_valid(array_line_data_valid_int),
       .line_data_ready(array_line_data_ready),
       .line_data_beat_idx(array_line_data_beat_idx_int),
       .line_data(array_line_data_int), .line_data_last(array_line_data_last_int),
       .protocol_error(array_protocol_error[core])
     );
+    /* verilator lint_on PINCONNECTEMPTY */
 
     assign replace_way[core] = replace_way_int;
     assign replace_state[core] = replace_state_int;
@@ -529,8 +530,11 @@ module DualL1MesiCluster #(
     assign array_line_data = array_line_data_int;
     assign array_line_data_last = array_line_data_last_int;
     assign controller_protocol_error[core] =
-      ctrl_protocol_error | replace_protocol_error_q |
-      ((array_line_rd_valid && array_line_rd_ready) && !array_line_rd_hit);
+      // MesiL1Array latches a line-read miss into array_protocol_error on the
+      // accepted handshake. Do not mirror that event combinationally here:
+      // it feeds the subsystem fatal gate while Snoop ready depends on the
+      // lookup address, creating a ready/address loop across the Directory.
+      ctrl_protocol_error | replace_protocol_error_q;
   end
 
   CoherenceRequestArbiter #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) request_arbiter (

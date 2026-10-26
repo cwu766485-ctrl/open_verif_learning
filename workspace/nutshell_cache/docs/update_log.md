@@ -59,3 +59,4 @@ format:
 - 19:28：20-seed/4,000 笔 Python/Toffee 随机回归发现 refill 与 dirty-owner SnoopRead 争用 L2 写口形成死锁；调整为 refill 独占完成整条 line 后再接收 SnoopRead，并暂停 L1 replacement 期间的 snoop 准入。加入写口保持断言。
 - 19:28：随机替换压力暴露参考模型预测 way 与并发失效后的真实替换顺序不一致；改由已握手 Put 事务更新 L1 副本记录，仍独立检查 MESI、Directory 和数据。修复后 `make coherence_stress` 20/20 seeds、4,000 笔通过；formal、Python fault injection（9/9）、功能覆盖（27/27）及 AXI Python（3/3）通过。
 - 19:34：全量 `make coherence_verify` 通过：RTL 模块/总线与系统回归、34/34 SV 功能 bins、92.7% RTL 行覆盖、6 个 bounded formal 目标、Python 20/20、故障注入 9/9、AXI 3/3、长随机 20/20。Verilator 仍报告顶层 snoop/写口 `UNOPTFLAT` 及空端口/未使用信号告警，作为后续 lint 收敛项记录。
+- 2026-10-26 20:43 +08：收敛 Coherence 顶层 lint：移除 Cluster 重复组合上报的 L1 line-read miss（Array 已锁存错误），拆分 Subsystem 握手组合锥，并让 fatal 后已发出的内存响应可排空；两个产品顶层 lint 均零 Warning。修复 Legacy fault-injection 测试硬编码 4/实际 9 的过期断言。`make test` 46 passed；`make coherence_verify`、SV 34/34 bins、Python 20/20、AXI 3/3、压力随机 20 seeds/4,000 ops 与全部 bounded formal 通过；RTL 行覆盖 92.8%。

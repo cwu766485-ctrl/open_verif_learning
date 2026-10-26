@@ -290,6 +290,9 @@ module CoherentCacheSubsystem #(
 
   logic [31:0] l2_lookup_addr;
   logic l2_lookup_hit;
+  // The array exposes way selection for standalone checks; subsystem control
+  // is address-based and does not consume these optional observations.
+  /* verilator lint_off UNUSEDSIGNAL */
   logic [2:0] l2_lookup_way;
   directory_state_t l2_lookup_state;
   logic [1:0] l2_lookup_sharers;
@@ -297,6 +300,7 @@ module CoherentCacheSubsystem #(
   logic [31:0] l2_alloc_addr;
   logic l2_alloc_victim_valid;
   logic [2:0] l2_alloc_way;
+  /* verilator lint_on UNUSEDSIGNAL */
   logic [31:0] l2_alloc_victim_addr;
   directory_state_t l2_alloc_victim_state;
   logic [1:0] l2_alloc_victim_sharers;
@@ -378,8 +382,6 @@ module CoherentCacheSubsystem #(
     mem_mshr_r_match = 1'b0;
     mem_r_protocol_bad = 1'b0;
     mem_mshr_r_sel = '0;
-    mshr_set_conflict = 1'b0;
-    snoop_set_conflict = 1'b0;
     selected = -1;
     for (i = 0; i < NUM_MSHRS; i = i + 1) begin
       if (!mem_mshr_valid_q[i] && !mem_mshr_alloc_found) begin
@@ -390,12 +392,6 @@ module CoherentCacheSubsystem #(
         mem_mshr_r_sel = MSHR_ID_WIDTH'(i);
         mem_mshr_r_match = mem_mshr_valid_q[i] && !mem_mshr_full_q[i];
       end
-      if (mem_mshr_valid_q[i] &&
-          (mem_mshr_addr_q[i][14:6] == dir_xfer_addr[14:6]))
-        mshr_set_conflict = 1'b1;
-      if (mem_mshr_valid_q[i] &&
-          (mem_mshr_addr_q[i][14:6] == dir_snoop_addr[14:6]))
-        snoop_set_conflict = 1'b1;
     end
     selected = -1;
     for (i = 0; i < NUM_MSHRS; i = i + 1) begin
@@ -420,6 +416,22 @@ module CoherentCacheSubsystem #(
        (mem_rd_data_error ? !mem_rd_data_last :
         ((mem_rd_data_beat_idx != mem_mshr_expected_q[mem_mshr_r_sel]) ||
          (mem_rd_data_last != (mem_rd_data_beat_idx == 3'd7)))));
+  end
+
+  // These interlocks only compare a Directory line with in-flight refill
+  // lines. Keep them out of the MSHR response decoder's output cone so the
+  // Directory ready path cannot appear to feed its own context selector.
+  always_comb begin : decode_refill_set_conflicts
+    mshr_set_conflict = 1'b0;
+    snoop_set_conflict = 1'b0;
+    for (integer i = 0; i < NUM_MSHRS; i = i + 1) begin
+      if (mem_mshr_valid_q[i] &&
+          (mem_mshr_addr_q[i][14:6] == dir_xfer_addr[14:6]))
+        mshr_set_conflict = 1'b1;
+      if (mem_mshr_valid_q[i] &&
+          (mem_mshr_addr_q[i][14:6] == dir_snoop_addr[14:6]))
+        snoop_set_conflict = 1'b1;
+    end
   end
 
   for (genvar perf_core = 0; perf_core < 2; perf_core = perf_core + 1) begin : perf_events
@@ -634,10 +646,14 @@ module CoherentCacheSubsystem #(
                       cpu_resp_ready[mmio_owner_q];
   end
 
-  always_comb begin
-    dir_xfer_start_ready = (engine_state_q == ENGINE_IDLE) &&
-                           !mem_fill_writer_active_q &&
-                           !mshr_set_conflict;
+  assign dir_xfer_start_ready = (engine_state_q == ENGINE_IDLE) &&
+                                !mem_fill_writer_active_q &&
+                                !mshr_set_conflict;
+
+  // Snoop payload/valid are independent of the return ready path. Keep them
+  // in their own combinational cone because an L1 may qualify ready by line
+  // address while a Directory MSHR holds valid and address stable.
+  always_comb begin : route_snoop_payload
     snoop_valid_core[0] = 1'b0;
     snoop_valid_core[1] = 1'b0;
     put_xfer_start_core[0] = 1'b0;
@@ -646,8 +662,6 @@ module CoherentCacheSubsystem #(
     put_xfer_addr_core[1] = dir_xfer_addr;
     put_xfer_txn_id_core[0] = dir_xfer_txn_id;
     put_xfer_txn_id_core[1] = dir_xfer_txn_id;
-    put_data_ready_core[0] = 1'b0;
-    put_data_ready_core[1] = 1'b0;
     snoop_addr_core[0] = dir_snoop_addr;
     snoop_addr_core[1] = dir_snoop_addr;
     snoop_opcode_core[0] = dir_snoop_opcode;
@@ -674,6 +688,9 @@ module CoherentCacheSubsystem #(
     if (dir_xfer_start_valid && dir_xfer_start_ready &&
         (dir_xfer_kind == XFER_PUTM_TO_L2))
       put_xfer_start_core[dir_xfer_src] = 1'b1;
+  end
+
+  always_comb begin : route_snoop_handshake
     dir_snoop_ready = victim_snoop_active ? 1'b0 :
                       (snoop_ready_core[dir_snoop_target] &&
                        dir_snoop_issue_enable);
@@ -694,7 +711,9 @@ module CoherentCacheSubsystem #(
       (engine_state_q == ENGINE_VICTIM_SNOOP_WAIT) &&
       snoop_rsp_valid_core[victim_snoop_target_q] &&
       snoop_rsp_ready_core[victim_snoop_target_q];
+  end
 
+  always_comb begin : route_grant_and_data
     grant_valid_core[0] = 1'b0;
     grant_valid_core[1] = 1'b0;
     grant_opcode_core[0] = dir_grant_opcode;
@@ -711,21 +730,31 @@ module CoherentCacheSubsystem #(
                             (!dir_grant_has_data ||
                              ((engine_state_q == ENGINE_IDLE) &&
                               !dir_xfer_start_valid));
+  end
+
+  always_comb begin : route_grant_ready
     dir_grant_ready = grant_ready_core[dir_grant_dst] &&
                       (!dir_grant_has_data ||
                        ((engine_state_q == ENGINE_IDLE) &&
                         !dir_xfer_start_valid));
+  end
 
+  always_comb begin : route_grant_commit
     dir_grant_commit_valid = grant_commit_valid_core[0] |
                              grant_commit_valid_core[1];
     dir_grant_commit_src_id = grant_commit_valid_core[0] ? 1'b0 : 1'b1;
     dir_grant_commit_txn_id = grant_commit_valid_core[0] ?
       grant_commit_txn_id_core[0] : grant_commit_txn_id_core[1];
+  end
+
+  always_comb begin : route_grant_commit_ready
     grant_commit_ready_core[0] = dir_grant_commit_ready &&
                                  !dir_grant_commit_src_id;
     grant_commit_ready_core[1] = dir_grant_commit_ready &&
                                  dir_grant_commit_src_id;
+  end
 
+  always_comb begin : route_grant_data
     grant_data_valid_core[0] = 1'b0;
     grant_data_valid_core[1] = 1'b0;
     grant_data_txn_id_core[0] = grant_txn_q;
@@ -739,7 +768,9 @@ module CoherentCacheSubsystem #(
     if (engine_state_q == ENGINE_GRANT_STREAM) begin
       grant_data_valid_core[grant_dst_q] = l2_line_data_valid;
     end
+  end
 
+  always_comb begin : route_l2_line_data_ready
     // The actual ready mux is written explicitly to avoid a combinational
     // dependency through an unselected core's channel.
     if (engine_state_q == ENGINE_GRANT_STREAM)
@@ -748,7 +779,9 @@ module CoherentCacheSubsystem #(
       l2_line_data_ready = mem_wr_data_ready;
     else
       l2_line_data_ready = 1'b0;
+  end
 
+  always_comb begin : issue_l2_line_read
     l2_line_rd_valid = (engine_state_q == ENGINE_GRANT_READ) ||
                        (engine_state_q == ENGINE_VICTIM_READ) ||
                        ((engine_state_q == ENGINE_IDLE) &&
@@ -761,22 +794,29 @@ module CoherentCacheSubsystem #(
       l2_line_rd_addr = line_align(dir_grant_addr);
     else
       l2_line_rd_addr = grant_addr_q;
+  end
+
+  always_comb begin : route_xfer_completion
     dir_xfer_done_valid = (engine_state_q == ENGINE_XFER_DONE) ||
                           ((engine_state_q != ENGINE_XFER_DONE) &&
                            mem_mshr_done_found);
     dir_xfer_done_context_id = (engine_state_q == ENGINE_XFER_DONE) ?
                                engine_context_q :
                                mem_mshr_context_q[mem_mshr_done_sel];
+  end
 
+  always_comb begin : route_memory_channels
     mem_rd_req_valid = !reset && !fatal_error &&
                        (engine_state_q == ENGINE_MEM_REQ) &&
                        mem_mshr_alloc_found;
     mem_rd_req_addr = engine_addr_q;
     mem_rd_req_txn_id = TXN_ID_WIDTH'(mem_mshr_alloc_sel);
-    // Responses are accepted by ID into per-MSHR line buffers. A malformed
-    // or unknown ID is also drained and raised as a protocol error below.
-    mem_rd_data_ready = !reset && !fatal_error;
-    mem_wr_rsp_ready = !reset && !fatal_error;
+    // Drain responses for transactions that were already issued, even after a
+    // fatal protocol error. Blocking these ready signals can strand an AXI
+    // response and feeds the fatal status back into the MSHR/Snoop arbitration
+    // network. Fatal status still blocks admission of new requests below.
+    mem_rd_data_ready = !reset;
+    mem_wr_rsp_ready = !reset;
 
     mem_wr_req_valid = !reset &&
                        !fatal_error &&
@@ -790,27 +830,28 @@ module CoherentCacheSubsystem #(
     mem_wr_data = l2_line_data;
     mem_wr_data_last = l2_line_data_last;
     mem_wr_data_txn_id = engine_txn_q;
+  end
 
+  always_comb begin : route_victim_metadata_ops
     l2_entry_invalidate_valid =
       (engine_state_q == ENGINE_VICTIM_INVALIDATE);
     l2_entry_invalidate_addr = victim_addr_q;
     l2_mark_clean_valid = (engine_state_q == ENGINE_VICTIM_MARK_CLEAN);
     l2_mark_clean_addr = victim_addr_q;
+  end
 
+  always_comb begin : route_l2_line_write_payload
     l2_line_wr_valid = 1'b0;
     l2_line_wr_addr = 32'b0;
     l2_line_wr_dirty = 1'b0;
     l2_line_wr_beat_idx = 3'b0;
     l2_line_wr_data = 64'b0;
     l2_line_wr_last = 1'b0;
-    monitor_owner_data_valid = 1'b0;
     monitor_owner_data_core = 1'b0;
     monitor_owner_data_addr = 32'b0;
     monitor_owner_data_beat_idx = 3'b0;
     monitor_owner_data = 64'b0;
     monitor_owner_data_last = 1'b0;
-    snoop_data_ready_core[0] = 1'b0;
-    snoop_data_ready_core[1] = 1'b0;
     if (engine_state_q == ENGINE_PUTM_STREAM) begin
       l2_line_wr_valid = put_data_valid_core[engine_src_q];
       l2_line_wr_addr = engine_addr_q;
@@ -818,7 +859,6 @@ module CoherentCacheSubsystem #(
       l2_line_wr_beat_idx = put_data_beat_idx_core[engine_src_q];
       l2_line_wr_data = put_data_core[engine_src_q];
       l2_line_wr_last = put_data_last_core[engine_src_q];
-      put_data_ready_core[engine_src_q] = l2_line_wr_ready;
     end else if (victim_snoop_data_to_l2) begin
       l2_line_wr_valid = snoop_data_valid_core[victim_snoop_target_q];
       l2_line_wr_addr = victim_addr_q;
@@ -826,9 +866,6 @@ module CoherentCacheSubsystem #(
       l2_line_wr_beat_idx = snoop_data_beat_idx_core[victim_snoop_target_q];
       l2_line_wr_data = snoop_data_core[victim_snoop_target_q];
       l2_line_wr_last = snoop_data_last_core[victim_snoop_target_q];
-      snoop_data_ready_core[victim_snoop_target_q] = l2_line_wr_ready;
-      monitor_owner_data_valid = snoop_data_valid_core[victim_snoop_target_q] &&
-                                 l2_line_wr_ready;
       monitor_owner_data_core = victim_snoop_target_q;
       monitor_owner_data_addr = victim_addr_q;
       monitor_owner_data_beat_idx =
@@ -836,8 +873,7 @@ module CoherentCacheSubsystem #(
       monitor_owner_data = snoop_data_core[victim_snoop_target_q];
       monitor_owner_data_last = snoop_data_last_core[victim_snoop_target_q];
     // A refill writer owns the shared L2 line-write port through beat 7.
-    // A pending owner-data SnoopRead is held off while that writer is active;
-    // keep the refill valid/beat sequence intact, then admit the snoop.
+    // A pending owner-data SnoopRead waits until the refill has drained.
     end else if (mem_fill_writer_active_q) begin
       l2_line_wr_valid = 1'b1;
       l2_line_wr_addr = mem_mshr_addr_q[mem_fill_writer_sel_q];
@@ -853,16 +889,33 @@ module CoherentCacheSubsystem #(
       l2_line_wr_beat_idx = snoop_data_beat_idx_core[dir_snoop_target];
       l2_line_wr_data = snoop_data_core[dir_snoop_target];
       l2_line_wr_last = snoop_data_last_core[dir_snoop_target];
-      snoop_data_ready_core[dir_snoop_target] = l2_line_wr_ready;
-      monitor_owner_data_valid = snoop_data_valid_core[dir_snoop_target] &&
-                                 l2_line_wr_ready;
       monitor_owner_data_core = dir_snoop_target;
       monitor_owner_data_addr = dir_snoop_addr;
       monitor_owner_data_beat_idx = snoop_data_beat_idx_core[dir_snoop_target];
       monitor_owner_data = snoop_data_core[dir_snoop_target];
       monitor_owner_data_last = snoop_data_last_core[dir_snoop_target];
     end
+  end
 
+  always_comb begin : route_l2_line_write_ready
+    put_data_ready_core[0] = 1'b0;
+    put_data_ready_core[1] = 1'b0;
+    snoop_data_ready_core[0] = 1'b0;
+    snoop_data_ready_core[1] = 1'b0;
+    monitor_owner_data_valid = 1'b0;
+    if (engine_state_q == ENGINE_PUTM_STREAM) begin
+      put_data_ready_core[engine_src_q] = l2_line_wr_ready;
+    end else if (victim_snoop_data_to_l2) begin
+      snoop_data_ready_core[victim_snoop_target_q] = l2_line_wr_ready;
+      monitor_owner_data_valid = snoop_data_valid_core[victim_snoop_target_q] &&
+                                 l2_line_wr_ready;
+    end else if (mem_fill_writer_active_q) begin
+      // Refill stream has priority; hold owner-data Snoop until beat 7.
+    end else if (dir_snoop_data_to_l2) begin
+      snoop_data_ready_core[dir_snoop_target] = l2_line_wr_ready;
+      monitor_owner_data_valid = snoop_data_valid_core[dir_snoop_target] &&
+                                 l2_line_wr_ready;
+    end
   end
 
   assign l2_victim_valid = l2_alloc_victim_valid;
@@ -891,6 +944,7 @@ module CoherentCacheSubsystem #(
     assign monitor_snoop_rsp_opcode[snoop_core] = snoop_rsp_opcode_core[snoop_core];
   end
 
+  /* verilator lint_off PINCONNECTEMPTY */
   DualL1MesiCluster #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) l1_cluster (
     .clock(clock), .reset(reset),
     .cpu_req_valid(cluster_cpu_req_valid), .cpu_req_ready(cluster_cpu_req_ready),
@@ -947,6 +1001,7 @@ module CoherentCacheSubsystem #(
     .controller_protocol_error(l1_controller_protocol_error),
     .array_protocol_error(l1_array_protocol_error)
   );
+  /* verilator lint_on PINCONNECTEMPTY */
 
   DirectoryMshrBank #(
     .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)

@@ -6,13 +6,21 @@ module MesiL1Array #(
   input  logic clock,
   input  logic reset,
 
+  // Byte offsets below the word boundary are not part of this 64-bit LSU
+  // interface; word selection uses address bits [5:3].
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] cpu_lookup_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic cpu_lookup_hit,
   output logic [$clog2(WAYS)-1:0] cpu_lookup_way,
   output coherence_protocol_pkg::mesi_state_t cpu_lookup_state,
   output logic [63:0] cpu_lookup_word,
 
+  // Snoop and line-stream addresses are byte addresses; their low six bits
+  // are intentionally ignored because all transactions are full-line.
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] snoop_lookup_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic snoop_lookup_hit,
   output logic [$clog2(WAYS)-1:0] snoop_lookup_way,
   output coherence_protocol_pkg::mesi_state_t snoop_lookup_state,
@@ -35,7 +43,9 @@ module MesiL1Array #(
 
   input  logic refill_valid,
   output logic refill_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] refill_line_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   input  logic [$clog2(WAYS)-1:0] refill_way,
   input  logic [2:0] refill_beat_idx,
   input  logic [63:0] refill_data,
@@ -43,14 +53,18 @@ module MesiL1Array #(
 
   input  logic cpu_store_valid,
   output logic cpu_store_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] cpu_store_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   input  logic [$clog2(WAYS)-1:0] cpu_store_way,
   input  logic [7:0] cpu_store_wmask,
   input  logic [63:0] cpu_store_wdata,
 
   input  logic line_rd_valid,
   output logic line_rd_ready,
+  /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] line_rd_addr,
+  /* verilator lint_on UNUSEDSIGNAL */
   output logic line_rd_hit,
   output logic line_data_valid,
   input  logic line_data_ready,

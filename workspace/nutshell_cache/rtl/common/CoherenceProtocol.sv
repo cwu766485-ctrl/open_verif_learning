@@ -1,9 +1,10 @@
+/* verilator lint_off DECLFILENAME */
 package coherence_protocol_pkg;
   parameter int ADDR_WIDTH = 32;
-  localparam int LINE_BYTES = 64;
   localparam int WORD_BYTES = 8;
+  localparam int BEAT_WIDTH = WORD_BYTES * 8;
   localparam int LINE_BEATS = 8;
-  localparam int BEAT_WIDTH = 64;
+  localparam int LINE_BYTES = LINE_BEATS * BEAT_WIDTH / 8;
   parameter int TXN_ID_WIDTH = 4;
 
   typedef enum logic [1:0] {
@@ -55,7 +56,7 @@ package coherence_protocol_pkg;
   function automatic logic [ADDR_WIDTH-1:0] line_align(
     input logic [ADDR_WIDTH-1:0] addr
   );
-    line_align = {addr[ADDR_WIDTH-1:6], 6'b0};
+    line_align = addr - (addr % LINE_BYTES);
   endfunction
 
   function automatic logic [1:0] core_bit(input logic core_id);
@@ -78,3 +79,4 @@ package coherence_protocol_pkg;
                           (opcode == GRANT_DATA_M);
   endfunction
 endpackage
+/* verilator lint_on DECLFILENAME */

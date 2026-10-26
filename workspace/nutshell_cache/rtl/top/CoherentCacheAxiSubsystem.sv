@@ -121,6 +121,10 @@ module CoherentCacheAxiSubsystem #(
   logic [4:0] perf_error_status;
   logic protocol_error_status;
 
+  // Core metadata and protocol-event ports are DV probes. This production AXI
+  // wrapper intentionally exposes the CSR/status interface instead.
+  /* verilator lint_off PINCONNECTEMPTY */
+  /* verilator lint_off PINMISSING */
   CoherentCacheSubsystem #(
     .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)
   ) cache_core (
@@ -186,8 +190,20 @@ module CoherentCacheAxiSubsystem #(
     .monitor_dir_req_accept_valid(), .monitor_dir_req_accept_addr(),
     .monitor_l2_lookup_valid(), .monitor_l2_lookup_addr(),
     .monitor_l2_lookup_hit(), .monitor_dir_grant_accept_valid(),
-    .monitor_dir_grant_accept_addr()
+    .monitor_dir_grant_accept_addr(),
+    .perf_l2_refill_hit_event(), .perf_l2_refill_miss_event(),
+    .monitor_snoop_rsp_valid(), .monitor_snoop_rsp_ready(),
+    .monitor_snoop_rsp_txn_id(), .monitor_snoop_rsp_opcode(),
+    .monitor_dir_snoop_target(), .monitor_dir_snoop_txn_id(),
+    .monitor_dir_snoop_rsp_valid(), .monitor_dir_snoop_rsp_ready(),
+    .monitor_dir_req_accept_src_id(), .monitor_dir_req_accept_opcode(),
+    .monitor_l2_fill_active(), .monitor_l2_line_wr_valid(),
+    .monitor_l2_line_wr_ready(), .monitor_l2_line_wr_addr(),
+    .monitor_l2_line_wr_beat(), .monitor_dir_snoop_data_to_l2(),
+    .monitor_dir_snoop_valid(), .monitor_snoop_set_conflict()
   );
+  /* verilator lint_on PINMISSING */
+  /* verilator lint_on PINCONNECTEMPTY */
 
   LineMemoryAxi4Adapter #(
     .ID_WIDTH(TXN_ID_WIDTH),
