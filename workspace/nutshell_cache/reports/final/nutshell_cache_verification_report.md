@@ -1,14 +1,16 @@
 # NutShell MESI Cache v1.0 — 综合技术与验证报告
 
-更新日期：2026-10-25  
-适用分支：`cache_coherence`  版本基线：MESI v1.0（`release/v1.0`）  
+更新日期：2026-10-26  
+适用分支：`cache_coherence`  版本基线：MESI v1.0（`release/v1.0`），维护候选：v1.0.1  
 项目：双核 MESI Cache 子系统，包含私有 L1、共享 L2/Directory、内存 AXI4 适配器及 APB 性能 CSR。
 
 ## 1. 执行摘要
 
-当前交付已经从旧的单核 L1 DCache 学习验证项目演进为双核自定义 MESI 一致性缓存子系统。报告、验证入口与性能数据均以当前 MESI RTL 为对象；旧 L1 验证保留为独立回归，不再充当 MESI 的验证依据。
+当前交付已经从旧的单核 L1 DCache 学习验证项目演进为双核自定义 MESI 一致性缓存子系统。报告、验证入口与性能数据均以当前 MESI RTL 为对象；旧 L1 验证保留为独立回归，不再充当 MESI 的验证依据。`release/v1.0` 维持冻结；本报告记录 `cache_coherence` 上的维护候选结果，不移动或重打 v1.0 标签。
 
 本次更新修复了一处共享 refill 与 Snoop 竞争中的 ready/valid 协议缺陷，并启用无数据 clean invalidation 与 L2 refill 并行。相同定向 workload 下，Core1 Store 请求到响应由 14 cycles 降至 10 cycles；数据、目录状态与协议错误检查均通过。PPA/SRAM 实现评估按当前计划暂不包含。
+
+本次收尾补充双 sharer / dirty owner 的长压测 L2 victim 触发、独立 L1 victim-to-Put 对照、覆盖/报告更新和 testbench lint 告警分类。一个更激进的随机地址池实验仍未闭合，限制见第 7 节。
 
 ## 2. 硬件架构
 
@@ -47,15 +49,17 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录本报告对应源码的最新本地回归结果；推送后 GitHub Actions 的 Legacy 与 Coherence job 结果以该提交页面为准。
+以下表格记录本次源码对应的最新本地回归结果。最近一次此前提交的 GitHub Actions 两个 job 均通过；本次更新推送后，应再以新提交的 Legacy 与 Coherence job 为最终 CI 记录。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
-| Legacy L1 regression | 46 passed; 17 skipped; 3 deselected | 独立保留的单 L1 兼容测试 |
-| Coherence SV regression | smoke + multisnoop + 5 seeds PASS; 34/34 功能 bins; 92.7% 行覆盖 | 模块、集成 directed 与固定随机 seed |
-| Python/Toffee MESI | 17 passed; 26/26 功能 bins | 独立数据/权限 scoreboard 与功能覆盖 |
-| AXI adapter / AXI subsystem | adapter 1 passed; AXI top 5 seeds PASS | adapter 五通道压力 + 集成 burst 测试 |
+| Legacy L1 regression | 46 passed; 23 skipped; 3 deselected | 独立保留的单 L1 兼容测试 |
+| Coherence SV regression | smoke + multisnoop + 5 seeds PASS; 34/34 功能 bins; 92.8% 行覆盖 | 模块、集成 directed 与固定随机 seed |
+| Python/Toffee MESI | 21 passed; 30/30 功能 bins; 9/9 checker fault injections caught | 独立数据/权限 scoreboard、L1 victim/Put 对照与 MESI mutation sensitivity |
+| Extended Python stress | 20/20 seeds; 4,000 mixed operations; 710 L1 evictions; 3 modeled live L2 evictions | 包含 1 dirty-owner 与 1 two-sharer victim 的固定 replay 前导；另有未通过的更激进同 L2 set 随机实验，见第 7 节 |
+| AXI adapter / AXI subsystem | adapter Python 3 passed; AXI top 5 seeds PASS | 五通道、4 outstanding、ID/error/reset/backpressure 测试 |
 | Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度 |
+| Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
 | PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
 ## 6. 性能数据与复现
@@ -78,7 +82,9 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 ## 7. 当前限制与后续
 
-- 本次明确跳过 P1：PPA、真实 SRAM macro 映射/面积与时序签核，以及更深长随机冲突压力。当前 Verilator 仿真数据不是物理实现结果。
+- 一项额外的压力实验把九条随机读写行全部映射到同一个 L2 set，同时运行双核并发和反压；20 个 seed 中 14 个触发 Directory reference-state mismatch 或 CPU response timeout/protocol error。该混合压力场景尚未定位根因，因此当前 20×200 签收池改为十条同 L1 set、分布在四个 L2 set 的行，并在 `0x5eed` 前导中独立确定性触发 dirty-owner 与 two-sharer 九行 L2 victim。确定性 victim、L1 victim/Put 对照和已配置的 20×200 回归均通过；不能据此宣称更激进的全同 L2 set 并发随机场景已通过。
+- 集成 SV testbench 的 Verilator build 仍会报告 testbench 级 `PINCONNECTEMPTY` / `PINMISSING`（非验证实例的可选 monitor 端口）、`WIDTHEXPAND` / `WIDTHTRUNC`、`MISINDENT`、`TIMESCALEMOD`、`UNUSEDSIGNAL`，以及 testbench/reference-model `MULTIDRIVEN`。`SharedL2DirectoryArray.line_wr_ready` 的 `MULTIDRIVEN` 来自一项层级 `force` backpressure 测试注入。两个实际产品顶层单独 lint 均为零 Warning；这些 bench 警告没有通过全局 waiver 隐藏。
+- PPA、真实 SRAM macro 映射/面积与时序签核仍未执行；当前 Verilator 仿真数据不是物理实现结果。
 - L1 仍为 blocking，完整系统 CPU 请求不能持续产生四个 outstanding miss；四个 Directory context/MHSR 的局部容量不等于四个 CPU 端到端并行 miss。
 - Formal 尚未覆盖整个双核 cache 的无界数据正确性与所有并发事务；当前结论限于组件有界证明及仿真回归。
-- `release/v1.0` 是冻结的 MESI v1.0 基线；本次 P2 优化与报告更新提交到开发分支，后续可单独形成维护版本。
+- `release/v1.0` 是冻结的 MESI v1.0 基线；v1.0.1 维护记录独立放在 [`docs/releases/v1.0.1.md`](../../docs/releases/v1.0.1.md)，不移动冻结分支或标签。

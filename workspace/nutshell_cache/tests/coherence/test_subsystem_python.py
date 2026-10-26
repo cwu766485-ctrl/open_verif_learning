@@ -50,6 +50,30 @@ def _record_model(model):
                              encoding="utf-8")
 
 
+_PUT_OPCODES = {0b011, 0b100, 0b101}
+_PUT_OPCODE_BY_STATE = {"S": 0b011, "E": 0b100, "M": 0b101}
+
+
+def _assert_replacement_put_trace(model, memory, *, model_cursor=0,
+                                  request_cursor=0):
+    """Compare independently predicted L1 victims with accepted Put traffic."""
+    expected = [
+        (item["core"], item["line"], _PUT_OPCODE_BY_STATE[item["state"]])
+        for item in model.l1_evictions[model_cursor:]
+        if item.get("state") in _PUT_OPCODE_BY_STATE
+    ]
+    actual = [
+        (item["core"], item["line"], item["opcode"])
+        for item in memory.snoop_data.directory_requests[request_cursor:]
+        if item["opcode"] in _PUT_OPCODES
+    ]
+    assert actual == expected, (
+        "L1 replacement victim/Put mismatch: "
+        f"accepted={actual}, independently predicted={expected}"
+    )
+    return actual
+
+
 @fixture
 async def coherent_env(toffee_request: ToffeeRequest):
     if DUTCoherentCachePythonWrapper is None:
@@ -85,6 +109,33 @@ async def coherent_env(toffee_request: ToffeeRequest):
         return dut, memory, perf
 
     return start
+
+
+@case
+async def test_python_l1_replacement_victim_matches_put(coherent_env):
+    """Check the reference replacement way against the accepted Put line."""
+    dut, memory, _ = await coherent_env()
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    base = 0x0060_4000
+    line_stride = 32768  # same 4-way L1 set; distinct tags
+    request_cursor = len(memory.snoop_data.directory_requests)
+
+    for index in range(6):
+        address = base + index * line_stride
+        expected = memory.word(address, (address >> 3) & 7)
+        model.seed_word(address, expected)
+        response = await cpu.access(0, address)
+        assert response == expected
+        model.observe(0, address, response_data=response)
+
+    matched = _assert_replacement_put_trace(model, memory,
+                                            request_cursor=request_cursor)
+    assert len(matched) == 2
+    assert [line for _, line, _ in matched] == [base, base + line_stride]
+    assert int(dut.protocol_error.value) == 0
+    PYTHON_COVERAGE.sample_external("l1_replacement_put_match")
+    _record_model(model)
 
 
 @case
@@ -202,6 +253,67 @@ async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     assert len(memory.write_responses) == len(memory.write_requests)
     PYTHON_COVERAGE.sample_external("dirty_writeback", len(memory.write_requests))
     PYTHON_COVERAGE.sample_external("write_response", len(memory.write_responses))
+
+    # Force a shared S victim from an 8-way L2 set. Both L1s retain the seventh
+    # line as S while the ninth line allocates, so both copies must be invalidated.
+    shared_base = 0x0100_0000
+    shared_target = shared_base + 6 * 32768
+    shared_lines = [shared_base + index * 32768 for index in range(9)]
+    for index in range(6):
+        core = 0 if index < 3 else 1
+        address = shared_lines[index]
+        expected = memory.word(address, (address >> 3) & 7)
+        model.seed_word(address, expected)
+        response = await cpu.access(core, address)
+        assert response == expected
+        model.observe(core, address, response_data=response)
+
+    for core in (0, 1):
+        expected = memory.word(shared_target, (shared_target >> 3) & 7)
+        model.seed_word(shared_target, expected)
+        response = await cpu.access(core, shared_target)
+        assert response == expected
+        model.observe(core, shared_target, response_data=response)
+        memory.snoop_data.assert_directory_matches(model, shared_target)
+
+    address = shared_lines[7]
+    expected = memory.word(address, (address >> 3) & 7)
+    model.seed_word(address, expected)
+    response = await cpu.access(0, address)
+    assert response == expected
+    model.observe(0, address, response_data=response)
+    assert model.states[shared_target] == ["S", "S"]
+    assert model.l1_way_view(0, shared_target) is not None
+    assert model.l1_way_view(1, shared_target) is not None
+
+    set_index = model._l2_set(shared_target)
+    predicted_victim = model.l2_ways[set_index][model.l2_next_way[set_index] % 8]
+    assert predicted_victim == shared_target
+    shared_expected_words = [memory.word(shared_target, beat)
+                             for beat in range(8)]
+    snoop_cursor = len(memory.snoop_data.snoops)
+    write_cursor = len(memory.write_requests)
+    address = shared_lines[8]
+    expected = memory.word(address, (address >> 3) & 7)
+    model.seed_word(address, expected)
+    response = await cpu.access(0, address)
+    assert response == expected
+    model.observe(0, address, response_data=response)
+
+    shared_victims = [item for item in model.l2_evictions
+                      if item["line"] == shared_target and item["state"] == "S"]
+    assert {item["core"] for item in shared_victims} == {0, 1}
+    assert {item["core"] for item in memory.snoop_data.snoops[snoop_cursor:]
+            if item["line"] == shared_target} == {0, 1}
+    if any((write[0] & ~0x3F) == shared_target
+           for write in memory.write_requests[write_cursor:]):
+        # An E→S owner transfer may conservatively mark the L2 data dirty;
+        # if it writes back, verify every beat rather than requiring no AW.
+        assert tuple(memory._read_word(shared_target, beat)
+                     for beat in range(8)) == tuple(shared_expected_words)
+    assert not model.l2_contains(shared_target)
+    memory.snoop_data.assert_directory_matches(model, shared_target)
+    PYTHON_COVERAGE.sample_external("l2_shared_victim_back_invalidation")
 
     _record_model(model)
     assert PYTHON_COVERAGE.l2_live_evictions >= 1, "live inclusive L2 eviction was not modeled"
@@ -735,11 +847,13 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
     model.track_l1_replacement = False
     lookup_conflict_cursor = len(memory.snoop_data.lookup_conflicts)
     rng = random.Random(seed)
-    if os.environ.get("COHERENCE_STRESS_SEED_COUNT"):
-        # Ten same-index lines exercise L1/L2 replacement and dirty ownership;
-        # the remaining addresses spread accesses over independent sets.
-        addresses = ([0x0200_0000 + index * 0x2000 for index in range(10)] +
-                     [0x1200_0000 + index * 64 for index in range(16)])
+    stress_mode = bool(os.environ.get("COHERENCE_STRESS_SEED_COUNT"))
+    if stress_mode:
+        # Ten lines conflict in one L1 set while spreading across four L2
+        # sets; the remaining addresses spread traffic over other sets. Keep
+        # this pool away from the deterministic prologue's L2 sets 0 and 128.
+        addresses = ([0x0200_0800 + index * 0x2000 for index in range(10)] +
+                     [0x1200_1000 + index * 64 for index in range(16)])
     else:
         addresses = [0x0200_0000 + index * 64 for index in range(12)]
 
@@ -816,6 +930,81 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
                 f"owner_partial={memory.snoop_data.partial}; {error}"
             ) from error
 
+    # Keep a deterministic eviction prelude on the replay seed so the long
+    # random sweep always reaches dirty-owner and two-sharer L2 victims.
+    if stress_mode and seed == 0x5EED:
+        index = -1
+        dirty_base = 0x0080_2000
+        dirty_values = {}
+        l2_cursor = len(model.l2_evictions)
+        write_cursor = len(memory.write_requests)
+        for n in range(9):
+            address = dirty_base + n * 32768
+            value = 0xD17E000000000000 | n
+            core = 0 if n < 4 or n == 8 else 1
+            seed_if_needed(address)
+            await checked_access(core, address, write=True, data=value)
+            model.observe(core, address, write=True, write_data=value,
+                          write_mask=0xFF)
+            dirty_values[address] = value
+        dirty_victims = [item for item in model.l2_evictions[l2_cursor:]
+                         if item["state"] == "M"]
+        dirty_lines = {item["line"] for item in dirty_victims}
+        observed_writes = {entry[0] & ~0x3F
+                           for entry in memory.write_requests[write_cursor:]}
+        assert dirty_lines and dirty_lines & observed_writes, (
+            f"seed={seed:#x}: expected dirty live L2 victim/writeback; "
+            f"victims={dirty_victims}, writes={memory.write_requests[write_cursor:]}"
+        )
+        victim = dirty_victims[0]
+        victim_line = victim["line"]
+        reload = await checked_access(1 - victim["core"], victim_line)
+        model.observe(1 - victim["core"], victim_line, response_data=reload)
+        assert reload == dirty_values[victim_line], (
+            f"seed={seed:#x}: dirty victim data changed after writeback"
+        )
+        assert len(memory.write_responses) == len(memory.write_requests)
+
+        shared_base = 0x0100_0000
+        shared_lines = [shared_base + n * 32768 for n in range(9)]
+        shared_target = shared_lines[6]
+        for n in range(6):
+            core = 0 if n < 3 else 1
+            address = shared_lines[n]
+            seed_if_needed(address)
+            response = await checked_access(core, address)
+            model.observe(core, address, response_data=response)
+        for core in (0, 1):
+            seed_if_needed(shared_target)
+            response = await checked_access(core, shared_target)
+            model.observe(core, shared_target, response_data=response)
+        address = shared_lines[7]
+        seed_if_needed(address)
+        response = await checked_access(0, address)
+        model.observe(0, address, response_data=response)
+        assert model.states[shared_target] == ["S", "S"]
+        set_index = model._l2_set(shared_target)
+        assert model.l2_ways[set_index][model.l2_next_way[set_index] % 8] == shared_target
+        shared_expected_words = [memory.word(shared_target, beat)
+                                 for beat in range(8)]
+        snoop_cursor = len(memory.snoop_data.snoops)
+        shared_write_cursor = len(memory.write_requests)
+        address = shared_lines[8]
+        seed_if_needed(address)
+        response = await checked_access(0, address)
+        model.observe(0, address, response_data=response)
+        shared_victims = [item for item in model.l2_evictions[l2_cursor:]
+                          if item["line"] == shared_target and item["state"] == "S"]
+        assert {item["core"] for item in shared_victims} == {0, 1}
+        assert {item["core"] for item in memory.snoop_data.snoops[snoop_cursor:]
+                if item["line"] == shared_target} == {0, 1}
+        if any((entry[0] & ~0x3F) == shared_target
+               for entry in memory.write_requests[shared_write_cursor:]):
+            assert tuple(memory._read_word(shared_target, beat)
+                         for beat in range(8)) == tuple(shared_expected_words)
+        memory.snoop_data.assert_directory_matches(model, shared_target)
+        assert not model.l2_contains(shared_target)
+
     for index in range(operations):
         model.operation_index = index
         if index % 6 == 5:
@@ -874,7 +1063,11 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
                         f"{memory.snoop_data.directory_commits[dir_commit_cursor:]}, "
                         f"line snoops={line_snoops}, "
                         f"line commits={line_commits}, "
-                        f"new owner-data={memory.snoop_data.transfers[snoop_cursor:]}"
+                        f"new owner-data={memory.snoop_data.transfers[snoop_cursor:]}, "
+                        f"model_line_states={model.states[req.addr & ~0x3F]}, "
+                        f"model_l2_ways={model.l2_ways[model._l2_set(req.addr)]}, "
+                        f"model_l2_next={model.l2_next_way[model._l2_set(req.addr)]}, "
+                        f"model_l2_evictions={model.l2_evictions[-16:]}"
                     ) from error
                 if req.write:
                     readback = await checked_access(core, req.addr)
@@ -938,7 +1131,7 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
     # different-address Directory request with the active owner-transfer
     # lookup. All normal data, MESI, beat and directory checkers above remain
     # enabled while request and R-beat backpressure are active.
-    if seed == 0x5EED:
+    if seed == 0x5EED and not stress_mode:
         assert transfer_conflicts, (
             f"seed={seed:#x} failed to recreate a distinct-address transfer "
             f"lookup race: {conflicts}"
@@ -948,6 +1141,17 @@ async def test_python_seeded_randomized_coherence(coherent_env, seed):
         PYTHON_COVERAGE.sample_external("directory_lookup_conflict_transfer")
         PYTHON_COVERAGE.sample_interleaving(
             "active_transfer_distinct_address_ready_stall")
+    if stress_mode and seed == 0x5EED:
+        assert any(item["state"] == "M" for item in model.l2_evictions), (
+            "stress prologue missed a dirty-owner L2 live victim"
+        )
+        shared_lines_evicted = {}
+        for item in model.l2_evictions:
+            if item["state"] == "S":
+                shared_lines_evicted.setdefault(item["line"], set()).add(item["core"])
+        assert any(cores == {0, 1} for cores in shared_lines_evicted.values()), (
+            "stress prologue missed a two-sharer L2 live victim"
+        )
     _record_model(model)
 
 

@@ -11,6 +11,8 @@ class CoherenceCoverage:
         self.cross_state_opcode_core_source = Counter()
         self.l1_evictions = 0
         self.l2_live_evictions = 0
+        self.l2_dirty_owner_evictions = 0
+        self.l2_shared_evictions = 0
         self._model_progress = {}
 
     def sample(self, transition):
@@ -41,9 +43,21 @@ class CoherenceCoverage:
         for transition in model.transitions[transition_cursor:]:
             self.sample(transition)
         self.l1_evictions += len(model.l1_evictions) - previous[2]
-        self.l2_live_evictions += len(model.l2_evictions) - previous[3]
+        new_l2_evictions = model.l2_evictions[previous[3]:]
+        self.l2_live_evictions += len(new_l2_evictions)
+        evicted_by_line = {}
+        for eviction in new_l2_evictions:
+            evicted_by_line.setdefault(eviction["line"], []).append(eviction)
+        for evictions in evicted_by_line.values():
+            if any(item["state"] == "M" for item in evictions):
+                self.l2_dirty_owner_evictions += 1
+            if ({item["core"] for item in evictions if item["state"] == "S"}
+                    == {0, 1}):
+                self.l2_shared_evictions += 1
         self.features["l1_eviction"] = self.l1_evictions
         self.features["l2_live_eviction"] = self.l2_live_evictions
+        self.features["l2_live_victim_dirty_owner"] = self.l2_dirty_owner_evictions
+        self.features["l2_live_victim_shared"] = self.l2_shared_evictions
         self._model_progress[key] = (model, len(model.transitions),
                                      len(model.l1_evictions),
                                      len(model.l2_evictions))
@@ -68,6 +82,8 @@ class CoherenceCoverage:
             "features": dict(sorted(self.features.items())),
             "l1_evictions": self.l1_evictions,
             "l2_live_evictions": self.l2_live_evictions,
+            "l2_dirty_owner_evictions": self.l2_dirty_owner_evictions,
+            "l2_shared_evictions": self.l2_shared_evictions,
             "cross_state_opcode_core_source": dict(
                 sorted(self.cross_state_opcode_core_source.items())
             ),

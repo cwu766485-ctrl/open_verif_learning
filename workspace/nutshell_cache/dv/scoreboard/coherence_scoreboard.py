@@ -162,6 +162,10 @@ class CoherenceScoreboard:
             raise ValueError(f"not a Put request opcode: {opcode:#b}")
         line = addr & ~0x3F
         state = self.states[line][core]
+        # A completed PutM returns a full dirty line to L2. The L2 array
+        # advances its replacement pointer when that line write completes.
+        if state == "M":
+            self._touch_l2_write(line)
         self.states[line][core] = "I"
         self._remove_l1_copy(core, line)
         self.directory[line] = self.directory_view(line)
@@ -217,8 +221,11 @@ class CoherenceScoreboard:
         line = addr & ~0x3F
         own, other = self.states[line][core], self.states[line][1 - core]
         old_states = tuple(self.states[line])
-        if (write and other == "M") or (not write and own == "I" and other == "M"):
-            # OwnerData is written into the L2 data array before the grant.
+        if ((write and other == "M") or
+                (not write and own == "I" and other in ("M", "E"))):
+            # OwnerData from an M or E holder is accepted by the L2 line port
+            # before Grant; that full-line write advances the L2 replacement
+            # pointer even when the architectural value is still clean.
             self._touch_l2_write(line)
         expected, event = self.predict(core, addr, write=write,
                                        write_data=write_data,

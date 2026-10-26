@@ -268,7 +268,7 @@ coherence_stress:
 	  $(MAKE) coherence_python_build; \
 	fi
 	@mkdir -p reports/coherence/stress
-	@python3 -c 'import json; json.dump({"seed_count":20,"operations_per_seed":200,"seeds":[0x5eed]+[0xa0000000+i*0x9e3779b9 for i in range(19)],"address_pool":"10 same-index conflict lines + 16 spread lines"}, open("reports/coherence/stress/config.json", "w"), indent=2)'
+	@python3 -c 'import json; json.dump({"seed_count":20,"operations_per_seed":200,"seeds":[0x5eed]+[0xa0000000+i*0x9e3779b9 for i in range(19)],"address_pool":"10 same-L1-set conflicts spread over four L2 sets plus 16 spread lines, separated from the seed-0x5eed victim prologue sets","eviction_prologue":{"seed":"0x5eed","dirty_owner_victim":True,"two_sharer_shared_victim":True}}, open("reports/coherence/stress/config.json", "w"), indent=2)'
 	@source $(ENV_SCRIPT); COHERENCE_STRESS_SEED_COUNT=20 COHERENCE_STRESS_OPERATIONS=200 \
 	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_stress_coverage.json \
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \

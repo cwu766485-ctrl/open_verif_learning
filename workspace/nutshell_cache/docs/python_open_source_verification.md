@@ -71,7 +71,18 @@ resume, hit forwarding, dirty eviction, MMIO isolation and probe release.
 
 The Python subsystem suite currently covers the dual-core owner-transfer path,
 paired independent cold misses, byte-masked stores, an L1 replacement that
-hits in shared L2, and dirty L2 victim writeback/re-read. Benchmark v2 records
+hits in shared L2, and both dirty-owner and two-sharer live L2 victim reclaim.
+A dedicated four-way L1 replacement test compares reference-predicted victim
+addresses and Put opcodes with accepted Directory requests. Long stress keeps
+20 reproducible seeds × 200 mixed operations, adds ten same-L1-set conflict
+lines spread across four L2 sets, and runs a deterministic dirty/shared victim
+prologue on seed `0x5eed`. The prologue creates nine same-set L2 pressure
+sequentially and checks both an M-owner victim and a two-sharer S victim.
+An additional experiment with nine same-L2-set lines mixed into dual-lane
+random traffic produced Directory mismatches or response timeouts in 14/20
+seeds; that concurrent pattern remains an open stress issue, not a passing
+claim of the accepted regression.
+Benchmark v3 records
 per-core and aggregate L1 hit/miss rates, Directory L2 refill hit/miss rates,
 mean/P95 CPU latency, operations per cycle, snoops, writebacks, and backing
 memory read/write bytes and bandwidth. JSON and CSV outputs are generated under
