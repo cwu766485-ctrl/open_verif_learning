@@ -1,4 +1,13 @@
-# Coherence Benchmark v3 Results — 2026-10-25
+# Coherence Benchmark v3 Results — 2026-10-26 rerun
+
+The checked-in v3 A/B data was rerun against the final maintenance-candidate
+source tree `20bd7df03be36e408561a8369c7d99f6060ab29a` on 2026-10-26. The
+pre-optimization baseline is commit
+`231894463fc26c3e40211402a212ffae9412c44c`, the parent of the v3 Grant-read
+prefetch change. The original JSON did not store source SHAs; this provenance
+was reconstructed from the Git commit history. The separately measured clean
+Snoop/refill A/B was added in commit `9a55250` and is reported in its own
+section below.
 
 ## Reproduction and artifacts
 
@@ -49,11 +58,15 @@ delay setting does not affect the L2 hit path. The observed
 cycle is after that event: the line read now overlaps Grant acceptance. The
 CPU request-to-response measurement confirms the end-to-end one-cycle gain.
 
-Across the five 56-operation seeded Python mixed workloads, average response
-latency moved from 17.54 to 17.14 cycles; mean throughput moved from 0.04865
-to 0.04972 ops/cycle. Aggregate memory traffic moved from 0.4557 to 0.4658
-bytes/cycle. Those mixed-workload results are supplementary; the isolated
-32-sample L2-hit test is the direct measurement of the chosen optimization.
+Across the five seeded Python mixed workloads, average response latency moved
+from 17.538 to 17.259 cycles (-1.59%). The mean of per-seed throughput moved
+from 0.04865 to 0.04960 ops/cycle (+1.96%); aggregate memory traffic moved
+from 0.45575 to 0.46467 bytes/cycle (+1.96%). The optimized per-seed P95
+range is 59–62 cycles versus 59–64 cycles at baseline; this tail result is not
+uniformly better for every seed. These mixed-workload results are
+supplementary; the isolated 32-sample L2-hit test is the direct measurement of
+the chosen optimization. The updated averages use the checked-in JSON rows,
+not the earlier hand-calculated summary.
 
 ## AXI-integrated top results
 
@@ -66,9 +79,9 @@ test exercises backpressure on all five AXI channels.
 
 | Metric, mean across five seeds | Baseline | Optimized |
 | --- | ---: | ---: |
-| CPU response latency | 29.91 cycles | 29.21 cycles |
+| CPU response latency | 29.913 cycles | 29.206 cycles |
 | Operations/cycle | 0.03309 | 0.03383 |
-| Aggregate memory bandwidth | 0.7377 B/cycle | 0.7541 B/cycle |
+| Aggregate memory bandwidth | 0.73770 B/cycle | 0.75415 B/cycle |
 | Per-seed P95 latency range | 81–93 cycles | 85–92 cycles |
 | Peak outstanding reads | 2 | 2 |
 

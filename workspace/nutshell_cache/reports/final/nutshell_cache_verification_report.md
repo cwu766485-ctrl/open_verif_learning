@@ -12,6 +12,8 @@
 
 本次收尾补充双 sharer / dirty owner 的长压测 L2 victim 触发、独立 L1 victim-to-Put 对照、覆盖/报告更新和 testbench lint 告警分类。一个更激进的随机地址池实验仍未闭合，限制见第 7 节。
 
+性能数据已在维护候选源提交 `20bd7df` 上复跑并整理成[性能签核摘要](performance_signoff.md)，明确了 A/B baseline SHA、测试环境、4,000 操作压力回归与 benchmark 的对应关系及其边界。最新 GitHub Actions run `40338433620` 的 Legacy 与 Coherence jobs 均通过。
+
 ## 2. 硬件架构
 
 - 两个私有 L1 Data Cache，每个 32 KiB、4-way、64-byte line；各自连接 LSU/CPU 请求接口。
@@ -49,7 +51,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录本次源码对应的最新本地回归结果。最近一次此前提交的 GitHub Actions 两个 job 均通过；本次更新推送后，应再以新提交的 Legacy 与 Coherence job 为最终 CI 记录。
+以下表格记录维护候选源码的最新回归结果。GitHub Actions run `40338433620` 在 `20bd7df` 上的 Legacy 与 Coherence 两个 job 均通过；[查看 run](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620)。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
@@ -64,7 +66,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 6. 性能数据与复现
 
-性能 workload 固定 seed、初始 cache 状态和可配置内存响应延迟。基准输出 latency、P95、ops/cycle、L1/L2 refill hit/miss、Snoop、dirty writeback、AXI 读写 line/byte 数与 bytes/cycle。模拟周期数据只比较同一仿真配置下的设计行为。
+性能 workload 固定 seed、初始 cache 状态和可配置内存响应延迟。基准输出 latency、P95、ops/cycle、L1/L2 refill hit/miss、Snoop、dirty writeback、AXI 读写 line/byte 数与 bytes/cycle。模拟周期数据只比较同一仿真配置下的设计行为。最终 A/B 数字、source/baseline SHA、工作负载映射、scoreboard 与限制见[性能签核摘要](performance_signoff.md)。
 
 ```bash
 source scripts/env.sh
@@ -77,6 +79,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 - [`MESI v1.0 验证计划`](../../docs/cache_spec_and_verification_plan.md)
 - [`Benchmark v3 测量与定义`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)
+- [`最终性能签核摘要`](performance_signoff.md)
 - [`clean Snoop/refill A/B 原始结果`](../../benchmarks/results/p2_clean_snoop_fill_ab.json)
 - [`更新日志`](../../docs/update_log.md)
 
