@@ -13,6 +13,7 @@ format:
 - 22:03：将 RTL、Python DV、Formal harness、coverage、benchmark 原始结果及签核报告共 47 个文件推送到 `cache_coherence`，源验证提交为 `0c2c43251ec93f795dd286da42fccefae5373ae8`。该提交的 GitHub Actions run `40516921592` 已创建，检查时 Legacy 与 Coherence 两个 job 均排队；报告明确保留此状态，待 run 完成后再更新结论。
 - 22:26：Actions run `40516921592` 的 Coherence job PASS；Legacy job 仍停在 apt 依赖安装且活动日志不可取。报告改记为部分完成，不把未结束 CI 宣称为全绿；本地 Legacy `make gen_dut && make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 仍不在本次交付范围。
 - 23:02：核对 Actions 最终状态：run `40516921592` 的 Coherence PASS；Legacy 在 `make formal` 阶段于 45 分钟 job timeout 后取消，后续 regression 未执行。确认 Makefile 已有 `coherence_dense_set_stress`，且 `coherence_verify` 和已通过的 Coherence job 会执行它；图中关于缺少该门禁的描述已过期。将 Legacy job timeout 提至 90 分钟并保留完整 Formal/Regression；同步修正 v1.0.1 说明中旧的 dense-set 14/20 失败数据，等待完整 Actions 重跑后再固定版本。
+- 23:04：推送 follow-up commit `75a7533107c4c0f279dbfe7ebbcb9bc8f0c00b81`，将 Legacy CI timeout 从 45 提至 90 分钟，并同步 release manifest 与最终报告。完整 Actions run `40527215667` 已启动；等待 Legacy Formal/Regression 和 Coherence 全部结束后再固定 v1.0.1。
 
 ## 2026-10-27（新加坡时间）
 - 17:05：按 D01/D02/D04 新增 message-passing、100 代 DATA/READY/ACK 与 false-sharing A/B Python/Toffee 测试、coverage map 和 Testplan 说明；文档明确这些 litmus 只验证 LSU 驱动顺序下的一致性，不代表 ISA memory-ordering 证明。
