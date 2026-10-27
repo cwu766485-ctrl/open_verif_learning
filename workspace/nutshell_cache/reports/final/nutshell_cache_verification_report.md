@@ -12,7 +12,7 @@
 
 本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
-本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。源验证提交为 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8)，本地 `make COHERENCE_JOBS=2 coherence_verify` 通过；cache 与 AXI 性能数据在同一修复候选快照复跑。对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job PASS；Legacy 在完整 `make formal` 阶段被 45 分钟 job timeout 取消，后续 Legacy regression 未执行。timeout 已增至 90 分钟，完整 follow-up run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 正在新候选上执行。本地 Legacy `make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 评估不在本次交付范围。
+本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。RTL 源验证提交为 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8)，本地 `make COHERENCE_JOBS=2 coherence_verify` 通过；cache 与 AXI 性能数据在同一修复候选快照复跑。首次完整 CI run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Legacy job 在 45 分钟 timeout 后被取消。提高 timeout 到 90 分钟后，完整 follow-up run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 在验证提交 `75a7533` 上成功：Legacy（含 Formal 与 Regression）和 Coherence 均 PASS，没有跳过验证目标。本地 Legacy `make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 评估不在本次交付范围。
 
 ## 2. 硬件架构
 
@@ -53,7 +53,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录 2026-10-27 RTL 源提交 `0c2c432` 的本地回归结果。当前 CI 门禁候选 `75a7533` 的完整 run 为 [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667)，结果待定；旧 run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job PASS，Legacy job 在 Formal 阶段因 45 分钟 timeout 被取消。
+以下表格记录 2026-10-27 RTL 源提交 `0c2c432` 的本地回归结果。CI 门禁候选 `75a7533` 的完整 run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 已通过；旧 run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Legacy job 在 Formal 阶段因 45 分钟 timeout 被取消，随后通过延长到 90 分钟完整重跑闭环。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
@@ -64,9 +64,9 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 | AXI adapter / AXI subsystem | Adapter Python 3 passed; AXI top 5 seeds PASS | 五通道、ID/error/reset/backpressure；top benchmark peak read outstanding 为 2 |
 | Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度；不代表系统级无界证明 |
 | Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
-| GitHub Actions | New full run in progress | 90-minute Legacy job; formal and regression both enabled |
+| GitHub Actions | PASS: Legacy/Formal + Coherence | Run 40527215667 on `75a7533`; all jobs green, no verification target skipped |
 
-门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照；当前未闭合项是 Legacy job 在 45 分钟 timeout 下未能完成完整 Formal/Regression。
+门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照。Legacy 的 45 分钟 timeout 已提高至 90 分钟，完整 Formal/Regression 在 run 40527215667 中通过。
 | PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
 ## 6. 性能数据与复现
@@ -90,7 +90,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 ## 7. 当前限制与后续
 
-- 同 L2 set 压力曾有 14/20 seeds 失败。根因和修复已由原失败分布复测闭环：PutM 可绕过尚未握手 owner-data Snoop 的循环等待；一旦 Snoop 已握手或数据流进行中，仍禁止共享 L2 写口冲突。修复后 dense-set 20/20 seeds × 200 操作通过。该有限随机回归与 bounded formal 仍不能穷举所有 set、时序和系统活性组合。
+- 同 L2 set 压力曾有 14/20 seeds 失败。根因和修复已由原失败分布复测闭环：PutM 可绕过尚未握手 owner-data Snoop 的循环等待；一旦 Snoop 已握手或数据流进行中，仍禁止共享 L2 写口冲突。修复后 dense-set 20/20 seeds × 200 操作通过，并纳入 Makefile 与 CI 自动回归。该有限随机回归与 bounded formal 仍不能穷举所有 set、时序和系统活性组合。
 - 集成 SV testbench 的 Verilator build 仍会报告 testbench 级 `PINCONNECTEMPTY` / `PINMISSING`（非验证实例的可选 monitor 端口）、`WIDTHEXPAND` / `WIDTHTRUNC`、`MISINDENT`、`TIMESCALEMOD`、`UNUSEDSIGNAL`，以及 testbench/reference-model `MULTIDRIVEN`。`SharedL2DirectoryArray.line_wr_ready` 的 `MULTIDRIVEN` 来自一项层级 `force` backpressure 测试注入。两个实际产品顶层单独 lint 均为零 Warning；这些 bench 警告没有通过全局 waiver 隐藏。
 - PPA、真实 SRAM macro 映射/面积与时序签核仍未执行；当前 Verilator 仿真数据不是物理实现结果。
 - L1 仍为 blocking，完整系统 CPU 请求不能持续产生四个 outstanding miss；四个 Directory context/MHSR 的局部容量不等于四个 CPU 端到端并行 miss。
