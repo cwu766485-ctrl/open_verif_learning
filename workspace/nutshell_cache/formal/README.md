@@ -22,15 +22,23 @@ Run `make formal` to execute the maintained formal gate:
 `reports/formal/`; these outputs are ignored by Git and recreated by the target.
 
 The coherence-specific formal gate is `make coherence_formal`. It runs the two
-arbiter proofs plus `coherence_directory.sby` and
-`coherence_l1_controller.sby`. The latter two use the Slang SystemVerilog
-frontend to elaborate the actual controller RTL and run 16-step bounded safety
+arbiter proofs plus the Directory, Directory MSHR bank, bounded Directory
+progress, and L1 controller jobs. The Directory and L1 controller safety
+harnesses use the Slang SystemVerilog frontend to elaborate the actual RTL and
+run 16-step bounded safety
 checks for transaction ID/address routing, legal directory metadata,
 ready/valid payload stability, Snoop/refill data routing, sticky protocol
 errors, and cancellation of in-flight outputs after reset. These bounded
 checks complement the focused simulation tests; they are not unbounded
 controller proofs or a proof of the dual-L1/L2 subsystem. The arbiters retain
 their separate k-inductive/combinational proofs.
+
+`coherence_directory_progress.sby` adds an explicit bounded completion check
+for one cold `GetS`: with refill start/done, Directory write, Grant, and Grant
+commit handshakes all available, it requires the Grant within 8 Directory
+cycles and the commit within 9 cycles. This is a deterministic, fair
+environment progress check for that transaction path. It does not establish
+unbounded liveness under arbitrary traffic or fairness schedules.
 
 The controller harnesses leave downstream ready signals unconstrained so
 backpressure can occur for arbitrary cycles. Input stream payloads are assumed

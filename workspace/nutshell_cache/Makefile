@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_benchmark_v2 coherence_benchmark_v3 coherence_python_verify coherence_stress coherence_axi_python_build coherence_axi_python_test coherence_python_coverage_close clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_python_coverage_close clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -93,6 +93,7 @@ coherence_formal:
 	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
 	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
 	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
+	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_progress formal/coherence_directory_progress.sby && \
 	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_l1_controller formal/coherence_l1_controller.sby
 
 fault_injection:
@@ -224,11 +225,13 @@ coherence_axi_lint:
 
 # End-to-end dual-L1 MESI simulation connected to a backpressured, burst-capable
 # AXI RAM model with read/write accounting and an architectural data scoreboard.
-coherence_axi_e2e:
+coherence_axi_build:
 	@mkdir -p reports/coherence/axi_e2e_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherentCacheAxiSubsystem_tb --Mdir ../reports/coherence/axi_e2e_obj \
 	  -f Coherence.files.f ../tests/subsystem/rtl/CoherentCacheAxiSubsystem_tb.sv
+
+coherence_axi_e2e: coherence_axi_build
 	@mkdir -p reports/coherence
 	@set -e; for seed in 6699 24301 12648430 195936478 219540062; do \
 	  reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb +seed=$$seed \
@@ -236,6 +239,19 @@ coherence_axi_e2e:
 	  cat reports/coherence/axi_e2e_seed_$$seed.log; \
 	done
 	@python3 benchmarks/collect_axi_top_v3.py
+
+# Integrated top-level RREADY/BREADY stalls. Each mode checks that VALID and
+# response payload remain stable until the cache-side consumer accepts them.
+coherence_axi_backpressure:
+	@if [[ ! -x reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb ]]; then \
+	  $(MAKE) coherence_axi_build; \
+	fi
+	@mkdir -p reports/coherence/axi_backpressure
+	@set -e; for mode in r b rb; do \
+	  reports/coherence/axi_e2e_obj/VCoherentCacheAxiSubsystem_tb +seed=6699 +stall_$$mode \
+	    > reports/coherence/axi_backpressure/$$mode.log 2>&1 || { cat reports/coherence/axi_backpressure/$$mode.log; exit 1; }; \
+	  cat reports/coherence/axi_backpressure/$$mode.log; \
+	done
 
 # Picker-exported packed-port DUT and the independent Python/Toffee dual-L1
 # MESI regression (directed, reset, backpressure, seeded random, and benchmark).
@@ -250,6 +266,11 @@ coherence_python_test: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark" tests/coherence/test_subsystem_python.py && \
 	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
 
+coherence_python_litmus: coherence_python_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
+	 -k "message_passing_litmus or false_sharing_ab or generation_counter_litmus" \
+	 tests/coherence/test_subsystem_python.py
+
 coherence_benchmark_v2: coherence_benchmark_v3
 
 coherence_benchmark_v3: coherence_python_build
@@ -260,6 +281,11 @@ coherence_python_verify: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py && \
 	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure && \
 	 PYTHONPATH=.:./dv python3 -m dv.fault_injection.run
+
+# Inject faults into the real MESI L1 controller RTL and require the
+# module-level transaction checker to detect each mutated design.
+coherence_rtl_mutation:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 -m dv.mutation_testing.coherence_rtl_mutations
 
 # Opt-in extended constrained-random sweep. Every pytest case ID records its
 # seed; JUnit and seed configuration are retained for failure replay.
@@ -273,6 +299,21 @@ coherence_stress:
 	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_stress_coverage.json \
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 --junitxml=reports/coherence/stress/results.xml \
+	 'tests/coherence/test_subsystem_python.py::test_python_seeded_randomized_coherence'
+
+# Regression for directory/victim races when all random traffic collides in
+# one L2 set. Different L2 sets may still occupy separate Directory contexts.
+coherence_dense_set_stress:
+	@if [[ ! -f .tooling/coherent_python/_UT_CoherentCachePythonWrapper.so ]]; then \
+	  $(MAKE) coherence_python_build; \
+	fi
+	@mkdir -p reports/coherence/dense_l2_stress
+	@python3 -c 'import json; json.dump({"seed_count":20,"operations_per_seed":200,"seeds":[0x5eed]+[0xa0000000+i*0x9e3779b9 for i in range(19)],"address_pool":"nine random read/write lines in one 8-way L2 set; dual-core pairs and memory backpressure enabled","expected_behavior":"at most one active Directory context per L2 set; four contexts remain available across distinct sets"}, open("reports/coherence/dense_l2_stress/config.json", "w"), indent=2)'
+	@source $(ENV_SCRIPT); COHERENCE_STRESS_SEED_COUNT=20 COHERENCE_STRESS_OPERATIONS=200 \
+	 COHERENCE_DENSE_L2_SET_STRESS=1 \
+	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_dense_l2_set_coverage.json \
+	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
+	 --junitxml=reports/coherence/dense_l2_stress/results.xml \
 	 'tests/coherence/test_subsystem_python.py::test_python_seeded_randomized_coherence'
 
 # Independent AXI5-channel Python agent against the line-to-AXI adapter.
@@ -295,7 +336,7 @@ coherence_multisnoop: coherence_build
 coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
-	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify coherence_axi_python_test coherence_stress
+	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_axi_backpressure && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify coherence_axi_python_test coherence_stress coherence_dense_set_stress coherence_rtl_mutation
 
 # Remove transient build and per-test trace artifacts. Keep consolidated
 # coverage reports, formal proof logs, and experimental formal records.

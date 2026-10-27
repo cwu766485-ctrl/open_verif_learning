@@ -128,6 +128,8 @@ module CoherentCacheAxiSubsystem_tb;
   integer accepted_aw_count_q, accepted_w_beat_count_q, returned_b_count_q;
   integer ar_stall_count_q, aw_stall_count_q, w_stall_count_q;
   integer r_stall_count_q, b_stall_count_q;
+  integer forced_r_stall_cycles;
+  integer forced_b_stall_cycles;
   integer cpu_latency_count_q [0:1];
   integer cpu_latency_samples_q [0:1][0:255];
 
@@ -471,6 +473,8 @@ module CoherentCacheAxiSubsystem_tb;
     real total_bytes_per_cycle;
 
     if (!$value$plusargs("seed=%d", benchmark_seed)) benchmark_seed = 1;
+    forced_r_stall_cycles = 0;
+    forced_b_stall_cycles = 0;
     random_state = benchmark_seed;
     cpu_latency_count_q[0] = 0;
     cpu_latency_count_q[1] = 0;
@@ -573,6 +577,12 @@ module CoherentCacheAxiSubsystem_tb;
         (w_stall_count_q == 0))
       $fatal(1, "AXI backpressure coverage missing: AR=%0d AW=%0d W=%0d",
              ar_stall_count_q, aw_stall_count_q, w_stall_count_q);
+    if (($test$plusargs("stall_r") || $test$plusargs("stall_rb")) &&
+        (forced_r_stall_cycles < 5))
+      $fatal(1, "requested AXI R backpressure was not injected");
+    if (($test$plusargs("stall_b") || $test$plusargs("stall_rb")) &&
+        (forced_b_stall_cycles < 5))
+      $fatal(1, "requested AXI B backpressure was not injected");
 
     apb_read(32'h04, csr_value);
     if (csr_value == 0) $fatal(1, "APB miss counter did not observe AXI traffic");
@@ -632,6 +642,52 @@ module CoherentCacheAxiSubsystem_tb;
              w_stall_count_q, r_stall_count_q, b_stall_count_q);
     $display("PASS: AXI memory-model end-to-end MESI read/write stress");
     $finish;
+  end
+
+  // Force the top-level master READY low only after a response is presented.
+  // The source must keep VALID/ID/data/beat/last stable for five cycles and
+  // then drain normally when READY is released.
+  initial begin : axi_response_backpressure_injection
+    logic do_r_stall;
+    logic do_b_stall;
+    logic [TXN_ID_WIDTH-1:0] held_id;
+    logic [63:0] held_data;
+    logic held_last;
+    logic [1:0] held_resp;
+    do_r_stall = $test$plusargs("stall_r") || $test$plusargs("stall_rb");
+    do_b_stall = $test$plusargs("stall_b") || $test$plusargs("stall_rb");
+    wait (!reset);
+    if (do_r_stall) begin
+      wait (axi_rvalid);
+      held_id = axi_rid;
+      held_data = axi_rdata;
+      held_last = axi_rlast;
+      held_resp = axi_rresp;
+      force dut.cache_core.mem_rd_data_ready = 1'b0;
+      repeat (5) begin
+        @(posedge clock); #1;
+        if (!axi_rvalid || axi_rready || axi_rid != held_id ||
+            axi_rdata != held_data || axi_rresp != held_resp ||
+            axi_rlast != held_last)
+          $fatal(1, "AXI R response changed during forced backpressure");
+        forced_r_stall_cycles = forced_r_stall_cycles + 1;
+      end
+      release dut.cache_core.mem_rd_data_ready;
+    end
+    if (do_b_stall) begin
+      wait (axi_bvalid);
+      held_id = axi_bid;
+      held_resp = axi_bresp;
+      force dut.cache_core.mem_wr_rsp_ready = 1'b0;
+      repeat (5) begin
+        @(posedge clock); #1;
+        if (!axi_bvalid || axi_bready || axi_bid != held_id ||
+            axi_bresp != held_resp)
+          $fatal(1, "AXI B response changed during forced backpressure");
+        forced_b_stall_cycles = forced_b_stall_cycles + 1;
+      end
+      release dut.cache_core.mem_wr_rsp_ready;
+    end
   end
 
   initial begin

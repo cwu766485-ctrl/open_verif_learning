@@ -12,7 +12,8 @@ normal CI gate.
 | P0 | Directory lookup race and Grant/Snoop admission regressions | `tests/coherence/test_subsystem_python.py`: `test_python_seeded_randomized_coherence` (fixed replay `0x5eed`), `test_directory_lookup_grant_conflict_offset_sweep`, and `test_clean_snoop_overlaps_l2_fill_stream` | Independent byte-accurate MESI model; accepted Snoop/data/Directory commit monitors; both core directions run for clean invalidation during refill |
 | P0 | Dirty owner Snoop concurrent with L2 refill | `test_dirty_owner_snoop_and_refill_share_l2_write_port_safely` | Eight-beat owner-data comparison, reference Directory comparison, no simultaneous refill/owner write-port acceptance; runs with either core as owner |
 | P0 | Dense same-L2-set victim race | `make coherence_dense_set_stress` (also in `make coherence_verify`) | 20 seeds × 200 operations with nine same-set lines, dual-lane traffic and memory backpressure; independent MESI/data/Directory checkers; ownership requests serialize per L2 set and same-set Put is allowed to retire L1 victims |
-| P0 | MESI scoreboard/checker mutation sensitivity | `PYTHONPATH=.:./dv python3 -m dv.fault_injection.run` (also part of `make coherence_python_verify`) | Injects false hit, corrupt writeback and owner data, dropped stalled payload, duplicate response/Grant, unnecessary invalidate, mismatched Grant ID, and wrong Directory sharer; each must raise from its named checker |
+| P0 | MESI checker sensitivity and RTL mutation | `make coherence_python_verify`; `make coherence_rtl_mutation` | Python fault injection checks checker rejection; RTL mutation compiles actual `MesiL1Controller.sv` mutants and requires the module testbench to fail on the named protocol expectation |
+| P1 | Coverage gap review | `make coherence_regression`; `python3 -m dv.coverage.coherence_gap_review` | `docs/coherence_coverage_gap_review.md` lists all 288 unhit merged-LCOV lines, separates 244 product RTL from 44 testbench lines, and records source-level risk and directed-closure candidates |
 | D01 | Coherence vs memory-ordering litmus | `test_python_message_passing_litmus` and `test_python_generation_counter_litmus` | Producer waits for each LSU Store response; consumer checks READY/DATA/ACK on separate lines against an independent scoreboard. This validates coherence visibility under the test driver's ordering contract, not ISA acquire/release, RVWMO, or fence semantics |
 | D02 | False-sharing A/B | `test_python_false_sharing_ab` | Same fixed write count, response latency and backpressure; compares separate words in one 64-byte line against separate lines. Reports RTL cycles/op, mean/P95 CPU response latency, L1/L2 hit/miss rates, memory line traffic and simulated read/write/total bandwidth, snoop, GetM/Upgrade counts and final data in `reports/coherence/false_sharing_ab.json` |
 | D04 | Testplan/checker/coverage closure | `dv/coverage/python_coherence_map.json`, `make coherence_python_test`, `make coherence_python_verify` | Litmus and A/B testpoints map to independent checker events and cross bins; generated JSON/Markdown closure reports hit/miss status. Required tests are part of the Python/Toffee gate |
@@ -20,7 +21,8 @@ normal CI gate.
 | P1 | Independent L1 replacement / Put check | `test_python_l1_replacement_victim_matches_put` | A separate round-robin reference predicts the two victims from six same-set fills and compares each line, core, and PutS/PutE/PutM opcode with the accepted Directory request |
 | P1 | L2 live victim coverage by coherence state | `test_python_parallel_misses_l2_hit_and_dirty_writeback` and stress replay `0x5eed` | Dirty M victim must return all eight beats, complete its memory write response, and reload unchanged; a two-sharer S victim must be snooped by both cores, and any conservative owner-data writeback must preserve all eight words |
 | P1 | AXI error, reset, ID reuse, ordering and 4 KiB boundary | `make coherence_axi_python_test` | Five-channel memory agent checks R/B ID routing, propagated RRESP/BRESP errors, cancellation of active read/write IDs on reset, ID reuse after retirement/reset, 4 KiB-safe 64-byte bursts, and payload stability under backpressure |
-| P2 | Functional cross closure and formal baseline | `make coherence_python_verify` and `make coherence_formal` | Python feature/cross maps require all listed bins; existing module formal harnesses check arbitration, Directory/MSHR, and L1 controller properties at their configured bounded depths |
+| P1 | Integrated AXI R/B response backpressure | `make coherence_axi_backpressure` | Full cache-to-AXI top holds RREADY and BREADY low for five cycles after a response arrives; checks VALID/ID/data/RESP/LAST stability and successful drain in R-only, B-only, and simultaneous R+B modes |
+| P2 | Functional cross closure and bounded progress | `make coherence_python_verify` and `make coherence_formal` | Python feature/cross maps require all listed bins; module harnesses check arbitration, Directory/MSHR, L1 controller safety, plus bounded cold-GetS Grant/commit progress under an always-ready fair environment |
 
 ## Mutation sensitivity cases
 
@@ -33,9 +35,11 @@ normal CI gate.
 | Grant is delivered twice | Exactly-once transaction lifecycle checker |
 | A response payload changes while ready is low | Ready/valid stability checker |
 
-The mutation runner succeeds only when every injected fault is rejected. These
-are checker-sensitivity tests; they do not claim that each fault was compiled
-into and injected into the RTL netlist.
+The Python fault-injection runner mutates checker-visible observations and
+proves the checker is sensitive to those faults. Separately,
+`coherence_rtl_mutation` changes two real L1 controller RTL expressions,
+rebuilds the DUT with the module testbench, and requires the named checker
+failure. This is a small mutation set, not exhaustive RTL mutation coverage.
 
 ## Debug cases to retain
 
@@ -108,7 +112,10 @@ make coherence_python_verify
 make coherence_axi_python_test
 make coherence_stress
 make coherence_dense_set_stress
+make coherence_axi_backpressure
+make coherence_rtl_mutation
 make coherence_formal
+PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_gap_review
 ```
 
 `coherence_verify` runs the component, formal, RTL, Python/Toffee, AXI, the
