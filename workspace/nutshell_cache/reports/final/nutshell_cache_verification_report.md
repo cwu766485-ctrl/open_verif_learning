@@ -65,9 +65,9 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 | Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度；不代表系统级无界证明 |
 | Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
 | GitHub Actions | PASS: Legacy/Formal + Coherence | Run 40527215667 on `75a7533`; all jobs green, no verification target skipped |
+| PPA/SRAM 实现 | 未执行 | 本次明确排除，需目标工艺/库/约束后评估 |
 
 门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照。Legacy 的 45 分钟 timeout 已提高至 90 分钟，完整 Formal/Regression 在 run 40527215667 中通过。
-| PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
 ## 6. 性能数据与复现
 
