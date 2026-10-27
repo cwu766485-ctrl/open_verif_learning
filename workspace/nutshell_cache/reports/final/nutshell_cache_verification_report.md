@@ -12,7 +12,7 @@
 
 本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
-本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。源验证提交为 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8)，本地 `make COHERENCE_JOBS=2 coherence_verify` 通过；cache 与 AXI 性能数据在同一修复候选快照复跑。对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job 已 PASS；Legacy job 在 2026-10-27 22:26（新加坡时间）仍停留于依赖安装，未取得最终结论。本地 Legacy `make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 评估不在本次交付范围。
+本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。源验证提交为 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8)，本地 `make COHERENCE_JOBS=2 coherence_verify` 通过；cache 与 AXI 性能数据在同一修复候选快照复跑。对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job PASS；Legacy 在完整 `make formal` 阶段被 45 分钟 job timeout 取消，后续 Legacy regression 未执行。本次 follow-up 将 timeout 增至 90 分钟并重跑全部检查。本地 Legacy `make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 评估不在本次交付范围。
 
 ## 2. 硬件架构
 
@@ -53,7 +53,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录 2026-10-27 最终源提交 `0c2c432` 的本地回归结果。该提交对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job PASS，Legacy job 仍在运行；旧 Actions 结果不作为本候选签核证据。
+以下表格记录 2026-10-27 最终源提交 `0c2c432` 的本地回归结果。该提交对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 的 Coherence job PASS；Legacy job 在 Formal 阶段因 45 分钟 timeout 被取消。完整 workflow 会在提高 timeout 的 follow-up commit 上重跑。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
@@ -64,7 +64,9 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 | AXI adapter / AXI subsystem | Adapter Python 3 passed; AXI top 5 seeds PASS | 五通道、ID/error/reset/backpressure；top benchmark peak read outstanding 为 2 |
 | Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度；不代表系统级无界证明 |
 | Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
-| GitHub Actions | Coherence PASS; Legacy job in progress | Legacy job 停在依赖安装步骤；本地 `make test` 已通过 |
+| GitHub Actions | Coherence PASS; Legacy run cancelled | Legacy Formal hit 45-minute job timeout; full proof/regression is retained for the 90-minute rerun |
+
+门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照；当前未闭合项是 Legacy job 在 45 分钟 timeout 下未能完成完整 Formal/Regression。
 | PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
 ## 6. 性能数据与复现
