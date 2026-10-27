@@ -11,6 +11,7 @@ format:
 - 19:25：完成 D01/D02/D04 与 Test A/B/C 的最终映射；当前候选 Benchmark v3 重跑：L1 warm hit 2 cycles、L2 hit 22 cycles、五 seed mixed workload 17.20 cycles / 0.04957 ops/cycle / 0.46444 B/cycle。修订综合报告与性能签核；PPA/SRAM 不在本次签核范围。当前候选推送与 Actions 复核待完成。
 - 19:27：`make gen_dut` 成功；Legacy/Python `make test` 为 46 passed、26 skipped、3 deselected。重建综合验证报告 PDF，并更新总报告回归数据；报告用 Noto/WQY 本地字体生成，字体文件只保存在忽略的 `.tooling/` 环境目录。
 - 22:03：将 RTL、Python DV、Formal harness、coverage、benchmark 原始结果及签核报告共 47 个文件推送到 `cache_coherence`，源验证提交为 `0c2c43251ec93f795dd286da42fccefae5373ae8`。该提交的 GitHub Actions run `40516921592` 已创建，检查时 Legacy 与 Coherence 两个 job 均排队；报告明确保留此状态，待 run 完成后再更新结论。
+- 22:26：Actions run `40516921592` 的 Coherence job PASS；Legacy job 仍停在 apt 依赖安装且活动日志不可取。报告改记为部分完成，不把未结束 CI 宣称为全绿；本地 Legacy `make gen_dut && make test` 为 46 passed、26 skipped、3 deselected。PPA/SRAM 仍不在本次交付范围。
 
 ## 2026-10-27（新加坡时间）
 - 17:05：按 D01/D02/D04 新增 message-passing、100 代 DATA/READY/ACK 与 false-sharing A/B Python/Toffee 测试、coverage map 和 Testplan 说明；文档明确这些 litmus 只验证 LSU 驱动顺序下的一致性，不代表 ISA memory-ordering 证明。

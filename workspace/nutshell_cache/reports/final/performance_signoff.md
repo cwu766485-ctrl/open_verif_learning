@@ -89,7 +89,7 @@ AXI 顶层使用五个固定 seed，每 seed 64 个 CPU 请求；读写 RAM 检�
 
 独立 `CoherenceScoreboard` 不读取 DUT 的推导 MESI 状态；它维护逐 word architectural data、两个 L1 的 MESI 副本、byte mask、L1/L2 replacement 和由副本推导的 Directory owner/sharer。监视器以已接受的 Put、Snoop、数据 beat 和 Directory commit 与模型对照；每个随机 CPU 操作后比较目录，并对写操作做读回。随机 stress 模式让 DUT 选择真实 L1 victim，通过已接受 Put 更新副本模型，故不在该随机模式里二次预测 victim way；victim-way 预测另由独立 directed L1 replacement→Put 测试检查。
 
-源验证提交 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8) 对应的 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 已触发；截至本报告更新时两个 job 仍排队，暂不记为 CI 通过。本地 `make COHERENCE_JOBS=2 coherence_verify` 已全程通过。此前 run [40338433620](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620) 对应旧源提交 `20bd7df`，不替代本次结果。
+源验证提交 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8) 对应的 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592)：Coherence job 已 PASS；Legacy job 截至 2026-10-27 22:26（新加坡时间）仍卡在 `Install open-source RTL toolchain dependencies`，GitHub 未提供活动步骤日志，故整个 Actions run 尚未完成。Legacy 本地 `make gen_dut && make test` 为 46 passed、26 skipped、3 deselected。此前 run [40338433620](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620) 对应旧源提交 `20bd7df`，不替代本次结果。
 
 ## 限制与签核边界
 
