@@ -12,7 +12,7 @@
 
 本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
-本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。最新本地 `make COHERENCE_JOBS=2 coherence_verify` 通过，cache 与 AXI 性能数据在修复后的候选快照复跑。PPA/SRAM 仍按计划排除；最终 Actions 状态待推送后核对。
+本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。源验证提交为 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8)，本地 `make COHERENCE_JOBS=2 coherence_verify` 通过；cache 与 AXI 性能数据在同一修复候选快照复跑。对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 已触发，截至本报告更新时仍在队列，故暂不宣称远端 CI 通过。PPA/SRAM 评估不在本次交付范围。
 
 ## 2. 硬件架构
 
@@ -53,7 +53,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录 2026-10-27 本地最终候选的回归结果。对应 commit SHA 与 GitHub Actions run 在推送后回填；旧 Actions 结果不作为本候选签核证据。
+以下表格记录 2026-10-27 最终源提交 `0c2c432` 的本地回归结果。该提交对应 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 尚在队列；旧 Actions 结果不作为本候选签核证据。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |

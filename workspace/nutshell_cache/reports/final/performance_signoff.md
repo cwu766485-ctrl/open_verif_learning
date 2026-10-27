@@ -7,7 +7,7 @@
 | 项目 | 记录 |
 | --- | --- |
 | 分支 | `cache_coherence` |
-| 本次基准对应源提交 | 本地最终候选快照；推送后在此记录可复现 commit SHA |
+| 本次基准对应源提交 | [`0c2c43251ec93f795dd286da42fccefae5373ae8`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8) |
 | 性能 A/B 基线 | `231894463fc26c3e40211402a212ffae9412c44c`，Benchmark v3 优化提交 `e3008dc` 的父提交；比较的是 Grant 读预取优化前后 |
 | 基准复跑时间 | 2026-10-27 19:23，新加坡时间；当前修复候选上重跑 Benchmark v3 |
 | 仿真时钟 | 10 ns 周期（100 MHz 仿真时钟） |
@@ -15,7 +15,7 @@
 | Cache benchmark 内存 | 可读写 64-byte line 模型；可配置 2/20/50/100-cycle 响应延迟 |
 | AXI benchmark 内存 | 独立可读写 AXI RAM 模型，64-byte INCR burst、独立地址/ID/beat/write-response 检查 |
 
-基线 JSON/CSV 不含源代码 SHA。基线 SHA 根据 Git 历史确认：`2318944` 是引入 Grant 预取和 Benchmark v3 A/B 结果的 `e3008dc` 的直接父提交。本次 cache 和 AXI 候选性能数据均在已修复的本地候选快照复跑；同一源快照同时完成 `coherence_verify`。推送后记录对应 commit SHA 与 CI run。`release/v1.0` 仍保持冻结。
+基线 JSON/CSV 不含源代码 SHA。基线 SHA 根据 Git 历史确认：`2318944` 是引入 Grant 预取和 Benchmark v3 A/B 结果的 `e3008dc` 的直接父提交。本次 cache 和 AXI 候选性能数据均在源提交 `0c2c432` 对应的修复候选上复跑；同一源快照同时完成 `coherence_verify`。该提交对应的 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 已创建，报告更新时仍在队列中，完成后再补录结论。`release/v1.0` 仍保持冻结。
 
 复跑命令：
 
@@ -89,7 +89,7 @@ AXI 顶层使用五个固定 seed，每 seed 64 个 CPU 请求；读写 RAM 检�
 
 独立 `CoherenceScoreboard` 不读取 DUT 的推导 MESI 状态；它维护逐 word architectural data、两个 L1 的 MESI 副本、byte mask、L1/L2 replacement 和由副本推导的 Directory owner/sharer。监视器以已接受的 Put、Snoop、数据 beat 和 Directory commit 与模型对照；每个随机 CPU 操作后比较目录，并对写操作做读回。随机 stress 模式让 DUT 选择真实 L1 victim，通过已接受 Put 更新副本模型，故不在该随机模式里二次预测 victim way；victim-way 预测另由独立 directed L1 replacement→Put 测试检查。
 
-GitHub Actions 状态将在当前最终候选推送后记录；本地 `make COHERENCE_JOBS=2 coherence_verify` 已全程通过。之前的 Actions run [`40338433620`](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620) 是旧源提交 `20bd7df` 的结果，不代替本次提交的 CI。
+源验证提交 [`0c2c432`](https://github.com/cwu766485-ctrl/open_verif_learning/commit/0c2c43251ec93f795dd286da42fccefae5373ae8) 对应的 GitHub Actions run [40516921592](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40516921592) 已触发；截至本报告更新时两个 job 仍排队，暂不记为 CI 通过。本地 `make COHERENCE_JOBS=2 coherence_verify` 已全程通过。此前 run [40338433620](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620) 对应旧源提交 `20bd7df`，不替代本次结果。
 
 ## 限制与签核边界
 
