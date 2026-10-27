@@ -66,6 +66,7 @@ module MesiL1Controller #(
   output logic snoop_line_rd_valid,
   input  logic snoop_line_rd_ready,
   output logic [31:0] snoop_line_rd_addr,
+  input  logic snoop_line_rd_hit,
   input  logic snoop_array_data_valid,
   output logic snoop_array_data_ready,
   input  logic [2:0] snoop_array_beat_idx,
@@ -89,7 +90,10 @@ module MesiL1Controller #(
   output logic [31:0] snoop_meta_write_line_addr,
   output coherence_protocol_pkg::mesi_state_t snoop_meta_write_state,
 
-  output logic protocol_error
+  output logic protocol_error,
+  output logic [2:0] monitor_cpu_state,
+  output logic [2:0] monitor_snoop_state,
+  output logic [31:0] monitor_cpu_active_addr
 );
   import coherence_protocol_pkg::*;
 
@@ -155,6 +159,9 @@ module MesiL1Controller #(
                           (cpu_state_q == CPU_RESP);
 
   always_comb begin
+    monitor_cpu_state = cpu_state_q;
+    monitor_snoop_state = snoop_state_q;
+    monitor_cpu_active_addr = cpu_addr_q;
     cpu_req_ready = req_snoop_cpu_ready;
     cpu_resp_valid = (cpu_state_q == CPU_RESP) && cpu_resp_pending_q;
     cpu_resp_addr = resp_addr_q;
@@ -396,8 +403,23 @@ module MesiL1Controller #(
         end
 
         SNP_READ_LINE: begin
-          if (snoop_line_rd_valid && snoop_line_rd_ready)
-            snoop_state_q <= SNP_SEND_DATA;
+          if (snoop_line_rd_valid && snoop_line_rd_ready) begin
+            if (snoop_line_rd_hit) begin
+              snoop_state_q <= SNP_SEND_DATA;
+            end else begin
+              // The tag/state lookup occurs when the Snoop is accepted, while
+              // the single-ported line array may not grant its read until a
+              // later cycle. A concurrent completed metadata update can remove
+              // the line in between. Report a no-data acknowledgement so the
+              // Directory retries from the now-authoritative L2 line.
+              snoop_rsp_opcode_q <= (snoop_meta_state_q == MESI_I) ?
+                                    SNOOP_RSP_INV_ACK : SNOOP_RSP_ACK;
+              snoop_rsp_has_data_q <= 1'b0;
+              snoop_state_change_q <= 1'b0;
+              snoop_meta_pending_q <= 1'b0;
+              snoop_state_q <= SNP_SEND_RSP;
+            end
+          end
         end
 
         SNP_SEND_DATA: begin

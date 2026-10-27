@@ -160,6 +160,7 @@ module CoherentCacheAxiSubsystem #(
     .l1_controller_protocol_error(l1_controller_protocol_error),
     .l1_array_protocol_error(l1_array_protocol_error),
     .directory_protocol_error(directory_protocol_error),
+    .directory_protocol_error_code(),
     .l2_protocol_error(l2_protocol_error),
     .memory_adapter_protocol_error(core_memory_adapter_protocol_error),
     .memory_adapter_error(core_memory_adapter_error), .fatal_error(core_fatal_error),
@@ -200,7 +201,10 @@ module CoherentCacheAxiSubsystem #(
     .monitor_l2_fill_active(), .monitor_l2_line_wr_valid(),
     .monitor_l2_line_wr_ready(), .monitor_l2_line_wr_addr(),
     .monitor_l2_line_wr_beat(), .monitor_dir_snoop_data_to_l2(),
-    .monitor_dir_snoop_valid(), .monitor_snoop_set_conflict()
+    .monitor_dir_snoop_valid(), .monitor_snoop_set_conflict(),
+    .monitor_victim_snoop_accept_valid(),
+    .monitor_victim_snoop_accept_core(),
+    .monitor_victim_snoop_accept_addr()
   );
   /* verilator lint_on PINMISSING */
   /* verilator lint_on PINCONNECTEMPTY */

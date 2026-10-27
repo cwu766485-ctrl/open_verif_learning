@@ -1,0 +1,28 @@
+{
+  "seed_count": 20,
+  "operations_per_seed": 200,
+  "seeds": [
+    24301,
+    2684354560,
+    5338790329,
+    7993226098,
+    10647661867,
+    13302097636,
+    15956533405,
+    18610969174,
+    21265404943,
+    23919840712,
+    26574276481,
+    29228712250,
+    31883148019,
+    34537583788,
+    37192019557,
+    39846455326,
+    42500891095,
+    45155326864,
+    47809762633,
+    50464198402
+  ],
+  "address_pool": "nine random read/write lines in one 8-way L2 set; dual-core pairs and memory backpressure enabled",
+  "expected_behavior": "at most one active Directory context per L2 set; four contexts remain available across distinct sets"
+}

@@ -23,5 +23,10 @@
     47809762633,
     50464198402
   ],
-  "address_pool": "10 same-index conflict lines + 16 spread lines"
+  "address_pool": "10 same-L1-set conflicts spread over four L2 sets plus 16 spread lines, separated from the seed-0x5eed victim prologue sets",
+  "eviction_prologue": {
+    "seed": "0x5eed",
+    "dirty_owner_victim": true,
+    "two_sharer_shared_victim": true
+  }
 }

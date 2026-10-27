@@ -23,6 +23,9 @@ module CoherentCachePythonWrapper (
   output logic [1:0] monitor_snoop_accept_valid,
   output logic [63:0] monitor_snoop_accept_addr,
   output logic [1:0] monitor_snoop_accept_opcode,
+  output logic monitor_victim_snoop_accept_valid,
+  output logic monitor_victim_snoop_accept_core,
+  output logic [31:0] monitor_victim_snoop_accept_addr,
   output logic [1:0] monitor_snoop_rsp_valid,
   output logic [1:0] monitor_snoop_rsp_ready,
   output logic [5:0] monitor_snoop_rsp_txn_id,
@@ -66,6 +69,24 @@ module CoherentCachePythonWrapper (
   output logic monitor_dir_snoop_data_to_l2,
   output logic monitor_dir_snoop_valid,
   output logic monitor_snoop_set_conflict,
+  output logic [4:0] monitor_engine_state,
+  output logic [31:0] monitor_engine_addr,
+  output logic [31:0] monitor_victim_addr,
+  output logic [1:0] monitor_victim_pending_targets,
+  output logic monitor_victim_target,
+  output logic [1:0] monitor_snoop_offer_valid,
+  output logic [1:0] monitor_snoop_offer_ready,
+  output logic [3:0] monitor_mem_mshr_valid,
+  output logic [3:0] monitor_directory_active_contexts,
+  output logic monitor_dir_req_live_valid,
+  output logic monitor_dir_req_live_ready,
+  output logic [31:0] monitor_dir_req_live_addr,
+  output logic monitor_dir_xfer_live_valid,
+  output logic monitor_dir_xfer_live_ready,
+  output logic [5:0] monitor_cpu_state,
+  output logic [5:0] monitor_l1_snoop_state,
+  output logic [63:0] monitor_cpu_active_addr,
+  output logic [7:0] monitor_l1_replace_state,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -93,7 +114,8 @@ module CoherentCachePythonWrapper (
   output logic mem_wr_rsp_ready,
   input  logic [2:0] mem_wr_rsp_txn_id,
   input  logic mem_wr_rsp_error,
-  output logic protocol_error
+  output logic protocol_error,
+  output logic [11:0] protocol_error_detail
 );
   logic cpu_req_valid_u [0:1];
   logic cpu_req_ready_u [0:1];
@@ -126,6 +148,7 @@ module CoherentCachePythonWrapper (
   logic [1:0] l1_controller_protocol_error;
   logic [1:0] l1_array_protocol_error;
   logic directory_protocol_error;
+  logic [3:0] directory_protocol_error_code;
   logic l2_protocol_error;
   logic memory_adapter_protocol_error;
   logic memory_adapter_error;
@@ -158,6 +181,15 @@ module CoherentCachePythonWrapper (
     l2_protocol_error || (|l1_controller_protocol_error) ||
     (|l1_array_protocol_error) || memory_adapter_protocol_error ||
     memory_adapter_error || mmio_protocol_error;
+  assign protocol_error_detail = {
+    mmio_protocol_error,
+    (memory_adapter_protocol_error || memory_adapter_error),
+    l1_array_protocol_error,
+    l1_controller_protocol_error,
+    l2_protocol_error,
+    directory_protocol_error,
+    directory_protocol_error_code
+  };
 
   CoherentCacheSubsystem #(.TXN_ID_WIDTH(3), .NUM_MSHRS(4)) cache (
     .clock(clock), .reset(reset), .external_fatal_error(1'b0),
@@ -192,6 +224,7 @@ module CoherentCachePythonWrapper (
     .l1_controller_protocol_error(l1_controller_protocol_error),
     .l1_array_protocol_error(l1_array_protocol_error),
     .directory_protocol_error(directory_protocol_error),
+    .directory_protocol_error_code(directory_protocol_error_code),
     .l2_protocol_error(l2_protocol_error),
     .memory_adapter_protocol_error(memory_adapter_protocol_error),
     .memory_adapter_error(memory_adapter_error), .fatal_error(fatal_error),
@@ -208,6 +241,9 @@ module CoherentCachePythonWrapper (
     .monitor_snoop_accept_addr(monitor_snoop_accept_addr_u),
     .monitor_snoop_accept_opcode(monitor_snoop_accept_opcode_u),
     .monitor_snoop_accept_txn_id(monitor_snoop_accept_txn_id_u),
+    .monitor_victim_snoop_accept_valid(monitor_victim_snoop_accept_valid),
+    .monitor_victim_snoop_accept_core(monitor_victim_snoop_accept_core),
+    .monitor_victim_snoop_accept_addr(monitor_victim_snoop_accept_addr),
     .monitor_snoop_rsp_valid(monitor_snoop_rsp_valid),
     .monitor_snoop_rsp_ready(monitor_snoop_rsp_ready),
     .monitor_snoop_rsp_txn_id(monitor_snoop_rsp_txn_id_u),
@@ -256,7 +292,25 @@ module CoherentCachePythonWrapper (
     .monitor_l2_line_wr_beat(monitor_l2_line_wr_beat),
     .monitor_dir_snoop_data_to_l2(monitor_dir_snoop_data_to_l2),
     .monitor_dir_snoop_valid(monitor_dir_snoop_valid),
-    .monitor_snoop_set_conflict(monitor_snoop_set_conflict)
+    .monitor_snoop_set_conflict(monitor_snoop_set_conflict),
+    .monitor_engine_state(monitor_engine_state),
+    .monitor_engine_addr(monitor_engine_addr),
+    .monitor_victim_addr(monitor_victim_addr),
+    .monitor_victim_pending_targets(monitor_victim_pending_targets),
+    .monitor_victim_target(monitor_victim_target),
+    .monitor_snoop_offer_valid(monitor_snoop_offer_valid),
+    .monitor_snoop_offer_ready(monitor_snoop_offer_ready),
+    .monitor_mem_mshr_valid(monitor_mem_mshr_valid),
+    .monitor_directory_active_contexts(monitor_directory_active_contexts),
+    .monitor_dir_req_live_valid(monitor_dir_req_live_valid),
+    .monitor_dir_req_live_ready(monitor_dir_req_live_ready),
+    .monitor_dir_req_live_addr(monitor_dir_req_live_addr),
+    .monitor_dir_xfer_live_valid(monitor_dir_xfer_live_valid),
+    .monitor_dir_xfer_live_ready(monitor_dir_xfer_live_ready),
+    .monitor_cpu_state(monitor_cpu_state),
+    .monitor_l1_snoop_state(monitor_l1_snoop_state),
+    .monitor_cpu_active_addr(monitor_cpu_active_addr),
+    .monitor_l1_replace_state(monitor_l1_replace_state)
   );
 
   assign monitor_dir_req_accept_opcode = monitor_dir_req_accept_opcode_pkg;

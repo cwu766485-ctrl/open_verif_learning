@@ -11,7 +11,11 @@ normal CI gate.
 | --- | --- | --- | --- |
 | P0 | Directory lookup race and Grant/Snoop admission regressions | `tests/coherence/test_subsystem_python.py`: `test_python_seeded_randomized_coherence` (fixed replay `0x5eed`), `test_directory_lookup_grant_conflict_offset_sweep`, and `test_clean_snoop_overlaps_l2_fill_stream` | Independent byte-accurate MESI model; accepted Snoop/data/Directory commit monitors; both core directions run for clean invalidation during refill |
 | P0 | Dirty owner Snoop concurrent with L2 refill | `test_dirty_owner_snoop_and_refill_share_l2_write_port_safely` | Eight-beat owner-data comparison, reference Directory comparison, no simultaneous refill/owner write-port acceptance; runs with either core as owner |
+| P0 | Dense same-L2-set victim race | `make coherence_dense_set_stress` (also in `make coherence_verify`) | 20 seeds × 200 operations with nine same-set lines, dual-lane traffic and memory backpressure; independent MESI/data/Directory checkers; ownership requests serialize per L2 set and same-set Put is allowed to retire L1 victims |
 | P0 | MESI scoreboard/checker mutation sensitivity | `PYTHONPATH=.:./dv python3 -m dv.fault_injection.run` (also part of `make coherence_python_verify`) | Injects false hit, corrupt writeback and owner data, dropped stalled payload, duplicate response/Grant, unnecessary invalidate, mismatched Grant ID, and wrong Directory sharer; each must raise from its named checker |
+| D01 | Coherence vs memory-ordering litmus | `test_python_message_passing_litmus` and `test_python_generation_counter_litmus` | Producer waits for each LSU Store response; consumer checks READY/DATA/ACK on separate lines against an independent scoreboard. This validates coherence visibility under the test driver's ordering contract, not ISA acquire/release, RVWMO, or fence semantics |
+| D02 | False-sharing A/B | `test_python_false_sharing_ab` | Same fixed write count, response latency and backpressure; compares separate words in one 64-byte line against separate lines. Reports RTL cycles/op, mean/P95 CPU response latency, L1/L2 hit/miss rates, memory line traffic and simulated read/write/total bandwidth, snoop, GetM/Upgrade counts and final data in `reports/coherence/false_sharing_ab.json` |
+| D04 | Testplan/checker/coverage closure | `dv/coverage/python_coherence_map.json`, `make coherence_python_test`, `make coherence_python_verify` | Litmus and A/B testpoints map to independent checker events and cross bins; generated JSON/Markdown closure reports hit/miss status. Required tests are part of the Python/Toffee gate |
 | P1 | Extended constrained random | `make coherence_stress` (also included in `make coherence_verify`) | 20 deterministic seeds × 200 mixed transactions; ten addresses conflict in one L1 set while spreading across four L2 sets, plus 16 spread addresses. Replay seed `0x5eed` first forces a dirty M-owner victim and a two-sharer S victim, then random traffic runs with response gaps/backpressure and independent data/Directory checks. Config, coverage counters, and JUnit results are saved under `reports/coherence/stress/` |
 | P1 | Independent L1 replacement / Put check | `test_python_l1_replacement_victim_matches_put` | A separate round-robin reference predicts the two victims from six same-set fills and compares each line, core, and PutS/PutE/PutM opcode with the accepted Directory request |
 | P1 | L2 live victim coverage by coherence state | `test_python_parallel_misses_l2_hit_and_dirty_writeback` and stress replay `0x5eed` | Dirty M victim must return all eight beats, complete its memory write response, and reload unchanged; a two-sharer S victim must be snooped by both cores, and any conservative owner-data writeback must preserve all eight words |
@@ -69,6 +73,33 @@ into and injected into the RTL netlist.
    and compares predicted L1 victims with accepted Put addresses/opcodes. The
    model also advances its L2 replacement pointer when an observed PutM returns
    a dirty line, matching the full-line write event that the RTL uses.
+6. **Concurrent same-L2-set victim race.** Dense dual-core stress could make a
+   live L2 victim overlap another Directory context in the same 512-set index.
+   Victim invalidation removed the L1 owner while that context retained its old
+   Directory snapshot; a later SnoopRead then received an invalidation ack
+   instead of owner data. `DirectoryMshrBank` serializes same-set ownership
+   requests while retaining four-context concurrency across distinct sets.
+   Same-set Put bypasses that lock so an L1 replacement can complete and
+   service an outstanding snoop. The MSHR bench checks ownership backpressure,
+   Put bypass, and re-admission after grant commit; dense random replay stresses
+   same-set dual-lane traffic.
+
+## Application litmus scope (D01/D02)
+
+`test_python_message_passing_litmus` and the 100-generation DATA/READY/ACK
+test use three different cache lines. Each producer Store is completed through
+the LSU driver before the next Store is issued. Their result demonstrates
+coherence visibility under this explicit driver ordering. The testbench has no
+real CPU pipeline, ISA fence, acquire/release instruction, or architectural
+memory-model checker, so it must not be used to claim RVWMO or another CPU
+memory-ordering guarantee.
+
+The false-sharing A/B keeps the measured number of writes and configured
+memory delays/backpressure equal. One case places each core's word in the same
+64-byte line; the control places them in separate lines. Each workload is
+preconditioned into S/S or per-core E ownership, respectively, and excludes
+setup/final readback from the measured window. Reported latency and throughput
+are Verilator simulation cycles, not physical clock frequency or silicon PPA.
 
 ## Commands
 
@@ -76,17 +107,17 @@ into and injected into the RTL netlist.
 make coherence_python_verify
 make coherence_axi_python_test
 make coherence_stress
+make coherence_dense_set_stress
 make coherence_formal
 ```
 
-`coherence_verify` runs the component, formal, RTL, Python/Toffee, AXI and
-4,000-operation stress gates together. `make coherence_stress` runs the same
-long random sweep by itself for replay and local debugging.
+`coherence_verify` runs the component, formal, RTL, Python/Toffee, AXI, the
+standard 4,000-operation stress sweep, and the dense same-set 4,000-operation
+regression. Each stress target can also run independently for replay and local
+debugging.
 
-**Open stress limit:** a separate experiment placed nine random read/write
-lines in one L2 set while dual-lane requests and backpressure were active. It
-produced Directory-state mismatches or response timeouts/protocol errors in
-14/20 seeds. The accepted sweep keeps L1 replacement pressure across four L2
-sets and uses a deterministic sequential nine-line prologue for dirty-owner
-and two-sharer live victims; the denser same-set concurrent case remains to be
-debugged before claiming full closure of that stress corner.
+**Same-set stress:** nine read/write lines are placed in one L2 set while
+dual-lane requests and memory backpressure are active. Directory allocation
+serializes new ownership requests sharing that set, while Put requests bypass
+the lock so L1 replacement can retire. Distinct sets can still use all four
+contexts. This does not imply four-way same-set miss parallelism.

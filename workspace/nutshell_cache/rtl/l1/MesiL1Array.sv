@@ -62,6 +62,10 @@ module MesiL1Array #(
 
   input  logic line_rd_valid,
   output logic line_rd_ready,
+  // Only snoop reads can legitimately lose a hit between the controller's
+  // tag lookup and the shared array-read handshake. Replacement reads keep
+  // this low so a missing victim remains a reportable array error.
+  input  logic line_rd_miss_ok,
   /* verilator lint_off UNUSEDSIGNAL */
   input  logic [31:0] line_rd_addr,
   /* verilator lint_on UNUSEDSIGNAL */
@@ -262,7 +266,9 @@ module MesiL1Array #(
              ((refill_line_addr[31:6] != refill_addr_q[31:6]) ||
               (refill_way != refill_way_q) ||
               (refill_beat_idx != refill_expected_beat_q))))
-          protocol_error <= 1'b1;
+          begin
+            protocol_error <= 1'b1;
+          end
         data_array[refill_set][refill_way][refill_beat_idx] <= refill_data;
         if ((refill_beat_idx != 3'd0) && refill_pending_q &&
             (refill_beat_idx == refill_expected_beat_q))
@@ -299,7 +305,8 @@ module MesiL1Array #(
       if (cpu_store_valid && cpu_store_ready) begin
         if (!valid_array[store_set][cpu_store_way] ||
             (tag_array[store_set][cpu_store_way] != store_tag) ||
-            (state_array[store_set][cpu_store_way] != MESI_M)) begin
+            !((state_array[store_set][cpu_store_way] == MESI_M) ||
+              (state_array[store_set][cpu_store_way] == MESI_E))) begin
           protocol_error <= 1'b1;
         end else begin
           for (k = 0; k < 8; k = k + 1) begin
@@ -307,6 +314,16 @@ module MesiL1Array #(
               data_array[store_set][cpu_store_way][cpu_store_addr[5:3]][8*k +: 8]
                 <= cpu_store_wdata[8*k +: 8];
           end
+          // A local store may consume E permission directly. Normally the L1
+          // controller commits E->M before returning the response; update the
+          // array at the accepted store as well so its data and state cannot
+          // diverge if a concurrent metadata-port owner delayed that commit.
+          // A same-line Snoop metadata write has priority and determines the
+          // final state on this edge.
+          if ((state_array[store_set][cpu_store_way] == MESI_E) &&
+              !(snoop_meta_write_valid && snoop_meta_write_ready &&
+                (snoop_meta_write_line_addr[31:6] == cpu_store_addr[31:6])))
+            state_array[store_set][cpu_store_way] <= MESI_M;
         end
       end
 
@@ -320,8 +337,9 @@ module MesiL1Array #(
                 line_rd_addr[6+SET_WIDTH +: TAG_WIDTH])
             line_rd_way_q <= WAY_WIDTH'(j);
         end
-        if (!line_rd_hit)
+        if (!line_rd_hit && !line_rd_miss_ok) begin
           protocol_error <= 1'b1;
+        end
       end else if (line_data_valid && line_data_ready) begin
         if (line_rd_beat_q == 3'd7) begin
           line_rd_busy_q <= 1'b0;

@@ -27,7 +27,9 @@ class CoherenceScoreboard:
         self.directory = {}
         self.l1_evictions = []
         self.l2_evictions = []
+        self.pending_puts = set()
         self.track_l1_replacement = True
+        self.track_l2_replacement = True
 
     def seed_word(self, addr: int, value: int):
         self.data[addr & ~0x7] = value & WORD_MASK
@@ -122,6 +124,8 @@ class CoherenceScoreboard:
 
     def _touch_l2_write(self, line: int):
         """Model the replacement-pointer update on a full-line L2 data write."""
+        if not self.track_l2_replacement:
+            return
         set_index = self._l2_set(line)
         ways = self.l2_ways[set_index]
         if line in ways:
@@ -169,10 +173,27 @@ class CoherenceScoreboard:
         self.states[line][core] = "I"
         self._remove_l1_copy(core, line)
         self.directory[line] = self.directory_view(line)
+        self.pending_puts.add((core, line))
         self.l1_evictions.append({
             "core": core, "line": line, "state": state,
             "source": "directory_put",
         })
+
+    def observe_victim_invalidate(self, core: int, addr: int):
+        """Apply an accepted inclusive-L2 back-invalidation to the reference."""
+        line = addr & ~0x3F
+        if core not in (0, 1):
+            raise ValueError("core must be 0 or 1")
+        state = self.states[line][core]
+        if state == "I" and (core, line) not in self.pending_puts:
+            raise AssertionError(
+                f"L2 victim back-invalidated absent core{core} copy of {line:#x}"
+            )
+        self.states[line][core] = "I"
+        self._remove_l1_copy(core, line)
+        self.directory[line] = self.directory_view(line)
+        self.pending_puts.discard((core, line))
+        self.event_counts["l2_victim_back_invalidate"] += 1
 
     def _ensure_l2_line(self, line: int) -> bool:
         """Ensure an inclusive L2 entry exists; return whether it was present."""
@@ -219,6 +240,7 @@ class CoherenceScoreboard:
                 write_data: int = 0, write_mask: int = 0xFF,
                 response_data: int = 0):
         line = addr & ~0x3F
+        self.pending_puts.discard((core, line))
         own, other = self.states[line][core], self.states[line][1 - core]
         old_states = tuple(self.states[line])
         if ((write and other == "M") or
@@ -242,8 +264,9 @@ class CoherenceScoreboard:
             # admitted to the shared L2. That writeback can advance the L2
             # replacement pointer, so model the L1 victim first.
             self._allocate_l1(core, line)
-            l2_was_present = self._ensure_l2_line(line)
-            l2_refill = "hit" if l2_was_present else "miss"
+            if self.track_l2_replacement:
+                l2_was_present = self._ensure_l2_line(line)
+                l2_refill = "hit" if l2_was_present else "miss"
 
         if own != "I":
             data_source = "l1"

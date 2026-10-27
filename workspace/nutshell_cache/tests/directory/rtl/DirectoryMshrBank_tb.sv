@@ -42,6 +42,7 @@ module DirectoryMshrBank_tb;
   logic grant_commit_valid, grant_commit_src_id, grant_commit_ready;
   logic [TXN_ID_WIDTH-1:0] grant_commit_txn_id;
   logic snoop_data_to_l2, protocol_error;
+  logic [3:0] protocol_error_code;
 
   logic [31:0] ctx_addr [0:NUM_MSHRS-1];
   logic [TXN_ID_WIDTH-1:0] ctx_txn [0:NUM_MSHRS-1];
@@ -81,7 +82,8 @@ module DirectoryMshrBank_tb;
     .grant_commit_valid(grant_commit_valid),
     .grant_commit_src_id(grant_commit_src_id),
     .grant_commit_ready(grant_commit_ready), .grant_commit_txn_id(grant_commit_txn_id),
-    .snoop_data_to_l2(snoop_data_to_l2), .protocol_error(protocol_error)
+    .snoop_data_to_l2(snoop_data_to_l2), .protocol_error(protocol_error),
+    .protocol_error_code(protocol_error_code)
   );
 
   task automatic reset_bank;
@@ -150,7 +152,9 @@ module DirectoryMshrBank_tb;
         end
       end
       if (count != expected_count)
-        $fatal(1, "only observed %0d/%0d refill contexts", count, expected_count);
+        $fatal(1, "only observed %0d/%0d refill contexts active=%b xfer_valid=%b ready=%b",
+               count, expected_count, dut.active_q, dut.xfer_valid_ctx,
+               dut.xfer_ready_ctx);
     end
   endtask
 
@@ -326,6 +330,92 @@ module DirectoryMshrBank_tb;
     $display("COV_EVENT: id=mshr_bank.four_contexts checker=PASS old_state=I requester=multiple opcode=GetS snoop_target=none new_state=DIR_U data_source=L2_refill beats=8 contexts=4");
     $display("PASS: Directory MSHR bank routes four distinct contexts and out-of-order fills");
 
+    // Different lines in one L2 set must not retain simultaneous directory
+    // snapshots: a miss can reclaim any way in the set while a prior grant is
+    // still pending. The second request is accepted after the first commits.
+    reset_bank();
+    ctx_addr[0] = 32'h0000_9000;
+    ctx_addr[1] = 32'h0001_1000; // same [14:6] L2 set as 0x9000
+    ctx_txn[0] = TXN_ID_WIDTH'(1);
+    ctx_txn[1] = TXN_ID_WIDTH'(2);
+    ctx_src[0] = 1'b0;
+    ctx_src[1] = 1'b1;
+    ctx_seen[0] = 1'b0;
+    ctx_written[0] = 1'b0;
+    line_xfer_start_ready = 1'b0;
+    send_request(ctx_addr[0], ctx_src[0], ctx_txn[0], DIR_I, 2'b00, 1'b0);
+    @(negedge clock);
+    req_valid = 1'b1;
+    req_src_id = ctx_src[1];
+    req_txn_id = ctx_txn[1];
+    req_line_addr = ctx_addr[0];
+    lookup_dir_state = DIR_I;
+    #1;
+    if (req_ready) $fatal(1, "same-line ownership request was not serialized");
+    req_opcode = REQ_PUTS;
+    req_src_id = 1'b1;
+    #1;
+    if (req_ready)
+      $fatal(1, "same-line Put raced an ownership snapshot without a snoop dependency");
+    $display("COV_EVENT: id=mshr_bank.same_line_put_serialization checker=PASS old_state=DIR_I requester=Core1 opcode=PutS snoop_target=none new_state=I data_source=none beats=0 contexts=1");
+    req_opcode = REQ_GETS;
+    req_src_id = ctx_src[1];
+    req_line_addr = ctx_addr[1];
+    #1;
+    if (req_ready) $fatal(1, "same-L2-set Directory context was not serialized");
+    req_opcode = REQ_PUTS;
+    req_src_id = 1'b1;
+    req_line_addr = ctx_addr[1];
+    lookup_dir_state = DIR_S;
+    lookup_sharers = 2'b10;
+    #1;
+    if (!req_ready)
+      $fatal(1, "same-set Put was blocked behind an active ownership transaction");
+    $display("COV_EVENT: id=mshr_bank.same_set_put_bypass checker=PASS old_state=DIR_S requester=Core1 opcode=PutS snoop_target=none new_state=DIR_I data_source=none beats=0 contexts=1");
+    req_valid = 1'b0;
+    line_xfer_start_ready = 1'b1;
+    collect_xfers(1);
+    complete_xfer(CTX_W'(0));
+    accept_directory_writes(1);
+    accept_grants(1);
+    send_request(ctx_addr[1], ctx_src[1], ctx_txn[1], DIR_I, 2'b00, 1'b0);
+    $display("COV_EVENT: id=mshr_bank.same_set_serialization checker=PASS old_state=I requester=multiple opcode=GetS_same_set snoop_target=none new_state=DIR_U data_source=L2_refill beats=8 contexts=1");
+    if (protocol_error || protocol_error_code != 0)
+      $fatal(1, "protocol error during same-set serialization test code=%0d",
+             protocol_error_code);
+    reset_bank();
+
+    // A blocking L1 replacement cannot accept the snoop until its same-line
+    // Put is acknowledged. Permit that Put only while the snoop offer remains
+    // stalled; after the snoop handshake, the same-line snapshot is locked.
+    ctx_addr[0] = 32'h0000_6800;
+    ctx_txn[0] = TXN_ID_WIDTH'(6);
+    ctx_src[0] = 1'b0;
+    snoop_req_ready = 1'b0;
+    send_request(ctx_addr[0], ctx_src[0], ctx_txn[0], DIR_U, 2'b00, 1'b1);
+    for (cycles = 0; cycles < 30; cycles++) begin
+      @(posedge clock);
+      if (snoop_req_valid) break;
+    end
+    if (cycles == 30 || snoop_req_ready)
+      $fatal(1, "snoop offer was not held under target backpressure");
+    @(negedge clock);
+    req_valid = 1'b1;
+    req_opcode = REQ_PUTS;
+    req_src_id = 1'b1;
+    req_txn_id = TXN_ID_WIDTH'(7);
+    req_line_addr = ctx_addr[0];
+    lookup_dir_state = DIR_S;
+    lookup_sharers = 2'b10;
+    #1;
+    if (!req_ready)
+      $fatal(1, "stalled-snoop target Put did not bypass the blocking L1");
+    @(posedge clock);
+    @(negedge clock);
+    req_valid = 1'b0;
+    $display("COV_EVENT: id=mshr_bank.stalled_snoop_target_put checker=PASS old_state=DIR_U requester=Core0 opcode=GetS_plus_PutS snoop_target=Core1 new_state=DIR_S data_source=putbypass beats=0 contexts=2");
+    reset_bank();
+
     // Park a shared-owner read in its snoop wait state, then show three other
     // contexts still refill, update the directory, and return grants.
     reset_bank();
@@ -349,6 +439,22 @@ module DirectoryMshrBank_tb;
     if (snoop_addr_saved != ctx_addr[0] || snoop_target_saved != 1'b1 ||
         snoop_req_opcode != SNOOP_READ)
       $fatal(1, "incorrect owner snoop payload");
+
+    // Once the snoop is accepted, a same-line Put from its target must wait;
+    // committing its separate snapshot would let this older context restore
+    // stale owner/sharer metadata.
+    @(negedge clock);
+    req_valid = 1'b1;
+    req_opcode = REQ_PUTS;
+    req_src_id = 1'b1;
+    req_txn_id = TXN_ID_WIDTH'(12);
+    req_line_addr = ctx_addr[0];
+    lookup_dir_state = DIR_S;
+    lookup_sharers = 2'b10;
+    #1;
+    if (req_ready)
+      $fatal(1, "same-line Put raced an already accepted snoop snapshot");
+    req_valid = 1'b0;
 
     line_xfer_start_ready = 1'b0;
     for (integer i = 1; i < NUM_MSHRS; i++)

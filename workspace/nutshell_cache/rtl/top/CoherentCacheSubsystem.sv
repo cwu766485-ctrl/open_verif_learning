@@ -83,6 +83,7 @@ module CoherentCacheSubsystem #(
   output logic [1:0] l1_controller_protocol_error,
   output logic [1:0] l1_array_protocol_error,
   output logic directory_protocol_error,
+  output logic [3:0] directory_protocol_error_code,
   output logic l2_protocol_error,
   output logic memory_adapter_protocol_error,
   output logic memory_adapter_error,
@@ -111,6 +112,9 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_snoop_accept_addr [0:1],
   output coherence_protocol_pkg::snoop_opcode_t monitor_snoop_accept_opcode [0:1],
   output logic [TXN_ID_WIDTH-1:0] monitor_snoop_accept_txn_id [0:1],
+  output logic monitor_victim_snoop_accept_valid,
+  output logic monitor_victim_snoop_accept_core,
+  output logic [31:0] monitor_victim_snoop_accept_addr,
   output logic [1:0] monitor_snoop_rsp_valid,
   output logic [1:0] monitor_snoop_rsp_ready,
   output logic [TXN_ID_WIDTH-1:0] monitor_snoop_rsp_txn_id [0:1],
@@ -164,7 +168,26 @@ module CoherentCacheSubsystem #(
   output logic [2:0] monitor_l2_line_wr_beat,
   output logic monitor_dir_snoop_data_to_l2,
   output logic monitor_dir_snoop_valid,
-  output logic monitor_snoop_set_conflict
+  output logic monitor_snoop_set_conflict,
+  // Debug-only transaction snapshot used by timeout diagnostics in Python DV.
+  output logic [4:0] monitor_engine_state,
+  output logic [31:0] monitor_engine_addr,
+  output logic [31:0] monitor_victim_addr,
+  output logic [1:0] monitor_victim_pending_targets,
+  output logic monitor_victim_target,
+  output logic [1:0] monitor_snoop_offer_valid,
+  output logic [1:0] monitor_snoop_offer_ready,
+  output logic [NUM_MSHRS-1:0] monitor_mem_mshr_valid,
+  output logic [NUM_MSHRS-1:0] monitor_directory_active_contexts,
+  output logic monitor_dir_req_live_valid,
+  output logic monitor_dir_req_live_ready,
+  output logic [31:0] monitor_dir_req_live_addr,
+  output logic monitor_dir_xfer_live_valid,
+  output logic monitor_dir_xfer_live_ready,
+  output logic [5:0] monitor_cpu_state,
+  output logic [5:0] monitor_l1_snoop_state,
+  output logic [63:0] monitor_cpu_active_addr,
+  output logic [7:0] monitor_l1_replace_state
 );
   import coherence_protocol_pkg::*;
 
@@ -256,6 +279,10 @@ module CoherentCacheSubsystem #(
   logic [1:0] dir_write_sharers;
   logic dir_write_owner;
   logic dir_snoop_valid, dir_snoop_ready, dir_snoop_target;
+  // The inclusive-victim engine reuses the Directory snoop wires but owns a
+  // separate response FSM. Remember an accepted Directory snoop until its
+  // response retires so a victim operation cannot steal that response.
+  logic dir_snoop_inflight_q;
   snoop_opcode_t dir_snoop_opcode;
   logic [31:0] dir_snoop_addr;
   logic [TXN_ID_WIDTH-1:0] dir_snoop_txn_id;
@@ -287,6 +314,7 @@ module CoherentCacheSubsystem #(
   logic [1:0] victim_targets_after_current;
   logic victim_snoop_target_q, victim_snoop_data_expected_q;
   logic victim_snoop_data_complete_q, victim_dirty_q;
+  logic victim_owner_retired_before_snoop;
 
   logic [31:0] l2_lookup_addr;
   logic l2_lookup_hit;
@@ -463,6 +491,17 @@ module CoherentCacheSubsystem #(
     end
   end
 
+  always_ff @(posedge clock) begin
+    if (reset) begin
+      dir_snoop_inflight_q <= 1'b0;
+    end else begin
+      if (dir_snoop_valid && dir_snoop_ready)
+        dir_snoop_inflight_q <= 1'b1;
+      if (dir_snoop_rsp_valid && dir_snoop_rsp_ready)
+        dir_snoop_inflight_q <= 1'b0;
+    end
+  end
+
   always_comb begin
     fatal_error = external_fatal_error ||
                   (|l1_controller_protocol_error) ||
@@ -480,6 +519,14 @@ module CoherentCacheSubsystem #(
     victim_snoop_data_expected_q;
   assign victim_targets_after_current = victim_pending_targets_q &
     ~(victim_snoop_target_q ? 2'b10 : 2'b01);
+  // A dirty victim owner may have completed PutM and disappeared while the
+  // eviction waited for its snoop slot. INV_ACK without data is then legal:
+  // the accepted PutM already made the current L2 line authoritative.
+  assign victim_owner_retired_before_snoop =
+    victim_snoop_data_expected_q && !victim_snoop_data_complete_q &&
+    (mem_expected_beat_q == 3'd0) &&
+    (snoop_rsp_opcode_core[victim_snoop_target_q] == SNOOP_RSP_INV_ACK) &&
+    !snoop_rsp_has_data_core[victim_snoop_target_q];
   assign l2_dir_write_valid =
     (engine_state_q == ENGINE_VICTIM_CLEAR_DIR) ? 1'b1 : dir_write_valid;
   assign l2_dir_write_addr =
@@ -538,12 +585,33 @@ module CoherentCacheSubsystem #(
   assign monitor_dir_snoop_data_to_l2 = dir_snoop_data_to_l2;
   assign monitor_dir_snoop_valid = dir_snoop_valid;
   assign monitor_snoop_set_conflict = snoop_set_conflict;
+  assign monitor_engine_state = engine_state_q;
+  assign monitor_engine_addr = engine_addr_q;
+  assign monitor_victim_addr = victim_addr_q;
+  assign monitor_victim_pending_targets = victim_pending_targets_q;
+  assign monitor_victim_target = victim_snoop_target_q;
+  assign monitor_snoop_offer_valid = {snoop_valid_core[1], snoop_valid_core[0]};
+  assign monitor_snoop_offer_ready = {snoop_ready_core[1], snoop_ready_core[0]};
+  assign monitor_mem_mshr_valid = mem_mshr_valid_q;
+  assign monitor_dir_req_live_valid = cluster_dir_req_valid;
+  assign monitor_dir_req_live_ready = dir_req_ready;
+  assign monitor_dir_req_live_addr = cluster_dir_req_addr;
+  assign monitor_dir_xfer_live_valid = dir_xfer_start_valid;
+  assign monitor_dir_xfer_live_ready = dir_xfer_start_ready;
+  assign monitor_victim_snoop_accept_valid = !reset && victim_snoop_active &&
+    snoop_valid_core[victim_snoop_target_q] &&
+    snoop_ready_core[victim_snoop_target_q];
+  assign monitor_victim_snoop_accept_core = victim_snoop_target_q;
+  assign monitor_victim_snoop_accept_addr = victim_addr_q;
   assign monitor_dir_snoop_rsp_valid = dir_snoop_rsp_valid;
   assign monitor_dir_snoop_rsp_ready = dir_snoop_rsp_ready;
   assign monitor_dir_snoop_target = dir_snoop_target;
   assign monitor_dir_snoop_txn_id = dir_snoop_txn_id;
 
   always_ff @(posedge clock) begin
+    if (!reset && victim_snoop_active)
+      assert (!dir_snoop_inflight_q)
+        else $error("L2 victim snoop took ownership while a Directory snoop was outstanding");
     if (!reset && mem_fill_writer_active_q) begin
       assert (l2_line_wr_valid &&
               (l2_line_wr_addr == mem_mshr_addr_q[mem_fill_writer_sel_q]) &&
@@ -648,7 +716,30 @@ module CoherentCacheSubsystem #(
 
   assign dir_xfer_start_ready = (engine_state_q == ENGINE_IDLE) &&
                                 !mem_fill_writer_active_q &&
-                                !mshr_set_conflict;
+                                !mshr_set_conflict &&
+                                // Once an owner-data Snoop has been accepted,
+                                // its stream owns the L2 write port. A stalled
+                                // Snoop offer must not block a same-line PutM:
+                                // the replacement can be waiting for this PutM
+                                // before it can accept the Snoop. PutM is
+                                // drained first, then the missing-line Snoop
+                                // response falls back to the newly committed
+                                // L2 copy in DirectoryController.
+                                (!dir_snoop_data_to_l2 ||
+                                 ((dir_xfer_kind == XFER_PUTM_TO_L2) &&
+                                  dir_snoop_valid &&
+                                  !dir_snoop_inflight_q &&
+                                  !dir_snoop_ready)) &&
+                                // A live L2 victim uses the same L1 snoop
+                                // response path as Directory transactions.
+                                // Wait for the outstanding Directory snoop
+                                // to retire, including the cycle it is first
+                                // offered, before taking ownership of that
+                                // path for back-invalidation.
+                                !((dir_xfer_kind == XFER_L2_REFILL) &&
+                                  l2_alloc_victim_valid &&
+                                  (dir_snoop_inflight_q || dir_snoop_valid ||
+                                   dir_snoop_rsp_valid));
 
   // Snoop payload/valid are independent of the return ready path. Keep them
   // in their own combinational cone because an L1 may qualify ready by line
@@ -671,6 +762,9 @@ module CoherentCacheSubsystem #(
     // Keep request valid and ready coupled: otherwise an L1 could consume a
     // Snoop while the Directory MSHR did not accept the same request.
     dir_snoop_issue_enable = !victim_snoop_active && !snoop_set_conflict &&
+      // Once PutM owns the line-write engine, hold off a new dirty-owner
+      // Snoop until the eight-beat PutM stream releases the shared L2 port.
+      (engine_state_q != ENGINE_PUTM_STREAM) &&
       (!mem_fill_writer_active_q || !dir_snoop_data_to_l2);
     if (victim_snoop_active) begin
       snoop_addr_core[0] = victim_addr_q;
@@ -999,12 +1093,17 @@ module CoherentCacheSubsystem #(
     .replace_valid(l1_replace_valid_core), .replace_way(),
     .replace_state(l1_victim_state), .replace_line_addr(l1_victim_addr),
     .controller_protocol_error(l1_controller_protocol_error),
-    .array_protocol_error(l1_array_protocol_error)
+    .array_protocol_error(l1_array_protocol_error),
+    .monitor_cpu_state(monitor_cpu_state),
+    .monitor_snoop_state(monitor_l1_snoop_state),
+    .monitor_cpu_active_addr(monitor_cpu_active_addr),
+    .monitor_replace_state(monitor_l1_replace_state)
   );
   /* verilator lint_on PINCONNECTEMPTY */
 
   DirectoryMshrBank #(
-    .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS)
+    .TXN_ID_WIDTH(TXN_ID_WIDTH), .NUM_MSHRS(NUM_MSHRS),
+    .L2_SET_INDEX_WIDTH(9)
   ) directory_controller (
     .clock(clock), .reset(reset),
     .req_valid(cluster_dir_req_valid && dir_lookup_available),
@@ -1039,7 +1138,9 @@ module CoherentCacheSubsystem #(
     .grant_commit_src_id(dir_grant_commit_src_id),
     .grant_commit_txn_id(dir_grant_commit_txn_id),
     .snoop_data_to_l2(dir_snoop_data_to_l2),
-    .protocol_error(directory_protocol_error)
+    .protocol_error(directory_protocol_error),
+    .protocol_error_code(directory_protocol_error_code),
+    .monitor_active_contexts(monitor_directory_active_contexts)
   );
 
   SharedL2DirectoryArray #(.SETS(512), .WAYS(8), .TAG_WIDTH(17)) l2_array (
@@ -1392,9 +1493,10 @@ module CoherentCacheSubsystem #(
           if (victim_snoop_rsp_fire) begin
             if ((snoop_rsp_txn_id_core[victim_snoop_target_q] != engine_txn_q) ||
                 (victim_snoop_data_expected_q &&
-                 ((snoop_rsp_opcode_core[victim_snoop_target_q] != SNOOP_RSP_DATA) ||
-                  !snoop_rsp_has_data_core[victim_snoop_target_q] ||
-                  !victim_snoop_data_complete_q)) ||
+                 !((snoop_rsp_opcode_core[victim_snoop_target_q] == SNOOP_RSP_DATA &&
+                    snoop_rsp_has_data_core[victim_snoop_target_q] &&
+                    victim_snoop_data_complete_q) ||
+                   victim_owner_retired_before_snoop)) ||
                 (!victim_snoop_data_expected_q &&
                  ((snoop_rsp_opcode_core[victim_snoop_target_q] != SNOOP_RSP_INV_ACK) ||
                   snoop_rsp_has_data_core[victim_snoop_target_q]))) begin

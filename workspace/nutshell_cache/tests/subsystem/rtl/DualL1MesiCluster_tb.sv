@@ -25,6 +25,9 @@ module DualL1MesiCluster_tb;
   mesi_state_t metadata_commit_state [0:1];
   logic metadata_commit_is_snoop [0:1];
   logic [1:0] metadata_commit_seen = 2'b00;
+  logic [5:0] monitor_cpu_state, monitor_snoop_state;
+  logic [63:0] monitor_cpu_active_addr;
+  logic [7:0] monitor_replace_state;
 
   logic [1:0] dir_req_ready;
   logic dir_req_valid;

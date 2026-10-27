@@ -5,6 +5,7 @@
 module DirectoryMshrBank #(
   parameter int TXN_ID_WIDTH = coherence_protocol_pkg::TXN_ID_WIDTH,
   parameter int NUM_MSHRS = 4,
+  parameter int L2_SET_INDEX_WIDTH = 9,
   parameter int MSHR_ID_WIDTH = (NUM_MSHRS < 2) ? 1 : $clog2(NUM_MSHRS)
 ) (
   input logic clock,
@@ -62,13 +63,16 @@ module DirectoryMshrBank #(
   input logic [TXN_ID_WIDTH-1:0] grant_commit_txn_id,
 
   output logic snoop_data_to_l2,
-  output logic protocol_error
+  output logic protocol_error,
+  output logic [3:0] protocol_error_code,
+  output logic [NUM_MSHRS-1:0] monitor_active_contexts
 );
   import coherence_protocol_pkg::*;
 
   logic [NUM_MSHRS-1:0] active_q;
   logic [31:0] line_addr_q [0:NUM_MSHRS-1];
   logic src_id_q [0:NUM_MSHRS-1];
+  request_opcode_t req_opcode_q [0:NUM_MSHRS-1];
   logic [TXN_ID_WIDTH-1:0] txn_id_q [0:NUM_MSHRS-1];
 
   logic [NUM_MSHRS-1:0] req_ready_ctx, req_valid_ctx;
@@ -97,6 +101,7 @@ module DirectoryMshrBank #(
   logic [TXN_ID_WIDTH-1:0] grant_txn_ctx [0:NUM_MSHRS-1];
   logic [NUM_MSHRS-1:0] grant_commit_ready_ctx;
   logic [NUM_MSHRS-1:0] snoop_data_ctx, error_ctx;
+  logic [3:0] error_code_ctx [0:NUM_MSHRS-1];
 
   logic [MSHR_ID_WIDTH-1:0] write_rr_q, snoop_rr_q, xfer_rr_q, grant_rr_q;
   logic write_offer_lock_q, snoop_offer_lock_q, xfer_offer_lock_q, grant_offer_lock_q;
@@ -107,6 +112,10 @@ module DirectoryMshrBank #(
   logic [MSHR_ID_WIDTH-1:0] write_sel, snoop_sel, xfer_sel, grant_sel;
   logic write_found, snoop_found, xfer_found, grant_found;
   logic req_found, duplicate_line;
+  logic put_snoop_bypass;
+  logic same_line_put_conflict;
+  logic same_line_active;
+  logic active_set_conflict;
   logic [MSHR_ID_WIDTH-1:0] req_sel;
   logic commit_found;
   logic [MSHR_ID_WIDTH-1:0] commit_sel;
@@ -121,16 +130,56 @@ module DirectoryMshrBank #(
     integer first_free;
     req_found = 1'b0;
     duplicate_line = 1'b0;
+    put_snoop_bypass = 1'b0;
+    same_line_put_conflict = 1'b0;
+    same_line_active = 1'b0;
+    active_set_conflict = 1'b0;
     req_sel = '0;
     first_free = -1;
     for (i = 0; i < NUM_MSHRS; i = i + 1) begin
       if (!active_q[i] && first_free < 0) first_free = i;
-      if (active_q[i] && (line_addr_q[i] == line_align(req_line_addr)))
-        duplicate_line = 1'b1;
+      if (active_q[i]) begin
+        if (line_addr_q[i] == line_align(req_line_addr)) begin
+          same_line_active = 1'b1;
+          if (req_opcode == REQ_GETS || req_opcode == REQ_GETM ||
+              req_opcode == REQ_UPGRADE) begin
+            duplicate_line = 1'b1;
+          end else if (req_opcode == REQ_PUTS || req_opcode == REQ_PUTE ||
+                       req_opcode == REQ_PUTM) begin
+            // Normally serialize same-line Put with ownership requests too:
+            // otherwise their snapshots can commit out of order (for example
+            // a GetS retaining a departing sharer after PutS cleared it).
+            // The sole bypass is the deadlock escape while this context's
+            // snoop offer is stalled at that Put source. A blocking L1
+            // replacement cannot accept the snoop until the Put receives its
+            // Ack. Once the snoop is accepted, serialize same-line Puts so an
+            // older directory snapshot cannot overwrite the Put's commit.
+            if (snoop_valid_ctx[i] && !snoop_ready_ctx[i] &&
+                (snoop_target_ctx[i] == req_src_id))
+              put_snoop_bypass = 1'b1;
+            else
+              same_line_put_conflict = 1'b1;
+          end
+        end
+        // A live L2 victim is selected from the refill's set. Serialize new
+        // ownership requests while a context can still hold a set snapshot.
+        // Put transactions must bypass this guard: an L1 can be waiting for
+        // its victim PutAck before it is able to service the active context's
+        // snoop, so blocking Put here would create a Directory/L1 deadlock.
+        if ((req_opcode == REQ_GETS || req_opcode == REQ_GETM ||
+             req_opcode == REQ_UPGRADE) &&
+            line_addr_q[i][6 +: L2_SET_INDEX_WIDTH] ==
+            req_line_addr[6 +: L2_SET_INDEX_WIDTH])
+          active_set_conflict = 1'b1;
+      end
     end
+    if ((req_opcode == REQ_PUTS || req_opcode == REQ_PUTE ||
+         req_opcode == REQ_PUTM) &&
+        same_line_active && (same_line_put_conflict || !put_snoop_bypass))
+      duplicate_line = 1'b1;
     if (first_free >= 0) begin
       req_sel = MSHR_ID_WIDTH'(first_free);
-      req_found = !duplicate_line;
+      req_found = !duplicate_line && !active_set_conflict;
     end
     req_ready = req_found && req_ready_ctx[req_sel];
   end
@@ -233,7 +282,13 @@ module DirectoryMshrBank #(
 
     snoop_data_to_l2 = snoop_data_ctx[snoop_sel];
     protocol_error = |error_ctx;
+    protocol_error_code = 4'd0;
+    for (integer i = 0; i < NUM_MSHRS; i = i + 1)
+      if (error_ctx[i] && protocol_error_code == 4'd0)
+        protocol_error_code = error_code_ctx[i];
   end
+
+  assign monitor_active_contexts = active_q;
 
   always_comb begin : route_channel_readies
     write_ready_ctx = '0;
@@ -270,6 +325,7 @@ module DirectoryMshrBank #(
       for (integer i = 0; i < NUM_MSHRS; i = i + 1) begin
         line_addr_q[i] <= '0;
         src_id_q[i] <= 1'b0;
+        req_opcode_q[i] <= REQ_GETS;
         txn_id_q[i] <= '0;
       end
     end else begin
@@ -277,6 +333,7 @@ module DirectoryMshrBank #(
         active_q[req_sel] <= 1'b1;
         line_addr_q[req_sel] <= line_align(req_line_addr);
         src_id_q[req_sel] <= req_src_id;
+        req_opcode_q[req_sel] <= req_opcode;
         txn_id_q[req_sel] <= req_txn_id;
       end
       if (grant_commit_valid && grant_commit_ready)
@@ -360,7 +417,8 @@ module DirectoryMshrBank #(
                           (commit_sel == MSHR_ID_WIDTH'(c))),
       .grant_commit_ready(grant_commit_ready_ctx[c]),
       .grant_commit_txn_id(grant_commit_txn_id),
-      .snoop_data_to_l2(snoop_data_ctx[c]), .protocol_error(error_ctx[c])
+      .snoop_data_to_l2(snoop_data_ctx[c]), .protocol_error(error_ctx[c]),
+      .protocol_error_code(error_code_ctx[c])
     );
   end
 

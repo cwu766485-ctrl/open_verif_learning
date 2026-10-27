@@ -116,6 +116,8 @@ module CoherenceDirectoryMshrBankFormal(
   always @(posedge clock) begin : bank_properties
     integer i;
     integer j;
+    integer matching_line_contexts;
+    integer legal_put_bypass_found;
     past_valid <= 1'b1;
     if (init_reset_count < 2)
       init_reset_count <= init_reset_count + 1'b1;
@@ -132,17 +134,34 @@ module CoherenceDirectoryMshrBankFormal(
     end
 
     if (!reset) begin
-      // A line may have only one live Directory context, even when requester
-      // transaction IDs are reused or equal across the two cores.
+      matching_line_contexts = 0;
+      legal_put_bypass_found = 0;
       for (i = 0; i < NUM_MSHRS; i = i + 1) begin
-        for (j = i + 1; j < NUM_MSHRS; j = j + 1) begin
-          assert (!(dut.active_q[i] && dut.active_q[j] &&
-                    (dut.line_addr_q[i] == dut.line_addr_q[j])));
-        end
         if (dut.active_q[i] &&
-            (dut.line_addr_q[i] == line_align(req_line_addr)))
-          assert (!req_ready);
+            (dut.line_addr_q[i] == line_align(req_line_addr))) begin
+          matching_line_contexts = matching_line_contexts + 1;
+          if (dut.snoop_valid_ctx[i] && !dut.snoop_ready_ctx[i] &&
+              (dut.snoop_target_ctx[i] == req_src_id))
+            legal_put_bypass_found = 1;
+        end
+        for (j = i + 1; j < NUM_MSHRS; j = j + 1) begin
+          if (dut.active_q[i] && dut.active_q[j] &&
+              (dut.line_addr_q[i] == dut.line_addr_q[j])) begin
+            // The sole allowed duplicate is one replacement Put context
+            // behind one coherence context that had to let the Put retire
+            // before its stalled Snoop could be accepted.
+            assert ((dut.req_opcode_q[i] inside
+                      {REQ_PUTS, REQ_PUTE, REQ_PUTM}) !=
+                    (dut.req_opcode_q[j] inside
+                      {REQ_PUTS, REQ_PUTE, REQ_PUTM}));
+          end
+        end
       end
+      // Check the bypass at the acceptance edge. Later, the old Snoop may be
+      // accepted and the two legal same-line contexts coexist until commit.
+      if (req_valid && req_ready && (matching_line_contexts != 0))
+        assert (((req_opcode == REQ_PUTS) || (req_opcode == REQ_PUTE) ||
+                 (req_opcode == REQ_PUTM)) && legal_put_bypass_found);
 
       // Four independently arbitrated shared outputs must never grant more
       // than one context in a cycle.

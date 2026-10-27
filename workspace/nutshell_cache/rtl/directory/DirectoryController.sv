@@ -4,9 +4,8 @@ module DirectoryController #(
   input  logic clock,
   input  logic reset,
 
-  // This block serializes one transaction globally. The request arbiter and
-  // directory-tag lookup sit in front of it; lookup metadata is sampled when
-  // the request handshake occurs.
+  // Each MSHR context owns one transaction. The shared request and directory
+  // lookup inputs are sampled when that context accepts the request.
   input  logic req_valid,
   output logic req_ready,
   input  logic req_src_id,
@@ -71,7 +70,8 @@ module DirectoryController #(
   // to S or transfers ownership. This qualifier is held during that snoop.
   output logic snoop_data_to_l2,
 
-  output logic protocol_error
+  output logic protocol_error,
+  output logic [3:0] protocol_error_code
 );
   import coherence_protocol_pkg::*;
 
@@ -99,6 +99,7 @@ module DirectoryController #(
   logic [1:0] pending_targets_q;
   logic current_target_q;
   logic src_id_q;
+  request_opcode_t req_opcode_q;
   logic [31:0] line_addr_q;
   logic [TXN_ID_WIDTH-1:0] txn_id_q;
   logic grant_has_data_q;
@@ -163,11 +164,13 @@ module DirectoryController #(
       pending_targets_q <= 2'b00;
       current_target_q <= 1'b0;
       src_id_q <= 1'b0;
+      req_opcode_q <= REQ_GETS;
       line_addr_q <= 32'b0;
       txn_id_q <= '0;
       grant_has_data_q <= 1'b0;
       snoop_response_must_be_data_q <= 1'b0;
       protocol_error <= 1'b0;
+      protocol_error_code <= 4'd0;
     end else begin
       case (state_q)
         DIR_IDLE: begin
@@ -175,6 +178,7 @@ module DirectoryController #(
             source_mask = core_bit(req_src_id);
             target_mask = 2'b00;
             src_id_q <= req_src_id;
+            req_opcode_q <= req_opcode;
             line_addr_q <= line_align(req_line_addr);
             txn_id_q <= req_txn_id;
             pending_targets_q <= 2'b00;
@@ -193,6 +197,7 @@ module DirectoryController #(
                  ((lookup_sharers == 2'b00) || lookup_owner_id)) ||
                 ((lookup_dir_state == DIR_U) && (lookup_sharers != 2'b00))) begin
               protocol_error <= 1'b1;
+              protocol_error_code <= 4'd1;
               state_q <= DIR_ERROR;
             end else begin
               case (req_opcode)
@@ -232,6 +237,7 @@ module DirectoryController #(
                     end
                     default: begin
                       protocol_error <= 1'b1;
+                      protocol_error_code <= 4'd2;
                       state_q <= DIR_ERROR;
                     end
                   endcase
@@ -292,6 +298,7 @@ module DirectoryController #(
                     end
                     default: begin
                       protocol_error <= 1'b1;
+                      protocol_error_code <= 4'd2;
                       state_q <= DIR_ERROR;
                     end
                   endcase
@@ -304,6 +311,7 @@ module DirectoryController #(
                     DIR_S: begin
                       if (!lookup_sharers[req_src_id]) begin
                         protocol_error <= 1'b1;
+                        protocol_error_code <= 4'd3;
                         state_q <= DIR_ERROR;
                       end else begin
                         target_mask = lookup_sharers & ~source_mask;
@@ -346,6 +354,7 @@ module DirectoryController #(
                       // Recover an invalid Upgrade as a GetM so stale caller
                       // metadata cannot result in a write without a line.
                       protocol_error <= 1'b1;
+                      protocol_error_code <= 4'd4;
                       grant_opcode_q <= GRANT_DATA_M;
                       grant_has_data_q <= 1'b1;
                       next_dir_state_q <= DIR_U;
@@ -356,6 +365,7 @@ module DirectoryController #(
                     end
                     default: begin
                       protocol_error <= 1'b1;
+                      protocol_error_code <= 4'd2;
                       state_q <= DIR_ERROR;
                     end
                   endcase
@@ -366,6 +376,7 @@ module DirectoryController #(
                   if (lookup_dir_state == DIR_S) begin
                     if (!lookup_sharers[req_src_id]) begin
                       protocol_error <= 1'b1;
+                      protocol_error_code <= 4'd5;
                       state_q <= DIR_ERROR;
                     end else begin
                       next_sharers_q <= lookup_sharers & ~source_mask;
@@ -379,10 +390,12 @@ module DirectoryController #(
                     // U does not tell us whether the L1 owner is E or M.
                     // Require PutE or PutM so a dirty M line cannot be lost.
                     protocol_error <= 1'b1;
+                    protocol_error_code <= 4'd5;
                     state_q <= DIR_ERROR;
                     grant_opcode_q <= GRANT_PUT_ACK;
                   end else if (lookup_dir_state != DIR_I) begin
                     protocol_error <= 1'b1;
+                    protocol_error_code <= 4'd5;
                     state_q <= DIR_ERROR;
                   end else begin
                     state_q <= DIR_COMMIT;
@@ -401,6 +414,7 @@ module DirectoryController #(
                     state_q <= DIR_COMMIT;
                   end else begin
                     protocol_error <= 1'b1;
+                    protocol_error_code <= 4'd6;
                     state_q <= DIR_ERROR;
                   end
                 end
@@ -416,12 +430,14 @@ module DirectoryController #(
                     state_q <= DIR_START_XFER;
                   end else begin
                     protocol_error <= 1'b1;
+                    protocol_error_code <= 4'd7;
                     state_q <= DIR_ERROR;
                   end
                 end
 
                 default: begin
                   protocol_error <= 1'b1;
+                  protocol_error_code <= 4'd2;
                   state_q <= DIR_ERROR;
                 end
               endcase
@@ -448,19 +464,43 @@ module DirectoryController #(
 
         DIR_WAIT_SNOOP: begin
           if (snoop_rsp_valid && snoop_rsp_ready) begin
-            if ((snoop_opcode_q == SNOOP_READ) &&
-                (snoop_rsp_opcode != SNOOP_RSP_DATA)) begin
+            if (((snoop_rsp_opcode == SNOOP_RSP_INV_ACK) ||
+                 (snoop_rsp_opcode == SNOOP_RSP_ACK)) &&
+                ((snoop_opcode_q == SNOOP_READ) ||
+                 snoop_response_must_be_data_q)) begin
+              // A line can disappear from the owner while a blocking L1
+              // replacement commits its Put. A missing SnoopRead line returns
+              // ACK (Invalidate returns INV_ACK); retry from L2, where PutM
+              // has committed the authoritative data, then grant ownership.
+              next_dir_state_q <= DIR_U;
+              next_sharers_q <= 2'b00;
+              next_owner_q <= src_id_q;
+              grant_has_data_q <= 1'b1;
+              if (req_opcode_q == REQ_GETS)
+                grant_opcode_q <= GRANT_DATA_E;
+              else
+                grant_opcode_q <= GRANT_DATA_M;
+              line_xfer_kind_q <= XFER_L2_REFILL;
+              snoop_response_must_be_data_q <= 1'b0;
+              snoop_resume_q <= DIR_COMMIT;
+              pending_targets_q <= 2'b00;
+              state_q <= DIR_START_XFER;
+            end else if ((snoop_opcode_q == SNOOP_READ) &&
+                         (snoop_rsp_opcode != SNOOP_RSP_DATA)) begin
               protocol_error <= 1'b1;
+              protocol_error_code <= 4'd8;
               state_q <= DIR_ERROR;
             end else if ((snoop_opcode_q == SNOOP_INVALIDATE) &&
                          snoop_response_must_be_data_q &&
                          (snoop_rsp_opcode != SNOOP_RSP_DATA)) begin
               protocol_error <= 1'b1;
+              protocol_error_code <= 4'd10;
               state_q <= DIR_ERROR;
             end else if ((snoop_opcode_q == SNOOP_INVALIDATE) &&
                          !snoop_response_must_be_data_q &&
                          (snoop_rsp_opcode != SNOOP_RSP_INV_ACK)) begin
               protocol_error <= 1'b1;
+              protocol_error_code <= 4'd11;
               state_q <= DIR_ERROR;
             end else begin
               pending_targets_q <= targets_after_current;
@@ -490,6 +530,7 @@ module DirectoryController #(
 
         default: begin
           protocol_error <= 1'b1;
+          protocol_error_code <= 4'd9;
           state_q <= DIR_ERROR;
         end
       endcase

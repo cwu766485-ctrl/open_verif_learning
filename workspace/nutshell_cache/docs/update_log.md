@@ -3,6 +3,24 @@ format:
 2. update each time when you editing
 3. 当前时间戳+对代码进行的修改/遇见的bug/其他值得记录的事情
 4. 每次记录尽可能简短
+
+## 2026-10-27（新加坡时间）
+- 19:25：定位并闭合同 L2 set 压力中的 14/20 seed 失败：L1 replacement PutM 与 Directory 尚未握手的 owner-data Snoop 互等；仅在 Snoop 未接受且没有在途 snoop 数据时允许 PutM 先提交，已握手的 owner-data 流仍独占共享 L2 写口。原失败 dense-set 回归现为 20/20 seeds × 200 操作通过。
+- 19:25：修正 MSHR formal 对同线 replacement Put 与 stalled Snoop 合法旁路的约束；补充 Directory/L1 harness 缺失 monitor/错误端口，加入同线 Put 序列化和 stalled-Snoop-target coverage bins。六个 bounded formal/cover 目标通过。
+- 19:25：最终 `make COHERENCE_JOBS=2 coherence_verify` 退出码 0；SV 38/38 bins、91.6% RTL 行覆盖，Python/Toffee 24/24、功能 36/36、cross 12/12、故障注入 9/9，AXI Python 3/3，标准与 dense-set 压力均 20/20。
+- 19:25：完成 D01/D02/D04 与 Test A/B/C 的最终映射；当前候选 Benchmark v3 重跑：L1 warm hit 2 cycles、L2 hit 22 cycles、五 seed mixed workload 17.20 cycles / 0.04957 ops/cycle / 0.46444 B/cycle。修订综合报告与性能签核；PPA/SRAM 不在本次签核范围。当前候选推送与 Actions 复核待完成。
+- 19:27：`make gen_dut` 成功；Legacy/Python `make test` 为 46 passed、26 skipped、3 deselected。重建综合验证报告 PDF，并更新总报告回归数据；报告用 Noto/WQY 本地字体生成，字体文件只保存在忽略的 `.tooling/` 环境目录。
+
+## 2026-10-27（新加坡时间）
+- 17:05：按 D01/D02/D04 新增 message-passing、100 代 DATA/READY/ACK 与 false-sharing A/B Python/Toffee 测试、coverage map 和 Testplan 说明；文档明确这些 litmus 只验证 LSU 驱动顺序下的一致性，不代表 ISA memory-ordering 证明。
+- 17:05：复现九条随机 Cache Line 映射到同一 L2 set 的压力失败。首个 Snoop 路径互锁未消除 seed `0x5eed` 的 operation 65 协议错误/CPU 超时；增加错误来源诊断，RTL 根因仍待闭环。
+- 18:11：回放 seed `0x13e3779b9` 定位 L1 Array 将持有 MESI_E 权限的合法 Store 误报为错误（Store 检查只接受 M）；修正为 Store 原子写数据并完成 E→M，重放消除了该 Array fatal，但仍暴露 Directory owner 与模型结果不一致，压力问题尚未关闭。
+- 18:12：为 Directory commit monitor 与压力失败诊断补充仿真周期/已接收请求记录，以区分并发 RTL 提交顺序与参考模型排序。
+- 18:13：确认同一 seed 的 Directory 错 owner 根因：并行 MSHR 共用实时 req bundle，Snoop 等待期间后到的 PutM 改写了前一 GetM 的 fallback owner/opcode。DirectoryController 现锁存 opcode 并在恢复时使用事务内 src/opcode；新增对手请求覆盖该 Snoop-ACK→L2-refill 恢复路径。
+- 18:14：Directory directed bench elaboration 指出 testbench `.*` 漏接既有 `protocol_error_code` 端口；补齐连接后继续回归。
+- 18:15：Directory bench 旧用例仍把 owner SnoopRead 的 ACK 当作 fatal；该协议路径已设计为从 L2 恢复，故将期望更新为 refill+GetS/GrantE 检查，不再把合法恢复判成错误。
+- 18:16：`make coherence_directory` 通过；新增用例在活动 GetM 等 Snoop 时改写共享请求输入为另一核 GetS，验证恢复仍按原事务写 owner0 并返回 GrantM；GetS 缺 owner data 的 L2 重取路径也通过。
+- 18:19：强制 clean rebuild 后，原失败 seed `0x13e3779b9` 的双核/同 L2 set 回放 PASS；原先 Store E-state fatal 与 Directory owner 污染均未再出现。
 ## 2026-10-24（新加坡时间）
 - 20:24：拆分请求仲裁器的 valid/payload 与 ready 组合逻辑，定位并消除 `UNOPTFLAT` 组合环路告警。
 - 20:28：清理未使用 RTL 信号；目录验证改用 harness 记录已接收 opcode，避免形式验证依赖已移除的硬件状态；补上 L1 阵列读未命中错误上报。

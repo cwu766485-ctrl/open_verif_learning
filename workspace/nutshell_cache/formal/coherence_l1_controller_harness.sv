@@ -25,6 +25,7 @@ module CoherenceL1ControllerFormal(
   input logic [1:0] snoop_line_state_bits,
   input logic snoop_rsp_ready,
   input logic snoop_line_rd_ready,
+  input logic snoop_line_rd_hit,
   input logic snoop_array_data_valid,
   input logic [2:0] snoop_array_beat_idx,
   input logic [63:0] snoop_array_data,
@@ -70,6 +71,8 @@ module CoherenceL1ControllerFormal(
   logic [2:0] snoop_data_beat_idx;
   logic [63:0] snoop_data;
   logic snoop_data_last;
+  logic [2:0] monitor_cpu_state, monitor_snoop_state;
+  logic [31:0] monitor_cpu_active_addr;
   logic cpu_meta_write_valid;
   logic [31:0] cpu_meta_write_line_addr;
   mesi_state_t cpu_meta_write_state;

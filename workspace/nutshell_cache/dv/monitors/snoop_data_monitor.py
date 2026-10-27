@@ -13,10 +13,13 @@ class SnoopDataMonitor:
         self.partial = {}
         self.transfers = []
         self.snoops = []
+        self.victim_snoops = []
         self.snoop_response_cycles = []
         self.directory_snoop_response_cycles = []
         self.directory_commits = []
         self.directory_requests = []
+        self.directory_grants = []
+        self.l2_lookups = []
         self.lookup_conflicts = []
         self.transfer_grant_conflicts = []
         self.beat_errors = []
@@ -58,8 +61,16 @@ class SnoopDataMonitor:
                         "cycle": self.cycle,
                         "during_l2_fill": bool(int(d.monitor_l2_fill_active.value)),
                     })
+            if int(d.monitor_victim_snoop_accept_valid.value):
+                self.victim_snoops.append({
+                    "core": int(d.monitor_victim_snoop_accept_core.value),
+                    "line": int(d.monitor_victim_snoop_accept_addr.value) &
+                            0xFFFFFFC0,
+                    "cycle": self.cycle,
+                })
             if int(d.monitor_dir_commit_valid.value):
                 self.directory_commits.append({
+                    "cycle": self.cycle,
                     "line": int(d.monitor_dir_commit_addr.value) & 0xFFFFFFC0,
                     "state": int(d.monitor_dir_commit_state.value),
                     "sharers": int(d.monitor_dir_commit_sharers.value),
@@ -70,6 +81,17 @@ class SnoopDataMonitor:
                     "line": int(d.monitor_dir_req_accept_addr.value) & 0xFFFFFFC0,
                     "core": int(d.monitor_dir_req_accept_src_id.value),
                     "opcode": int(d.monitor_dir_req_accept_opcode.value),
+                    "cycle": self.cycle,
+                })
+            if int(d.monitor_l2_lookup_valid.value):
+                self.l2_lookups.append({
+                    "line": int(d.monitor_l2_lookup_addr.value) & 0xFFFFFFC0,
+                    "hit": bool(int(d.monitor_l2_lookup_hit.value)),
+                    "cycle": self.cycle,
+                })
+            if int(d.monitor_dir_grant_accept_valid.value):
+                self.directory_grants.append({
+                    "line": int(d.monitor_dir_grant_accept_addr.value) & 0xFFFFFFC0,
                     "cycle": self.cycle,
                 })
             if int(d.monitor_dir_lookup_conflict_valid.value):

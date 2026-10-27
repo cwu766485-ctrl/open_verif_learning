@@ -81,7 +81,11 @@ module DualL1MesiCluster #(
   output coherence_protocol_pkg::mesi_state_t replace_state [0:1],
   output logic [31:0] replace_line_addr [0:1],
   output logic [1:0] controller_protocol_error,
-  output logic [1:0] array_protocol_error
+  output logic [1:0] array_protocol_error,
+  output logic [5:0] monitor_cpu_state,
+  output logic [5:0] monitor_snoop_state,
+  output logic [63:0] monitor_cpu_active_addr,
+  output logic [7:0] monitor_replace_state
 );
   import coherence_protocol_pkg::*;
 
@@ -126,6 +130,14 @@ module DualL1MesiCluster #(
     logic [1:0] allocation_way_q;
     logic [7:0] store_wmask_q;
     logic [63:0] store_wdata_q;
+    logic [2:0] controller_cpu_state;
+    logic [2:0] controller_snoop_state;
+    logic [31:0] controller_cpu_active_addr;
+
+    assign monitor_cpu_state[core*3 +: 3] = controller_cpu_state;
+    assign monitor_snoop_state[core*3 +: 3] = controller_snoop_state;
+    assign monitor_cpu_active_addr[core*32 +: 32] =
+      controller_cpu_active_addr;
 
     logic ctrl_resp_valid;
     logic ctrl_resp_ready;
@@ -190,11 +202,15 @@ module DualL1MesiCluster #(
     logic [TXN_ID_WIDTH-1:0] replace_txn_q;
     logic [TXN_ID_WIDTH-1:0] replace_txn_counter_q;
     logic replace_protocol_error_q;
+    logic snoop_active_q;
+    logic replacement_snoop_available;
+    assign monitor_replace_state[core*4 +: 4] = replace_state_q;
     logic arb_req_is_replace;
     logic evict_grant_ready;
     logic ctrl_protocol_error;
     logic array_refill_ready;
     logic array_store_ready;
+    logic array_line_rd_hit_int;
 
     assign ctrl_cpu_req_addr =
       ((replace_state_q == REPLACE_CHECK) ||
@@ -211,6 +227,8 @@ module DualL1MesiCluster #(
     // later, shortening the path without forming a ready/valid loop.
     assign ctrl_cpu_req_valid = (replace_state_q == REPLACE_REPLAY);
     assign cpu_req_ready[core] = (replace_state_q == REPLACE_IDLE) &&
+                                 !snoop_active_q &&
+                                 !(snoop_valid[core] && snoop_ready[core]) &&
                                  ctrl_cpu_req_ready;
     // A read hit needs an existing MESI copy. A write hit is silent only in
     // E/M; an S-state store requires a Directory Upgrade and counts as a miss.
@@ -254,14 +272,30 @@ module DualL1MesiCluster #(
       (replace_state_q == REPLACE_WAIT_COMMIT) ? replace_txn_q :
                                                  ctrl_grant_commit_txn_id;
 
-    // Replacement owns the per-core array read stream while it drains a
-    // victim. Do not accept a snoop into the controller during that window:
-    // its line read would wait behind the victim stream while the Directory
-    // could hold resources needed to complete the replacement.
+    // Replacement owns the L1 array only while it reads/streams the victim or
+    // commits its invalidation. During the protocol wait states it has no array
+    // port reservation, so allow a different-line Snoop to make progress. This
+    // is required when an L2 victim Snoop targets an L1 that is waiting for a
+    // PutAck: serializing all Snoops behind that replacement deadlocks the
+    // shared line engine. A Snoop for the replacement's own line remains
+    // serialized until the Put transaction retires.
+    always_comb begin
+      replacement_snoop_available = 1'b0;
+      case (replace_state_q)
+        REPLACE_IDLE: replacement_snoop_available = 1'b1;
+        REPLACE_SEND_PUT,
+        REPLACE_WAIT_XFER,
+        REPLACE_WAIT_ACK,
+        REPLACE_WAIT_COMMIT:
+          replacement_snoop_available =
+            (line_align(snoop_line_addr[core]) != replace_line_addr_q);
+        default: replacement_snoop_available = 1'b0;
+      endcase
+    end
     assign ctrl_snoop_valid = snoop_valid[core] &&
-                              (replace_state_q == REPLACE_IDLE);
+                              replacement_snoop_available;
     assign snoop_ready[core] = ctrl_snoop_ready &&
-                               (replace_state_q == REPLACE_IDLE);
+                               replacement_snoop_available;
 
     assign array_cpu_meta_write_valid =
       (replace_state_q == REPLACE_INVALIDATE) ? 1'b1 :
@@ -331,6 +365,7 @@ module DualL1MesiCluster #(
         replace_protocol_error_q <= 1'b0;
         array_rd_active_q <= 1'b0;
         array_rd_owner_evict_q <= 1'b0;
+        snoop_active_q <= 1'b0;
       end else if (cpu_req_valid[core] && cpu_req_ready[core]) begin
         pending_cpu_addr_q <= cpu_req_addr[core];
         pending_cpu_write_q <= cpu_req_write[core];
@@ -346,6 +381,10 @@ module DualL1MesiCluster #(
           replace_state_q <= REPLACE_REPLAY;
         end
       end else begin
+        if (snoop_valid[core] && snoop_ready[core])
+          snoop_active_q <= 1'b1;
+        if (snoop_rsp_valid[core] && snoop_rsp_ready[core])
+          snoop_active_q <= 1'b0;
         if (!array_rd_active_q && array_line_rd_valid && array_line_rd_ready) begin
           array_rd_active_q <= 1'b1;
           array_rd_owner_evict_q <= array_rd_select_evict;
@@ -463,6 +502,7 @@ module DualL1MesiCluster #(
       .snoop_line_rd_valid(snoop_line_rd_valid),
       .snoop_line_rd_ready(snoop_line_rd_ready),
       .snoop_line_rd_addr(snoop_line_rd_addr),
+      .snoop_line_rd_hit(array_line_rd_hit_int),
       .snoop_array_data_valid(array_line_data_valid),
       .snoop_array_data_ready(ctrl_snoop_array_data_ready),
       .snoop_array_beat_idx(array_line_data_beat_idx),
@@ -480,7 +520,10 @@ module DualL1MesiCluster #(
       .snoop_meta_write_ready(snoop_meta_write_ready),
       .snoop_meta_write_line_addr(snoop_meta_write_line_addr),
       .snoop_meta_write_state(snoop_meta_write_state),
-      .protocol_error(ctrl_protocol_error)
+      .protocol_error(ctrl_protocol_error),
+      .monitor_cpu_state(controller_cpu_state),
+      .monitor_snoop_state(controller_snoop_state),
+      .monitor_cpu_active_addr(controller_cpu_active_addr)
     );
 
     MesiL1Array #(.SETS(128), .WAYS(4), .TAG_WIDTH(19)) l1_array (
@@ -514,7 +557,9 @@ module DualL1MesiCluster #(
       .cpu_store_wdata(store_wdata_q),
       .line_rd_valid(array_line_rd_valid),
       .line_rd_ready(array_line_rd_ready), .line_rd_addr(array_line_rd_addr),
-      .line_rd_hit(), .line_data_valid(array_line_data_valid_int),
+      .line_rd_hit(array_line_rd_hit_int),
+      .line_rd_miss_ok(!array_rd_select_evict),
+      .line_data_valid(array_line_data_valid_int),
       .line_data_ready(array_line_data_ready),
       .line_data_beat_idx(array_line_data_beat_idx_int),
       .line_data(array_line_data_int), .line_data_last(array_line_data_last_int),

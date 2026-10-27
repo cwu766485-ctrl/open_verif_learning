@@ -28,6 +28,7 @@ class DualCoreCpuDriver:
         self.request_stall_cycles = {0: 0, 1: 0}
         self.response_stall_cycles = {0: 0, 1: 0}
         self.last_pair_accepted_at = {}
+        self.last_pair_completed_at = {}
 
     @staticmethod
     def _pack(reqs):
@@ -108,6 +109,7 @@ class DualCoreCpuDriver:
         self.last_pair_accepted_at = dict(accepted_at)
 
         results = [None, None]
+        completed_at = {}
         latched = 0
         held_payload = {}
         stall_remaining = {}
@@ -161,6 +163,7 @@ class DualCoreCpuDriver:
                     if stall_remaining[core] > 0:
                         continue
                 results[core] = got_data
+                completed_at[core] = self.cycle
                 self.latencies[core].append(self.cycle - accepted_at[core])
                 ready_mask |= bit
                 held_payload.pop(core, None)
@@ -171,6 +174,7 @@ class DualCoreCpuDriver:
                 await ClockCycles(d, 1)
                 self.cycle += 1
                 d.cpu_resp_ready.value = 0
+                self.last_pair_completed_at = dict(completed_at)
                 return tuple(results)
         d.cpu_resp_ready.value = 0
         raise TimeoutError(

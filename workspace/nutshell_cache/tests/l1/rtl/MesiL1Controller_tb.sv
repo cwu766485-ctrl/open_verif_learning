@@ -44,6 +44,7 @@ module MesiL1Controller_tb;
   logic snoop_rsp_has_data;
   logic snoop_line_rd_valid, snoop_line_rd_ready;
   logic [31:0] snoop_line_rd_addr;
+  logic snoop_line_rd_hit;
   logic snoop_array_data_valid, snoop_array_data_ready;
   logic [2:0] snoop_array_beat_idx;
   logic [63:0] snoop_array_data;
@@ -60,6 +61,8 @@ module MesiL1Controller_tb;
   logic [31:0] snoop_meta_write_line_addr;
   mesi_state_t snoop_meta_write_state;
   logic protocol_error;
+  logic [2:0] monitor_cpu_state, monitor_snoop_state;
+  logic [31:0] monitor_cpu_active_addr;
 
   MesiL1Controller dut (.*);
 
@@ -78,6 +81,7 @@ module MesiL1Controller_tb;
     snoop_valid = 0; snoop_line_addr = 0; snoop_opcode = SNOOP_READ;
     snoop_txn_id = 0; snoop_tag_hit = 0; snoop_line_state = MESI_I;
     snoop_rsp_ready = 0; snoop_line_rd_ready = 0;
+    snoop_line_rd_hit = 1;
     snoop_array_data_valid = 0; snoop_array_beat_idx = 0;
     snoop_array_data = 0; snoop_array_last = 0; snoop_data_ready = 0;
     cpu_meta_write_ready = 0; snoop_meta_write_ready = 0;
@@ -302,6 +306,25 @@ module MesiL1Controller_tb;
     end
     @(negedge clock); snoop_rsp_ready = 1; tick(); @(negedge clock);
     snoop_rsp_ready = 0;
+
+    // The line was M at Snoop acceptance, but a concurrent cache metadata
+    // transition removes it before the shared line-read port accepts. Return
+    // a no-data ACK so Directory can retry from L2 instead of poisoning the
+    // L1 protocol-error latch.
+    snoop_valid = 1; snoop_line_addr = 32'h2000_2000;
+    snoop_opcode = SNOOP_READ; snoop_txn_id = 7;
+    snoop_tag_hit = 1; snoop_line_state = MESI_M; #1;
+    if (!snoop_ready) $fatal(1, "stale SnoopRead not accepted");
+    tick(); @(negedge clock); snoop_valid = 0;
+    snoop_line_rd_ready = 1; snoop_line_rd_hit = 0; #1;
+    if (!snoop_line_rd_valid)
+      $fatal(1, "stale SnoopRead did not request line-array access");
+    tick(); @(negedge clock);
+    snoop_line_rd_ready = 0; snoop_line_rd_hit = 1;
+    if (!snoop_rsp_valid || snoop_rsp_opcode != SNOOP_RSP_ACK ||
+        snoop_rsp_has_data || snoop_rsp_txn_id != 7 || protocol_error)
+      $fatal(1, "missing SnoopRead line did not return recoverable ACK");
+    snoop_rsp_ready = 1; tick(); @(negedge clock); snoop_rsp_ready = 0;
 
     // A Shared copy invalidates without sending line data and returns InvAck.
     snoop_valid = 1; snoop_line_addr = 32'h2000_1000;

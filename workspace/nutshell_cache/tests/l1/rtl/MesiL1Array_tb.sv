@@ -41,6 +41,7 @@ module MesiL1Array_tb;
   logic [63:0] cpu_store_wdata;
   logic line_rd_valid;
   logic line_rd_ready;
+  logic line_rd_miss_ok;
   logic [31:0] line_rd_addr;
   logic line_rd_hit;
   logic line_data_valid;
@@ -84,6 +85,7 @@ module MesiL1Array_tb;
     cpu_store_valid = 0; cpu_store_addr = 0; cpu_store_way = 0;
     cpu_store_wmask = 0; cpu_store_wdata = 0;
     line_rd_valid = 0; line_rd_addr = 0; line_data_ready = 0;
+    line_rd_miss_ok = 0;
     repeat (3) tick();
     @(negedge clock); reset = 0;
 

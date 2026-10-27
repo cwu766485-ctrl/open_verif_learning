@@ -1,0 +1,74 @@
+{
+  "benchmark": "false_sharing_ab",
+  "cases": [
+    {
+      "case": "same_64B_line_different_words",
+      "final_values": [
+        11529215046068473616,
+        12682136550675320608
+      ],
+      "getm_requests": 31,
+      "l1_hit_rate": 0.0,
+      "l1_hits": 0,
+      "l1_miss_rate": 1.0,
+      "l1_misses": 32,
+      "l2_hit_rate": null,
+      "l2_miss_rate": null,
+      "l2_refill_hits": 0,
+      "l2_refill_misses": 0,
+      "line_addresses": [
+        52428800,
+        52428800
+      ],
+      "mean_latency_cycles": 25.46875,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "operations_per_cycle": 0.03640500568828214,
+      "p95_latency_cycles": 26,
+      "read_bandwidth_bytes_per_cycle": 0.0,
+      "snoops": 32,
+      "total_bandwidth_bytes_per_cycle": 0.0,
+      "upgrade_requests": 1,
+      "window_cycles": 879,
+      "write_bandwidth_bytes_per_cycle": 0.0,
+      "writes": 32
+    },
+    {
+      "case": "different_64B_lines",
+      "final_values": [
+        11529215046068473616,
+        12682136550675320608
+      ],
+      "getm_requests": 0,
+      "l1_hit_rate": 1.0,
+      "l1_hits": 32,
+      "l1_miss_rate": 0.0,
+      "l1_misses": 0,
+      "l2_hit_rate": null,
+      "l2_miss_rate": null,
+      "l2_refill_hits": 0,
+      "l2_refill_misses": 0,
+      "line_addresses": [
+        52432896,
+        52432960
+      ],
+      "mean_latency_cycles": 2.0625,
+      "memory_read_lines": 0,
+      "memory_write_lines": 0,
+      "operations_per_cycle": 0.24615384615384617,
+      "p95_latency_cycles": 3,
+      "read_bandwidth_bytes_per_cycle": 0.0,
+      "snoops": 0,
+      "total_bandwidth_bytes_per_cycle": 0.0,
+      "upgrade_requests": 0,
+      "window_cycles": 130,
+      "write_bandwidth_bytes_per_cycle": 0.0,
+      "writes": 32
+    }
+  ],
+  "measurement_units": "Verilator RTL simulation cycles; not silicon PPA",
+  "memory_response_delay_cycles": 3,
+  "rounds_per_core": 16,
+  "schema_version": 1,
+  "seed": "deterministic"
+}

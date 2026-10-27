@@ -125,6 +125,10 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 
 **当前事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR，可让不同 L2 set 的 memory read 同时 outstanding。L2 fill/grant、Snoop、Put 和 writeback 使用共享串行资源；同一 L2 set 的待处理 refill 会互相阻塞。Snoop 与本地 CPU 事务按第 6.2 节的同址/异址规则仲裁；进展仍假设外部响应反压最终解除。
 
+### 2.1 Coherence litmus 与 CPU memory ordering 的边界
+
+Python/Toffee 的 message-passing 和 DATA/READY/ACK generation tests 使用两个 LSU 驱动器及独立 MESI/data scoreboard。测试在前一笔 Store 收到 CPU 响应后才发出下一笔 Store，并把 DATA、READY、ACK 放在不同的 64B Cache Line 上。它们验证此驱动次序下的跨核一致性可见性，不验证真实 CPU 的 store buffer、Acquire/Release、RISC-V `FENCE` 或 RVWMO。要对 ISA memory ordering 作结论，必须加入真实 CPU/指令模型及相应内存模型 checker。
+
 ---
 
 ## 3. L1 MESI 稳态和目录状态

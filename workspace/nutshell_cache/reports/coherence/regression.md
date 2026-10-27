@@ -2,8 +2,8 @@
 
 - **Status:** PASS
 - **PASS markers:** 197
-- **Functional coverage:** 34/34 (100.0%)
-- **Code line coverage:** 3089/3331 (92.7%)
+- **Functional coverage:** 38/38 (100.0%)
+- **Code line coverage:** 3153/3441 (91.6%)
 - **Documented waivers:** 0
 
 Functional bins close only from structured `COV_EVENT` records emitted after the corresponding checker completes; PASS text is informational.
@@ -41,6 +41,10 @@ Functional bins close only from structured `COV_EVENT` records emitted after the
 | Error handling | `error.mem_write` | failed write response preserves the valid dirty L2 victim / `subsystem_reference_scoreboard_and_protocol_invariants` | `old_state=M, requester=0, opcode=L2_Writeback+MemError, snoop_target=none, new_state=M, data_source=backing_memory, beats=8` | 6 | hit |
 | Directory MSHR concurrency | `mshr_bank.four_contexts` | four concurrent line misses, reversed refill completion / `directory_mshr_bank_transaction_checks` | `old_state=I, requester=multiple, opcode=GetS, snoop_target=none, new_state=DIR_U, data_source=L2_refill, beats=8, contexts=4` | 1 | hit |
 | Directory MSHR concurrency | `mshr_bank.duplicate_suppression` | same-line duplicate plus fifth unique request / `directory_mshr_bank_transaction_checks` | `old_state=I, requester=multiple, opcode=GetS_duplicate, snoop_target=none, new_state=I, data_source=none, beats=0, contexts=4` | 1 | hit |
+| Directory MSHR concurrency | `mshr_bank.same_set_serialization` | same-set miss is backpressured until prior grant commit, then accepted / `directory_mshr_bank_transaction_checks` | `old_state=I, requester=multiple, opcode=GetS_same_set, snoop_target=none, new_state=DIR_U, data_source=L2_refill, beats=8, contexts=1` | 1 | hit |
+| Directory MSHR concurrency | `mshr_bank.same_set_put_bypass` | probe same-set Put readiness behind an active GetS context / `directory_mshr_bank_transaction_checks` | `old_state=DIR_S, requester=Core1, opcode=PutS, snoop_target=none, new_state=DIR_I, data_source=none, beats=0, contexts=1` | 1 | hit |
+| Directory MSHR concurrency | `mshr_bank.same_line_put_serialization` | probe same-line PutS against an active idle-directory context / `directory_mshr_bank_transaction_checks` | `old_state=DIR_I, requester=Core1, opcode=PutS, snoop_target=none, new_state=I, data_source=none, beats=0, contexts=1` | 1 | hit |
+| Directory MSHR concurrency | `mshr_bank.stalled_snoop_target_put` | hold a GetS owner Snoop stalled while the owner issues PutS / `directory_mshr_bank_transaction_checks` | `old_state=DIR_U, requester=Core0, opcode=GetS_plus_PutS, snoop_target=Core1, new_state=DIR_S, data_source=putbypass, beats=0, contexts=2` | 1 | hit |
 | Directory MSHR concurrency | `mshr_bank.snoop_independence` | hold one owner snoop while other contexts refill / `directory_mshr_bank_transaction_checks` | `old_state=DIR_U, requester=0, opcode=GetS_plus_GetS, snoop_target=owner1, new_state=mixed, data_source=owner_plus_memory, beats=8, contexts=4` | 1 | hit |
 | Directory MSHR concurrency | `mshr_bank.reset_cancel` | four active requests followed by reset / `directory_mshr_bank_transaction_checks` | `old_state=mixed, requester=multiple, opcode=GetS_plus_Reset, snoop_target=none, new_state=I, data_source=none, beats=0, contexts=4` | 1 | hit |
 | Seeded random data/state traffic | `random.seeded_data` | seeded 80-operation coherence/data scoreboard regression seed= / `subsystem_reference_scoreboard_and_protocol_invariants` | `old_state=mixed, requester=both, opcode=random, snoop_target=mixed, new_state=mixed, data_source=mixed, beats=8` | 6 | hit |

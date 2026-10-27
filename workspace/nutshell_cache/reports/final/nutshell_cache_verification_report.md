@@ -1,6 +1,6 @@
 # NutShell MESI Cache v1.0 — 综合技术与验证报告
 
-更新日期：2026-10-26  
+更新日期：2026-10-27  
 适用分支：`cache_coherence`  版本基线：MESI v1.0（`release/v1.0`），维护候选：v1.0.1  
 项目：双核 MESI Cache 子系统，包含私有 L1、共享 L2/Directory、内存 AXI4 适配器及 APB 性能 CSR。
 
@@ -10,9 +10,9 @@
 
 本次更新修复了一处共享 refill 与 Snoop 竞争中的 ready/valid 协议缺陷，并启用无数据 clean invalidation 与 L2 refill 并行。相同定向 workload 下，Core1 Store 请求到响应由 14 cycles 降至 10 cycles；数据、目录状态与协议错误检查均通过。PPA/SRAM 实现评估按当前计划暂不包含。
 
-本次收尾补充双 sharer / dirty owner 的长压测 L2 victim 触发、独立 L1 victim-to-Put 对照、覆盖/报告更新和 testbench lint 告警分类。一个更激进的随机地址池实验仍未闭合，限制见第 7 节。
+本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
-性能数据已在维护候选源提交 `20bd7df` 上复跑并整理成[性能签核摘要](performance_signoff.md)，明确了 A/B baseline SHA、测试环境、4,000 操作压力回归与 benchmark 的对应关系及其边界。最新 GitHub Actions run `40338433620` 的 Legacy 与 Coherence jobs 均通过。
+本次也完成 D01/D02/D04 及 Tests A/B/C：message-passing、同/异 cache-line false-sharing 对照、generation-counter 通信均通过，并登记到 Testplan/coverage。最新本地 `make COHERENCE_JOBS=2 coherence_verify` 通过，cache 与 AXI 性能数据在修复后的候选快照复跑。PPA/SRAM 仍按计划排除；最终 Actions 状态待推送后核对。
 
 ## 2. 硬件架构
 
@@ -49,24 +49,26 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 此优化只针对 clean invalidation 与 refill 数据流的资源重叠，不宣称提升物理频率、面积、SRAM 推断质量或 DRAM 带宽。原 Benchmark v3 的隔离 L2 hit 优化数据仍保留：32 个样本平均响应由 23 降至 22 cycles，详见 [`coherence_benchmark_v3_results_2026-10-25.md`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)。
 
+**同组并发死锁闭环：** 更激进的 9 行同 L2 set 双核压力曾在 20 seeds 中有 14 个失败。回放定位为 replacement PutM 等待 L2 写入，而 L1 又因同一 Directory owner-data Snoop 尚未被接受而无法继续，形成握手等待环。顶层现允许 PutM 仅在该 Snoop 尚未握手、且当前没有 snoop 数据传输时先提交；已接受的 owner-data Snoop 仍保持 L2 写口互斥。Directory 对无数据 ACK 从权威 L2 数据恢复。修复后同一压力配置 20/20 seeds × 200 operations 通过，逐事务检查数据、MESI/Directory 状态和响应结束。
+
 ## 5. 回归与验收结果
 
-以下表格记录维护候选源码的最新回归结果。GitHub Actions run `40338433620` 在 `20bd7df` 上的 Legacy 与 Coherence 两个 job 均通过；[查看 run](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40338433620)。
+以下表格记录 2026-10-27 本地最终候选的回归结果。对应 commit SHA 与 GitHub Actions run 在推送后回填；旧 Actions 结果不作为本候选签核证据。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
-| Legacy L1 regression | 46 passed; 23 skipped; 3 deselected | 独立保留的单 L1 兼容测试 |
-| Coherence SV regression | smoke + multisnoop + 5 seeds PASS; 34/34 功能 bins; 92.8% 行覆盖 | 模块、集成 directed 与固定随机 seed |
-| Python/Toffee MESI | 21 passed; 30/30 功能 bins; 9/9 checker fault injections caught | 独立数据/权限 scoreboard、L1 victim/Put 对照与 MESI mutation sensitivity |
-| Extended Python stress | 20/20 seeds; 4,000 mixed operations; 710 L1 evictions; 3 modeled live L2 evictions | 包含 1 dirty-owner 与 1 two-sharer victim 的固定 replay 前导；另有未通过的更激进同 L2 set 随机实验，见第 7 节 |
-| AXI adapter / AXI subsystem | adapter Python 3 passed; AXI top 5 seeds PASS | 五通道、4 outstanding、ID/error/reset/backpressure 测试 |
-| Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度 |
+| Legacy L1 regression (`make test`) | 46 passed; 26 skipped; 3 deselected | 独立保留的单 L1 兼容测试；本地重新生成 Picker DUT 后运行 |
+| Coherence SV regression | 38/38 功能 bins; 91.6% 行覆盖 | 模块、集成 directed 与固定随机 seed |
+| Python/Toffee MESI | 24 passed; 36/36 功能 bins; 12/12 cross bins; 9/9 checker fault injections caught | 独立数据/权限 scoreboard、L1 victim/Put 对照、D01/D02/D04 与 Tests A/B/C |
+| Extended Python stress | 标准与 dense-set 均 20/20 seeds × 200 操作；标准压力记录 710 次 L1 eviction、3 次 live L2 victim | dense-set 覆盖同 L2 set 双核并发/反压；两种压力均检查数据、MESI/Directory 状态与事务完成 |
+| AXI adapter / AXI subsystem | Adapter Python 3 passed; AXI top 5 seeds PASS | 五通道、ID/error/reset/backpressure；top benchmark peak read outstanding 为 2 |
+| Bounded formal | 6/6 组件目标 PASS | 组件级、有界深度；不代表系统级无界证明 |
 | Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
 | PPA/SRAM 实现 | 未执行 | 本次排除，需目标工艺/库/约束后评估 |
 
 ## 6. 性能数据与复现
 
-性能 workload 固定 seed、初始 cache 状态和可配置内存响应延迟。基准输出 latency、P95、ops/cycle、L1/L2 refill hit/miss、Snoop、dirty writeback、AXI 读写 line/byte 数与 bytes/cycle。模拟周期数据只比较同一仿真配置下的设计行为。最终 A/B 数字、source/baseline SHA、工作负载映射、scoreboard 与限制见[性能签核摘要](performance_signoff.md)。
+性能 workload 固定 seed、初始 cache 状态和可配置内存响应延迟。当前候选数据显示 warm L1 read 2 cycles、L2 hit 22 cycles；五 seed mixed workload 平均 17.20 cycles、0.04957 ops/cycle、0.46444 B/cycle。模拟周期数据只比较同一仿真配置下的设计行为，不是 DRAM 带宽或芯片 Fmax。完整 A/B 数字、source/baseline SHA、工作负载映射、scoreboard 与限制见[性能签核摘要](performance_signoff.md)。
 
 ```bash
 source scripts/env.sh
@@ -85,7 +87,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 ## 7. 当前限制与后续
 
-- 一项额外的压力实验把九条随机读写行全部映射到同一个 L2 set，同时运行双核并发和反压；20 个 seed 中 14 个触发 Directory reference-state mismatch 或 CPU response timeout/protocol error。该混合压力场景尚未定位根因，因此当前 20×200 签收池改为十条同 L1 set、分布在四个 L2 set 的行，并在 `0x5eed` 前导中独立确定性触发 dirty-owner 与 two-sharer 九行 L2 victim。确定性 victim、L1 victim/Put 对照和已配置的 20×200 回归均通过；不能据此宣称更激进的全同 L2 set 并发随机场景已通过。
+- 同 L2 set 压力曾有 14/20 seeds 失败。根因和修复已由原失败分布复测闭环：PutM 可绕过尚未握手 owner-data Snoop 的循环等待；一旦 Snoop 已握手或数据流进行中，仍禁止共享 L2 写口冲突。修复后 dense-set 20/20 seeds × 200 操作通过。该有限随机回归与 bounded formal 仍不能穷举所有 set、时序和系统活性组合。
 - 集成 SV testbench 的 Verilator build 仍会报告 testbench 级 `PINCONNECTEMPTY` / `PINMISSING`（非验证实例的可选 monitor 端口）、`WIDTHEXPAND` / `WIDTHTRUNC`、`MISINDENT`、`TIMESCALEMOD`、`UNUSEDSIGNAL`，以及 testbench/reference-model `MULTIDRIVEN`。`SharedL2DirectoryArray.line_wr_ready` 的 `MULTIDRIVEN` 来自一项层级 `force` backpressure 测试注入。两个实际产品顶层单独 lint 均为零 Warning；这些 bench 警告没有通过全局 waiver 隐藏。
 - PPA、真实 SRAM macro 映射/面积与时序签核仍未执行；当前 Verilator 仿真数据不是物理实现结果。
 - L1 仍为 blocking，完整系统 CPU 请求不能持续产生四个 outstanding miss；四个 Directory context/MHSR 的局部容量不等于四个 CPU 端到端并行 miss。

@@ -61,6 +61,7 @@ module CoherenceDirectoryFormal(
   logic [TXN_ID_WIDTH-1:0] grant_txn_id;
   logic grant_commit_ready;
   logic snoop_data_to_l2, protocol_error;
+  logic [3:0] protocol_error_code;
 
   logic past_valid = 1'b0;
   logic reset_seen_q = 1'b0;

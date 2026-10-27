@@ -512,6 +512,74 @@
       }
     },
     {
+      "id": "mshr_bank.same_set_serialization",
+      "feature": "Directory MSHR concurrency",
+      "testpoint": "Different lines in one L2 set cannot retain overlapping Directory snapshots",
+      "stimulus": "same-set miss is backpressured until prior grant commit, then accepted",
+      "checker": "directory_mshr_bank_transaction_checks",
+      "expected_transaction": {
+        "old_state": "I",
+        "requester": "multiple",
+        "opcode": "GetS_same_set",
+        "snoop_target": "none",
+        "new_state": "DIR_U",
+        "data_source": "L2_refill",
+        "beats": 8,
+        "contexts": 1
+      }
+    },
+    {
+      "id": "mshr_bank.same_set_put_bypass",
+      "feature": "Directory MSHR concurrency",
+      "testpoint": "A same-set Put can progress while an ownership transaction is active",
+      "stimulus": "probe same-set Put readiness behind an active GetS context",
+      "checker": "directory_mshr_bank_transaction_checks",
+      "expected_transaction": {
+        "old_state": "DIR_S",
+        "requester": "Core1",
+        "opcode": "PutS",
+        "snoop_target": "none",
+        "new_state": "DIR_I",
+        "data_source": "none",
+        "beats": 0,
+        "contexts": 1
+      }
+    },
+    {
+      "id": "mshr_bank.same_line_put_serialization",
+      "feature": "Directory MSHR concurrency",
+      "testpoint": "A same-line replacement Put waits unless it is unblocking a stalled owner Snoop",
+      "stimulus": "probe same-line PutS against an active idle-directory context",
+      "checker": "directory_mshr_bank_transaction_checks",
+      "expected_transaction": {
+        "old_state": "DIR_I",
+        "requester": "Core1",
+        "opcode": "PutS",
+        "snoop_target": "none",
+        "new_state": "I",
+        "data_source": "none",
+        "beats": 0,
+        "contexts": 1
+      }
+    },
+    {
+      "id": "mshr_bank.stalled_snoop_target_put",
+      "feature": "Directory MSHR concurrency",
+      "testpoint": "A replacement Put bypasses its same-line context only when that context is stalled Snoop-targeting the Put source",
+      "stimulus": "hold a GetS owner Snoop stalled while the owner issues PutS",
+      "checker": "directory_mshr_bank_transaction_checks",
+      "expected_transaction": {
+        "old_state": "DIR_U",
+        "requester": "Core0",
+        "opcode": "GetS_plus_PutS",
+        "snoop_target": "Core1",
+        "new_state": "DIR_S",
+        "data_source": "putbypass",
+        "beats": 0,
+        "contexts": 2
+      }
+    },
+    {
       "id": "mshr_bank.snoop_independence",
       "feature": "Directory MSHR concurrency",
       "testpoint": "A context blocked on snoop does not prevent other contexts from progressing",

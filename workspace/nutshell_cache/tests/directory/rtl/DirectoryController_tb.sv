@@ -38,6 +38,7 @@ module DirectoryController_tb;
   logic grant_commit_valid, grant_commit_ready;
   logic [TXN_ID_WIDTH-1:0] grant_commit_txn_id;
   logic snoop_data_to_l2, protocol_error;
+  logic [3:0] protocol_error_code;
 
   DirectoryController dut (.*);
 
@@ -231,8 +232,41 @@ module DirectoryController_tb;
         grant_valid || protocol_error)
       $fatal(1, "reset left stale Directory transaction outputs");
 
-    // A GetS intervention requires authoritative owner data. Returning only an
-    // ACK is a protocol error and must leave the controller fail-stopped.
+    // A second MSHR may accept a different source/opcode while this context
+    // waits for its owner Snoop. Recovery must use this context's latched
+    // GetM/core0 fields, not the shared live request payload (Put/GetS/core1).
+    issue_req(0, REQ_GETM, 32'h3000_0020, 4'hC, DIR_U, 0, 1);
+    if (!snoop_req_valid || snoop_target_id != 1'b1 ||
+        snoop_req_opcode != SNOOP_INVALIDATE || snoop_req_txn_id != 4'hC)
+      $fatal(1, "concurrent-context replay missed owner Snoop");
+    snoop_req_ready = 1;
+    tick();
+    @(negedge clock);
+    snoop_req_ready = 0;
+    req_src_id = 1;
+    req_opcode = REQ_GETS;
+    req_line_addr = 32'h5000_0040;
+    req_txn_id = 4'hD;
+    snoop_rsp_valid = 1;
+    snoop_rsp_src_id = 1;
+    snoop_rsp_txn_id = 4'hC;
+    snoop_rsp_opcode = SNOOP_RSP_INV_ACK;
+    #1;
+    if (!snoop_rsp_ready) $fatal(1, "owner-missing Snoop response was not accepted");
+    tick();
+    @(negedge clock);
+    snoop_rsp_valid = 0;
+    if (!line_xfer_start_valid || line_xfer_kind != XFER_L2_REFILL ||
+        line_xfer_addr != 32'h3000_0000 || line_xfer_txn_id != 4'hC ||
+        line_xfer_src_id != 1'b0)
+      $fatal(1, "GetM recovery used the competing context payload");
+    finish_xfer(4'hC, 32'h3000_0000, XFER_L2_REFILL);
+    finish_commit(DIR_U, 2'b00, 1'b0);
+    finish_grant(4'hC, GRANT_DATA_M, 1, 0);
+    if (protocol_error) $fatal(1, "context-payload recovery raised protocol error");
+
+    // If an owner disappears while a blocking replacement commits Put, a
+    // GetS-only ACK retries from the current L2 copy and grants E to requester.
     @(negedge clock); reset = 1; repeat (2) tick();
     @(negedge clock); reset = 0;
     issue_req(1, REQ_GETS, 32'h3000_0008, 4'h9, DIR_U, 0, 0);
@@ -241,8 +275,14 @@ module DirectoryController_tb;
     snoop_rsp_txn_id = 4'h9; snoop_rsp_opcode = SNOOP_RSP_ACK;
     #1; if (!snoop_rsp_ready) $fatal(1, "matching malformed Snoop response not accepted");
     tick(); @(negedge clock); snoop_rsp_valid = 0;
-    if (!protocol_error || req_ready)
-      $fatal(1, "owner GetS without data did not fail-stop");
+    if (!line_xfer_start_valid || line_xfer_kind != XFER_L2_REFILL ||
+        line_xfer_addr != 32'h3000_0000 || line_xfer_txn_id != 4'h9 ||
+        line_xfer_src_id != 1'b1)
+      $fatal(1, "GetS owner-miss recovery transfer mismatch");
+    finish_xfer(4'h9, 32'h3000_0000, XFER_L2_REFILL);
+    finish_commit(DIR_U, 2'b00, 1'b1);
+    finish_grant(4'h9, GRANT_DATA_E, 1, 1);
+    if (protocol_error) $fatal(1, "GetS owner-miss recovery raised protocol error");
     $display("PASS DirectoryController_tb");
     $finish;
   end

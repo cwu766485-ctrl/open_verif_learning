@@ -1,0 +1,796 @@
+{
+  "code_coverage": {
+    "lcov": "reports/coherence/coverage.info",
+    "line_hit": 3153,
+    "line_total": 3441,
+    "percent": 91.6303400174368
+  },
+  "coverage_event_errors": [],
+  "functional_coverage": {
+    "bins": [
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "memory",
+          "new_state": "E",
+          "old_state": "I",
+          "opcode": "GetS",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "MESI GetS",
+        "hits": 6,
+        "id": "mesi.gets_cold_refill",
+        "status": "hit",
+        "stimulus": "Core0 GetS refill from backing memory",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: Core0 GetS refill from backing memory"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "remote_owner",
+          "new_state": "S",
+          "old_state": "M",
+          "opcode": "GetS",
+          "requester": "1",
+          "snoop_target": "0"
+        },
+        "feature": "MESI sharing/intervention",
+        "hits": 6,
+        "id": "mesi.gets_share_m_owner",
+        "status": "hit",
+        "stimulus": "Core1 GetS shares the full latest line from the M owner",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: Core1 GetS shares the full latest line from the M owner"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "L1_peer",
+          "new_state": "M",
+          "old_state": "S",
+          "opcode": "GetM",
+          "requester": "0",
+          "snoop_target": "1"
+        },
+        "feature": "MESI GetM / Upgrade",
+        "hits": 6,
+        "id": "mesi.getm_upgrade_s",
+        "status": "hit",
+        "stimulus": "shared-to-exclusive upgrade invalidates peer; remote read sees M data",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: shared-to-exclusive upgrade invalidates peer; remote read sees M data"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "remote_owner",
+          "new_state": "M",
+          "old_state": "M",
+          "opcode": "GetM",
+          "requester": "0",
+          "snoop_target": "1"
+        },
+        "feature": "MESI GetM / intervention",
+        "hits": 6,
+        "id": "mesi.getm_remote_owner",
+        "status": "hit",
+        "stimulus": "remote GetM invalidates an M owner and preserves its latest data",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: remote GetM invalidates an M owner and preserves its latest data"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "clean_L1_peer",
+          "new_state": "M",
+          "old_state": "E",
+          "opcode": "GetM",
+          "requester": "0",
+          "snoop_target": "1"
+        },
+        "feature": "MESI GetM / intervention",
+        "hits": 6,
+        "id": "mesi.getm_remote_clean_e",
+        "status": "hit",
+        "stimulus": "remote GetM invalidates a clean E owner and receives all beats",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: remote GetM invalidates a clean E owner and receives all beats"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "local_L1",
+          "new_state": "M",
+          "old_state": "E",
+          "opcode": "Store",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "MESI E-to-M",
+        "hits": 6,
+        "id": "mesi.e_to_m_silent",
+        "status": "hit",
+        "stimulus": "E-to-M local write is silent and preserves the full line",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: E-to-M local write is silent and preserves the full line"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "L1_owner",
+          "new_state": "S",
+          "old_state": "E",
+          "opcode": "GetS+StoreCommit",
+          "requester": "1",
+          "snoop_target": "0"
+        },
+        "feature": "MESI progress",
+        "hits": 6,
+        "id": "mesi.snoop_waits_store_commit",
+        "status": "hit",
+        "stimulus": "same-line SnoopRead waits for local E-to-M write commit",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: same-line SnoopRead waits for local E-to-M write commit"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "remote_owner",
+          "new_state": "S",
+          "old_state": "M",
+          "opcode": "GetS_after_MaskedStore",
+          "requester": "1",
+          "snoop_target": "0"
+        },
+        "feature": "MESI masked write",
+        "hits": 6,
+        "id": "mesi.masked_owner_write",
+        "status": "hit",
+        "stimulus": "byte-masked write is visible after remote owner intervention",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: byte-masked write is visible after remote owner intervention"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "mixed",
+          "new_state": "M",
+          "old_state": "mixed",
+          "opcode": "GetS+GetM",
+          "requester": "both",
+          "snoop_target": "both"
+        },
+        "feature": "Concurrency / same line",
+        "hits": 6,
+        "id": "cpu_pair.same_line",
+        "status": "hit",
+        "stimulus": "same-line simultaneous GetS/GetM and byte-mask corner cases",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: same-line simultaneous GetS/GetM and byte-mask corner cases"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "memory",
+          "new_state": "E",
+          "old_state": "I",
+          "opcode": "GetS",
+          "requester": "both",
+          "snoop_target": "none"
+        },
+        "feature": "Concurrency / different lines",
+        "hits": 6,
+        "id": "cpu_pair.different_lines",
+        "status": "hit",
+        "stimulus": "different-address concurrent misses route to the correct cores",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: different-address concurrent misses route to the correct cores"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "local_L1",
+          "new_state": "M",
+          "old_state": "S",
+          "opcode": "GetM_Upgrade",
+          "requester": "1",
+          "snoop_target": "0"
+        },
+        "feature": "Concurrency / Snoop progress",
+        "hits": 6,
+        "id": "cpu_pair.snoop_progress",
+        "status": "hit",
+        "stimulus": "different-line SnoopInvalidate progresses during a local CPU response stall",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: different-line SnoopInvalidate progresses during a local CPU response stall"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "L1_owner",
+          "new_state": "I",
+          "old_state": "M",
+          "opcode": "PutM",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "L1 replacement",
+        "hits": 6,
+        "id": "l1.putm",
+        "status": "hit",
+        "stimulus": "dirty M victim uses PutM, returns to L2, then refills by peer",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: dirty M victim uses PutM, returns to L2, then refills by peer"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "L2",
+          "new_state": "I",
+          "old_state": "E",
+          "opcode": "PutE",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "L1 replacement",
+        "hits": 6,
+        "id": "l1.pute",
+        "status": "hit",
+        "stimulus": "clean E victim is removed with PutE; dirty L2 data is preserved",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: clean E victim is removed with PutE; dirty L2 data is preserved"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "L2",
+          "new_state": "I",
+          "old_state": "S",
+          "opcode": "PutS",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "L1 replacement",
+        "hits": 6,
+        "id": "l1.puts",
+        "status": "hit",
+        "stimulus": "shared S victim is removed with PutS while the peer retains its copy",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: shared S victim is removed with PutS while the peer retains its copy"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "L1_owner",
+          "new_state": "I",
+          "old_state": "M",
+          "opcode": "L2_Evict",
+          "requester": "1",
+          "snoop_target": "1"
+        },
+        "feature": "L2 live victim reclaim",
+        "hits": 6,
+        "id": "l2.live_u_victim",
+        "status": "hit",
+        "stimulus": "L2 live victim back-invalidates an M owner and writes back its line",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: L2 live victim back-invalidates an M owner and writes back its line"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "backing_memory",
+          "new_state": "I",
+          "old_state": "M",
+          "opcode": "L2_Evict",
+          "requester": "1",
+          "snoop_target": "1"
+        },
+        "feature": "L2 live victim reclaim",
+        "hits": 6,
+        "id": "l2.dirty_owner_writeback",
+        "status": "hit",
+        "stimulus": "dirty owner data survives L2 eviction through backing memory",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: dirty owner data survives L2 eviction through backing memory"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "L2_dirty",
+          "new_state": "I",
+          "old_state": "S",
+          "opcode": "L2_Evict",
+          "requester": "both",
+          "snoop_target": "both"
+        },
+        "feature": "L2 shared victim multi-snoop",
+        "hits": 6,
+        "id": "l2.shared_multisnoop",
+        "status": "hit",
+        "stimulus": "DIR_S L2 victim invalidates both sharers and writes back dirty L2 data",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "MMIO",
+          "new_state": "na",
+          "old_state": "na",
+          "opcode": "MMIO",
+          "requester": "both",
+          "snoop_target": "none"
+        },
+        "feature": "MMIO isolation",
+        "hits": 6,
+        "id": "mmio.bypass",
+        "status": "hit",
+        "stimulus": "MMIO read/write bypasses L1, L2, and backing memory",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: MMIO read/write bypasses L1, L2, and backing memory"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "MMIO",
+          "new_state": "na",
+          "old_state": "na",
+          "opcode": "MMIO_boundary",
+          "requester": "both",
+          "snoop_target": "none"
+        },
+        "feature": "MMIO address decode",
+        "hits": 6,
+        "id": "mmio.address_boundaries",
+        "status": "hit",
+        "stimulus": "cacheable/MMIO address-domain boundary cases",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: cacheable/MMIO address-domain boundary cases"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "memory",
+          "new_state": "E",
+          "old_state": "I",
+          "opcode": "GetS",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Backpressure",
+        "hits": 6,
+        "id": "backpressure.mem_refill",
+        "status": "hit",
+        "stimulus": "refill MSHR absorbs the memory line while the L2 fill port is stalled",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: refill MSHR absorbs the memory line while the L2 fill port is stalled"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "memory",
+          "new_state": "mixed",
+          "old_state": "mixed",
+          "opcode": "GetS+GetM",
+          "requester": "both",
+          "snoop_target": "none"
+        },
+        "feature": "Backpressure",
+        "hits": 6,
+        "id": "backpressure.independent_channels",
+        "status": "hit",
+        "stimulus": "memory request/refill and CPU response survive independent stalls",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: memory request/refill and CPU response survive independent stalls"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "MMIO",
+          "new_state": "na",
+          "old_state": "na",
+          "opcode": "MMIO",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Backpressure",
+        "hits": 6,
+        "id": "backpressure.mmio",
+        "status": "hit",
+        "stimulus": "MMIO request and response payloads remain stable under backpressure",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: MMIO request and response payloads remain stable under backpressure"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "memory",
+          "new_state": "I",
+          "old_state": "I",
+          "opcode": "GetS+Reset",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Reset cancellation",
+        "hits": 6,
+        "id": "reset.refill",
+        "status": "hit",
+        "stimulus": "reset cancels an active refill without a stale response",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: reset cancels an active refill without a stale response"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "MMIO",
+          "new_state": "na",
+          "old_state": "na",
+          "opcode": "MMIO+Reset",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Reset cancellation",
+        "hits": 6,
+        "id": "reset.mmio",
+        "status": "hit",
+        "stimulus": "reset cancels a backpressured MMIO response",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: reset cancels a backpressured MMIO response"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 0,
+          "data_source": "L1",
+          "new_state": "I",
+          "old_state": "E",
+          "opcode": "GetS+Reset",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Reset cancellation",
+        "hits": 6,
+        "id": "reset.cpu_rsp",
+        "status": "hit",
+        "stimulus": "reset cancels a stalled cache response without replay",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: reset cancels a stalled cache response without replay"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "L1_owner",
+          "new_state": "I",
+          "old_state": "M",
+          "opcode": "SnoopData+Reset",
+          "requester": "0",
+          "snoop_target": "1"
+        },
+        "feature": "Reset cancellation",
+        "hits": 6,
+        "id": "reset.snoop_data",
+        "status": "hit",
+        "stimulus": "reset cancels an active owner SnoopData stream",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: reset cancels an active owner SnoopData stream"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "backing_memory",
+          "new_state": "I",
+          "old_state": "M",
+          "opcode": "L2_Writeback+Reset",
+          "requester": "1",
+          "snoop_target": "1"
+        },
+        "feature": "Reset cancellation",
+        "hits": 6,
+        "id": "reset.l2_writeback",
+        "status": "hit",
+        "stimulus": "reset cancels a stalled dirty L2 writeback beat",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: reset cancels a stalled dirty L2 writeback beat"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 1,
+          "data_source": "memory_error",
+          "new_state": "I",
+          "old_state": "I",
+          "opcode": "GetS+MemError",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Error handling",
+        "hits": 6,
+        "id": "error.mem_read",
+        "status": "hit",
+        "stimulus": "terminal memory read error suppresses success and blocks new requests",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: terminal memory read error suppresses success and blocks new requests"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "backing_memory",
+          "new_state": "M",
+          "old_state": "M",
+          "opcode": "L2_Writeback+MemError",
+          "requester": "0",
+          "snoop_target": "none"
+        },
+        "feature": "Error handling",
+        "hits": 6,
+        "id": "error.mem_write",
+        "status": "hit",
+        "stimulus": "failed write response preserves the valid dirty L2 victim",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: failed write response preserves the valid dirty L2 victim"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 8,
+          "contexts": 4,
+          "data_source": "L2_refill",
+          "new_state": "DIR_U",
+          "old_state": "I",
+          "opcode": "GetS",
+          "requester": "multiple",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.four_contexts",
+        "status": "hit",
+        "stimulus": "four concurrent line misses, reversed refill completion",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "Four distinct line misses overlap and refill out of order"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 0,
+          "contexts": 4,
+          "data_source": "none",
+          "new_state": "I",
+          "old_state": "I",
+          "opcode": "GetS_duplicate",
+          "requester": "multiple",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.duplicate_suppression",
+        "status": "hit",
+        "stimulus": "same-line duplicate plus fifth unique request",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "Duplicate same-line request is suppressed while four contexts are occupied"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 8,
+          "contexts": 1,
+          "data_source": "L2_refill",
+          "new_state": "DIR_U",
+          "old_state": "I",
+          "opcode": "GetS_same_set",
+          "requester": "multiple",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.same_set_serialization",
+        "status": "hit",
+        "stimulus": "same-set miss is backpressured until prior grant commit, then accepted",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "Different lines in one L2 set cannot retain overlapping Directory snapshots"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 0,
+          "contexts": 1,
+          "data_source": "none",
+          "new_state": "DIR_I",
+          "old_state": "DIR_S",
+          "opcode": "PutS",
+          "requester": "Core1",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.same_set_put_bypass",
+        "status": "hit",
+        "stimulus": "probe same-set Put readiness behind an active GetS context",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "A same-set Put can progress while an ownership transaction is active"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 0,
+          "contexts": 1,
+          "data_source": "none",
+          "new_state": "I",
+          "old_state": "DIR_I",
+          "opcode": "PutS",
+          "requester": "Core1",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.same_line_put_serialization",
+        "status": "hit",
+        "stimulus": "probe same-line PutS against an active idle-directory context",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "A same-line replacement Put waits unless it is unblocking a stalled owner Snoop"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 0,
+          "contexts": 2,
+          "data_source": "putbypass",
+          "new_state": "DIR_S",
+          "old_state": "DIR_U",
+          "opcode": "GetS_plus_PutS",
+          "requester": "Core0",
+          "snoop_target": "Core1"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.stalled_snoop_target_put",
+        "status": "hit",
+        "stimulus": "hold a GetS owner Snoop stalled while the owner issues PutS",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "A replacement Put bypasses its same-line context only when that context is stalled Snoop-targeting the Put source"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 8,
+          "contexts": 4,
+          "data_source": "owner_plus_memory",
+          "new_state": "mixed",
+          "old_state": "DIR_U",
+          "opcode": "GetS_plus_GetS",
+          "requester": "0",
+          "snoop_target": "owner1"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.snoop_independence",
+        "status": "hit",
+        "stimulus": "hold one owner snoop while other contexts refill",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "A context blocked on snoop does not prevent other contexts from progressing"
+      },
+      {
+        "checker": "directory_mshr_bank_transaction_checks",
+        "expected_transaction": {
+          "beats": 0,
+          "contexts": 4,
+          "data_source": "none",
+          "new_state": "I",
+          "old_state": "mixed",
+          "opcode": "GetS_plus_Reset",
+          "requester": "multiple",
+          "snoop_target": "none"
+        },
+        "feature": "Directory MSHR concurrency",
+        "hits": 1,
+        "id": "mshr_bank.reset_cancel",
+        "status": "hit",
+        "stimulus": "four active requests followed by reset",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "Reset cancels four active Directory contexts without residual completion"
+      },
+      {
+        "checker": "subsystem_reference_scoreboard_and_protocol_invariants",
+        "expected_transaction": {
+          "beats": 8,
+          "data_source": "mixed",
+          "new_state": "mixed",
+          "old_state": "mixed",
+          "opcode": "random",
+          "requester": "both",
+          "snoop_target": "mixed"
+        },
+        "feature": "Seeded random data/state traffic",
+        "hits": 6,
+        "id": "random.seeded_data",
+        "status": "hit",
+        "stimulus": "seeded 80-operation coherence/data scoreboard regression seed=",
+        "test": "CoherentCacheSubsystem_tb (integrated directed plus seeded random)",
+        "testpoint": "PASS: seeded 80-operation coherence/data scoreboard regression seed="
+      }
+    ],
+    "hit": 38,
+    "missing": [],
+    "percent": 100.0,
+    "total": 38
+  },
+  "missing_stall_bins": [],
+  "performance_proxy": {
+    "cpu_req_ready_stall_cycles": 0,
+    "l1_cold_miss_avg_cycles": 43,
+    "l1_cold_miss_count": 140,
+    "l1_hit_avg_cycles": 2,
+    "l1_hit_count": 59,
+    "l1_miss_avg_cycles": 41,
+    "l1_miss_count": 150,
+    "l1_miss_penalty_cycles": 39,
+    "read_hit_avg_cycles": 2,
+    "read_hit_count": 43,
+    "snoop_avg_cycles": 19,
+    "snoop_count": 41,
+    "storage_capacity_bytes": 327680,
+    "storage_capacity_kib": 320,
+    "upgrade_avg_cycles": 11,
+    "upgrade_count": 10,
+    "write_hit_avg_cycles": 3,
+    "write_hit_count": 16
+  },
+  "regression": "dual_l1_shared_l2_mesi",
+  "schema_version": 2,
+  "simulation_logs": [
+    "reports/coherence/smoke.log",
+    "reports/coherence/multisnoop.log",
+    "reports/coherence/directory_mshr_bank.log",
+    "reports/coherence/seed_00000001.log",
+    "reports/coherence/seed_00001234.log",
+    "reports/coherence/seed_5EEDC0DE.log",
+    "reports/coherence/seed_DEADBEEF.log",
+    "reports/coherence/seed_2468ACE0.log"
+  ],
+  "stall_counts": {
+    "cpu_resp": 26,
+    "dir_req": 42,
+    "l2_fill": 2,
+    "mem_rd_req": 9,
+    "mem_wr_data": 756,
+    "mem_wr_req": 11,
+    "mmio_req": 4,
+    "mmio_resp": 5
+  },
+  "status": "PASS",
+  "test_pass_markers": 197,
+  "waivers": {
+    "count": 0,
+    "file": "dv/coverage/coherence_waivers.json"
+  }
+}
