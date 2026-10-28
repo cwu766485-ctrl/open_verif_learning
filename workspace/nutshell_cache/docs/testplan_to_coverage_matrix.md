@@ -118,6 +118,15 @@ make coherence_formal
 PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_gap_review
 ```
 
+## Deferred integrated recovery closure
+
+The remaining legal Directory, Snoop, MSHR backpressure, and replacement replay
+paths are tracked as v1.1 follow-up items in
+[`docs/releases/v1.1_verification_backlog.md`](releases/v1.1_verification_backlog.md).
+They are not reported as covered by the current merged subsystem LCOV run.
+Three representative RTL defect investigations and their passing regressions
+are documented in [`docs/bug_case_studies.md`](bug_case_studies.md).
+
 `coherence_verify` runs the component, formal, RTL, Python/Toffee, AXI, the
 standard 4,000-operation stress sweep, and the dense same-set 4,000-operation
 regression. Each stress target can also run independently for replay and local

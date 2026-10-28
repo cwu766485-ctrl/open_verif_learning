@@ -1,99 +1,98 @@
-# NutShell Cache RTL & Verification
+# NutShell MESI Cache Subsystem
 
-This project keeps the original NutShell L1 DCache SimpleBus regression and a
-separate dual-L1 MESI subsystem with a shared Directory/L2. The coherent path
-now has a bus-facing AXI4 top and an APB performance CSR; it remains a blocking
-RTL prototype rather than a full CPU/SoC implementation.
+[![Cache CI](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml/badge.svg?branch=cache_coherence)](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml)
 
-## Tools
+这是一个面向开源数字 IC 验证学习的双核 MESI Cache 项目。它保留原有的 NutShell 单 L1 DCache 回归，并增加一套独立的双 L1、一致性 Directory、共享 L2、AXI4 内存接口和 APB 性能 CSR 子系统。当前 v1.0.1 内容处于发布候选阶段；必须在最终候选提交的两个 CI Job 均通过后再打 Tag。PPA、物理 SRAM 映射和芯片级时序不在交付范围内。
 
-- Picker: exports the Verilog DUT as a Python-accessible model.
-- Verilator: compiles and simulates the RTL, with optional line coverage.
-- Toffee/toffee-test: bundles, agents, reference model, fixtures and reports.
-- pytest: runs the self-checking regression.
+## 架构
 
-## Commands
-
-```bash
-make gen_dut      # Compile maintained rtl/ with Picker/Verilator
-make test         # Run the regular Python/Toffee regression
-make test_slow    # Run opt-in full-capacity and mega-random stress tests
-make mega_random  # Run only the large seeded cache/MMIO random test
-make benchmark   # Measure deterministic L1 DCache hit/miss and RTL cycles
-make report       # Run tests and generate reports/coverage
-make clean        # Remove generated simulator artifacts
-make doctor       # Check the project-local WSL Python/EDA toolchain
-make coherence_modules     # Run the independent MESI/L1/Directory/L2 benches
-make coherence_bus_blocks  # Check AXI line bursts and APB performance CSRs
-make coherence_axi_e2e     # Run the MESI subsystem against an AXI RAM model
-make coherence_axi_lint    # Elaborate the AXI/APB cache subsystem top
-make coherence_verify      # Run coherence modules, bounded formal and subsystem regression
-make coherence_benchmark_v3 # Generate seeded cache and mixed-workload benchmark JSON/CSV
+```mermaid
+flowchart TB
+  LSU0[LSU / Core 0] --> L10[32 KiB L1D 0, 4-way]
+  LSU1[LSU / Core 1] --> L11[32 KiB L1D 1, 4-way]
+  L10 <--> MESI[自定义 MESI 请求与 Snoop]
+  L11 <--> MESI
+  MESI <--> DIR[共享 Directory + 256 KiB L2, 8-way]
+  DIR <--> AXI[AXI4 Line Memory Adapter]
+  AXI <--> MEM[可写 AXI Memory Model]
+  DIR --> CSR[APB Performance CSR]
 ```
 
-Run these commands from Ubuntu/WSL. The Makefile sources `scripts/env.sh`,
-which activates the repository-local virtualenv plus the pinned Picker and SBY
-installations under `.tooling/`. Running the system `python3` directly can
-produce `No module named pytest` even when the project toolchain is installed.
+- 两个私有 L1D：每核 32 KiB、4-way、64-byte line。
+- 共享 inclusive L2 与 Directory：256 KiB、8-way；Directory 与 refill 分别有四个事务上下文/MSHR。
+- AXI4 adapter 每个读写方向最多支持四笔活动事务，按 ID 路由响应；AXI 顶层已接入可读写 burst memory model。
+- 每个 L1 控制器仍为 blocking，L2 fill、Grant、Snoop 和 dirty writeback 仍共享部分数据资源。因此，adapter 的四笔 outstanding 不代表 Cache 可同时处理四个 CPU miss。
+- APB CSR 暴露 Cache hit/miss、Snoop、dirty writeback 和协议错误统计。项目没有自建 JTAG TAP。
 
-The maintained RTL source is under `rtl/`. The active verification
-environment is under `dv/`, with scenarios under `tests/`; `src/` is retained
-as a legacy migration source. Before the new timing and mega-random tests were
-added, the recorded regression passed 39/39 pytest cases and closed 37/37
-functional coverage goals. The local short-random run used seven fixed seeds
-(448 operations); GitHub Actions used nine (576 operations). The new slow
-mega-random test defaults to 32 seeds x 512 randomized operations, plus
-read-after-write checks and directed coverage setup. Maintained-RTL line
-coverage is 98.1% raw (846/862), or 100%
-(846/846) after reviewed waivers; all-source coverage including generated DUT
-wrappers is 95.2% (1424/1496). Formal assumptions, limitations and the CI link
-are documented in `dv/README.md` and `formal/README.md`.
+## 验证结果
 
-The verification target is an open-toolchain DV flow based on Python/Toffee,
-pytest, Picker, and Verilator, without a dependency on a commercial simulator.
-UVM is not the benchmark for this project. It remains an educational and
-pre-signoff environment rather than commercial sign-off equivalence; the
-current coverage numbers and closure gaps are documented in `dv/README.md`.
+`cache_coherence` 上的开源验证流程覆盖独立模块、双核子系统、AXI 集成、Python/Toffee scoreboard、覆盖率和组件级 bounded formal。完整结果和边界见[最终验证报告](reports/final/nutshell_cache_verification_report.md)与[测试计划映射](docs/testplan_to_coverage_matrix.md)。
 
-The architecture and verification plan are documented in
-`docs/cache_spec_and_verification_plan.md`.
+| 项目 | 当前证据 |
+| --- | --- |
+| Legacy 单 L1 回归 | 46 passed；26 skipped、3 deselected（按现有测试标记） |
+| MESI RTL/SV 回归 | 38/38 功能 bins；合并 LCOV 3153/3441 行命中（91.6%，其中产品 RTL 1579/1823） |
+| Python/Toffee | 24 passed；功能 bins 36/36、cross bins 12/12；checker fault injection 9/9 |
+| 并发压力 | 标准与 dense-set 各 20 seeds × 200 操作；dense-set 修复前 14/20 seeds 失败，修复后 20/20 通过 |
+| AXI | adapter Python 3/3；集成 benchmark 五个 seed 通过；R-only、B-only、R+B 三种集成响应反压通过 |
+| Formal / RTL mutation | 7 个组件级 bounded formal 目标通过；两项真实 L1 RTL mutation 均被测试检测到 |
 
-The current freeze manifest and the v3 cache/AXI benchmark results are in
-[`docs/releases/v1.0.md`](docs/releases/v1.0.md) and
-[`docs/coherence_benchmark_v3_results_2026-10-25.md`](docs/coherence_benchmark_v3_results_2026-10-25.md).
+Formal 结果是组件级、有界的证据，不是完整 Cache 子系统的无界证明。覆盖率缺口审阅列出 244 条未命中的产品 RTL 行和 44 条 testbench 行；其中合法恢复路径列入 [v1.1 验证 backlog](docs/releases/v1.1_verification_backlog.md)，未把它们标记为已覆盖。
 
-## Repository layout
+## 仿真性能样本
 
-- `rtl/` contains synthesizable hardware grouped by protocol, L1, Directory, L2, interconnect, bus, cluster, and top-level integration. The original single-L1 design is isolated under `rtl/legacy_l1/`.
-- `tests/` groups the Python L1 regression and verification-unit cases with SystemVerilog block benches. `dv/` contains reusable agents, environments, reference models, scoreboard, coverage, sequences, and checkers.
-- `formal/`, `benchmarks/`, and `scripts/` contain proof jobs, performance workloads, and automation.
+下表来自 [Benchmark v3 与性能签核记录](reports/final/performance_signoff.md)。它们是指定 RTL 快照、初始 Cache 状态和 memory-model 延迟下的 Verilator 周期/流量测量，不是实际 CPU 应用性能、物理时钟或 DRAM 带宽。
 
-`rtl/Cache.files.f` and `rtl/Coherence.files.f` are the source lists for the legacy and MESI designs. Pytest discovers Python cases recursively under `tests/`.
+| 工作负载 | 测量结果 |
+| --- | --- |
+| Warm L1 read | 2 cycles |
+| L1 replacement 后 L2 hit | 22 cycles（32 个样本；预优化 23 cycles） |
+| 双核 cold miss 相对串行加速 | 配置内存延迟 2 / 100 cycles 时为 1.451× / 1.917× |
+| Clean Snoop 与 L2 refill 重叠 | 定向 Store 响应 14 → 10 cycles；refill 为 36 cycles |
+| AXI 顶层五 seed 混合 workload | 0.03383 ops/cycle；模型内存流量 0.75415 B/cycle |
 
-The coherent subsystem architecture, external bus contract, APB register map,
-outstanding-transaction limit and remaining formal/physical-design boundaries
-are documented in [`docs/coherence_rtl.md`](docs/coherence_rtl.md) and
-[`docs/cache.md`](docs/cache.md). The AXI adapter supports four active requests
-per direction. The coherent subsystem now has four Directory contexts and four
-read-refill MSHRs, allowing independent different-set refills to overlap on
-AXI. Each L1 remains blocking, and L2 fill/grant, Snoop, and writeback
-resources are still shared. `make coherence_axi_e2e` checks overlapping
-refills through a burst-capable AXI RAM model. The APB block does not implement
-a JTAG TAP.
+## 快速开始
 
-## Performance baseline
+在 Ubuntu/WSL 仓库目录运行。项目提供本地 Python、Picker、Verilator 与 SymbiYosys 工具环境：
 
-`make benchmark` runs three reproducible read traces on the maintained
-Verilator RTL and writes `benchmarks/results/dcache_baseline.json`. The current
-baseline and measurement boundaries are documented in
-[`benchmarks/README.md`](benchmarks/README.md). These are standalone L1 DCache
-RTL measurements; they do not represent full-CPU IPC, CoreMark, or a physical
-clock-frequency result.
+```bash
+source scripts/env.sh
+make doctor
 
-This project verifies Verilog directly. Chisel is not required to regenerate
-the DUT or run the regression.
+# 原单 L1 DCache 回归
+make gen_dut && make test
 
-The final report source and PDF are under `reports/final/`; simulation,
-coverage and formal run artifacts stay under `reports/`. Regenerate the PDF
-with `python -m pip install reportlab` followed by
-`python reports/final/build_report_pdf.py`.
+# MESI 模块、Formal、Python/Toffee、AXI 与压力回归
+make COHERENCE_JOBS=2 coherence_verify
+
+# 单独重跑长随机压力或 Benchmark v3
+make COHERENCE_JOBS=2 coherence_stress coherence_dense_set_stress
+make COHERENCE_JOBS=2 coherence_benchmark_v3
+```
+
+不要在没有 `source scripts/env.sh` 的系统 Python 环境中直接运行 pytest；项目依赖由仓库环境固定。各目标定义见根目录 [`Makefile`](Makefile)、[DV 说明](dv/README.md)和[Formal 说明](formal/README.md)。
+
+## 目录
+
+- `rtl/`：MESI 子系统与 `rtl/legacy_l1/` 中的原单 L1 RTL。
+- `dv/`：Python agents、独立 reference model、scoreboard、monitor、coverage 与 fault injection。
+- `tests/`：Python/Toffee 测试和 SystemVerilog 模块/集成基线。
+- `formal/`：SymbiYosys harness、性质和 mutation 检查。
+- `benchmarks/`：固定 workload、baseline、JSON/CSV 性能结果。
+- `docs/`、`reports/final/`：规格、验证计划、[真实 Bug 案例](docs/bug_case_studies.md)和可复现的签核材料。
+
+## 设计与验证边界
+
+- 这是 Cache 子系统原型，不包含完整 CPU、ISA fence/acquire-release 验证或 SoC。
+- D01 message-passing 用例只验证测试驱动定义的 Store 完成顺序下的一致性可见性，不证明 RVWMO。
+- 四个 Directory context/MSHR 与 blocking L1 并存；端到端 CPU miss 并行度受 L1 和共享资源约束。
+- 当前没有综合、Fmax、面积、功耗、真实 SRAM macro 映射或 STA 结果；Benchmark 不应解释为 PPA。
+
+### 主要文档
+
+- [MESI 架构与接口](docs/cache.md)
+- [MESI 规格和验证计划](docs/cache_spec_and_verification_plan.md)
+- [Testplan-to-Coverage Matrix](docs/testplan_to_coverage_matrix.md)
+- [Coverage Gap Review](docs/coherence_coverage_gap_review.md)
+- [v1.0.1 Release Manifest](docs/releases/v1.0.1.md)
+- [最终技术与验证报告 PDF](reports/final/nutshell_cache_verification_report.pdf)
