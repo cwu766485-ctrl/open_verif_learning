@@ -12,6 +12,7 @@ format:
 - 01:33：按最新 LCOV 生成 `docs/coherence_coverage_gap_review.md`，把 288 条未命中拆为 RTL 244 条、SV TB 44 条，列出逐文件行号和可测试风险，不将未覆盖防御分支笼统豁免。更新 v1.0.1 manifest 与最终报告；PPA/SRAM 仍排除。
 - 10:03：收口源提交 `38fdb74062a8416563e5824589256e1f5d836785` 的 GitHub Actions run `40552490749`：Legacy/Formal 与 Coherence 两个 Job 的所有步骤均 PASS，Dense-set 已由默认 `coherence_verify` 覆盖。同步将 release manifest 和最终报告状态改为 CI 全绿；PPA/SRAM 仍不在范围内。
 - 10:24：重写项目首页，增加 MESI 架构、验证状态、仿真性能和运行入口；整理 Directory Lookup、Grant/Snoop 握手分歧、dense-set PutM/Snoop 死锁三个 Bug 案例，并把六类未命中合法恢复路径单列到 v1.1 backlog。该文档候选提交推送后需完整重跑两个 CI Job，再作为正式 Tag 候选。
+- 10:50：提交 `87ea0d3` 的 `cache-regression` 与 `coherence-regression` 均 PASS。复核发现 GitHub 首页文件名应规范为 `README.md`，已完成大小写改名；此文件名收尾会形成新的候选 SHA，并重新运行完整 CI 后再决定打 Tag。
 
 ## 2026-10-27（新加坡时间）
 - 19:25：定位并闭合同 L2 set 压力中的 14/20 seed 失败：L1 replacement PutM 与 Directory 尚未握手的 owner-data Snoop 互等；仅在 Snoop 未接受且没有在途 snoop 数据时允许 PutM 先提交，已握手的 owner-data 流仍独占共享 L2 写口。原失败 dense-set 回归现为 20/20 seeds × 200 操作通过。
