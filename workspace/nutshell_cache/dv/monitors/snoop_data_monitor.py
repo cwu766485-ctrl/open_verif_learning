@@ -34,13 +34,19 @@ class SnoopDataMonitor:
             snoop_valid = int(d.monitor_snoop_accept_valid.value)
             rsp_valid = int(d.monitor_snoop_rsp_valid.value)
             rsp_ready = int(d.monitor_snoop_rsp_ready.value)
-            if rsp_valid or rsp_ready:
-                self.snoop_response_cycles.append({
-                    "cycle": self.cycle, "valid": rsp_valid, "ready": rsp_ready,
-                    "fill": bool(int(d.monitor_l2_fill_active.value)),
-                    "txn": int(d.monitor_snoop_rsp_txn_id.value),
-                    "opcode": int(d.monitor_snoop_rsp_opcode.value),
-                })
+            rsp_txn = int(d.monitor_snoop_rsp_txn_id.value)
+            rsp_opcode = int(d.monitor_snoop_rsp_opcode.value)
+            for core in range(2):
+                bit = 1 << core
+                if (rsp_valid | rsp_ready) & bit:
+                    self.snoop_response_cycles.append({
+                        "cycle": self.cycle, "core": core,
+                        "valid": int(bool(rsp_valid & bit)),
+                        "ready": int(bool(rsp_ready & bit)),
+                        "fill": bool(int(d.monitor_l2_fill_active.value)),
+                        "txn": (rsp_txn >> (3 * core)) & 0b111,
+                        "opcode": (rsp_opcode >> (2 * core)) & 0b11,
+                    })
             if (int(d.monitor_dir_snoop_rsp_valid.value) or
                     int(d.monitor_dir_snoop_rsp_ready.value)):
                 self.directory_snoop_response_cycles.append({
@@ -50,6 +56,7 @@ class SnoopDataMonitor:
                     "fill": bool(int(d.monitor_l2_fill_active.value)),
                     "target": int(d.monitor_dir_snoop_target.value),
                     "txn": int(d.monitor_dir_snoop_txn_id.value),
+                    "opcode": int(d.monitor_dir_snoop_rsp_opcode.value),
                 })
             for core in range(2):
                 if snoop_valid & (1 << core):
@@ -58,6 +65,8 @@ class SnoopDataMonitor:
                         "line": (int(d.monitor_snoop_accept_addr.value) >> (32 * core)) &
                                 0xFFFFFFC0,
                         "opcode": (int(d.monitor_snoop_accept_opcode.value) >> core) & 1,
+                        "txn": (int(d.monitor_snoop_accept_txn_id.value) >>
+                                (3 * core)) & 0b111,
                         "cycle": self.cycle,
                         "during_l2_fill": bool(int(d.monitor_l2_fill_active.value)),
                     })
@@ -81,6 +90,7 @@ class SnoopDataMonitor:
                     "line": int(d.monitor_dir_req_accept_addr.value) & 0xFFFFFFC0,
                     "core": int(d.monitor_dir_req_accept_src_id.value),
                     "opcode": int(d.monitor_dir_req_accept_opcode.value),
+                    "txn": int(d.monitor_dir_req_accept_txn_id.value),
                     "cycle": self.cycle,
                 })
             if int(d.monitor_l2_lookup_valid.value):
@@ -92,6 +102,9 @@ class SnoopDataMonitor:
             if int(d.monitor_dir_grant_accept_valid.value):
                 self.directory_grants.append({
                     "line": int(d.monitor_dir_grant_accept_addr.value) & 0xFFFFFFC0,
+                    "dst": int(d.monitor_dir_grant_accept_dst.value),
+                    "opcode": int(d.monitor_dir_grant_accept_opcode.value),
+                    "txn": int(d.monitor_dir_grant_accept_txn_id.value),
                     "cycle": self.cycle,
                 })
             if int(d.monitor_dir_lookup_conflict_valid.value):

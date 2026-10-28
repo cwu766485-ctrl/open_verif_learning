@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "regression": "python_dual_l1_shared_l2_mesi",
-  "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+  "test": "tests/coherence/test_subsystem_python.py",
   "bins": [
     {"id": "mesi.cold_read", "feature": "cold_read", "testpoint": "Independent cold GetS data check", "checker": "CoherenceScoreboard response/data model"},
     {"id": "mesi.cold_write", "feature": "cold_write", "testpoint": "Cold GetM stores to the dual-core set-pressure sequence", "checker": "CoherenceScoreboard byte-accurate data and MESI invariants"},
@@ -29,6 +29,7 @@
     {"id": "directory.lookup_race_regression", "feature": "directory_lookup_race_regression", "testpoint": "Different-address owner transfer and cold grant contend for the L2 lookup", "checker": "Blocked-lookup monitor plus independent data, snoop-beat, and Directory scoreboard checks"},
     {"id": "directory.lookup_conflict_transfer", "feature": "directory_lookup_conflict_transfer", "testpoint": "A waiting request is held while an active owner-transfer lookup uses the shared port", "checker": "Accepted transfer address remains distinct from blocked incoming request"},
     {"id": "directory.lookup_conflict_grant", "feature": "directory_lookup_conflict_grant", "testpoint": "A waiting request is held while an active grant lookup uses the shared port", "checker": "Accepted grant address remains distinct from blocked incoming request"},
+    {"id": "directory.snoop_ack_l2_retry", "feature": "snoop_ack_l2_retry", "testpoint": "A same-set PutM removes the snapshotted M owner before SnoopRead response; Directory retries from the retained L2 line", "checker": "Accepted ACK/Snoop transaction ID, PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, dirty data, and independent MESI/Directory commit"},
     {"id": "cpu.same_line_dual_lane", "feature": "same_line_dual_lane", "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently", "checker": "Independent byte-accurate scoreboard and final readback"},
     {"id": "litmus.message_passing", "feature": "litmus_message_passing", "testpoint": "Core0 completes DATA then READY stores; Core1 observes READY and the latest DATA on distinct lines", "checker": "Independent byte-accurate MESI/data scoreboard and accepted Directory metadata monitor"},
     {"id": "false_sharing.same_line", "feature": "false_sharing_same_line", "testpoint": "Two cores repeatedly write different words in one 64-byte line", "checker": "Independent data scoreboard, snoop/request monitor, and final word readback"},

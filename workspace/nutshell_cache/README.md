@@ -32,7 +32,7 @@ flowchart TB
 | --- | --- |
 | Legacy 单 L1 回归 | 46 passed；26 skipped、3 deselected（按现有测试标记） |
 | MESI RTL/SV 回归 | 38/38 功能 bins；合并 LCOV 3153/3441 行命中（91.6%，其中产品 RTL 1579/1823） |
-| Python/Toffee | 24 passed；功能 bins 36/36、cross bins 12/12；checker fault injection 9/9 |
+| Python/Toffee | 25 passed；功能 bins 37/37、cross bins 12/12；checker fault injection 9/9 |
 | 并发压力 | 标准与 dense-set 各 20 seeds × 200 操作；dense-set 修复前 14/20 seeds 失败，修复后 20/20 通过 |
 | AXI | adapter Python 3/3；集成 benchmark 五个 seed 通过；R-only、B-only、R+B 三种集成响应反压通过 |
 | Formal / RTL mutation | 7 个组件级 bounded formal 目标通过；两项真实 L1 RTL mutation 均被测试检测到 |

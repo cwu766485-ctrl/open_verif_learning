@@ -13,6 +13,7 @@ format:
 - 10:03：收口源提交 `38fdb74062a8416563e5824589256e1f5d836785` 的 GitHub Actions run `40552490749`：Legacy/Formal 与 Coherence 两个 Job 的所有步骤均 PASS，Dense-set 已由默认 `coherence_verify` 覆盖。同步将 release manifest 和最终报告状态改为 CI 全绿；PPA/SRAM 仍不在范围内。
 - 10:24：重写项目首页，增加 MESI 架构、验证状态、仿真性能和运行入口；整理 Directory Lookup、Grant/Snoop 握手分歧、dense-set PutM/Snoop 死锁三个 Bug 案例，并把六类未命中合法恢复路径单列到 v1.1 backlog。该文档候选提交推送后需完整重跑两个 CI Job，再作为正式 Tag 候选。
 - 10:50：提交 `87ea0d3` 的 `cache-regression` 与 `coherence-regression` 均 PASS。复核发现 GitHub 首页文件名应规范为 `README.md`，已完成大小写改名；此文件名收尾会形成新的候选 SHA，并重新运行完整 CI 后再决定打 Tag。
+- 22:49：收口 v1.1 backlog 的 RCV-03：新增 Python/Toffee 定向竞态，独立匹配 Snoop ACK 的 target/txn、PutM→PutAck 与 GetS→DATA_E 的 txn ID、ACK 后 L2 hit、脏数据和最终 U/E 权限；补充请求/Grant opcode 与 ID 监视，区分合法 PutAck。完整 Python suite 25/25、覆盖 37/37 与 cross 12/12；AXI 顶层 lint/elaboration 通过（有一条既有 `DirectoryMshrBank.req_opcode_q` unused 警告）。等待本次 GitHub Actions 完整复核。
 
 ## 2026-10-27（新加坡时间）
 - 19:25：定位并闭合同 L2 set 压力中的 14/20 seed 失败：L1 replacement PutM 与 Directory 尚未握手的 owner-data Snoop 互等；仅在 Snoop 未接受且没有在途 snoop 数据时允许 PutM 先提交，已握手的 owner-data 流仍独占共享 L2 写口。原失败 dense-set 回归现为 20/20 seeds × 200 操作通过。

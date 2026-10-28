@@ -156,6 +156,135 @@ async def test_python_l1_replacement_victim_matches_put(coherent_env):
 
 
 @case
+async def test_python_snoop_ack_retries_from_authoritative_l2(coherent_env):
+    """Close the legal replacement/SnoopRead ACK to inclusive-L2 retry path."""
+    dut, memory, _ = await coherent_env()
+    cpu = DualCoreCpuDriver(dut)
+    attempts = []
+
+    # A fifth same-index Core0 line evicts its first Modified line. Offset the
+    # remote GetS across the replacement handshake to land in the window where
+    # the Directory has snapshotted the old owner but L1 has retired it with
+    # PutM. Each attempt uses a different set so misses do not disturb setup.
+    for attempt, delay in enumerate((0, 1, 2, 3, 4, 6, 8, 10, 12)):
+        model = CoherenceScoreboard()
+        line = 0x0300_0000 + attempt * 64
+        stride = 32768
+        dirty_word = 0xA11C_0000_0000_0000 | attempt
+        initial = memory.word(line, (line >> 3) & 7)
+        model.seed_word(line, initial)
+        await _model_access(cpu, model, memory.snoop_data, 0, line,
+                            write=True, data=dirty_word)
+        for way in range(1, 4):
+            address = line + way * stride
+            model.seed_word(address, memory.word(address, (address >> 3) & 7))
+            await _model_access(cpu, model, memory.snoop_data, 0, address)
+        assert model.states[line & ~0x3F] == ["M", "I"]
+        assert model.l1_way_view(0, line) == 0
+
+        snoop_cursor = len(memory.snoop_data.snoops)
+        response_cursor = len(memory.snoop_data.directory_snoop_response_cycles)
+        transfer_cursor = len(memory.snoop_data.transfers)
+        lookup_cursor = len(memory.snoop_data.l2_lookups)
+        grant_cursor = len(memory.snoop_data.directory_grants)
+        commit_cursor = len(memory.snoop_data.directory_commits)
+        request_cursor = len(memory.snoop_data.directory_requests)
+        read_cursor = len(memory.read_requests)
+        replacement_line = line + 4 * stride
+        model.seed_word(replacement_line,
+                        memory.word(replacement_line,
+                                    (replacement_line >> 3) & 7))
+        replacement_word = 0xBEEF_0000_0000_0000 | attempt
+
+        pair = await cpu.access_pair(
+            CpuRequest(replacement_line, write=True, data=replacement_word),
+            CpuRequest(line),
+            request_delay_cycles={1: delay},
+        )
+        line_tag = line & ~0x3F
+        accepted_snoops = [
+            event for event in memory.snoop_data.snoops[snoop_cursor:]
+            if event["core"] == 0 and event["line"] == line_tag and
+            event["opcode"] == 0
+        ]
+        responses = memory.snoop_data.directory_snoop_response_cycles[
+            response_cursor:
+        ]
+        ack_responses = [
+            response for response in responses
+            if response["valid"] and response["ready"] and
+            response["target"] == 0 and response["opcode"] == 0 and
+            any(snoop["txn"] == response["txn"] for snoop in accepted_snoops)
+        ]
+        attempts.append({"delay": delay, "snoops": accepted_snoops,
+                         "responses": responses,
+                         "lookups": memory.snoop_data.l2_lookups[lookup_cursor:]})
+        if not ack_responses:
+            continue
+
+        assert len(ack_responses) == 1, ack_responses
+        ack = ack_responses[0]
+        putm = [event for event in memory.snoop_data.directory_requests[
+            request_cursor:] if event["line"] == line_tag and
+            event["core"] == 0 and event["opcode"] == 0b101]
+        assert len(putm) == 1, putm
+        assert putm[0]["cycle"] <= ack["cycle"], (putm, ack)
+        gets = [event for event in memory.snoop_data.directory_requests[
+            request_cursor:] if event["line"] == line_tag and
+            event["core"] == 1 and event["opcode"] == 0b000]
+        assert len(gets) == 1, gets
+
+        refills = [event for event in memory.snoop_data.l2_lookups[lookup_cursor:]
+                   if event["line"] == line_tag and event["cycle"] > ack["cycle"]]
+        assert len(refills) == 1 and refills[0]["hit"], refills
+        assert not [event for event in memory.snoop_data.transfers[transfer_cursor:]
+                    if event["line"] == line_tag], (
+            "a no-data Snoop ACK must recover from L2, not owner-data beats"
+        )
+        assert not [request for request in memory.read_requests[read_cursor:]
+                    if request[0] == line_tag], (
+            "authoritative L2 retry unexpectedly fell through to backing memory"
+        )
+        assert pair[1] == dirty_word, (pair[1], dirty_word)
+        grants = [event for event in memory.snoop_data.directory_grants[grant_cursor:]
+                  if event["line"] == line_tag]
+        data_grants = [event for event in grants if event["opcode"] != 0b100]
+        put_acks = [event for event in grants if event["opcode"] == 0b100]
+        assert len(data_grants) == 1 and data_grants[0]["cycle"] > \
+            refills[0]["cycle"], grants
+        assert (data_grants[0]["dst"], data_grants[0]["opcode"]) == (1, 0b001), \
+            data_grants[0]
+        assert len(put_acks) == 1 and put_acks[0]["dst"] == 0, grants
+        assert data_grants[0]["txn"] == gets[0]["txn"], (gets, data_grants)
+        assert put_acks[0]["txn"] == putm[0]["txn"], (putm, put_acks)
+
+        # The independent model learns the replacement only from the accepted
+        # PutM protocol request. It then predicts an Exclusive grant to Core1.
+        model.track_l1_replacement = False
+        model.observe_l1_put(0, line, 0b101)
+        model.observe(0, replacement_line, write=True,
+                      write_data=replacement_word, write_mask=0xFF)
+        model.observe(1, line, response_data=pair[1])
+        assert model.states[line_tag] == ["I", "E"]
+        memory.snoop_data.assert_directory_matches(model, line)
+        final_commits = [event for event in
+                         memory.snoop_data.directory_commits[commit_cursor:]
+                         if event["line"] == line_tag]
+        assert final_commits, "retry/grant did not commit Directory metadata"
+        assert (final_commits[-1]["state"], final_commits[-1]["sharers"],
+                final_commits[-1]["owner"]) == (2, 0, 1), final_commits[-1]
+        assert int(dut.protocol_error.value) == 0
+        PYTHON_COVERAGE.sample_external("snoop_ack_l2_retry")
+        _record_model(model)
+        return
+
+    raise AssertionError(
+        "fixed replacement/GetS offset sweep did not produce a no-data Snoop ACK "
+        f"followed by an L2 hit retry: {attempts}"
+    )
+
+
+@case
 async def test_dual_core_owner_transfer_and_data_visibility(coherent_env):
     dut, memory, _ = await coherent_env()
     cpu = DualCoreCpuDriver(dut)

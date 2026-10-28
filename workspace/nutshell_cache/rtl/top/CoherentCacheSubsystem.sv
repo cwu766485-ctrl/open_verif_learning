@@ -123,6 +123,7 @@ module CoherentCacheSubsystem #(
   output logic [TXN_ID_WIDTH-1:0] monitor_dir_snoop_txn_id,
   output logic monitor_dir_snoop_rsp_valid,
   output logic monitor_dir_snoop_rsp_ready,
+  output coherence_protocol_pkg::snoop_response_t monitor_dir_snoop_rsp_opcode,
   // Accepted directory metadata updates for independent DV/reference models.
   output logic monitor_dir_commit_valid,
   output logic [31:0] monitor_dir_commit_addr,
@@ -154,11 +155,15 @@ module CoherentCacheSubsystem #(
   output logic [31:0] monitor_dir_req_accept_addr,
   output logic monitor_dir_req_accept_src_id,
   output coherence_protocol_pkg::request_opcode_t monitor_dir_req_accept_opcode,
+  output logic [TXN_ID_WIDTH-1:0] monitor_dir_req_accept_txn_id,
   output logic monitor_l2_lookup_valid,
   output logic [31:0] monitor_l2_lookup_addr,
   output logic monitor_l2_lookup_hit,
   output logic monitor_dir_grant_accept_valid,
   output logic [31:0] monitor_dir_grant_accept_addr,
+  output logic monitor_dir_grant_accept_dst,
+  output coherence_protocol_pkg::grant_opcode_t monitor_dir_grant_accept_opcode,
+  output logic [TXN_ID_WIDTH-1:0] monitor_dir_grant_accept_txn_id,
   // Observable for resource-contention regression; asserted during the
   // eight-beat refill stream into the shared L2 data array.
   output logic monitor_l2_fill_active,
@@ -569,6 +574,7 @@ module CoherentCacheSubsystem #(
   assign monitor_dir_req_accept_addr = cluster_dir_req_addr;
   assign monitor_dir_req_accept_src_id = cluster_dir_req_src_id;
   assign monitor_dir_req_accept_opcode = cluster_dir_req_opcode;
+  assign monitor_dir_req_accept_txn_id = cluster_dir_req_txn_id;
   assign monitor_l2_lookup_valid = !reset && dir_xfer_start_valid &&
                                    dir_xfer_start_ready &&
                                    (dir_xfer_kind == XFER_L2_REFILL);
@@ -577,6 +583,9 @@ module CoherentCacheSubsystem #(
   assign monitor_dir_grant_accept_valid = !reset && dir_grant_valid &&
                                           dir_grant_ready;
   assign monitor_dir_grant_accept_addr = dir_grant_addr;
+  assign monitor_dir_grant_accept_dst = dir_grant_dst;
+  assign monitor_dir_grant_accept_opcode = dir_grant_opcode;
+  assign monitor_dir_grant_accept_txn_id = dir_grant_txn_id;
   assign monitor_l2_fill_active = mem_fill_writer_active_q;
   assign monitor_l2_line_wr_valid = l2_line_wr_valid;
   assign monitor_l2_line_wr_ready = l2_line_wr_ready;
@@ -605,6 +614,7 @@ module CoherentCacheSubsystem #(
   assign monitor_victim_snoop_accept_addr = victim_addr_q;
   assign monitor_dir_snoop_rsp_valid = dir_snoop_rsp_valid;
   assign monitor_dir_snoop_rsp_ready = dir_snoop_rsp_ready;
+  assign monitor_dir_snoop_rsp_opcode = dir_snoop_rsp_opcode;
   assign monitor_dir_snoop_target = dir_snoop_target;
   assign monitor_dir_snoop_txn_id = dir_snoop_txn_id;
 
