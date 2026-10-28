@@ -9,7 +9,8 @@ format:
 - 01:19：加入真实 `MesiL1Controller.sv` 的两处协议变异（M-owner 远端读降级、owner-data 响应标记），以模块 checker 必须拒绝变异 RTL；2/2 捕获。另加 AXI 顶层 R-only、B-only、R+B 五周期响应反压，三种模式均保持 payload/ID/RESP/LAST 并正常排空。
 - 01:19：新增 Directory cold-GetS bounded progress harness。首轮断言错误地要求 Grant 周期仍有目录写使能；实际握手已提交并撤销写使能。修正为核对提交后的目录状态/数据，再跑 24-step BMC PASS。该结果只覆盖公平环境下的有界 GetS 路径，不声称无界活性。
 - 01:32：完整 `make COHERENCE_JOBS=2 coherence_verify` 退出码 0：模块/总线与 AXI 回归通过；Coherence formal 7/7；SV 38/38 bins、91.6% 汇总行覆盖（RTL 1579/1823，TB 1534/1578）；Python 24/24、功能 36/36、cross 12/12、checker 注错 9/9；AXI Python 3/3；标准与 dense-set 压力各 20 seeds × 200 操作通过；RTL mutation 2/2。
-- 01:33：按最新 LCOV 生成 `docs/coherence_coverage_gap_review.md`，把 288 条未命中拆为 RTL 244 条、SV TB 44 条，列出逐文件行号和可测试风险，不将未覆盖防御分支笼统豁免。更新 v1.0.1 manifest 与最终报告；本次完整 root Actions 仍待推送触发并确认两个 Job 均 PASS，PPA/SRAM 仍排除。
+- 01:33：按最新 LCOV 生成 `docs/coherence_coverage_gap_review.md`，把 288 条未命中拆为 RTL 244 条、SV TB 44 条，列出逐文件行号和可测试风险，不将未覆盖防御分支笼统豁免。更新 v1.0.1 manifest 与最终报告；PPA/SRAM 仍排除。
+- 18:03：收口源提交 `38fdb74062a8416563e5824589256e1f5d836785` 的 GitHub Actions run `40552490749`：Legacy/Formal 与 Coherence 两个 Job 的所有步骤均 PASS，Dense-set 已由默认 `coherence_verify` 覆盖。同步将 release manifest 和最终报告状态改为 CI 全绿；PPA/SRAM 仍不在范围内。
 
 ## 2026-10-27（新加坡时间）
 - 19:25：定位并闭合同 L2 set 压力中的 14/20 seed 失败：L1 replacement PutM 与 Directory 尚未握手的 owner-data Snoop 互等；仅在 Snoop 未接受且没有在途 snoop 数据时允许 PutM 先提交，已握手的 owner-data 流仍独占共享 L2 写口。原失败 dense-set 回归现为 20/20 seeds × 200 操作通过。

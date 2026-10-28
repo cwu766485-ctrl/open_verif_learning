@@ -8,7 +8,7 @@
 
 当前交付已经从旧的单核 L1 DCache 学习验证项目演进为双核自定义 MESI 一致性缓存子系统。报告、验证入口与性能数据均以当前 MESI RTL 为对象；旧 L1 验证保留为独立回归，不再充当 MESI 的验证依据。`release/v1.0` 维持冻结；本报告记录 `cache_coherence` 上的维护候选结果，不移动或重打 v1.0 标签。
 
-本次签核收尾把 Dense-set 20-seed 回归正式接入 `coherence_verify` 和 GitHub Actions，增加真实 L1 MESI RTL 注错、AXI R/B 响应反压与 Directory cold-GetS 有界进展检查，并逐行审阅剩余覆盖缺口。完整本地 `coherence_verify` 通过；本次推送后的 Actions 最终状态待运行完成后填入。PPA/SRAM 实现评估按当前计划暂不包含。
+本次签核收尾把 Dense-set 20-seed 回归正式接入 `coherence_verify` 和 GitHub Actions，增加真实 L1 MESI RTL 注错、AXI R/B 响应反压与 Directory cold-GetS 有界进展检查，并逐行审阅剩余覆盖缺口。完整本地 `coherence_verify` 通过；源提交 `38fdb74062a8416563e5824589256e1f5d836785` 对应的 GitHub Actions run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 中，Legacy/Formal 与 Coherence 两个 Job 均 PASS。PPA/SRAM 实现评估按当前计划暂不包含。
 
 本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
@@ -53,7 +53,7 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录 2026-10-28 收尾候选的本地全量回归。此前完整 run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 已通过；本次增加 Dense-set CI 门禁、AXI R/B 反压、RTL mutation 和 Directory bounded progress 后，新的 root Actions 验证正在等待推送触发。
+以下表格记录 2026-10-28 收尾候选的本地全量回归及远端签核。此前完整 run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 已通过；本次增加 Dense-set CI 门禁、AXI R/B 反压、RTL mutation 和 Directory bounded progress 后，源提交 `38fdb74062a8416563e5824589256e1f5d836785` 的 Actions run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 中 `cache-regression` 和 `coherence-regression` 均成功完成。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
@@ -66,10 +66,10 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 | Actual RTL mutation | 2/2 MESI L1 protocol mutations caught | 修改真实 `MesiL1Controller.sv` 行为，模块级 checker 必须失败；小规模敏感度样本，不是穷举 |
 | Coverage gap review | 3,153/3,441 行命中；244 RTL 与 44 SV TB 行未命中 | [逐文件行号与风险分类](../../docs/coherence_coverage_gap_review.md)；未命中不等于全部可删除 |
 | Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
-| GitHub Actions | 本地门禁 PASS；本次推送触发后的 Actions 待完成 | 只有两个 root jobs 都结束为 PASS 后，才记为最终全绿 |
+| GitHub Actions | run 40552490749：`cache-regression` PASS；`coherence-regression` PASS | 两个 job 的所有步骤均 completed/success；源提交 38fdb74062a8416563e5824589256e1f5d836785 |
 | PPA/SRAM 实现 | 未执行 | 本次明确排除，需目标工艺/库/约束后评估 |
 
-门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照。Legacy 的 45 分钟 timeout 已提高至 90 分钟，完整 Formal/Regression 在 run 40527215667 中通过。
+门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照。Legacy/Formal 与 Coherence 的完整门禁均在 run 40552490749 上通过，两个 job 的执行步骤均成功完成。
 
 ## 6. 性能数据与复现
 
