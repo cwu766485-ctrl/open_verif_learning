@@ -2,7 +2,7 @@
   "cross_coverage": {
     "bins": [
       {
-        "hits": 68,
+        "hits": 71,
         "id": "cross.cold_read_from_memory",
         "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8",
         "status": "hit",
@@ -99,10 +99,11 @@
     "I:from_E:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8": 11,
     "I:from_E:write:core0:source_remote_owner:l2_hit:snoop_core1:beats_8": 6,
     "I:from_E:write:core1:source_remote_owner:l2_hit:snoop_core0:beats_8": 6,
-    "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8": 68,
+    "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8": 71,
     "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8": 1,
     "I:from_I:read:core1:source_memory:l2_miss:snoop_none:beats_8": 22,
-    "I:from_I:write:core0:source_memory:l2_miss:snoop_none:beats_8": 23,
+    "I:from_I:read:core1:source_shared_l2:l2_hit:snoop_none:beats_8": 1,
+    "I:from_I:write:core0:source_memory:l2_miss:snoop_none:beats_8": 25,
     "I:from_I:write:core1:source_memory:l2_miss:snoop_none:beats_8": 22,
     "I:from_M:read:core0:source_remote_owner:l2_hit:snoop_core1:beats_8": 110,
     "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8": 239,
@@ -129,19 +130,19 @@
       {
         "checker": "CoherenceScoreboard response/data model",
         "feature": "cold_read",
-        "hits": 91,
+        "hits": 95,
         "id": "mesi.cold_read",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Independent cold GetS data check"
       },
       {
         "checker": "CoherenceScoreboard byte-accurate data and MESI invariants",
         "feature": "cold_write",
-        "hits": 76,
+        "hits": 78,
         "id": "mesi.cold_write",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Cold GetM stores to the dual-core set-pressure sequence"
       },
       {
@@ -150,7 +151,7 @@
         "hits": 13,
         "id": "mesi.remote_read_e",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Core1 reads Core0 E line"
       },
       {
@@ -159,7 +160,7 @@
         "hits": 349,
         "id": "mesi.remote_read_m",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Remote read observes latest M-owner data"
       },
       {
@@ -168,16 +169,16 @@
         "hits": 334,
         "id": "mesi.shared_upgrade",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Core0 byte-masked S-to-M store"
       },
       {
         "checker": "Independent 4-way L1 replacement model",
         "feature": "l1_eviction",
-        "hits": 15,
+        "hits": 16,
         "id": "l1.replacement",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Five same-index lines exceed one L1 set capacity"
       },
       {
@@ -186,25 +187,25 @@
         "hits": 1,
         "id": "l1.replacement_put_match",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Predicted L1 victim line/state matches the accepted Put opcode and address"
       },
       {
         "checker": "DUT L2 event and no backing-memory read",
         "feature": "l2_refill_hit",
-        "hits": 394,
+        "hits": 395,
         "id": "l2.refill_hit",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Re-read L1-evicted line retained in shared L2"
       },
       {
         "checker": "DUT L2 event and backing-memory read",
         "feature": "l2_refill_miss",
-        "hits": 135,
+        "hits": 140,
         "id": "l2.refill_miss",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Cold line refill absent from shared L2"
       },
       {
@@ -213,7 +214,7 @@
         "hits": 5,
         "id": "l2.live_victim",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Ninth same-set line evicts a line still owned by the other L1"
       },
       {
@@ -222,7 +223,7 @@
         "hits": 3,
         "id": "l2.live_victim_dirty_owner",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Dirty M owner is back-invalidated, written back, and reloaded with the same data"
       },
       {
@@ -231,7 +232,7 @@
         "hits": 1,
         "id": "l2.live_victim_shared",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Shared L2 victim with two live S copies is invalidated at both L1s"
       },
       {
@@ -240,7 +241,7 @@
         "hits": 1,
         "id": "cpu.dual_miss_overlap",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Both CPU lanes present independent cold misses together"
       },
       {
@@ -249,7 +250,7 @@
         "hits": 1,
         "id": "cpu.byte_mask",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Masked store followed by remote read"
       },
       {
@@ -258,7 +259,7 @@
         "hits": 1,
         "id": "cpu.byte_mask_m_hit",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Second byte-masked store hits a Modified line"
       },
       {
@@ -267,7 +268,7 @@
         "hits": 2,
         "id": "memory.dirty_writeback",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Dirty inclusive L2 victim writes all eight beats"
       },
       {
@@ -276,7 +277,7 @@
         "hits": 2,
         "id": "memory.write_response",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "CPU transaction completes after memory write response"
       },
       {
@@ -285,7 +286,7 @@
         "hits": 1,
         "id": "reset.active_refill",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Reset cancels a memory-accepted refill without a stale CPU response; the same line works after recovery"
       },
       {
@@ -294,7 +295,7 @@
         "hits": 4,
         "id": "backpressure.cpu_response",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "CPU response payload remains stable while ready is held low"
       },
       {
@@ -303,7 +304,7 @@
         "hits": 3,
         "id": "backpressure.memory_read_request",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Cold refill request holds through deterministic memory-ready stalls"
       },
       {
@@ -312,7 +313,7 @@
         "hits": 3,
         "id": "backpressure.memory_write_request",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Dirty victim write request holds through deterministic memory-ready stalls"
       },
       {
@@ -321,7 +322,7 @@
         "hits": 3,
         "id": "backpressure.memory_write_data",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "All eight dirty-victim beats survive deterministic write-data stalls"
       },
       {
@@ -330,7 +331,7 @@
         "hits": 19,
         "id": "memory.read_response_gaps",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Read refill beats complete with deterministic response-valid gaps"
       },
       {
@@ -339,7 +340,7 @@
         "hits": 1,
         "id": "directory.lookup_race_regression",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Different-address owner transfer and cold grant contend for the L2 lookup"
       },
       {
@@ -348,7 +349,7 @@
         "hits": 1,
         "id": "directory.lookup_conflict_transfer",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "A waiting request is held while an active owner-transfer lookup uses the shared port"
       },
       {
@@ -357,8 +358,17 @@
         "hits": 1,
         "id": "directory.lookup_conflict_grant",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "A waiting request is held while an active grant lookup uses the shared port"
+      },
+      {
+        "checker": "Accepted ACK/Snoop transaction ID, PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, dirty data, and independent MESI/Directory commit",
+        "feature": "snoop_ack_l2_retry",
+        "hits": 1,
+        "id": "directory.snoop_ack_l2_retry",
+        "status": "hit",
+        "test": "tests/coherence/test_subsystem_python.py",
+        "testpoint": "A same-set PutM removes the snapshotted M owner before SnoopRead response; Directory retries from the retained L2 line"
       },
       {
         "checker": "Independent byte-accurate scoreboard and final readback",
@@ -366,7 +376,7 @@
         "hits": 1,
         "id": "cpu.same_line_dual_lane",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently"
       },
       {
@@ -375,7 +385,7 @@
         "hits": 1,
         "id": "litmus.message_passing",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Core0 completes DATA then READY stores; Core1 observes READY and the latest DATA on distinct lines"
       },
       {
@@ -384,7 +394,7 @@
         "hits": 1,
         "id": "false_sharing.same_line",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Two cores repeatedly write different words in one 64-byte line"
       },
       {
@@ -393,7 +403,7 @@
         "hits": 1,
         "id": "false_sharing.separate_lines",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Matched two-core write workload on distinct 64-byte lines"
       },
       {
@@ -402,7 +412,7 @@
         "hits": 1,
         "id": "false_sharing.final_data",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "A/B cases preserve both final word values"
       },
       {
@@ -411,7 +421,7 @@
         "hits": 1,
         "id": "litmus.generation_100",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data"
       },
       {
@@ -420,7 +430,7 @@
         "hits": 1,
         "id": "litmus.generation_backpressure",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Generation handshake remains correct with memory request/response gaps and CPU response stalls"
       },
       {
@@ -429,7 +439,7 @@
         "hits": 4,
         "id": "cpu.seeded_random",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Four reproducible mixed read/write seeds pass the independent model"
       },
       {
@@ -438,7 +448,7 @@
         "hits": 24,
         "id": "cpu.random_dual_lane",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Seeded regression issues independent requests on both packed CPU lanes"
       },
       {
@@ -447,24 +457,24 @@
         "hits": 2,
         "id": "coherence.dirty_owner_fill_port",
         "status": "hit",
-        "test": "tests/coherence/test_subsystem_python.py::test_python_parallel_misses_l2_hit_and_dirty_writeback",
+        "test": "tests/coherence/test_subsystem_python.py",
         "testpoint": "Both core directions transfer an M-owner line while an unrelated L2 refill is active"
       }
     ],
-    "hit": 36,
+    "hit": 37,
     "missing": [],
     "percent": 100.0,
-    "total": 36
+    "total": 37
   },
-  "l1_evictions": 15,
+  "l1_evictions": 16,
   "l2_live_evictions": 5,
   "regression": "python_dual_l1_shared_l2_mesi",
   "sampled_features": {
     "byte_mask_m_hit": 1,
     "byte_mask_write": 1,
     "clean_snoop_during_l2_fill": 2,
-    "cold_read": 91,
-    "cold_write": 76,
+    "cold_read": 95,
+    "cold_write": 78,
     "cpu_response_backpressure": 4,
     "directory_lookup_conflict_grant": 1,
     "directory_lookup_conflict_transfer": 1,
@@ -474,13 +484,13 @@
     "false_sharing_data_checked": 1,
     "false_sharing_same_line": 1,
     "false_sharing_separate_lines": 1,
-    "l1_eviction": 15,
+    "l1_eviction": 16,
     "l1_replacement_put_match": 1,
     "l2_live_eviction": 5,
     "l2_live_victim_dirty_owner": 3,
     "l2_live_victim_shared": 1,
-    "l2_refill_hit": 394,
-    "l2_refill_miss": 135,
+    "l2_refill_hit": 395,
+    "l2_refill_miss": 140,
     "l2_shared_victim_back_invalidation": 1,
     "litmus_generation_backpressure": 1,
     "litmus_generation_counter_100": 1,
@@ -499,6 +509,7 @@
     "reset_during_refill": 1,
     "same_line_dual_lane": 1,
     "shared_upgrade": 334,
+    "snoop_ack_l2_retry": 1,
     "write_hit": 29,
     "write_response": 2
   },
