@@ -757,8 +757,6 @@ module CoherentCacheSubsystem #(
   always_comb begin : route_snoop_payload
     snoop_valid_core[0] = 1'b0;
     snoop_valid_core[1] = 1'b0;
-    put_xfer_start_core[0] = 1'b0;
-    put_xfer_start_core[1] = 1'b0;
     put_xfer_addr_core[0] = dir_xfer_addr;
     put_xfer_addr_core[1] = dir_xfer_addr;
     put_xfer_txn_id_core[0] = dir_xfer_txn_id;
@@ -789,6 +787,15 @@ module CoherentCacheSubsystem #(
       snoop_valid_core[1] = dir_snoop_valid && dir_snoop_issue_enable;
     else
       snoop_valid_core[0] = dir_snoop_valid && dir_snoop_issue_enable;
+  end
+
+  // Keep the PutM start handshake out of the Snoop payload process. The
+  // readiness expression for a line transfer may inspect Snoop progress;
+  // combining both outputs in one procedural block creates a false
+  // process-level dependency loop in Verilator's flattened testbench model.
+  always_comb begin : route_put_xfer_start
+    put_xfer_start_core[0] = 1'b0;
+    put_xfer_start_core[1] = 1'b0;
     if (dir_xfer_start_valid && dir_xfer_start_ready &&
         (dir_xfer_kind == XFER_PUTM_TO_L2))
       put_xfer_start_core[dir_xfer_src] = 1'b1;

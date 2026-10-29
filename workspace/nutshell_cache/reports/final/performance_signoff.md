@@ -86,7 +86,7 @@ AXI 顶层使用五个固定 seed，每 seed 64 个 CPU 请求；读写 RAM 检�
 
 此前将 9 个随机行强制映射到同一 L2 set 并双核并发时，20 seeds 中 14 个触发 Directory 状态错误、协议错误或响应超时。回放将根因缩小为 replacement PutM 与尚未被 L1 接受的 owner-data Snoop 相互等待：PutM 要等数据被 L2 接收，L1 又因等待 PutM 而不能接受 Snoop。当前实现允许 PutM 在该 Snoop 尚未握手、且没有正在进行的 snoop 数据传输时先提交；一旦 owner-data Snoop 已接受，L2 写口仍保持互斥。Directory 对无数据 ACK 继续从权威 L2 行恢复数据。修复后同一 dense-set workload 为 20/20 seeds、4,000/4,000 操作槽通过，且每个 seed 均完成数据、MESI/Directory 状态和事务结束检查。结果见 [`dense-set config`](../coherence/dense_l2_stress/config.json)、[`JUnit`](../coherence/dense_l2_stress/results.xml) 和 [`coverage`](../../benchmarks/results/coherence_python_dense_l2_set_coverage.json)。
 
-本次最终候选验证（2026-10-27）包含 RTL directed/integrated 回归 38/38 功能 bins、91.6% 行覆盖；Python/Toffee 24/24，独立功能 bins 36/36、cross 12/12，fault injection 9/9；AXI Python 3/3；标准与 dense-set 随机压力分别为 20×200 PASS。6 个组件级 bounded formal/cover 目标通过，不代表双核顶层无界证明。D01/D02/D04 分别由 message-passing litmus、同/异 cache-line false-sharing 对照、coverage/testplan/scoreboard 证据链覆盖；新增 Tests A/B/C 为这三个 Python litmus，均通过。
+性能数值来自表中注明的既有 Benchmark v3 源快照，不因本轮恢复路径验证而重新解释或外推。2026-10-29 验证候选在此前结果上增加 stale Upgrade 集成 checker；Python/Toffee 为 26/26，功能 bins 38/38、cross 12/12，fault injection 9/9；标准与 dense-set 随机压力各 20×200 PASS；组件级 bounded formal/cover 为 7/7。结果不代表双核顶层无界证明。D01/D02/D04 分别由 message-passing litmus、同/异 cache-line false-sharing 对照、coverage/testplan/scoreboard 证据链覆盖；Tests A/B/C 均通过。
 
 独立 `CoherenceScoreboard` 不读取 DUT 的推导 MESI 状态；它维护逐 word architectural data、两个 L1 的 MESI 副本、byte mask、L1/L2 replacement 和由副本推导的 Directory owner/sharer。监视器以已接受的 Put、Snoop、数据 beat 和 Directory commit 与模型对照；每个随机 CPU 操作后比较目录，并对写操作做读回。随机 stress 模式让 DUT 选择真实 L1 victim，通过已接受 Put 更新副本模型，故不在该随机模式里二次预测 victim way；victim-way 预测另由独立 directed L1 replacement→Put 测试检查。
 

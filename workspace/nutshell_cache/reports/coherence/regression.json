@@ -1,9 +1,9 @@
 {
   "code_coverage": {
     "lcov": "reports/coherence/coverage.info",
-    "line_hit": 3153,
-    "line_total": 3441,
-    "percent": 91.6303400174368
+    "line_hit": 3152,
+    "line_total": 3440,
+    "percent": 91.62790697674419
   },
   "coverage_event_errors": [],
   "functional_coverage": {

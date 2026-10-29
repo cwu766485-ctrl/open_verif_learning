@@ -109,9 +109,22 @@ module CoherenceDirectoryMshrBankFormal(
   );
 
   logic past_valid = 1'b0;
+  request_opcode_t accepted_req_opcode_q [0:NUM_MSHRS-1];
   initial assume (reset);
   always @(posedge formal_timestep)
     clock <= ~clock;
+
+  // Keep the request opcode in the checker model from the public accepted
+  // request. The implementation need not retain a redundant opcode register.
+  always_ff @(posedge clock) begin : accepted_request_model
+    integer slot;
+    if (reset) begin
+      for (slot = 0; slot < NUM_MSHRS; slot = slot + 1)
+        accepted_req_opcode_q[slot] <= REQ_GETS;
+    end else if (req_valid && req_ready) begin
+      accepted_req_opcode_q[dut.req_sel] <= req_opcode;
+    end
+  end
 
   always @(posedge clock) begin : bank_properties
     integer i;
@@ -150,9 +163,9 @@ module CoherenceDirectoryMshrBankFormal(
             // The sole allowed duplicate is one replacement Put context
             // behind one coherence context that had to let the Put retire
             // before its stalled Snoop could be accepted.
-            assert ((dut.req_opcode_q[i] inside
+            assert ((accepted_req_opcode_q[i] inside
                       {REQ_PUTS, REQ_PUTE, REQ_PUTM}) !=
-                    (dut.req_opcode_q[j] inside
+                    (accepted_req_opcode_q[j] inside
                       {REQ_PUTS, REQ_PUTE, REQ_PUTM}));
           end
         end

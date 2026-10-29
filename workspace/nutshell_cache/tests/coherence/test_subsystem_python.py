@@ -317,6 +317,66 @@ async def test_dual_core_owner_transfer_and_data_visibility(coherent_env):
 
 
 @case
+async def test_python_stale_upgrade_recovers_after_peer_invalidation(coherent_env):
+    """A queued S->M Upgrade must recover after a competing writer invalidates S."""
+    dut, memory, _ = await coherent_env()
+    cpu = DualCoreCpuDriver(dut)
+    model = CoherenceScoreboard()
+    addr = 0x0052_8040
+    initial_line = tuple(memory.word(addr + 8 * beat, beat) for beat in range(8))
+    model.seed_line(addr, initial_line)
+
+    # Establish S/S first. Then let Core1's Upgrade win arbitration while
+    # Core0's Upgrade is queued behind the same-line ownership transaction.
+    reads = await cpu.access_pair(CpuRequest(addr), CpuRequest(addr))
+    for core in (0, 1):
+        model.observe(core, addr, response_data=reads[core])
+    assert model.states[addr & ~0x3F] == ["S", "S"]
+
+    req_cursor = len(memory.snoop_data.directory_requests)
+    grant_cursor = len(memory.snoop_data.directory_grants)
+    snoop_cursor = len(memory.snoop_data.snoops)
+    transfer_cursor = len(memory.snoop_data.transfers)
+    core1_value = 0x1111222233334444
+    core0_value = 0xAAAABBBBCCCCDDDD
+    await cpu.access_pair(
+        CpuRequest(addr, True, core0_value),
+        CpuRequest(addr, True, core1_value),
+        request_delay_cycles={0: 1},
+    )
+
+    accepted = [item for item in memory.snoop_data.directory_requests[req_cursor:]
+                if item["line"] == (addr & ~0x3F)]
+    assert [(item["core"], item["opcode"]) for item in accepted] == [
+        (1, 0b010), (0, 0b010)
+    ], f"expected Core0's stale Upgrade after Core1 invalidated it: {accepted}"
+    grants = [item for item in memory.snoop_data.directory_grants[grant_cursor:]
+              if item["line"] == (addr & ~0x3F)]
+    assert [(item["dst"], item["opcode"]) for item in grants] == [
+        (1, 0b011), (0, 0b010)
+    ], f"stale Upgrade was not recovered as data-bearing GetM: {grants}"
+    snoops = memory.snoop_data.snoops[snoop_cursor:]
+    assert [(item["core"], item["opcode"]) for item in snoops
+            if item["line"] == (addr & ~0x3F)] == [(0, 1), (1, 1)]
+
+    # The second Upgrade must recover Core1's just-written authoritative line.
+    model.observe(1, addr, write=True, write_data=core1_value)
+    expected_owner_line = tuple(model.word(addr + 8 * beat) for beat in range(8))
+    memory.snoop_data.assert_line_data(addr, expected_owner_line,
+                                       since=transfer_cursor)
+    model.observe(0, addr, write=True, write_data=core0_value)
+    assert model.directory_view(addr)["owner"] == 0
+    assert int(dut.protocol_error.value) == 0
+
+    result = await cpu.access(1, addr)
+    model.observe(1, addr, response_data=result)
+    assert result == core0_value
+    memory.snoop_data.assert_directory_matches(model, addr)
+    PYTHON_COVERAGE.sample_external("stale_upgrade_recovery")
+    _record_model(model)
+
+
+@case
 async def test_python_parallel_misses_l2_hit_and_dirty_writeback(coherent_env):
     dut, memory, perf = await coherent_env()
     cpu = DualCoreCpuDriver(dut)

@@ -3,56 +3,295 @@
   "regression": "python_dual_l1_shared_l2_mesi",
   "test": "tests/coherence/test_subsystem_python.py",
   "bins": [
-    {"id": "mesi.cold_read", "feature": "cold_read", "testpoint": "Independent cold GetS data check", "checker": "CoherenceScoreboard response/data model"},
-    {"id": "mesi.cold_write", "feature": "cold_write", "testpoint": "Cold GetM stores to the dual-core set-pressure sequence", "checker": "CoherenceScoreboard byte-accurate data and MESI invariants"},
-    {"id": "mesi.remote_read_e", "feature": "remote_read_from_E", "testpoint": "Core1 reads Core0 E line", "checker": "Independent MESI state transition and returned data"},
-    {"id": "mesi.remote_read_m", "feature": "remote_read_from_M", "testpoint": "Remote read observes latest M-owner data", "checker": "Independent MESI state transition and returned data"},
-    {"id": "mesi.shared_upgrade", "feature": "shared_upgrade", "testpoint": "Core0 byte-masked S-to-M store", "checker": "Byte-merge data comparison and MESI transition"},
-    {"id": "l1.replacement", "feature": "l1_eviction", "testpoint": "Five same-index lines exceed one L1 set capacity", "checker": "Independent 4-way L1 replacement model"},
-    {"id": "l1.replacement_put_match", "feature": "l1_replacement_put_match", "testpoint": "Predicted L1 victim line/state matches the accepted Put opcode and address", "checker": "Independent round-robin replacement scoreboard compared with Directory Put handshakes"},
-    {"id": "l2.refill_hit", "feature": "l2_refill_hit", "testpoint": "Re-read L1-evicted line retained in shared L2", "checker": "DUT L2 event and no backing-memory read"},
-    {"id": "l2.refill_miss", "feature": "l2_refill_miss", "testpoint": "Cold line refill absent from shared L2", "checker": "DUT L2 event and backing-memory read"},
-    {"id": "l2.live_victim", "feature": "l2_live_eviction", "testpoint": "Ninth same-set line evicts a line still owned by the other L1", "checker": "Directory/L1 reference state plus snoop, owner data, and L2 victim model"},
-    {"id": "l2.live_victim_dirty_owner", "feature": "l2_live_victim_dirty_owner", "testpoint": "Dirty M owner is back-invalidated, written back, and reloaded with the same data", "checker": "Independent Directory/MESI model, accepted Snoop, eight-beat memory writeback, and reload data"},
-    {"id": "l2.live_victim_shared", "feature": "l2_live_victim_shared", "testpoint": "Shared L2 victim with two live S copies is invalidated at both L1s", "checker": "Independent Directory/L1 model compared with both accepted snoops and any required memory writeback data"},
-    {"id": "cpu.dual_miss_overlap", "feature": "parallel_cold_miss_pair", "testpoint": "Both CPU lanes present independent cold misses together", "checker": "Single packed DualCoreCpuDriver handshakes and matches each response"},
-    {"id": "cpu.byte_mask", "feature": "byte_mask_write", "testpoint": "Masked store followed by remote read", "checker": "Architectural byte-lane merge comparison"},
-    {"id": "cpu.byte_mask_m_hit", "feature": "byte_mask_m_hit", "testpoint": "Second byte-masked store hits a Modified line", "checker": "Independent byte-merge model and local/remote data checks"},
-    {"id": "memory.dirty_writeback", "feature": "dirty_writeback", "testpoint": "Dirty inclusive L2 victim writes all eight beats", "checker": "Writable memory contents, beat count, and later victim reload"},
-    {"id": "memory.write_response", "feature": "write_response", "testpoint": "CPU transaction completes after memory write response", "checker": "ID-matched write response handshake count"},
-    {"id": "reset.active_refill", "feature": "reset_during_refill", "testpoint": "Reset cancels a memory-accepted refill without a stale CPU response; the same line works after recovery", "checker": "CPU response monitor, reset-aware line memory and post-reset data scoreboard"},
-    {"id": "backpressure.cpu_response", "feature": "cpu_response_backpressure", "testpoint": "CPU response payload remains stable while ready is held low", "checker": "Packed-lane driver checks address, operation and data through the stall"},
-    {"id": "backpressure.memory_read_request", "feature": "memory_read_request_backpressure", "testpoint": "Cold refill request holds through deterministic memory-ready stalls", "checker": "Accepted line-request queue and ready/valid stall counter"},
-    {"id": "backpressure.memory_write_request", "feature": "memory_write_request_backpressure", "testpoint": "Dirty victim write request holds through deterministic memory-ready stalls", "checker": "Accepted write-request queue and ready/valid stall counter"},
-    {"id": "backpressure.memory_write_data", "feature": "memory_write_data_backpressure", "testpoint": "All eight dirty-victim beats survive deterministic write-data stalls", "checker": "Beat-index checker, writable memory model and ready/valid stall counter"},
-    {"id": "memory.read_response_gaps", "feature": "memory_read_response_gaps", "testpoint": "Read refill beats complete with deterministic response-valid gaps", "checker": "ID/beat-aware memory queue and returned architectural data"},
-    {"id": "directory.lookup_race_regression", "feature": "directory_lookup_race_regression", "testpoint": "Different-address owner transfer and cold grant contend for the L2 lookup", "checker": "Blocked-lookup monitor plus independent data, snoop-beat, and Directory scoreboard checks"},
-    {"id": "directory.lookup_conflict_transfer", "feature": "directory_lookup_conflict_transfer", "testpoint": "A waiting request is held while an active owner-transfer lookup uses the shared port", "checker": "Accepted transfer address remains distinct from blocked incoming request"},
-    {"id": "directory.lookup_conflict_grant", "feature": "directory_lookup_conflict_grant", "testpoint": "A waiting request is held while an active grant lookup uses the shared port", "checker": "Accepted grant address remains distinct from blocked incoming request"},
-    {"id": "directory.snoop_ack_l2_retry", "feature": "snoop_ack_l2_retry", "testpoint": "A same-set PutM removes the snapshotted M owner before SnoopRead response; Directory retries from the retained L2 line", "checker": "Accepted ACK/Snoop transaction ID, PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, dirty data, and independent MESI/Directory commit"},
-    {"id": "cpu.same_line_dual_lane", "feature": "same_line_dual_lane", "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently", "checker": "Independent byte-accurate scoreboard and final readback"},
-    {"id": "litmus.message_passing", "feature": "litmus_message_passing", "testpoint": "Core0 completes DATA then READY stores; Core1 observes READY and the latest DATA on distinct lines", "checker": "Independent byte-accurate MESI/data scoreboard and accepted Directory metadata monitor"},
-    {"id": "false_sharing.same_line", "feature": "false_sharing_same_line", "testpoint": "Two cores repeatedly write different words in one 64-byte line", "checker": "Independent data scoreboard, snoop/request monitor, and final word readback"},
-    {"id": "false_sharing.separate_lines", "feature": "false_sharing_separate_lines", "testpoint": "Matched two-core write workload on distinct 64-byte lines", "checker": "Independent data scoreboard and final word readback"},
-    {"id": "false_sharing.final_data", "feature": "false_sharing_data_checked", "testpoint": "A/B cases preserve both final word values", "checker": "Independent architectural data scoreboard"},
-    {"id": "litmus.generation_100", "feature": "litmus_generation_counter_100", "testpoint": "100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data", "checker": "Independent scoreboard, generation sequence checker, and Directory monitor"},
-    {"id": "litmus.generation_backpressure", "feature": "litmus_generation_backpressure", "testpoint": "Generation handshake remains correct with memory request/response gaps and CPU response stalls", "checker": "Ready/valid driver checks, memory agent stall counters, and scoreboard"},
-    {"id": "cpu.seeded_random", "feature": "randomized_seeded_regression", "testpoint": "Four reproducible mixed read/write seeds pass the independent model", "checker": "Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output"},
-    {"id": "cpu.random_dual_lane", "feature": "random_dual_lane_pairs", "testpoint": "Seeded regression issues independent requests on both packed CPU lanes", "checker": "Single dual-core driver and per-core response matching"},
-    {"id": "coherence.dirty_owner_fill_port", "feature": "dirty_owner_snoop_during_l2_fill", "testpoint": "Both core directions transfer an M-owner line while an unrelated L2 refill is active", "checker": "Eight-beat owner-data scoreboard, independent Directory model, and shared L2 write-port collision monitor"}
+    {
+      "id": "mesi.cold_read",
+      "feature": "cold_read",
+      "testpoint": "Independent cold GetS data check",
+      "checker": "CoherenceScoreboard response/data model"
+    },
+    {
+      "id": "mesi.cold_write",
+      "feature": "cold_write",
+      "testpoint": "Cold GetM stores to the dual-core set-pressure sequence",
+      "checker": "CoherenceScoreboard byte-accurate data and MESI invariants"
+    },
+    {
+      "id": "mesi.remote_read_e",
+      "feature": "remote_read_from_E",
+      "testpoint": "Core1 reads Core0 E line",
+      "checker": "Independent MESI state transition and returned data"
+    },
+    {
+      "id": "mesi.remote_read_m",
+      "feature": "remote_read_from_M",
+      "testpoint": "Remote read observes latest M-owner data",
+      "checker": "Independent MESI state transition and returned data"
+    },
+    {
+      "id": "mesi.shared_upgrade",
+      "feature": "shared_upgrade",
+      "testpoint": "Core0 byte-masked S-to-M store",
+      "checker": "Byte-merge data comparison and MESI transition"
+    },
+    {
+      "id": "l1.replacement",
+      "feature": "l1_eviction",
+      "testpoint": "Five same-index lines exceed one L1 set capacity",
+      "checker": "Independent 4-way L1 replacement model"
+    },
+    {
+      "id": "l1.replacement_put_match",
+      "feature": "l1_replacement_put_match",
+      "testpoint": "Predicted L1 victim line/state matches the accepted Put opcode and address",
+      "checker": "Independent round-robin replacement scoreboard compared with Directory Put handshakes"
+    },
+    {
+      "id": "l2.refill_hit",
+      "feature": "l2_refill_hit",
+      "testpoint": "Re-read L1-evicted line retained in shared L2",
+      "checker": "DUT L2 event and no backing-memory read"
+    },
+    {
+      "id": "l2.refill_miss",
+      "feature": "l2_refill_miss",
+      "testpoint": "Cold line refill absent from shared L2",
+      "checker": "DUT L2 event and backing-memory read"
+    },
+    {
+      "id": "l2.live_victim",
+      "feature": "l2_live_eviction",
+      "testpoint": "Ninth same-set line evicts a line still owned by the other L1",
+      "checker": "Directory/L1 reference state plus snoop, owner data, and L2 victim model"
+    },
+    {
+      "id": "l2.live_victim_dirty_owner",
+      "feature": "l2_live_victim_dirty_owner",
+      "testpoint": "Dirty M owner is back-invalidated, written back, and reloaded with the same data",
+      "checker": "Independent Directory/MESI model, accepted Snoop, eight-beat memory writeback, and reload data"
+    },
+    {
+      "id": "l2.live_victim_shared",
+      "feature": "l2_live_victim_shared",
+      "testpoint": "Shared L2 victim with two live S copies is invalidated at both L1s",
+      "checker": "Independent Directory/L1 model compared with both accepted snoops and any required memory writeback data"
+    },
+    {
+      "id": "cpu.dual_miss_overlap",
+      "feature": "parallel_cold_miss_pair",
+      "testpoint": "Both CPU lanes present independent cold misses together",
+      "checker": "Single packed DualCoreCpuDriver handshakes and matches each response"
+    },
+    {
+      "id": "cpu.byte_mask",
+      "feature": "byte_mask_write",
+      "testpoint": "Masked store followed by remote read",
+      "checker": "Architectural byte-lane merge comparison"
+    },
+    {
+      "id": "cpu.byte_mask_m_hit",
+      "feature": "byte_mask_m_hit",
+      "testpoint": "Second byte-masked store hits a Modified line",
+      "checker": "Independent byte-merge model and local/remote data checks"
+    },
+    {
+      "id": "memory.dirty_writeback",
+      "feature": "dirty_writeback",
+      "testpoint": "Dirty inclusive L2 victim writes all eight beats",
+      "checker": "Writable memory contents, beat count, and later victim reload"
+    },
+    {
+      "id": "memory.write_response",
+      "feature": "write_response",
+      "testpoint": "CPU transaction completes after memory write response",
+      "checker": "ID-matched write response handshake count"
+    },
+    {
+      "id": "reset.active_refill",
+      "feature": "reset_during_refill",
+      "testpoint": "Reset cancels a memory-accepted refill without a stale CPU response; the same line works after recovery",
+      "checker": "CPU response monitor, reset-aware line memory and post-reset data scoreboard"
+    },
+    {
+      "id": "backpressure.cpu_response",
+      "feature": "cpu_response_backpressure",
+      "testpoint": "CPU response payload remains stable while ready is held low",
+      "checker": "Packed-lane driver checks address, operation and data through the stall"
+    },
+    {
+      "id": "backpressure.memory_read_request",
+      "feature": "memory_read_request_backpressure",
+      "testpoint": "Cold refill request holds through deterministic memory-ready stalls",
+      "checker": "Accepted line-request queue and ready/valid stall counter"
+    },
+    {
+      "id": "backpressure.memory_write_request",
+      "feature": "memory_write_request_backpressure",
+      "testpoint": "Dirty victim write request holds through deterministic memory-ready stalls",
+      "checker": "Accepted write-request queue and ready/valid stall counter"
+    },
+    {
+      "id": "backpressure.memory_write_data",
+      "feature": "memory_write_data_backpressure",
+      "testpoint": "All eight dirty-victim beats survive deterministic write-data stalls",
+      "checker": "Beat-index checker, writable memory model and ready/valid stall counter"
+    },
+    {
+      "id": "memory.read_response_gaps",
+      "feature": "memory_read_response_gaps",
+      "testpoint": "Read refill beats complete with deterministic response-valid gaps",
+      "checker": "ID/beat-aware memory queue and returned architectural data"
+    },
+    {
+      "id": "directory.lookup_race_regression",
+      "feature": "directory_lookup_race_regression",
+      "testpoint": "Different-address owner transfer and cold grant contend for the L2 lookup",
+      "checker": "Blocked-lookup monitor plus independent data, snoop-beat, and Directory scoreboard checks"
+    },
+    {
+      "id": "directory.lookup_conflict_transfer",
+      "feature": "directory_lookup_conflict_transfer",
+      "testpoint": "A waiting request is held while an active owner-transfer lookup uses the shared port",
+      "checker": "Accepted transfer address remains distinct from blocked incoming request"
+    },
+    {
+      "id": "directory.lookup_conflict_grant",
+      "feature": "directory_lookup_conflict_grant",
+      "testpoint": "A waiting request is held while an active grant lookup uses the shared port",
+      "checker": "Accepted grant address remains distinct from blocked incoming request"
+    },
+    {
+      "id": "directory.snoop_ack_l2_retry",
+      "feature": "snoop_ack_l2_retry",
+      "testpoint": "A same-set PutM removes the snapshotted M owner before SnoopRead response; Directory retries from the retained L2 line",
+      "checker": "Accepted ACK/Snoop transaction ID, PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, dirty data, and independent MESI/Directory commit"
+    },
+    {
+      "id": "cpu.same_line_dual_lane",
+      "feature": "same_line_dual_lane",
+      "testpoint": "Both CPU lanes read then write disjoint bytes of one line concurrently",
+      "checker": "Independent byte-accurate scoreboard and final readback"
+    },
+    {
+      "id": "litmus.message_passing",
+      "feature": "litmus_message_passing",
+      "testpoint": "Core0 completes DATA then READY stores; Core1 observes READY and the latest DATA on distinct lines",
+      "checker": "Independent byte-accurate MESI/data scoreboard and accepted Directory metadata monitor"
+    },
+    {
+      "id": "false_sharing.same_line",
+      "feature": "false_sharing_same_line",
+      "testpoint": "Two cores repeatedly write different words in one 64-byte line",
+      "checker": "Independent data scoreboard, snoop/request monitor, and final word readback"
+    },
+    {
+      "id": "false_sharing.separate_lines",
+      "feature": "false_sharing_separate_lines",
+      "testpoint": "Matched two-core write workload on distinct 64-byte lines",
+      "checker": "Independent data scoreboard and final word readback"
+    },
+    {
+      "id": "false_sharing.final_data",
+      "feature": "false_sharing_data_checked",
+      "testpoint": "A/B cases preserve both final word values",
+      "checker": "Independent architectural data scoreboard"
+    },
+    {
+      "id": "litmus.generation_100",
+      "feature": "litmus_generation_counter_100",
+      "testpoint": "100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data",
+      "checker": "Independent scoreboard, generation sequence checker, and Directory monitor"
+    },
+    {
+      "id": "litmus.generation_backpressure",
+      "feature": "litmus_generation_backpressure",
+      "testpoint": "Generation handshake remains correct with memory request/response gaps and CPU response stalls",
+      "checker": "Ready/valid driver checks, memory agent stall counters, and scoreboard"
+    },
+    {
+      "id": "cpu.seeded_random",
+      "feature": "randomized_seeded_regression",
+      "testpoint": "Four reproducible mixed read/write seeds pass the independent model",
+      "checker": "Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output"
+    },
+    {
+      "id": "cpu.random_dual_lane",
+      "feature": "random_dual_lane_pairs",
+      "testpoint": "Seeded regression issues independent requests on both packed CPU lanes",
+      "checker": "Single dual-core driver and per-core response matching"
+    },
+    {
+      "id": "coherence.dirty_owner_fill_port",
+      "feature": "dirty_owner_snoop_during_l2_fill",
+      "testpoint": "Both core directions transfer an M-owner line while an unrelated L2 refill is active",
+      "checker": "Eight-beat owner-data scoreboard, independent Directory model, and shared L2 write-port collision monitor"
+    },
+    {
+      "id": "directory.stale_upgrade_recovery",
+      "feature": "stale_upgrade_recovery",
+      "testpoint": "A queued shared-copy Upgrade is invalidated by the winning peer Upgrade, then recovers ownership",
+      "checker": "Independent byte-accurate MESI model, accepted request/grant order, owner-data beats, and Directory commit monitor"
+    }
   ],
   "cross_bins": [
-    {"id": "cross.cold_read_from_memory", "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8", "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer"},
-    {"id": "cross.remote_m_owner_read", "key": "I:from_M:read:core0:source_remote_owner:l2_hit:snoop_core1:beats_8", "testpoint": "Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer"},
-    {"id": "cross.remote_m_owner_read_core1", "key": "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8", "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context"},
-    {"id": "cross.shared_upgrade_snoop", "key": "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0", "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer"},
-    {"id": "cross.modified_hit_masked_store", "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0", "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"},
-    {"id": "cross.l2_hit_after_l1_eviction", "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8", "testpoint": "L1-evicted line refills from shared L2 without a snoop"},
-    {"id": "cross.lookup_conflict_during_transfer", "key": "interleaving:active_transfer_distinct_address_ready_stall", "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active"},
-    {"id": "cross.lookup_conflict_during_grant", "key": "interleaving:active_grant_distinct_address_ready_stall", "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"},
-    {"id": "cross.dirty_owner_waits_for_fill_port", "key": "interleaving:dirty_owner_waits_for_l2_fill_port", "testpoint": "Dirty owner writeback waits until the refill releases the shared L2 array port"},
-    {"id": "cross.message_passing", "key": "interleaving:message_passing_distinct_lines", "testpoint": "Ordered producer DATA/READY stores are observed by the consumer on separate lines"},
-    {"id": "cross.false_sharing", "key": "interleaving:false_sharing_same_line_ping_pong", "testpoint": "Same-line different-word stores create ownership traffic absent from matched separate-line stores"},
-    {"id": "cross.generation_counter", "key": "interleaving:data_ready_ack_100_generations", "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure"}
+    {
+      "id": "cross.cold_read_from_memory",
+      "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8",
+      "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer"
+    },
+    {
+      "id": "cross.remote_m_owner_read",
+      "key": "I:from_M:read:core0:source_remote_owner:l2_hit:snoop_core1:beats_8",
+      "testpoint": "Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer"
+    },
+    {
+      "id": "cross.remote_m_owner_read_core1",
+      "key": "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8",
+      "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context"
+    },
+    {
+      "id": "cross.shared_upgrade_snoop",
+      "key": "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0",
+      "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer"
+    },
+    {
+      "id": "cross.modified_hit_masked_store",
+      "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0",
+      "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"
+    },
+    {
+      "id": "cross.l2_hit_after_l1_eviction",
+      "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8",
+      "testpoint": "L1-evicted line refills from shared L2 without a snoop"
+    },
+    {
+      "id": "cross.lookup_conflict_during_transfer",
+      "key": "interleaving:active_transfer_distinct_address_ready_stall",
+      "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active"
+    },
+    {
+      "id": "cross.lookup_conflict_during_grant",
+      "key": "interleaving:active_grant_distinct_address_ready_stall",
+      "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"
+    },
+    {
+      "id": "cross.dirty_owner_waits_for_fill_port",
+      "key": "interleaving:dirty_owner_waits_for_l2_fill_port",
+      "testpoint": "Dirty owner writeback waits until the refill releases the shared L2 array port"
+    },
+    {
+      "id": "cross.message_passing",
+      "key": "interleaving:message_passing_distinct_lines",
+      "testpoint": "Ordered producer DATA/READY stores are observed by the consumer on separate lines"
+    },
+    {
+      "id": "cross.false_sharing",
+      "key": "interleaving:false_sharing_same_line_ping_pong",
+      "testpoint": "Same-line different-word stores create ownership traffic absent from matched separate-line stores"
+    },
+    {
+      "id": "cross.generation_counter",
+      "key": "interleaving:data_ready_ack_100_generations",
+      "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure"
+    }
   ]
 }

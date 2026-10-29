@@ -72,7 +72,6 @@ module DirectoryMshrBank #(
   logic [NUM_MSHRS-1:0] active_q;
   logic [31:0] line_addr_q [0:NUM_MSHRS-1];
   logic src_id_q [0:NUM_MSHRS-1];
-  request_opcode_t req_opcode_q [0:NUM_MSHRS-1];
   logic [TXN_ID_WIDTH-1:0] txn_id_q [0:NUM_MSHRS-1];
 
   logic [NUM_MSHRS-1:0] req_ready_ctx, req_valid_ctx;
@@ -325,7 +324,6 @@ module DirectoryMshrBank #(
       for (integer i = 0; i < NUM_MSHRS; i = i + 1) begin
         line_addr_q[i] <= '0;
         src_id_q[i] <= 1'b0;
-        req_opcode_q[i] <= REQ_GETS;
         txn_id_q[i] <= '0;
       end
     end else begin
@@ -333,7 +331,6 @@ module DirectoryMshrBank #(
         active_q[req_sel] <= 1'b1;
         line_addr_q[req_sel] <= line_align(req_line_addr);
         src_id_q[req_sel] <= req_src_id;
-        req_opcode_q[req_sel] <= req_opcode;
         txn_id_q[req_sel] <= req_txn_id;
       end
       if (grant_commit_valid && grant_commit_ready)

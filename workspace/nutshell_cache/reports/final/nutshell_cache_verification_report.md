@@ -1,6 +1,6 @@
-# NutShell MESI Cache v1.0 — 综合技术与验证报告
+# NutShell MESI Cache v1.0.1 — 综合技术与验证报告
 
-更新日期：2026-10-28  
+更新日期：2026-10-29  
 适用分支：`cache_coherence`  版本基线：MESI v1.0（`release/v1.0`），维护候选：v1.0.1  
 项目：双核 MESI Cache 子系统，包含私有 L1、共享 L2/Directory、内存 AXI4 适配器及 APB 性能 CSR。
 
@@ -8,7 +8,7 @@
 
 当前交付已经从旧的单核 L1 DCache 学习验证项目演进为双核自定义 MESI 一致性缓存子系统。报告、验证入口与性能数据均以当前 MESI RTL 为对象；旧 L1 验证保留为独立回归，不再充当 MESI 的验证依据。`release/v1.0` 维持冻结；本报告记录 `cache_coherence` 上的维护候选结果，不移动或重打 v1.0 标签。
 
-本次签核收尾把 Dense-set 20-seed 回归正式接入 `coherence_verify` 和 GitHub Actions，增加真实 L1 MESI RTL 注错、AXI R/B 响应反压与 Directory cold-GetS 有界进展检查，并逐行审阅剩余覆盖缺口。完整本地 `coherence_verify` 通过；源提交 `38fdb74062a8416563e5824589256e1f5d836785` 对应的 GitHub Actions run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 中，Legacy/Formal 与 Coherence 两个 Job 均 PASS。PPA/SRAM 实现评估按当前计划暂不包含。
+此前收尾已把 Dense-set 20-seed 回归、真实 L1 MESI RTL mutation、AXI R/B 响应反压与 Directory cold-GetS 有界进展接入默认门禁。2026-10-29 候选进一步补入 stale Upgrade 集成恢复检查，修正冻结 SPEC 对 Directory 并发/Opcode/ID 参数的描述，并消除产品顶层 lint 告警。本地完整验证结果见第 5 节；最终远端签核以 `cache_coherence` 当前候选 SHA 对应的 Legacy 与 Coherence Actions 为准，历史 run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 不代表本次改动。PPA/SRAM 实现评估按当前计划暂不包含。
 
 本次更新闭合了此前随机回归中“九条行落在同一 L2 set、双核并发与反压”失败：20 seeds 中原先 14 个触发 Directory mismatch、协议错误或响应超时。根因是 L1 replacement PutM 与尚未握手的 owner-data Snoop 相互等待；RTL 只在 Snoop 尚未被接受、且无正在进行的 snoop 数据传输时允许 PutM 先提交。修复后原 dense-set 工作负载 20/20 seeds、4,000/4,000 随机操作通过。
 
@@ -53,23 +53,23 @@ Formal 由 SymbiYosys/Yosys SAT 的组件级 bounded checks 组成，覆盖仲�
 
 ## 5. 回归与验收结果
 
-以下表格记录 2026-10-28 收尾候选的本地全量回归及远端签核。此前完整 run [40527215667](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40527215667) 已通过；本次增加 Dense-set CI 门禁、AXI R/B 反压、RTL mutation 和 Directory bounded progress 后，源提交 `38fdb74062a8416563e5824589256e1f5d836785` 的 Actions run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 中 `cache-regression` 和 `coherence-regression` 均成功完成。
+以下表格记录 2026-10-29 候选的本地全量回归；最终候选 Actions 结果待推送后核对。历史 run [40552490749](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/40552490749) 已通过旧源码，不代表本次修改。
 
 | 验证目标 | 结果 | 边界说明 |
 | --- | --- | --- |
 | Legacy L1 regression (`make test`) | 46 passed; 26 skipped; 3 deselected | 独立保留的单 L1 兼容测试；本地重新生成 Picker DUT 后运行 |
 | Coherence SV regression | 38/38 功能 bins; 91.6% 行覆盖 | 模块、集成 directed 与固定随机 seed |
-| Python/Toffee MESI | 24 passed; 36/36 功能 bins; 12/12 cross bins; 9/9 checker fault injections caught | 独立数据/权限 scoreboard、L1 victim/Put 对照、D01/D02/D04 与 Tests A/B/C |
+| Python/Toffee MESI | 26 passed; 38/38 功能 bins; 12/12 cross bins; 9/9 checker fault injections caught | 独立数据/权限 scoreboard、L1 victim/Put 对照、stale Upgrade 与 Snoop ACK→L2 retry、D01/D02/D04 与 Tests A/B/C |
 | Extended Python stress | 标准与 dense-set 均 20/20 seeds × 200 操作；标准压力记录 710 次 L1 eviction、3 次 live L2 victim | dense-set 覆盖同 L2 set 双核并发/反压；两种压力均检查数据、MESI/Directory 状态与事务完成 |
 | AXI adapter / AXI subsystem | Adapter Python 3 passed; AXI top 5 seeds PASS; integrated R/B stall modes 3/3 PASS | 五通道、ID/error/reset/backpressure；top benchmark peak read outstanding 为 2；R-only/B-only/R+B 各停顿 5 cycles |
 | Bounded formal | 7/7 Coherence 组件目标 PASS | 新增 cold-GetS Grant/Directory commit progress（24-step BMC）；其余包括 MSHR bank BMC/cover。组件级有界证据，不是系统级无界证明 |
 | Actual RTL mutation | 2/2 MESI L1 protocol mutations caught | 修改真实 `MesiL1Controller.sv` 行为，模块级 checker 必须失败；小规模敏感度样本，不是穷举 |
 | Coverage gap review | 3,153/3,441 行命中；244 RTL 与 44 SV TB 行未命中 | [逐文件行号与风险分类](../../docs/coherence_coverage_gap_review.md)；未命中不等于全部可删除 |
-| Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings |
-| GitHub Actions | run 40552490749：`cache-regression` PASS；`coherence-regression` PASS | 两个 job 的所有步骤均 completed/success；源提交 38fdb74062a8416563e5824589256e1f5d836785 |
+| Product-top lint | `CoherentCacheSubsystem` 与 `CoherentCacheAxiSubsystem` 均 0 Warning | 集成 SV testbench 仍有已分类的 bench-only warnings；无 `UNOPTFLAT` |
+| GitHub Actions | 以 [cache_coherence 分支 workflow](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml?query=branch%3Acache_coherence) 对应当前候选 SHA 的结果为准 | 历史 run 40552490749 不作为本候选签核 |
 | PPA/SRAM 实现 | 未执行 | 本次明确排除，需目标工艺/库/约束后评估 |
 
-门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归，截图中“缺少 Make target”的描述对应旧快照。Legacy/Formal 与 Coherence 的完整门禁均在 run 40552490749 上通过，两个 job 的执行步骤均成功完成。
+门禁核对：`Makefile` 已定义 `coherence_dense_set_stress`，并由 `coherence_verify` 调用；Actions 的 Coherence 步骤执行 `make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify`。因此 dense-set 已进入自动回归。RCV-01 是一致 L1 不会发出的 owner-self GetM 防御路径，不列为合法事务缺口；RCV-02 stale Upgrade 和 RCV-03 Snoop ACK→L2 retry 已由独立 Python/Toffee checker 验证。RCV-04～06 仍为 v1.1 增强项。候选 SHA 的 CI 结果以分支 workflow 为准。
 
 ## 6. 性能数据与复现
 
@@ -84,7 +84,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 主要产物：
 
-- [`MESI v1.0 验证计划`](../../docs/cache_spec_and_verification_plan.md)
+- [`原单 L1 DCache 验证基线`](../../docs/cache_spec_and_verification_plan.md)
 - [`Benchmark v3 测量与定义`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)
 - [`最终性能签核摘要`](performance_signoff.md)
 - [`clean Snoop/refill A/B 原始结果`](../../benchmarks/results/p2_clean_snoop_fill_ab.json)
@@ -93,7 +93,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 ## 7. 当前限制与后续
 
 - 同 L2 set 压力曾有 14/20 seeds 失败。根因和修复已由原失败分布复测闭环：PutM 可绕过尚未握手 owner-data Snoop 的循环等待；一旦 Snoop 已握手或数据流进行中，仍禁止共享 L2 写口冲突。修复后 dense-set 20/20 seeds × 200 操作通过，并纳入 Makefile 与 CI 自动回归。该有限随机回归与 bounded formal 仍不能穷举所有 set、时序和系统活性组合。
-- 集成 SV testbench 的 Verilator build 仍会报告 testbench 级 `PINCONNECTEMPTY` / `PINMISSING`（非验证实例的可选 monitor 端口）、`WIDTHEXPAND` / `WIDTHTRUNC`、`MISINDENT`、`TIMESCALEMOD`、`UNUSEDSIGNAL`，以及 testbench/reference-model `MULTIDRIVEN`。`SharedL2DirectoryArray.line_wr_ready` 的 `MULTIDRIVEN` 来自一项层级 `force` backpressure 测试注入。两个实际产品顶层单独 lint 均为零 Warning；这些 bench 警告没有通过全局 waiver 隐藏。
+- 集成 SV testbench 的 Verilator build 仍会报告 testbench 级 `PINCONNECTEMPTY` / `PINMISSING`（非验证实例的可选 monitor 端口）、`WIDTHEXPAND` / `WIDTHTRUNC`、`MISINDENT`、`TIMESCALEMOD`、`UNUSEDSIGNAL`，以及 testbench/reference-model `MULTIDRIVEN`。`SharedL2DirectoryArray.line_wr_ready` 的 `MULTIDRIVEN` 来自一项层级 `force` backpressure 测试注入。产品顶层 lint 不再有 `UNOPTFLAT` 或未使用信号告警；这些 bench 警告没有通过全局 waiver 隐藏。
 - PPA、真实 SRAM macro 映射/面积与时序签核仍未执行；当前 Verilator 仿真数据不是物理实现结果。
 - L1 仍为 blocking，完整系统 CPU 请求不能持续产生四个 outstanding miss；四个 Directory context/MHSR 的局部容量不等于四个 CPU 端到端并行 miss。
 - Formal 尚未覆盖整个双核 cache 的无界数据正确性与所有并发事务；当前结论限于组件有界证明及仿真回归。

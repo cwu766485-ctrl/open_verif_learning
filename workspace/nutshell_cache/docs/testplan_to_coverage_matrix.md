@@ -13,6 +13,7 @@ normal CI gate.
 | P0 | Dirty owner Snoop concurrent with L2 refill | `test_dirty_owner_snoop_and_refill_share_l2_write_port_safely` | Eight-beat owner-data comparison, reference Directory comparison, no simultaneous refill/owner write-port acceptance; runs with either core as owner |
 | P0 | Dense same-L2-set victim race | `make coherence_dense_set_stress` (also in `make coherence_verify`) | 20 seeds × 200 operations with nine same-set lines, dual-lane traffic and memory backpressure; independent MESI/data/Directory checkers; ownership requests serialize per L2 set and same-set Put is allowed to retire L1 victims |
 | P1 | Snoop ACK recovery through authoritative L2 | `test_python_snoop_ack_retries_from_authoritative_l2` | A deterministic offset sweep creates a legal PutM/SnoopRead overlap; monitor matches ACK target and transaction ID, then checks one L2 hit refill, no DRAM/owner-data path, correct dirty word, exactly-once Grant, and independent MESI/Directory commit |
+| P1 | Stale Upgrade after peer invalidation | `test_python_stale_upgrade_recovers_after_peer_invalidation` | Both L1s begin in S; Core1 wins Upgrade and invalidates Core0 while Core0's Upgrade is queued; Core0 then recovers as data-bearing GetM. Check accepted request/grant order, all eight owner-data beats, final data/Directory state, and no protocol error |
 | P0 | MESI checker sensitivity and RTL mutation | `make coherence_python_verify`; `make coherence_rtl_mutation` | Python fault injection checks checker rejection; RTL mutation compiles actual `MesiL1Controller.sv` mutants and requires the module testbench to fail on the named protocol expectation |
 | P1 | Coverage gap review | `make coherence_regression`; `python3 -m dv.coverage.coherence_gap_review` | `docs/coherence_coverage_gap_review.md` lists all 288 unhit merged-LCOV lines, separates 244 product RTL from 44 testbench lines, and records source-level risk and directed-closure candidates |
 | D01 | Coherence vs memory-ordering litmus | `test_python_message_passing_litmus` and `test_python_generation_counter_litmus` | Producer waits for each LSU Store response; consumer checks READY/DATA/ACK on separate lines against an independent scoreboard. This validates coherence visibility under the test driver's ordering contract, not ISA acquire/release, RVWMO, or fence semantics |
@@ -138,3 +139,11 @@ dual-lane requests and memory backpressure are active. Directory allocation
 serializes new ownership requests sharing that set, while Put requests bypass
 the lock so L1 replacement can retire. Distinct sets can still use all four
 contexts. This does not imply four-way same-set miss parallelism.
+
+**Stale Upgrade recovery:** `test_python_stale_upgrade_recovers_after_peer_invalidation`
+starts from an independently established S/S line, queues two competing
+Upgrade requests, and checks that the second request is serviced as a
+data-bearing GetM after the first core becomes the owner. The checker compares
+the eight transferred owner beats, accepted request/Grant/Snoop ordering,
+final data and Directory state, and protocol-error status. The mapped feature
+is `stale_upgrade_recovery` in `dv/coverage/python_coherence_map.json`.

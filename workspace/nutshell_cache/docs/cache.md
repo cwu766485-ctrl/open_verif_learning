@@ -1,8 +1,8 @@
 # NutShell 双核缓存一致性子系统微架构规格书（中文）
 
-**文档版本**：v0.2（设计评审草案）  
-**日期**：2026-10-20  
-**设计状态**：双 L1 + 共享 L2/Directory 已接通四个 Directory 事务上下文、四个读 refill MSHR、支持四笔 outstanding 的 AXI4 line adapter 与 APB 性能 CSR；端到端回归检查不同地址 refill 重叠。每份 L1 仍是 blocking；L2 fill/grant、Snoop 和 writeback 资源仍共享串行；无界/全子系统 formal 与 PPA 仍未完成
+**文档版本**：v1.0.1 Frozen Candidate  
+**冻结日期**：2026-10-29（新加坡时间）  
+**设计状态**：v1.0.1 冻结候选，冻结范围为当前 RTL 可复现的协议与接口行为。双 L1 + 共享 L2/Directory 含 4 个 Directory context、4 个 refill MSHR、64-bit AXI4 line adapter 和 APB 性能 CSR。每份 L1 仍为 blocking；L2 数据/元数据/传输端口仲裁及同 L2 set ownership admission 仍限制并发。组件级 bounded formal 已通过；无界全子系统 formal 与物理 PPA 不属于本版本签核范围。
 **现有仓库**：`cwu766485-ctrl/open_verif_learning`，分支 `cache_coherence`  
 **参考路径**：`workspace/nutshell_cache/`（已验证的单 L1 DCache）、`workspace/nutshell_src/`（NutShell Chisel SoC 源码）
 
@@ -98,7 +98,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
                     │
                     ▼
             Shared L2 Tag/Data
-          256KiB / 8-way [拟定]
+          256KiB / 8-way
               ┌─────┴─────────────┐
               ▼                   ▼
        AXI4 Master Adapter   APB Performance CSR
@@ -108,7 +108,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
        AXI Memory Model     Software / Debug
 ```
 
-| 属性 | L1 DCache 0/1 | 共享 L2（拟定） |
+| 属性 | L1 DCache 0/1 | 共享 L2 |
 |---|---|---|
 | 容量 | 各 32 KiB | 256 KiB |
 | 相联度 | 4-way | 8-way |
@@ -123,7 +123,7 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 
 **Inclusive 设计规则**：v1 采用 L2 **Tag/Directory Inclusion**。若任何 L1 持有 Line A，L2 必须保留 A 的目录和 Tag；但 **L2 Data 不一定最新**（L1 的 M Owner 可以具有最新副本）。L2 驱逐 A 时必须先完成对 L1 的 Back-Invalidation / Dirty Owner 数据回收。
 
-**当前事务能力**：每 L1 最多发起 1 笔未完成的 CPU Coherent Miss；Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR，可让不同 L2 set 的 memory read 同时 outstanding。L2 fill/grant、Snoop、Put 和 writeback 使用共享串行资源；同一 L2 set 的待处理 refill 会互相阻塞。Snoop 与本地 CPU 事务按第 6.2 节的同址/异址规则仲裁；进展仍假设外部响应反压最终解除。
+**当前事务能力**：每 L1 最多发起 1 笔未完成的 CPU coherent miss，因此双 LSU 当前最多产生 2 笔 CPU miss。Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR；AXI 读/写 adapter 各最多允许 4 笔 outstanding。不同 L2 set 的事务可占用不同 context 并并行等待内存响应，但共享 L2 array/metadata、Snoop、Grant 和传输输出仍需仲裁；同一 L2 set 的 ownership request 在活动 context 结束前受 admission interlock 阻塞。同址 duplicate ownership request 被抑制；Put 有为解除 victim/Snoop 等待环而定义的有限 bypass 规则。该结构不是四笔 CPU miss 的端到端并行保证。进展假设见第 6.2 节。
 
 ### 2.1 Coherence litmus 与 CPU memory ordering 的边界
 
@@ -170,7 +170,7 @@ Directory.U -> unique valid owner
 
 ## 4. 协议通道与消息定义
 
-### 4.1 物理接口（v1 建议）
+### 4.1 物理接口（v1.0.1 冻结）
 
 - `request`：L1 → Directory；`valid, ready, src_id, txn_id, line_addr, opcode`。
 - `snoop`：Directory → L1；`valid, ready, target_id, txn_id, line_addr, opcode`。
@@ -178,22 +178,33 @@ Directory.U -> unique valid owner
 - `ack/grant`：Invalidation ACK、Ownership Grant、Put ACK；含 `txn_id`。
 - 所有 Beat 在 `valid && ready` 时传输。`valid && !ready` 时 Payload 必须保持稳定。
 - 32-bit 地址按 64B Line 对齐，事务头携带 Line Address；CPU 8-bit `wmask` 是 Word 级 Store 的内部属性，并不是目录权限消息。
+- `coherence_protocol_pkg::TXN_ID_WIDTH` 默认是 4；顶层可参数化。当前 Python/Toffee wrapper 显式覆盖为 3，供验证配置使用；该覆盖不是产品 RTL 的固定接口宽度。每个 outstanding transaction 的 ID 在其生命周期内唯一，完成或共同 reset 后才可复用。
 
 ### 4.2 请求与控制消息
 
-| Opcode（暂不分配数值） | 方向 | 定义 |
-|---|---|---|
-| GetS | L1→Directory | 请求读共享权限及数据；无其他 Sharer 时可以授 E |
-| GetM | L1→Directory | 本地 I 态请求完整写权限及数据 |
-| Upgrade | L1→Directory | 本地 S 态请求写权限，无须重复回传已有行数据 |
-| SnoopRead | Directory→Owner | 获取最新 Line，原 Owner 转 S |
-| SnoopInvalidate | Directory→Sharer/Owner | 目标释放权限并转 I；若 Owner 可能 Dirty，必须返回权威数据 |
-| InvAck | L1→Directory | Shared 副本失效完成 |
-| SnoopData | Owner→Directory | 完整八拍最新数据并确认权限释放/降级 |
-| DataGrantS/E/M | Directory→L1 | 八拍数据 + 对应最终权限 |
-| GrantM | Directory→L1 | 已持有 S 数据时，授予写权限 |
-| PutS / PutE / PutM | L1→Directory | 释放对应权限；PutM 含八拍 Dirty 数据 |
-| PutAck | Directory→L1 | Eviction/Release 完成，可以释放本地资源 |
+| 请求 Opcode | 编码 | Grant Opcode | 编码 |
+|---|---:|---|---:|
+| GetS | `000` | DATA_S | `000` |
+| GetM | `001` | DATA_E | `001` |
+| Upgrade | `010` | DATA_M | `010` |
+| PutS | `011` | GRANT_M | `011` |
+| PutE | `100` | PUT_ACK | `100` |
+| PutM | `101` | 保留 | `101`–`111` |
+| 保留 | `110`–`111` |  |  |
+
+| Snoop opcode | 编码 | Snoop response | 编码 | 含义 |
+|---|---:|---|---:|---|
+| SnoopRead | `0` | ACK | `00` | 无数据确认；用于已不存在的 clean/shared 副本或 L2 retry |
+| SnoopInvalidate | `1` | INV_ACK | `01` | 无数据失效确认 |
+|  |  | DATA | `10` | 八拍权威行数据；`11` 保留 |
+
+| Line transfer kind | 编码 | 含义 |
+|---|---:|---|
+| L2_REFILL | `00` | L2/Memory 到 Directory/L1 的整行 refill |
+| PUTM_TO_L2 | `01` | L1 PutM 脏行写入共享 L2 |
+| 保留 | `10`–`11` |  |
+
+`DATA_S/E/M` 均携带完整八拍行数据；`GRANT_M` 和 `PUT_ACK` 不带行数据。`SnoopData` 是 `DATA` 响应加 8-beat stream。所有握手以 `valid && ready` 为准，事务地址、来源/目标、Opcode 和 transaction ID 必须匹配。上述编码与 `rtl/common/CoherenceProtocol.sv` 一致；保留值不得由实现自行解释。
 
 **禁止的简化**：不要把旧的 `PROBE(0x8)` 同时解释为 `SnoopRead` 和 `SnoopInvalidate`。它原本不会 Invalidate；MESI 需要显式的动作编码和 ACK 语义。
 
@@ -217,7 +228,7 @@ Directory.U -> unique valid owner
 | E/M | SnoopInvalidate | 提供最新 Line、释放所有权 | I |
 | S/E/M | Local Eviction | PutS/PutE/PutM，等 Ack | I |
 
-**暂态（建议）**：`IS_WAIT_DATA`、`IM_WAIT_DATA`、`SM_WAIT_ACK`、`MI_PUT_DATA`、`SNOOP_WAIT_DATA`、`EVICT_WAIT_ACK`；同时规定每个暂态中 CPU/ Snoop 的 Ready 行为及 Reset 退出路径。不能只画四个稳态就开始写 RTL。
+控制器的暂态状态名和内部 FSM 编码属于实现细节，不构成外部协议值。外部可观察的规则是：请求/响应在反压期间保持 valid 与 payload；事务仅在对应握手及 commit 后改变可见 MESI/Directory 权限；共同同步 reset 取消活动事务，具体 backing-memory 边界见第 6.1 节。
 
 ### 5.2 Directory 事务表
 
@@ -321,14 +332,21 @@ Core1 Write A -> GetM -> SnoopInvalidate(Core0)
 - 同址冲突按 CPU 阶段处理：CPU 已进入 refill、metadata commit 或 response/store
   commit 阶段时，Snoop 保持 valid 并等待；CPU request 仍在 Directory request/grant
   阶段时，Snoop 可以先执行，Directory 随后基于更新后的目录状态处理排队请求。
-  被前一笔事务反失效的旧 Upgrade 会由 Directory 作为 GetM 恢复，并从当前 owner
-  取回完整数据。
+  被前一笔事务反失效的旧 Upgrade 在目录仍为 `DIR_U` 且当前 owner 是另一核时，
+  会按 GetM 恢复：对当前 owner 发 SnoopInvalidate，收回完整权威数据后才提交新
+  owner 并发送带数据的 `DATA_M`。如果目录为 `DIR_I`，requester 却仍提交声称持有
+  S 副本的 Upgrade，则视为协议状态不一致：设置 protocol error/fail-stop，不作为
+  v1 的透明成功恢复保证。`DIR_U` 已由 requester 持有时的 GetM 自恢复属于防御性
+  Directory 路径；正常 L1 在 E/M 命中，不会为该行再发 GetM。
 - CPU 与 Snoop 在两个 FSM 都 idle 时同周期请求同一行，Snoop 优先接收，CPU request
   不握手，随后重试。这避免 E→M 本地 store 晚于 SnoopRead 数据采样提交。
-- Directory 全局一次只处理一笔事务；等待 owner/sharer Snoop 时不会启动第二笔
-  Directory 事务。Snoop response 和 CPU response 接收方最终拉高 ready 是进度假设；
-  对 Directory 阶段同址冲突采用 Snoop 先行，避免“Directory 等 Snoop、CPU 等
-  Directory”的循环依赖。Reset 取消两侧所有暂态和未完成握手。
+- Directory bank 可同时保存最多 4 个不同事务 context，不是全局单事务 FSM；每个
+  context 记录自己的地址、来源、Opcode、ID、Snoop/transfer/grant 阶段。不同 L2 set
+  可并行占用 context；同址 ownership duplicate 被抑制，同 L2 set ownership admission
+  在活动 context 持有该 set 快照时被阻塞。共享目录写口、Snoop、line transfer、L2
+  array 和 Grant 输出各自经过仲裁；同 set Put 只在已定义的 Snoop 尚未握手死锁逃生
+  条件下 bypass。Snoop response 和 CPU response 接收方最终拉高 ready 是进度假设。
+  Reset 取消所有 context 和未完成握手。
 
 ### 6.3 SRAM 组织与端口映射（v1 冻结）
 
@@ -421,7 +439,7 @@ System DV (可选):
 - 共享行 S/S 时一方写，另一方 Invalidate，GrantM 不早于 InvAck。
 - E 静默变 M，再被另一核读，确保最新数据而非旧 L2 数据。
 - M Owner 被另一核请求 GetM；含 Write Mask、八拍数据、Owner 转移。
-- 同一行同时 GetS/GetM、同时 GetM/GetM、不同地址并发；全局串行化后无错配。
+- 同一行 GetS/GetM、GetM/GetM 竞争按 Directory admission/事务顺序处理；不同地址可占用多个 Directory context，但共享阵列与输出端口仍受仲裁。
 - Local L1 Eviction 的 PutS/PutE/PutM；L2 Inclusive Eviction 后回收 L1 副本。
 - 所有 Request/Snoop/Data/Ack 通道分别施加 Backpressure，含第 0、3、7 拍停止。
 - 在 Snoop Ack、Line Transfer、Refill、Writeback 等暂态施加 Reset。
@@ -459,9 +477,11 @@ System DV (可选):
 
 ---
 
-## 8. 开发阶段与通过门槛
+## 8. 实现状态与验证边界
 
-**当前实现记录（2026-10-24）**：RTL 已按功能拆分到 `rtl/common/`、`rtl/l1/`、
+本节前半记录实现和已执行回归；末尾阶段表仅保留开发过程历史，不能覆盖本 SPEC 的冻结接口契约。当前具体签核结果以 [`reports/final/nutshell_cache_verification_report.md`](../reports/final/nutshell_cache_verification_report.md)、Python coverage closure 和对应 Actions run 为准。
+
+**实现记录（历史快照，2026-10-24）**：RTL 已按功能拆分到 `rtl/common/`、`rtl/l1/`、
 `rtl/directory/`、`rtl/l2/`、`rtl/interconnect/`、`rtl/bus/`、`rtl/cluster/` 和
 `rtl/top/`；原单 L1 RTL 收纳在 `rtl/legacy_l1/`。硬件包含协议编码、L1 MESI
 控制 FSM、Directory 控制 FSM、两份 32 KiB MESI L1 阵列、请求仲裁器，以及
@@ -477,8 +497,8 @@ MMIO 和 backing-memory 边界的 valid/ready 握手均被屏蔽。Memory 请求
 与子系统共用 reset，以取消 reset 前未完成的请求。当前 `make coherence_smoke` 已用
 定向场景通过 E→M 静默升级、M Owner 被远端读/写、E Owner 被远端写、S→M
 升级、MMIO 旁路读写与 Byte Mask、跨整行八拍数据检查、M/S/E L1 victim、DIR_U 脏 owner 回收、
-DIR_S 双 sharer 反失效，以及回写后再读数据等检查。Directory 会拒绝未登记为
-在 `DIR_S` 中未登记为 sharer 的 Upgrade 会被拒绝；在 `DIR_U` 下来自非 owner 的
+DIR_S 双 sharer 反失效，以及回写后再读数据等检查。在 `DIR_S` 中，未登记为 sharer
+的 Upgrade 会被拒绝；在 `DIR_U` 下来自非 owner 的
 排队/过期 Upgrade 则按 GetM 恢复，先对当前 owner 做失效 Snoop 并取回最新整行，再
 授予带数据的 M，避免并发 Upgrade 形成死锁或无数据 Grant。
 模块级回归分别直接实例化并检查 `MesiL1Array`、`MesiL1Controller`、
@@ -509,7 +529,7 @@ CPU/Snoop 仲裁性质证明，以及 Directory/L1 各 16-step bounded safety ch
 SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为模型，具体目标工艺宏
 尚未映射。
 
-| 阶段 | RTL 交付 | DV Gate |
+| 历史阶段 | RTL 交付 | 当时的 DV Gate |
 |---|---|---|
 | P0 基线冻结 | 保存单 L1 RTL、修订 SPEC；解释 Probe 保留 Line；定位长冲突 Trace 超时 | 旧 pytest/coverage/formal 可复现，已知问题单独登记 |
 | P1 协议与 FSM | Coherence Protocol Package + 独立 MESI FSM + Directory FSM（无需真实 L2） | 全部合法稳态/暂态、One-Hot、Protocol Assert |
@@ -524,11 +544,11 @@ SRAM 端口/bank/reset 映射见第 6.3 节；现有 `logic` 数组仍是行为�
 
 NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutcore/mem/CacheStage*.scala` 等 Chisel 文件。当前单 L1 验证子项目 `workspace/nutshell_cache/rtl` 是另一套独立维护的 Verilog 基线。
 
-**推荐现阶段做法**：先基于已有单 L1 RTL 冻结回归，P1 可使用独立手写 SystemVerilog 做 MESI/Directory FSM；L1 结构性改造优先修改模块化 Chisel 源码，经 `--split-verilog` 生成 RTL，再复用 Verilator/Toffee DV。若要全部使用 Chisel，先完成单模块 Chisel→生成 SV→波形→Formal 的 Debug PoC；每个模块必须只有一个权威源代码版本，不能长期双向手改 Chisel 和它生成的 Verilog。
+NutShell 原始单核 L1 的权威实现仍是 Chisel；本 MESI 子系统的权威实现是 `workspace/nutshell_cache/rtl/` 下独立维护的 SystemVerilog。两者是不同设计范围；不得将生成/拷贝的 RTL 与其上游源混作同一 DUT，也不得对同一模块维持两个可编辑权威版本。
 
 ---
 
-## 10. Design Review 决策与剩余项
+## 10. 冻结决策与剩余验证风险
 
 以下架构决策已落入 RTL：
 
@@ -536,14 +556,14 @@ NutShell L1 的原始权威源码为 `workspace/nutshell_src/src/main/scala/nutc
 - L2 保留 inclusive Tag/Directory；驱逐 live victim 前先反失效 L1，dirty owner 数据先回收。
 - 每个 L1 只有一个阻塞式 miss，Directory 有四个事务上下文，读 refill 有四个 MSHR；L1 Snoop 有独立 FSM。同址
   Snoop/CPU 依阶段仲裁，异址 Snoop 可并行推进；同址 E→M stall、过期 Upgrade 和
-  异址 Snoop stall 场景已加入定向回归，后续仍可扩大压力组合与 liveness 验证。
+  异址 Snoop stall 场景已有定向回归。被同址竞争提前失效的 `DIR_U` 旧 Upgrade 由独立 Python/Toffee 集成用例闭环；`DIR_I` 收到 stale Upgrade 属于状态不一致并触发 fail-stop。
 - 同址 CPU/Snoop 逐行串行，idle 同周期冲突由 Snoop 获胜；异址 Snoop 可在 CPU FSM 活跃时接收。CPU/Snoop response ready 最终解除是进度假设。
 - SRAM 逻辑组织已冻结为 64-bit × 8 beat banks、每份 L1 32 KiB、共享 L2 256 KiB；同步读延迟通过 wrapper ready/valid 表示。因没有目标 FPGA/工艺，具体 macro 型号、时序和 PPA 未定。
 - 新的一致性消息与旧 SimpleBus Probe 语义分开。
 - v1 验证边界是两个 LSU Agent 和 DCache；真实双 Core、ICache MESI、DMA coherence 不在当前实现内。
 - 已接入 256 KiB / 8-way Shared L2/Directory 阵列。
 
-GitHub Actions 当前已运行 `make coherence_verify`；本次增加的 AXI/APB 模块测试与顶层 elaboration 也已并入该 gate，需以本次 RTL 验证和下一次 Actions 结果作为交付依据。源码边界为旧单 L1 RTL 基线与新增手写 SystemVerilog coherence 子系统分别维护，后续应继续避免双权威源。
+当前冻结候选以 `docs/releases/v1.0.1.md` 记录的候选版本和通过的 CI 源码快照为准。任何 RTL/接口改变都必须生成新的候选快照并重新跑完整回归；仅文档或验证平台更新不得声称改变 RTL 行为。RCV-01（Directory defensive self-GetM）不属于合法 L1 可达请求；RCV-02（竞争失效后的 stale Upgrade）已有独立 Python/Toffee 集成检查。RCV-04～06 作为 v1.1 的剩余增强验证风险，不阻止本冻结范围，但不能宣称已覆盖。
 
 ---
 
@@ -556,4 +576,4 @@ GitHub Actions 当前已运行 `make coherence_verify`；本次增加的 AXI/APB
 - [`CacheTop.scala`：当前 Chisel Cache Pipeline/Array 连接](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_src/src/main/scala/nutcore/mem/CacheTop.scala)
 - [`test_coherence.py`：现有 Probe 不失效语义及相关测试](https://github.com/cwu766485-ctrl/open_verif_learning/blob/cache_coherence/workspace/nutshell_cache/tests/l1/test_coherence.py)
 
-**状态声明（2026-10-22）**：仓库已实现双 LSU Agent 驱动的双 L1 MESI、Directory 和 256 KiB 共享 L2 RTL，并有集成级定向/随机回归；内存错误契约、Snoop 进度规则和逻辑 SRAM 映射已冻结。具体回归结果与 formal 边界见第 8 节。这是可运行的阻塞式 RTL 子系统原型，不代表已接入两个真实 NutShell Core，也不代表完整 subsystem formal、具体工艺 SRAM/PPA 或芯片签收完成。本 SPEC 第 0 节描述的 NutShell 单核基线来自可检查的 Chisel 源码；它与新增的双 L1 一致性子系统是不同范围。
+**v1.0.1 冻结边界（2026-10-29）**：本规范描述双 LSU Agent 驱动的双 L1 MESI、Directory、256 KiB 共享 L2/Directory、AXI4 line adapter 与 APB CSR 行为。它不是两个已集成真实 NutShell Core，也不包含 ICache MESI、DMA coherence、RVWMO、无界全子系统 formal、具体工艺 SRAM macro 或 PPA 签核。组件/仿真通过与这些边界并存；不得把 coverage 100% 等同于全路径证明。`docs/releases/v1.0.1.md` 记录本冻结候选的源版本和验证 SHA。

@@ -14,8 +14,13 @@ format:
 - 10:24：重写项目首页，增加 MESI 架构、验证状态、仿真性能和运行入口；整理 Directory Lookup、Grant/Snoop 握手分歧、dense-set PutM/Snoop 死锁三个 Bug 案例，并把六类未命中合法恢复路径单列到 v1.1 backlog。该文档候选提交推送后需完整重跑两个 CI Job，再作为正式 Tag 候选。
 
 ## 2026-10-29（新加坡时间）
-- 14:41：同步最新验证产物：Python Functional Coverage Closure 达到 37/37；标准与 Dense L2 stress 各 20/20 通过。仅更新报告与日志，RTL 未变。
 - 10:50：提交 `87ea0d3` 的 `cache-regression` 与 `coherence-regression` 均 PASS。复核发现 GitHub 首页文件名应规范为 `README.md`，已完成大小写改名；此文件名收尾会形成新的候选 SHA，并重新运行完整 CI 后再决定打 Tag。
+- 14:41：同步最新验证产物：Python Functional Coverage Closure 达到 37/37；标准与 Dense L2 stress 各 20/20 通过。仅更新报告与日志，RTL 未变。
+- 18:40：冻结文档澄清 Directory 4-context/共享端口与同 set 序列化、协议 Opcode、ID 参数和逻辑 SRAM 边界；RCV-01 标记为合法 L1 不可达，RCV-02/03 对应独立 Python checker 已闭环。新增 stale Upgrade 覆盖后，文档候选更新为 Python 26 tests、38/38 bins；最终 Actions 待本次推送复核。
+- 18:40：将 `put_xfer_start_core` 移出 Snoop payload `always_comb`，消除 Verilator 对过程级依赖产生的 `UNOPTFLAT`；删除 MSHR bank 未读的 `req_opcode_q` 状态。产品顶层 lint 已重跑，正在执行 MSHR/集成及全量回归。
+- 18:47：完整回归发现 MSHR formal 仍引用被删除的 `req_opcode_q`；改由 harness 从已握手请求独立记录每个 context 的 Opcode，避免 checker 依赖实现冗余寄存器，重跑 formal 与全门禁。
+- 19:08：全量 `make COHERENCE_JOBS=2 coherence_verify` 以退出码 0 完成：组件仿真、AXI 集成、7/7 bounded formal、SV 38/38 bins（91.6% 汇总行覆盖）、Python 26/26（38/38 功能 bins、12/12 cross、checker fault injection 9/9）、AXI Python 3/3、标准及 Dense-set 各 20 seeds × 200 操作、RTL mutation 2/2 均通过。重编译确认产品顶层 lint 无 Warning、集成 TB 无 `UNOPTFLAT`；TB 保留已分类的空端口/位宽/未使用信号提示。最终候选仍需以推送后 Legacy 与 Coherence Actions 均通过签核；PPA/SRAM 不在范围内。
+- 19:11：更新最终报告与签核摘要后，默认 Python 环境缺 `reportlab`，改用项目已有 `.tooling/report-pdf-venv` 重建 PDF 成功；本地工作目录无 `.git` 元数据，GitHub 同步需基于远端 `cache_coherence` HEAD 创建快进提交。
 - 22:49：收口 v1.1 backlog 的 RCV-03：新增 Python/Toffee 定向竞态，独立匹配 Snoop ACK 的 target/txn、PutM→PutAck 与 GetS→DATA_E 的 txn ID、ACK 后 L2 hit、脏数据和最终 U/E 权限；补充请求/Grant opcode 与 ID 监视，区分合法 PutAck。完整 Python suite 25/25、覆盖 37/37 与 cross 12/12；AXI 顶层 lint/elaboration 通过（有一条既有 `DirectoryMshrBank.req_opcode_q` unused 警告）。等待本次 GitHub Actions 完整复核。
 - 23:21：GitHub Actions run `40710699152`（提交 `bd0b7e2`）Legacy 与 Coherence 两个 Job 均 PASS；Coherence Formal 7/7、SV 功能覆盖 38/38、Python 25/25 与 37/37 bins、checker 注错 9/9、RTL mutation 2/2、标准及 dense-set 压力各 20/20 seeds。日志确认 ACK→L2 定向用例通过。同步修正 Coverage Gap Review：该风险已由 Python/Toffee 关闭，但仍不冒充 integrated SV LCOV 命中。
 

@@ -1,22 +1,22 @@
 # Python/Toffee Coherence Functional Coverage
 
 - Status: **PASS**
-- Mapped bins: **37/37**
+- Mapped bins: **38/38**
 - L1 evictions: 16
 - Live inclusive L2 evictions: 5
 - MESI/op/core/source/snoop/transfer crosses: 12/12
 
 | Feature | Testpoint | Checker | Hits | Status |
 | --- | --- | --- | ---: | --- |
-| `cold_read` | Independent cold GetS data check | CoherenceScoreboard response/data model | 95 | hit |
-| `cold_write` | Cold GetM stores to the dual-core set-pressure sequence | CoherenceScoreboard byte-accurate data and MESI invariants | 78 | hit |
-| `remote_read_from_E` | Core1 reads Core0 E line | Independent MESI state transition and returned data | 13 | hit |
-| `remote_read_from_M` | Remote read observes latest M-owner data | Independent MESI state transition and returned data | 349 | hit |
-| `shared_upgrade` | Core0 byte-masked S-to-M store | Byte-merge data comparison and MESI transition | 334 | hit |
+| `cold_read` | Independent cold GetS data check | CoherenceScoreboard response/data model | 96 | hit |
+| `cold_write` | Cold GetM stores to the dual-core set-pressure sequence | CoherenceScoreboard byte-accurate data and MESI invariants | 79 | hit |
+| `remote_read_from_E` | Core1 reads Core0 E line | Independent MESI state transition and returned data | 14 | hit |
+| `remote_read_from_M` | Remote read observes latest M-owner data | Independent MESI state transition and returned data | 350 | hit |
+| `shared_upgrade` | Core0 byte-masked S-to-M store | Byte-merge data comparison and MESI transition | 335 | hit |
 | `l1_eviction` | Five same-index lines exceed one L1 set capacity | Independent 4-way L1 replacement model | 16 | hit |
 | `l1_replacement_put_match` | Predicted L1 victim line/state matches the accepted Put opcode and address | Independent round-robin replacement scoreboard compared with Directory Put handshakes | 1 | hit |
-| `l2_refill_hit` | Re-read L1-evicted line retained in shared L2 | DUT L2 event and no backing-memory read | 395 | hit |
-| `l2_refill_miss` | Cold line refill absent from shared L2 | DUT L2 event and backing-memory read | 140 | hit |
+| `l2_refill_hit` | Re-read L1-evicted line retained in shared L2 | DUT L2 event and no backing-memory read | 398 | hit |
+| `l2_refill_miss` | Cold line refill absent from shared L2 | DUT L2 event and backing-memory read | 141 | hit |
 | `l2_live_eviction` | Ninth same-set line evicts a line still owned by the other L1 | Directory/L1 reference state plus snoop, owner data, and L2 victim model | 5 | hit |
 | `l2_live_victim_dirty_owner` | Dirty M owner is back-invalidated, written back, and reloaded with the same data | Independent Directory/MESI model, accepted Snoop, eight-beat memory writeback, and reload data | 3 | hit |
 | `l2_live_victim_shared` | Shared L2 victim with two live S copies is invalidated at both L1s | Independent Directory/L1 model compared with both accepted snoops and any required memory writeback data | 1 | hit |
@@ -45,15 +45,16 @@
 | `randomized_seeded_regression` | Four reproducible mixed read/write seeds pass the independent model | Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output | 4 | hit |
 | `random_dual_lane_pairs` | Seeded regression issues independent requests on both packed CPU lanes | Single dual-core driver and per-core response matching | 24 | hit |
 | `dirty_owner_snoop_during_l2_fill` | Both core directions transfer an M-owner line while an unrelated L2 refill is active | Eight-beat owner-data scoreboard, independent Directory model, and shared L2 write-port collision monitor | 2 | hit |
+| `stale_upgrade_recovery` | A queued shared-copy Upgrade is invalidated by the winning peer Upgrade, then recovers ownership | Independent byte-accurate MESI model, accepted request/grant order, owner-data beats, and Directory commit monitor | 1 | hit |
 
 ## Cross coverage
 
 | Cross | Observed transaction | Hits | Status |
 | --- | --- | ---: | --- |
-| `cross.cold_read_from_memory` | Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer | 71 | hit |
+| `cross.cold_read_from_memory` | Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer | 72 | hit |
 | `cross.remote_m_owner_read` | Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer | 110 | hit |
-| `cross.remote_m_owner_read_core1` | Core1 GetS while Core0 owns M, including an overlapping independent Directory context | 239 | hit |
-| `cross.shared_upgrade_snoop` | Core1 S-to-M upgrade snoops Core0 without a line-data transfer | 107 | hit |
+| `cross.remote_m_owner_read_core1` | Core1 GetS while Core0 owns M, including an overlapping independent Directory context | 240 | hit |
+| `cross.shared_upgrade_snoop` | Core1 S-to-M upgrade snoops Core0 without a line-data transfer | 108 | hit |
 | `cross.modified_hit_masked_store` | Core0 byte-masked M-hit store updates only selected byte lanes | 11 | hit |
 | `cross.l2_hit_after_l1_eviction` | L1-evicted line refills from shared L2 without a snoop | 1 | hit |
 | `cross.lookup_conflict_during_transfer` | Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active | 1 | hit |

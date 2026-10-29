@@ -2,7 +2,7 @@
 
 [![Cache CI](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml/badge.svg?branch=cache_coherence)](https://github.com/cwu766485-ctrl/open_verif_learning/actions/workflows/nutshell-cache-dv.yml)
 
-这是一个面向开源数字 IC 验证学习的双核 MESI Cache 项目。它保留原有的 NutShell 单 L1 DCache 回归，并增加一套独立的双 L1、一致性 Directory、共享 L2、AXI4 内存接口和 APB 性能 CSR 子系统。当前 v1.0.1 内容处于发布候选阶段；必须在最终候选提交的两个 CI Job 均通过后再打 Tag。PPA、物理 SRAM 映射和芯片级时序不在交付范围内。
+这是一个面向开源数字 IC 验证学习的双核 MESI Cache 项目。它保留原有的 NutShell 单 L1 DCache 回归，并增加一套独立的双 L1、一致性 Directory、共享 L2、AXI4 内存接口和 APB 性能 CSR 子系统。v1.0.1 为冻结候选；正式固定发布版本的验收条件是当前候选分支上的 Legacy 与 Coherence 两个 CI Job 均通过。PPA、物理 SRAM 映射和芯片级时序不在交付范围内。
 
 ## 架构
 
@@ -32,12 +32,12 @@ flowchart TB
 | --- | --- |
 | Legacy 单 L1 回归 | 46 passed；26 skipped、3 deselected（按现有测试标记） |
 | MESI RTL/SV 回归 | 38/38 功能 bins；合并 LCOV 3153/3441 行命中（91.6%，其中产品 RTL 1579/1823） |
-| Python/Toffee | 25 passed；功能 bins 37/37、cross bins 12/12；checker fault injection 9/9 |
+| Python/Toffee | 26 passed；功能 bins 38/38、cross bins 12/12；checker fault injection 9/9 |
 | 并发压力 | 标准与 dense-set 各 20 seeds × 200 操作；dense-set 修复前 14/20 seeds 失败，修复后 20/20 通过 |
 | AXI | adapter Python 3/3；集成 benchmark 五个 seed 通过；R-only、B-only、R+B 三种集成响应反压通过 |
 | Formal / RTL mutation | 7 个组件级 bounded formal 目标通过；两项真实 L1 RTL mutation 均被测试检测到 |
 
-Formal 结果是组件级、有界的证据，不是完整 Cache 子系统的无界证明。覆盖率缺口审阅列出 244 条未命中的产品 RTL 行和 44 条 testbench 行；其中合法恢复路径列入 [v1.1 验证 backlog](docs/releases/v1.1_verification_backlog.md)，未把它们标记为已覆盖。
+Formal 结果是组件级、有界的证据，不是完整 Cache 子系统的无界证明。覆盖率缺口审阅列出 244 条未命中的产品 RTL 行和 44 条 testbench 行；stale Upgrade 与 Snoop ACK→L2 retry 已由独立 Python/Toffee 测试关闭，其他恢复路径仍列在 [v1.1 验证 backlog](docs/releases/v1.1_verification_backlog.md)，未把它们标记为已覆盖。
 
 ## 仿真性能样本
 
@@ -91,7 +91,7 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 ### 主要文档
 
 - [MESI 架构与接口](docs/cache.md)
-- [MESI 规格和验证计划](docs/cache_spec_and_verification_plan.md)
+- [原单 L1 DCache 规格与验证基线](docs/cache_spec_and_verification_plan.md)
 - [Testplan-to-Coverage Matrix](docs/testplan_to_coverage_matrix.md)
 - [Coverage Gap Review](docs/coherence_coverage_gap_review.md)
 - [v1.0.1 Release Manifest](docs/releases/v1.0.1.md)
