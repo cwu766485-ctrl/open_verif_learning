@@ -1,4 +1,33 @@
-# Dual-L1 MESI Benchmark v3
+# Dual-L1 MESI Cache Benchmarking
+
+## Benchmark v4
+
+Benchmark v4 is the Cache-only performance suite. It measures L1 read/write
+hit and miss rates, refill L2 rates, CPU request-to-response latency, miss
+penalty, per-core/aggregate operations per cycle, backing-memory bytes/cycle,
+MSHR and Directory-context occupancy, channel stall cycles, snoop traffic,
+and false-sharing behavior. The fixed workload set is B01–B08, including the
+4/16/32/64/256/512 KiB working-set sweep, same-set conflict tests, mixed
+read/write ratios, four memory-delay points for dual-core misses, ownership
+ping-pong, and false-sharing A/B.
+
+The measurements use two LSU agents; no real CPU retires instructions. Thus
+Benchmark v4 does not report IPC, CPI, MPKI, CoreMark, or application
+performance. Bytes/cycle comes from the simulated backing-memory interface and
+is not physical DRAM bandwidth or PPA. See the [v4 metric contract and
+workload plan](coherence_benchmark_v4_plan.md) and [measured v4
+results](coherence_benchmark_v4_results_2026-10-29.md).
+
+Reproduce the suite with:
+
+```bash
+make coherence_benchmark_v4
+```
+
+This target validates all workload rows and regenerates
+`benchmarks/results/coherence_benchmark_v4.json` and `.csv`.
+
+## Benchmark v3
 
 Benchmark v3 measures the Python/Toffee `CoherentCacheSubsystem` and the
 independent AXI-integrated `CoherentCacheAxiSubsystem` testbench. It keeps the

@@ -29,6 +29,7 @@ class DualCoreCpuDriver:
         self.response_stall_cycles = {0: 0, 1: 0}
         self.last_pair_accepted_at = {}
         self.last_pair_completed_at = {}
+        self.transactions = []
 
     @staticmethod
     def _pack(reqs):
@@ -164,7 +165,18 @@ class DualCoreCpuDriver:
                         continue
                 results[core] = got_data
                 completed_at[core] = self.cycle
-                self.latencies[core].append(self.cycle - accepted_at[core])
+                latency = self.cycle - accepted_at[core]
+                self.latencies[core].append(latency)
+                self.transactions.append({
+                    "accepted_cycle": accepted_at[core],
+                    "response_cycle": self.cycle,
+                    "latency_cycles": latency,
+                    "core": core,
+                    "addr": req.addr & 0xFFFFFFFF,
+                    "write": int(req.write),
+                    "mask": req.mask & 0xFF,
+                    "data": got_data,
+                })
                 ready_mask |= bit
                 held_payload.pop(core, None)
                 stall_remaining.pop(core, None)

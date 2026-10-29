@@ -41,15 +41,16 @@ Formal 结果是组件级、有界的证据，不是完整 Cache 子系统的无
 
 ## 仿真性能样本
 
-下表来自 [Benchmark v3 与性能签核记录](reports/final/performance_signoff.md)。它们是指定 RTL 快照、初始 Cache 状态和 memory-model 延迟下的 Verilator 周期/流量测量，不是实际 CPU 应用性能、物理时钟或 DRAM 带宽。
+下表来自 [Benchmark v4 实测结果](docs/coherence_benchmark_v4_results_2026-10-29.md)，使用双 LSU agent、10 ns 仿真时钟和可配置的 backing-memory model。周期与 bytes/cycle 描述当前 RTL 和 workload，不是实际 CPU 应用性能、物理频率、DRAM 带宽或 PPA。
 
 | 工作负载 | 测量结果 |
 | --- | --- |
-| Warm L1 read | 2 cycles |
-| L1 replacement 后 L2 hit | 22 cycles（32 个样本；预优化 23 cycles） |
-| 双核 cold miss 相对串行加速 | 配置内存延迟 2 / 100 cycles 时为 1.451× / 1.917× |
-| Clean Snoop 与 L2 refill 重叠 | 定向 Store 响应 14 → 10 cycles；refill 为 36 cycles |
-| AXI 顶层五 seed 混合 workload | 0.03383 ops/cycle；模型内存流量 0.75415 B/cycle |
+| Warm L1 read | L1 read hit 100%；平均延迟 2 cycles |
+| L1 miss、L2 hit | 64/256 KiB working set：L2 refill hit 100%；平均延迟 22 cycles |
+| 512 KiB working set | L1/L2 refill hit 均为 0%；平均延迟 42 cycles；1.455 B/cycle |
+| 双核独立 cold miss 相对单核串行 | memory delay 2/20/50/100 cycles 时为 1.451×/1.594×/1.717×/1.812× |
+| False sharing A/B | 同 line 33 snoops、0.0684 ops/cycle；分离 line 0 snoops、0.4961 ops/cycle |
+| AXI 顶层五 seed 混合 workload（v3） | 0.03383 ops/cycle；模型内存流量 0.75415 B/cycle |
 
 ## 快速开始
 
@@ -65,9 +66,10 @@ make gen_dut && make test
 # MESI 模块、Formal、Python/Toffee、AXI 与压力回归
 make COHERENCE_JOBS=2 coherence_verify
 
-# 单独重跑长随机压力或 Benchmark v3
+# 单独重跑长随机压力、Benchmark v3 或 Cache-only Benchmark v4
 make COHERENCE_JOBS=2 coherence_stress coherence_dense_set_stress
 make COHERENCE_JOBS=2 coherence_benchmark_v3
+make coherence_benchmark_v4
 ```
 
 不要在没有 `source scripts/env.sh` 的系统 Python 环境中直接运行 pytest；项目依赖由仓库环境固定。各目标定义见根目录 [`Makefile`](Makefile)、[DV 说明](dv/README.md)和[Formal 说明](formal/README.md)。
@@ -93,6 +95,8 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 - [MESI 架构与接口](docs/cache.md)
 - [验证环境架构](dv/README.md)
 - [Benchmark 方法与复现](docs/coherence_benchmark.md)
+- [Benchmark v4 指标契约与工作负载](docs/coherence_benchmark_v4_plan.md)
+- [Benchmark v4 结果](docs/coherence_benchmark_v4_results_2026-10-29.md)
 - [Benchmark v3 结果](docs/coherence_benchmark_v3_results_2026-10-25.md)
 - [Testplan-to-Coverage Matrix](docs/testplan_to_coverage_matrix.md)
 - [Coverage Gap Review](docs/coherence_coverage_gap_review.md)
