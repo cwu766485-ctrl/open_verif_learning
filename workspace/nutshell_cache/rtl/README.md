@@ -16,10 +16,23 @@ carry initialization, synchronous-read timing, or handshake behavior.
 - `common/`: MESI and line-transfer protocol definitions.
 - `l1/`: MESI L1 array, controller, and snoop arbiter.
 - `directory/`, `l2/`: directory transaction contexts and shared L2 array.
-- `interconnect/`: request arbitration between L1 clients.
-- `bus/axi/`, `bus/apb/`: AXI line-memory adapter and APB performance CSR.
+- `interconnect/`: L1 request arbitration, CPU/MMIO routing, and the shared L2
+  line-write arbiter.
+- `coherence/`: shared line transaction FSM, kept intact as one controller so
+  its victim, PutM, refill, grant, and writeback sequencing remains explicit.
+- `bus/axi/`, `bus/apb/`: AXI line-memory adapter, refill MSHR bank, and APB
+  performance CSR.
 - `cluster/`, `top/`: dual-L1 cluster and cache subsystem tops.
 - `legacy_l1/`: original CacheTop, pipeline, arrays, and control blocks.
+
+`top/CoherentCacheSubsystem.sv` now composes four extracted units:
+`interconnect/CpuMmioRouter.sv`, `bus/axi/MemoryRefillMshrBank.sv`,
+`interconnect/L2LineWriteArbiter.sv`, and `coherence/SharedLineEngine.sv`.
+The first three own their corresponding routing, refill, and shared-write
+state. The line engine owns the original transaction FSM without changing its
+state encodings or transition conditions. Directory, L1, and AXI/APB blocks
+remain separate modules. See [RTL architecture notes](../docs/rtl_architecture.md)
+for the signal ownership map and refactor boundary.
 
 `Cache.files.f` and `Coherence.files.f` are the stable compile lists for the
 legacy and MESI designs. SystemVerilog benches are grouped under `tests/` and

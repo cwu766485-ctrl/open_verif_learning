@@ -93,6 +93,7 @@ make coherence_benchmark_v4
 ### 主要文档
 
 - [MESI 架构与接口](docs/cache.md)
+- [RTL 模块拆分与信号归属](docs/rtl_architecture.md)
 - [验证环境架构](dv/README.md)
 - [Benchmark 方法与复现](docs/coherence_benchmark.md)
 - [Benchmark v4 指标契约与工作负载](docs/coherence_benchmark_v4_plan.md)

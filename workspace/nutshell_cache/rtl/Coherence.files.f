@@ -1,4 +1,5 @@
 common/CoherenceProtocol.sv
+coherence/SharedLineEngine.sv
 l1/MesiL1SnoopArbiter.sv
 l1/MesiL1Controller.sv
 directory/DirectoryController.sv
@@ -6,9 +7,12 @@ directory/DirectoryMshrBank.sv
 l1/MesiL1Array.sv
 interconnect/CoherenceRequestArbiterCore.sv
 interconnect/CoherenceRequestArbiter.sv
+interconnect/CpuMmioRouter.sv
+interconnect/L2LineWriteArbiter.sv
 l2/SharedL2DirectoryArray.sv
 bus/apb/CachePerformanceCsr.sv
 bus/axi/LineMemoryAxi4Adapter.sv
+bus/axi/MemoryRefillMshrBank.sv
 cluster/DualL1MesiCluster.sv
 top/CoherentCacheSubsystem.sv
 top/CoherentCacheAxiSubsystem.sv
