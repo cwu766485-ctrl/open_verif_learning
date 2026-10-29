@@ -112,3 +112,4 @@ format:
 - 21:28：完成 Cache-only Benchmark v4（B01–B08），记录 L1 读写命中、Directory refill 命中、AMAT/分位延迟、每核/总吞吐、backing-memory 带宽、MSHR/Directory 占用、stall、Snoop 和 writeback；新增 B06 同 16 条 cold line 的串行/双核配对对照。24 行仿真数据经独立一致性检查，v4 pytest 1/1、旧 v3 pytest 1/1 通过。
 - 21:28：验证中发现 Toffee 监视器采样相位会造成伪造的 CPU response/accept 不匹配；延迟改由共享 CPU Driver 的握手记录计算，监视器只记录协议事件。B08 readback 未推进参考模型导致假 scoreboard mismatch，改为将 readback 也交给独立模型。Collector 曾漏读与 pytest 节点名拼接的 B01 日志并漏声明新增 speedup CSV 列，现均修复；最终 24 行 JSON/CSV 校验导出成功。
 - 21:28：新增 `docs/coherence_benchmark_v4_plan.md` 指标契约和 `docs/coherence_benchmark_v4_results_2026-10-29.md` 实测报告；B06 在 2/20/50/100-cycle memory delay 下的窗口加速为 1.451×/1.594×/1.717×/1.812×，峰值 MSHR 2 对 1。报告明确结果来自 LSU agent/RTL 仿真，不代表真实 CPU IPC/CPI、物理 DRAM 带宽或 PPA。
+- 21:37：收口后完整 `make coherence_benchmark_v4` 退出码 0：B01–B08 pytest 1/1（227.94 秒）、24 行 collector 校验和 JSON/CSV 导出均通过；v3 兼容回归 1/1。重跑结果与推送版本 JSON/CSV 的 Git blob SHA 一致。首次 Make 执行中 CSV 未包含新 speedup 字段，修正列并完成整条重跑。

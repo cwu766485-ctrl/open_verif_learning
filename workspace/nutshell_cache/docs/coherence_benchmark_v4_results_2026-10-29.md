@@ -2,11 +2,13 @@
 
 ## Run summary
 
-The Benchmark v4 directed suite completed on 2026-10-29 with 24 workload rows
+The full Benchmark v4 Make target completed on 2026-10-29 with 24 workload rows
 and 100% operation completion. The Picker/Verilator + Python/Toffee test passed
-(1 test, 308.88 seconds); the result collector validated all 24 rows and
-generated the checked-in JSON and CSV. The existing v3 Python benchmark also
-passed after the shared Driver and monitor changes (1 test, 7.41 seconds).
+(1 test, 227.94 seconds), followed by successful row validation and JSON/CSV
+export. The existing v3 Python benchmark also passed after the shared Driver and
+monitor changes (1 test, 7.41 seconds). An initial run exposed a CSV schema
+omission for the derived B06 speedup field; the collector was corrected and
+the complete target rerun successfully.
 
 ```bash
 source scripts/env.sh
