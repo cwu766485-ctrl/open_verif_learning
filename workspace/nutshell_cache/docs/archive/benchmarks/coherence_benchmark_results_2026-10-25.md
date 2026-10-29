@@ -1,5 +1,9 @@
 # 双核 MESI 子系统性能测试记录（2026-10-25）
 
+> **历史快照**：该记录早于 Benchmark v2/v3。当前方法见
+> [`coherence_benchmark.md`](../../coherence_benchmark.md)，当前结果见
+> [`coherence_benchmark_v3_results_2026-10-25.md`](../../coherence_benchmark_v3_results_2026-10-25.md)。
+
 使用从 `coherence_benchmark_starter` 复制的 `add_coherence_perf.py`，对
 `CoherentCacheSubsystem` 跑了六组 workload。仿真时钟为 10 ns，内存响应按固定
 模型返回，没有额外随机反压。数据是 RTL 周期级仿真结果，不代表综合后时序或芯片性能。

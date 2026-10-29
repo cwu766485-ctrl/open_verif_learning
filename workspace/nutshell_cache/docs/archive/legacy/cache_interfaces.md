@@ -1,5 +1,9 @@
 # Cache interface contracts
 
+> **Archived legacy interface note.** This describes the original single-L1
+> DCache ports, not the dual-L1 MESI subsystem. See the current
+> [MESI specification](../../cache.md) and [RTL layout](../../../rtl/README.md).
+
 The DUT exposes four interface groups.  They are documented here rather than
 wrapped in new Verilog modules in the baseline pass, so the generated port
 names and handshake timing remain unchanged.

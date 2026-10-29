@@ -1,5 +1,12 @@
 # Python/open-source RTL verification platform
 
+> **Archived verification snapshot.** Some migration status, coverage counts,
+> and stress limitations below predate the current Python/Toffee regression.
+> Use [`dv/README.md`](../../dv/README.md), the current
+> [testplan](../testplan_to_coverage_matrix.md), and the
+> [final report](../../reports/final/nutshell_cache_verification_report.md)
+> for maintained guidance and results.
+
 This project intentionally verifies the maintained Verilog RTL directly. Chisel
 is not part of the build or test flow.
 

@@ -84,11 +84,11 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 
 主要产物：
 
-- [`原单 L1 DCache 验证基线`](../../docs/cache_spec_and_verification_plan.md)
+- [`原单 L1 DCache 验证基线（归档）`](../../docs/archive/legacy/cache_spec_and_verification_plan.md)
 - [`Benchmark v3 测量与定义`](../../docs/coherence_benchmark_v3_results_2026-10-25.md)
 - [`最终性能签核摘要`](performance_signoff.md)
 - [`clean Snoop/refill A/B 原始结果`](../../benchmarks/results/p2_clean_snoop_fill_ab.json)
-- [`更新日志`](../../docs/update_log.md)
+- [`更新日志`](../../docs/archive/update_log.md)
 
 ## 7. 当前限制与后续
 

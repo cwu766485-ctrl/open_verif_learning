@@ -91,8 +91,13 @@ make COHERENCE_JOBS=2 coherence_benchmark_v3
 ### 主要文档
 
 - [MESI 架构与接口](docs/cache.md)
-- [原单 L1 DCache 规格与验证基线](docs/cache_spec_and_verification_plan.md)
+- [验证环境架构](dv/README.md)
+- [Benchmark 方法与复现](docs/coherence_benchmark.md)
+- [Benchmark v3 结果](docs/coherence_benchmark_v3_results_2026-10-25.md)
 - [Testplan-to-Coverage Matrix](docs/testplan_to_coverage_matrix.md)
 - [Coverage Gap Review](docs/coherence_coverage_gap_review.md)
+- [MESI Bug 案例](docs/bug_case_studies.md)
+- [v1.0 冻结清单](docs/releases/v1.0.md)
 - [v1.0.1 Release Manifest](docs/releases/v1.0.1.md)
+- [归档文档索引](docs/archive/README.md)
 - [最终技术与验证报告 PDF](reports/final/nutshell_cache_verification_report.pdf)

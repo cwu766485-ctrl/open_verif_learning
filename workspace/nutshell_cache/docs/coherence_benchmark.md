@@ -65,5 +65,5 @@ simultaneous read bursts because each L1 controller is blocking.
 
 The detailed v3 results, A/B method, and interpretation are in
 [`coherence_benchmark_v3_results_2026-10-25.md`](coherence_benchmark_v3_results_2026-10-25.md).
-The previous v2 measurements remain documented in
-[`coherence_benchmark_v2_results_2026-10-25.md`](coherence_benchmark_v2_results_2026-10-25.md).
+The historical v2 snapshot remains available in
+[`archive/benchmarks/coherence_benchmark_v2_results_2026-10-25.md`](archive/benchmarks/coherence_benchmark_v2_results_2026-10-25.md).

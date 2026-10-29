@@ -21,6 +21,7 @@ format:
 - 18:47：完整回归发现 MSHR formal 仍引用被删除的 `req_opcode_q`；改由 harness 从已握手请求独立记录每个 context 的 Opcode，避免 checker 依赖实现冗余寄存器，重跑 formal 与全门禁。
 - 19:08：全量 `make COHERENCE_JOBS=2 coherence_verify` 以退出码 0 完成：组件仿真、AXI 集成、7/7 bounded formal、SV 38/38 bins（91.6% 汇总行覆盖）、Python 26/26（38/38 功能 bins、12/12 cross、checker fault injection 9/9）、AXI Python 3/3、标准及 Dense-set 各 20 seeds × 200 操作、RTL mutation 2/2 均通过。重编译确认产品顶层 lint 无 Warning、集成 TB 无 `UNOPTFLAT`；TB 保留已分类的空端口/位宽/未使用信号提示。最终候选仍需以推送后 Legacy 与 Coherence Actions 均通过签核；PPA/SRAM 不在范围内。
 - 19:11：更新最终报告与签核摘要后，默认 Python 环境缺 `reportlab`，改用项目已有 `.tooling/report-pdf-venv` 重建 PDF 成功；本地工作目录无 `.git` 元数据，GitHub 同步需基于远端 `cache_coherence` HEAD 创建快进提交。
+- 20:24：整理 `docs/`：当前 MESI 规格、验证计划、Benchmark v3 与签核材料保留为主文档；旧单 L1 基线移入 `archive/legacy/`，旧 benchmark 结果移入 `archive/benchmarks/`，历史架构、平台说明和更新日志归档。补充归档索引并修正报告链接；未删除历史内容，未修改 RTL。
 - 22:49：收口 v1.1 backlog 的 RCV-03：新增 Python/Toffee 定向竞态，独立匹配 Snoop ACK 的 target/txn、PutM→PutAck 与 GetS→DATA_E 的 txn ID、ACK 后 L2 hit、脏数据和最终 U/E 权限；补充请求/Grant opcode 与 ID 监视，区分合法 PutAck。完整 Python suite 25/25、覆盖 37/37 与 cross 12/12；AXI 顶层 lint/elaboration 通过（有一条既有 `DirectoryMshrBank.req_opcode_q` unused 警告）。等待本次 GitHub Actions 完整复核。
 - 23:21：GitHub Actions run `40710699152`（提交 `bd0b7e2`）Legacy 与 Coherence 两个 Job 均 PASS；Coherence Formal 7/7、SV 功能覆盖 38/38、Python 25/25 与 37/37 bins、checker 注错 9/9、RTL mutation 2/2、标准及 dense-set 压力各 20/20 seeds。日志确认 ACK→L2 定向用例通过。同步修正 Coverage Gap Review：该风险已由 Python/Toffee 关闭，但仍不冒充 integrated SV LCOV 命中。
 
@@ -70,7 +71,7 @@ format:
 
 - 2026-10-25 10:14 +08：修复 Mutation runner 的 RTL 重构路径遗漏（CacheStage3、MetaWriteArbiter、DataWriteArbiter）；本机 formal mutation 4/4 成功捕获注入错误。
 - 2026-10-25 10:14 +08：修正 benchmark hit/miss 口径：统计 CPU 请求握手时的 L1 MESI 状态，S 态 Store 记为 Upgrade Miss；ready 等待与响应延迟分开计数，并断言 TB 分类与 RTL perf event 一致。
-- 2026-10-25 10:14 +08：从 `coherence_benchmark_starter` 导入工具并跑完六组 workload；数据记录在 `docs/coherence_benchmark_results_2026-10-25.md`，完成后恢复临时扩展的 SV harness。
+- 2026-10-25 10:14 +08：从 `coherence_benchmark_starter` 导入工具并跑完六组 workload；数据现归档于 `docs/archive/benchmarks/coherence_benchmark_results_2026-10-25.md`，完成后恢复临时扩展的 SV harness。
 - 2026-10-25 10:14 +08：增加 Picker packed-port wrapper、Python CPU/line-memory agents、独立 MESI/data scoreboard 和首个 owner-transfer pytest。曾因 async fixture 在 Toffee 时钟 loop 外等待而卡住；将时钟初始化移入 testcase loop 后，Python MESI smoke 通过。SV benches 暂留作迁移对照基线。
 - 2026-10-25 10:28 +08：完整回归揭示 reset 取消的 6 笔已接收 miss 造成 hit/miss 对账差异；拆分 accepted 事件对账与 completed latency 样本后，`make coherence_regression` 通过，功能覆盖 34/34、RTL 行覆盖 93.2%。
 - 2026-10-25 10:28 +08：`make formal` 全部通过，包括 coherence/legacy BMC、cover、SAT 检查和 Mutation Testing 4/4；`make test` 为 46 passed、1 skipped、2 deselected。修正 Picker 输出目录复用问题后，`make coherence_python_test` 从干净构建通过（1 passed）。

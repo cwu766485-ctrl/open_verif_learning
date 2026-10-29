@@ -1,11 +1,15 @@
 # Coherence Benchmark v2 Results (2026-10-25)
 
+> **Historical snapshot.** Benchmark v3 is the current result. See the
+> [method and reproduction guide](../../coherence_benchmark.md) and
+> [v3 results](../../coherence_benchmark_v3_results_2026-10-25.md).
+
 Run with `make coherence_python_verify` against the Picker/Verilator
 `CoherentCacheSubsystem` wrapper. The five main workloads ran with memory
 response delays of 2, 20, 50, and 100 cycles; an isolated dirty L2 victim
 writeback ran at 100 cycles (fixed seed 0, 10 ns clock). Detailed
 per-row counters are in
-[`coherence_benchmark_v2.json`](../benchmarks/results/coherence_benchmark_v2.json)
+[`coherence_benchmark_v2.json`](../../../benchmarks/results/coherence_benchmark_v2.json)
 and CSV form.
 
 The latest rerun also records per-phase transaction counts, mean, and P95 in

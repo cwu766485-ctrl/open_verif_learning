@@ -1,5 +1,13 @@
 # MESI RTL integration blocks
 
+> **Archived implementation snapshot.** The current specification and RTL
+> layout are maintained in [`cache.md`](../cache.md) and
+> [`rtl/README.md`](../../rtl/README.md). Current validation status is in the
+> [final verification report](../../reports/final/nutshell_cache_verification_report.md)
+> and [testplan](../testplan_to_coverage_matrix.md). This detailed snapshot is
+> retained for history; check current Make targets and reports before using its
+> evidence tables as a sign-off statement.
+
 `rtl/Coherence.files.f` contains the new coherence RTL in dependency order. It
 does not change the legacy `rtl/Cache.files.f` single-L1 baseline.
 
