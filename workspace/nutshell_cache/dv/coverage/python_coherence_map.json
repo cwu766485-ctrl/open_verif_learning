@@ -302,97 +302,116 @@
     {
       "id": "cross.cold_read_from_memory",
       "key": "I:from_I:read:core0:source_memory:l2_miss:snoop_none:beats_8",
-      "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer"
+      "testpoint": "Invalid L1 cold GetS from memory after an L2 miss, with no snoop and an eight-beat line transfer",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.remote_m_owner_read",
       "key": "I:from_M:read:core0:source_remote_owner:l2_hit:snoop_core1:beats_8",
-      "testpoint": "Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer"
+      "testpoint": "Core0 GetS while Core1 owns M, sourced from the remote owner with an eight-beat transfer",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.remote_m_owner_read_core1",
       "key": "I:from_M:read:core1:source_remote_owner:l2_hit:snoop_core0:beats_8",
-      "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context"
+      "testpoint": "Core1 GetS while Core0 owns M, including an overlapping independent Directory context",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.shared_upgrade_snoop",
       "key": "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0",
-      "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer"
+      "testpoint": "Core1 S-to-M upgrade snoops Core0 without a line-data transfer",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.modified_hit_masked_store",
       "key": "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0",
-      "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes"
+      "testpoint": "Core0 byte-masked M-hit store updates only selected byte lanes",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.l2_hit_after_l1_eviction",
       "key": "I:from_I:read:core0:source_shared_l2:l2_hit:snoop_none:beats_8",
-      "testpoint": "L1-evicted line refills from shared L2 without a snoop"
+      "testpoint": "L1-evicted line refills from shared L2 without a snoop",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.lookup_conflict_during_transfer",
       "key": "interleaving:active_transfer_distinct_address_ready_stall",
-      "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active"
+      "testpoint": "Another line request is blocked during an owner-transfer lookup while randomized memory ready stalls are active",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.lookup_conflict_during_grant",
       "key": "interleaving:active_grant_distinct_address_ready_stall",
-      "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active"
+      "testpoint": "Another line request is blocked during a grant lookup while randomized memory ready stalls are active",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.dirty_owner_waits_for_fill_port",
       "key": "interleaving:dirty_owner_waits_for_l2_fill_port",
-      "testpoint": "Dirty owner writeback waits until the refill releases the shared L2 array port"
+      "testpoint": "Dirty owner writeback waits until the refill releases the shared L2 array port",
+      "checker": "CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks"
     },
     {
       "id": "cross.message_passing",
       "key": "interleaving:message_passing_distinct_lines",
-      "testpoint": "Ordered producer DATA/READY stores are observed by the consumer on separate lines"
+      "testpoint": "Ordered producer DATA/READY stores are observed by the consumer on separate lines",
+      "checker": "CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks"
     },
     {
       "id": "cross.false_sharing",
       "key": "interleaving:false_sharing_same_line_ping_pong",
-      "testpoint": "Same-line different-word stores create ownership traffic absent from matched separate-line stores"
+      "testpoint": "Same-line different-word stores create ownership traffic absent from matched separate-line stores",
+      "checker": "CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks"
     },
     {
       "id": "cross.generation_counter",
       "key": "interleaving:data_ready_ack_100_generations",
-      "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure"
+      "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure",
+      "checker": "CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks"
     },
     {
       "id": "cross.mshr_two_context_memory_backpressure",
       "key": "interleaving:distinct_set_contexts_read_stalled",
-      "testpoint": "Two different-set contexts remain allocated while memory request and response channels are stalled"
+      "testpoint": "Two different-set contexts remain allocated while memory request and response channels are stalled",
+      "checker": "Directory MSHR bank checker for context lifecycle, request/response ID routing, stable payloads, and progress under the stated fairness assumptions"
     },
     {
       "id": "cross.replacement_put_s_snoop_core0",
       "key": "interleaving:put_s_snoop_core0",
-      "testpoint": "Core0 PutS overlaps Core1 same-line GetM and reaches the replacement replay path"
+      "testpoint": "Core0 PutS overlaps Core1 same-line GetM and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     },
     {
       "id": "cross.replacement_put_s_snoop_core1",
       "key": "interleaving:put_s_snoop_core1",
-      "testpoint": "Core1 PutS overlaps Core0 same-line GetM and reaches the replacement replay path"
+      "testpoint": "Core1 PutS overlaps Core0 same-line GetM and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     },
     {
       "id": "cross.replacement_put_e_snoop_core0",
       "key": "interleaving:put_e_snoop_core0",
-      "testpoint": "Core0 PutE overlaps Core1 same-line GetS and reaches the replacement replay path"
+      "testpoint": "Core0 PutE overlaps Core1 same-line GetS and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     },
     {
       "id": "cross.replacement_put_e_snoop_core1",
       "key": "interleaving:put_e_snoop_core1",
-      "testpoint": "Core1 PutE overlaps Core0 same-line GetS and reaches the replacement replay path"
+      "testpoint": "Core1 PutE overlaps Core0 same-line GetS and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     },
     {
       "id": "cross.replacement_put_m_snoop_core0",
       "key": "interleaving:put_m_snoop_core0",
-      "testpoint": "Core0 dirty PutM overlaps Core1 same-line GetS and reaches the replacement replay path"
+      "testpoint": "Core0 dirty PutM overlaps Core1 same-line GetS and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     },
     {
       "id": "cross.replacement_put_m_snoop_core1",
       "key": "interleaving:put_m_snoop_core1",
-      "testpoint": "Core1 dirty PutM overlaps Core0 same-line GetS and reaches the replacement replay path"
+      "testpoint": "Core1 dirty PutM overlaps Core0 same-line GetS and reaches the replacement replay path",
+      "checker": "Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks"
     }
   ]
 }

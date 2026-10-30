@@ -112,7 +112,7 @@ doctor:
 coherence_build:
 	@mkdir -p reports/coherence
 	@rm -rf reports/coherence/obj_dir
-	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert --coverage-line --coverage-branch -j $(COHERENCE_JOBS) -CFLAGS -O0 -Wall -Wno-fatal -Wno-BLKSEQ \
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert --coverage-line --coverage-branch --coverage-toggle --coverage-fsm -j $(COHERENCE_JOBS) -CFLAGS -O0 -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module CoherentCacheSubsystem_tb \
 	  --Mdir ../reports/coherence/obj_dir -f ../dv/blocks/coherent_cache_subsystem/filelist.f
 
@@ -142,7 +142,9 @@ coherence_regression: coherence_build
 	done
 	@set -o pipefail; $(MAKE) coherence_directory_mshr_bank 2>&1 | tee reports/coherence/directory_mshr_bank.log
 	@source $(ENV_SCRIPT); verilator_coverage --write reports/coherence/coverage.dat reports/coherence/*.dat
-	@source $(ENV_SCRIPT); verilator_coverage --write-info reports/coherence/coverage.info reports/coherence/coverage.dat
+	@source $(ENV_SCRIPT); verilator_coverage --filter-type line --write-info reports/coherence/coverage_line.info reports/coherence/coverage.dat
+	@sed '/^BRDA:/d; /^BRF:/d; /^BRH:/d' reports/coherence/coverage_line.info > reports/coherence/coverage.info
+	@source $(ENV_SCRIPT); verilator_coverage --report summary,hier reports/coherence/coverage.dat > reports/coherence/coverage_summary.txt
 	@source $(ENV_SCRIPT); cd rtl && genhtml ../reports/coherence/coverage.info --output-directory ../reports/coherence/code_html
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_closure \
 	  --log reports/coherence/smoke.log --log reports/coherence/multisnoop.log \
