@@ -1,54 +1,86 @@
-# Local toolchains and downloaded third-party packages
-.tooling/
-tmp/
+# Keep source, tests, documentation, reports and RTL; ignore local outputs.
+*
+*.*
 
-# Picker-generated DUT and native libraries
-labs/course2_picker_fifo/generated/
-*.so
+!*.py
+!*.md
+!*.pdf
+!Makefile
+!Readme.md
+!.gitignore
+!.gtkwaverc
+!pytest.ini
+!requirements-dv.txt
 
-# Simulation, coverage, and test artifacts
+# Current Python-based verification environment and regression tests.
+!dv/
+!dv/**/
+!dv/**/*.py
+!dv/**/*.md
+!dv/**/*.json
+!dv/**/*.sv
+!dv/**/*.svh
+!dv/**/*.v
+!dv/**/*.f
+!tests/
+!tests/**/
+!tests/**/*.py
+!tests/**/*.sv
+!tests/**/*.v
+!scripts/
+!scripts/*.sh
+!formal/
+!formal/**/
+!formal/*.sby
+!formal/*.ys
+!formal/*.v
+!formal/**/*.sby
+!formal/**/*.v
+!formal/**/*.sv
+!formal/**/*.py
+
+!src/
+!src/**/
+!src/**/*.py
+!docs/
+!docs/*.md
+!docs/releases/
+!docs/releases/*.md
+!benchmarks/
+!benchmarks/**/
+!benchmarks/*.py
+!benchmarks/*.md
+!benchmarks/results/*.json
+!benchmarks/results/*.csv
+!rtl/
+!rtl/*.v
+!rtl/
+!rtl/**/
+!rtl/**/*.v
+!rtl/*.sv
+!rtl/**/*.sv
+!rtl/**/*.f
+!rtl/**/*.md
+!tools/
+!tools/*.ps1
+!tools/*.json
+
+# Generated Python/simulator state remains ignored even under the exceptions.
+src/**/__pycache__/
+*.py[cod]
 *.fst
 *.dat
 reports/
-.pytest_cache/
-**/__pycache__/
-*.py[cod]
+Cache/
+Cache_modular/
+picker_out/
 
-# Editor and operating-system files
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-
-# Nested repository metadata is kept outside the submission tree.  The parent
-# repository must contain the actual source files, not gitlink pointers.
-**/.git/
-**/.git
-**/.gitmodules
-
-# Third-party toolchains, build products and language caches
-**/build/
-**/out/
-**/target/
-**/debug/
-**/.bsp/
-**/.metals/
-**/.mill/
-**/*.class
-**/*.jar
-**/*.log
-**/*.vcd
-**/*.wlf
-**/report/*.tex
-**/generated/
-**/Cache/
-**/Cache_modular/
-**/picker_out/
-
-# NutShell FPGA images and external run bundles are not needed to reproduce
-# the cache verification task.
-workspace/nutshell_src/fpga/boot/
-workspace/nutshell_src/ready-to-run/
-
-# Local backups of the two upstream repositories' histories.
-tmp/git-metadata/
+# Keep the final report source and its reproducible build script in Git while
+# ignoring generated simulation/formal/coverage artifacts under reports/.
+!reports/
+reports/*
+!reports/final/
+reports/final/*
+!reports/final/*.md
+!reports/final/*.py
+!reports/final/*.pdf
