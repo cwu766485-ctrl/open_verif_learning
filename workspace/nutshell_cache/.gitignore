@@ -19,6 +19,7 @@
 !dv/**/*.md
 !dv/**/*.json
 !dv/**/*.sv
+!dv/**/*.svh
 !dv/**/*.v
 !dv/**/*.f
 !tests/
