@@ -9,13 +9,15 @@ normal CI gate.
 
 | Priority | Requirement | Test / entry point | Independent checker / evidence |
 | --- | --- | --- | --- |
-| P0 | Directory lookup race and Grant/Snoop admission regressions | `tests/coherence/test_subsystem_python.py`: `test_python_seeded_randomized_coherence` (fixed replay `0x5eed`), `test_directory_lookup_grant_conflict_offset_sweep`, and `test_clean_snoop_overlaps_l2_fill_stream` | Independent byte-accurate MESI model; accepted Snoop/data/Directory commit monitors; both core directions run for clean invalidation during refill |
+| P0 | Directory lookup race and Grant/Snoop admission regressions | `tests/coherence/test_randomized.py`, `test_directory_arbitration.py`, and `test_snoop_fill_concurrency.py`: fixed replay `0x5eed`, conflict offset sweep, and clean Snoop during refill | Independent byte-accurate MESI model; accepted Snoop/data/Directory commit monitors; both core directions run for clean invalidation during refill |
 | P0 | Dirty owner Snoop concurrent with L2 refill | `test_dirty_owner_snoop_and_refill_share_l2_write_port_safely` | Eight-beat owner-data comparison, reference Directory comparison, no simultaneous refill/owner write-port acceptance; runs with either core as owner |
 | P0 | Dense same-L2-set victim race | `make coherence_dense_set_stress` (also in `make coherence_verify`) | 20 seeds × 200 operations with nine same-set lines, dual-lane traffic and memory backpressure; independent MESI/data/Directory checkers; ownership requests serialize per L2 set and same-set Put is allowed to retire L1 victims |
-| P1 | Snoop ACK recovery through authoritative L2 | `test_python_snoop_ack_retries_from_authoritative_l2` | A deterministic offset sweep creates a legal PutM/SnoopRead overlap; monitor matches ACK target and transaction ID, then checks one L2 hit refill, no DRAM/owner-data path, correct dirty word, exactly-once Grant, and independent MESI/Directory commit |
+| P1 | Snoop ACK recovery through authoritative L2 | `tests/coherence/test_recovery.py::test_python_snoop_ack_retries_from_authoritative_l2` | Deterministic offset sweep covers E/M owner in both core directions; monitor matches ACK target and transaction ID, then checks one L2 hit refill, no DRAM/owner-data path, correct data, exactly-once Grant, and independent MESI/Directory commit |
+| P0 | Directory MSHR/context progress under backpressure | `tests/coherence/test_mshr_arbitration.py::test_python_mshr_contexts_progress_under_memory_backpressure`; `make coherence_directory_mshr_bank`; `make coherence_formal` | Two simultaneous different-set misses occupy separate refill MSHRs and Directory contexts while memory request/response and CPU response stalls are active; module checks held payloads, routing, reset, and bounded progress under explicit fairness |
+| P1 | Replacement replay under Put/Snoop conflict | `tests/coherence/test_mshr_arbitration.py::test_python_replacement_replays_after_same_line_snoop` | Six Core × owner-state combinations cover PutS/PutE/PutM; accepted transaction monitors, sampled REPLACE_REPLAY state, independent final data/Directory model, and per-cross coverage |
 | P1 | Stale Upgrade after peer invalidation | `test_python_stale_upgrade_recovers_after_peer_invalidation` | Both L1s begin in S; Core1 wins Upgrade and invalidates Core0 while Core0's Upgrade is queued; Core0 then recovers as data-bearing GetM. Check accepted request/grant order, all eight owner-data beats, final data/Directory state, and no protocol error |
-| P0 | MESI checker sensitivity and RTL mutation | `make coherence_python_verify`; `make coherence_rtl_mutation` | Python fault injection checks checker rejection; RTL mutation compiles actual `MesiL1Controller.sv` mutants and requires the module testbench to fail on the named protocol expectation |
-| P1 | Coverage gap review | `make coherence_regression`; `python3 -m dv.coverage.coherence_gap_review` | `docs/coherence_coverage_gap_review.md` lists all 288 unhit merged-LCOV lines, separates 244 product RTL from 44 testbench lines, and records source-level risk and directed-closure candidates |
+| P0 | MESI checker sensitivity and RTL mutation | `make coherence_python_verify`; `make coherence_rtl_mutation` | Python fault injection checks checker rejection; four real RTL mutants across L1 MESI, Directory MSHR arbitration, and AXI adapter must fail through the corresponding SV block checker |
+| P1 | Coverage gap review | `make coherence_regression`; `python3 -m dv.coverage.coherence_gap_review` | `docs/coherence_coverage_gap_review.md` lists 289 unhit merged-LCOV records: 190 product RTL, 45 SV testbench, and 54 other-source lines, with source-level risk and directed-closure candidates |
 | D01 | Coherence vs memory-ordering litmus | `test_python_message_passing_litmus` and `test_python_generation_counter_litmus` | Producer waits for each LSU Store response; consumer checks READY/DATA/ACK on separate lines against an independent scoreboard. This validates coherence visibility under the test driver's ordering contract, not ISA acquire/release, RVWMO, or fence semantics |
 | D02 | False-sharing A/B | `test_python_false_sharing_ab` | Same fixed write count, response latency and backpressure; compares separate words in one 64-byte line against separate lines. Reports RTL cycles/op, mean/P95 CPU response latency, L1/L2 hit/miss rates, memory line traffic and simulated read/write/total bandwidth, snoop, GetM/Upgrade counts and final data in `reports/coherence/false_sharing_ab.json` |
 | D04 | Testplan/checker/coverage closure | `dv/coverage/python_coherence_map.json`, `make coherence_python_test`, `make coherence_python_verify` | Litmus and A/B testpoints map to independent checker events and cross bins; generated JSON/Markdown closure reports hit/miss status. Required tests are part of the Python/Toffee gate |
@@ -39,9 +41,12 @@ normal CI gate.
 
 The Python fault-injection runner mutates checker-visible observations and
 proves the checker is sensitive to those faults. Separately,
-`coherence_rtl_mutation` changes two real L1 controller RTL expressions,
-rebuilds the DUT with the module testbench, and requires the named checker
-failure. This is a small mutation set, not exhaustive RTL mutation coverage.
+`coherence_rtl_mutation` changes real RTL expressions in the L1 controller,
+Directory MSHR bank, and AXI adapter, rebuilds each DUT with its existing module
+testbench, and requires the named checker failure. The four mutations are a
+targeted sensitivity sample, not exhaustive RTL mutation coverage.
+The consolidated result is retained in
+`reports/coherence/mutations/rtl_mutation_campaign_summary.json`.
 
 ## Debug cases to retain
 
@@ -120,12 +125,13 @@ make coherence_formal
 PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_gap_review
 ```
 
-## Deferred integrated recovery closure
+## Integrated recovery closure and remaining scope
 
-The remaining legal Directory, Snoop, MSHR backpressure, and replacement replay
-paths are tracked as v1.1 follow-up items in
+The directed legal Directory, Snoop, MSHR backpressure, and replacement replay
+paths are recorded as closed for their stated bounded scenarios in
 [`docs/releases/v1.1_verification_backlog.md`](releases/v1.1_verification_backlog.md).
-They are not reported as covered by the current merged subsystem LCOV run.
+Uncovered RTL branches remain visible in the source-linked LCOV review and are
+not recast as functional coverage closure.
 Three representative RTL defect investigations and their passing regressions
 are documented in [`docs/bug_case_studies.md`](bug_case_studies.md).
 

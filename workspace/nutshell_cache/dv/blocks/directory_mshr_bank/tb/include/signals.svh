@@ -40,6 +40,7 @@
   logic [TXN_ID_WIDTH-1:0] grant_commit_txn_id;
   logic snoop_data_to_l2, protocol_error;
   logic [3:0] protocol_error_code;
+  logic [NUM_MSHRS-1:0] monitor_active_contexts;
 
   logic [31:0] ctx_addr [0:NUM_MSHRS-1];
   logic [TXN_ID_WIDTH-1:0] ctx_txn [0:NUM_MSHRS-1];
@@ -79,6 +80,8 @@
     .grant_commit_valid(grant_commit_valid),
     .grant_commit_src_id(grant_commit_src_id),
     .grant_commit_ready(grant_commit_ready), .grant_commit_txn_id(grant_commit_txn_id),
-    .snoop_data_to_l2(snoop_data_to_l2), .protocol_error(protocol_error),
+    .snoop_data_to_l2(snoop_data_to_l2),
+    .monitor_active_contexts(monitor_active_contexts),
+    .protocol_error(protocol_error),
     .protocol_error_code(protocol_error_code)
   );

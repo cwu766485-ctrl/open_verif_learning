@@ -17,7 +17,7 @@
     req_valid = 1'b0;
     reset_bank();
     if (line_xfer_start_valid || dir_write_valid || grant_valid || snoop_req_valid ||
-        protocol_error)
+        protocol_error || monitor_active_contexts != '0)
       $fatal(1, "outputs or error state survived reset cancellation");
     $display("COV_EVENT: id=mshr_bank.reset_cancel checker=PASS old_state=mixed requester=multiple opcode=GetS_plus_Reset snoop_target=none new_state=I data_source=none beats=0 contexts=4");
     $display("PASS: reset cancels four simultaneously active Directory contexts");

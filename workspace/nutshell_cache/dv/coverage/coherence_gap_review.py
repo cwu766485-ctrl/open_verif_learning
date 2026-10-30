@@ -51,8 +51,9 @@ def render() -> str:
         path: lines for path, lines in misses.items()
         if path.startswith(("cluster/", "directory/", "l1/", "l2/", "top/"))
     }
+    tb_prefixes = ("../tests/", "tests/", "../dv/blocks/", "dv/blocks/")
     tb_sources = {path: lines for path, lines in misses.items()
-                  if path.startswith("../tests/")}
+                  if path.startswith(tb_prefixes)}
     other = {path: lines for path, lines in misses.items()
              if path not in design_sources and path not in tb_sources}
     rtl_total = sum(total[path] for path in design_sources)

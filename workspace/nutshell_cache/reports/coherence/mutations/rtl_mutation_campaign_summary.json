@@ -1,0 +1,56 @@
+{
+  "caught": 4,
+  "mutations": [
+    {
+      "build_log": "reports/coherence/mutations/remote_read_must_downgrade_m_owner.build.log",
+      "caught": true,
+      "expected_checker_failure": "M-to-S Snoop metadata update missing",
+      "mutation": "remote_read_must_downgrade_m_owner",
+      "observed": [
+        "Aborting..."
+      ],
+      "return_code": 1,
+      "simulation_log": "reports/coherence/mutations/remote_read_must_downgrade_m_owner.sim.log"
+    },
+    {
+      "build_log": "reports/coherence/mutations/owner_data_response_must_mark_data_present.build.log",
+      "caught": true,
+      "expected_checker_failure": "Snoop response header mismatch",
+      "mutation": "owner_data_response_must_mark_data_present",
+      "observed": [
+        "Aborting..."
+      ],
+      "return_code": 1,
+      "simulation_log": "reports/coherence/mutations/owner_data_response_must_mark_data_present.sim.log"
+    },
+    {
+      "build_log": "reports/coherence/mutations/directory_mshr_stalled_snoop_put_must_bypass.build.log",
+      "caught": true,
+      "expected_checker_failure": "stalled-snoop target Put did not bypass the blocking L1",
+      "mutation": "directory_mshr_stalled_snoop_put_must_bypass",
+      "observed": [
+        "Aborting..."
+      ],
+      "return_code": 1,
+      "simulation_log": "reports/coherence/mutations/directory_mshr_stalled_snoop_put_must_bypass.sim.log"
+    },
+    {
+      "build_log": "reports/coherence/mutations/axi_adapter_must_surface_read_error.build.log",
+      "caught": true,
+      "expected_checker_failure": "AXI read error was not surfaced as a terminal line error",
+      "mutation": "axi_adapter_must_surface_read_error",
+      "observed": [
+        "Aborting..."
+      ],
+      "return_code": 1,
+      "simulation_log": "reports/coherence/mutations/axi_adapter_must_surface_read_error.sim.log"
+    }
+  ],
+  "scope": [
+    "rtl/l1/MesiL1Controller.sv",
+    "rtl/directory/DirectoryMshrBank.sv",
+    "rtl/bus/axi/LineMemoryAxi4Adapter.sv"
+  ],
+  "status": "PASS",
+  "total": 4
+}

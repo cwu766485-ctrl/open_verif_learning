@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
   "regression": "python_dual_l1_shared_l2_mesi",
-  "test": "tests/coherence/test_subsystem_python.py",
+  "test": "tests/coherence/ (feature-split pytest modules)",
   "bins": [
     {
       "id": "mesi.cold_read",
@@ -162,8 +162,74 @@
     {
       "id": "directory.snoop_ack_l2_retry",
       "feature": "snoop_ack_l2_retry",
-      "testpoint": "A same-set PutM removes the snapshotted M owner before SnoopRead response; Directory retries from the retained L2 line",
-      "checker": "Accepted ACK/Snoop transaction ID, PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, dirty data, and independent MESI/Directory commit"
+      "testpoint": "A same-set Put removes the snapshotted E/M owner before SnoopRead response in either core direction; Directory retries from retained L2 data",
+      "checker": "Accepted ACK/Snoop transaction ID, PutE/PutM-to-PutAck and GetS-to-DATA_E ID matching, post-ACK L2 hit, no owner beats or DRAM read, data integrity, and independent MESI/Directory commit"
+    },
+    {
+      "id": "directory.mshr_dual_context_backpressure",
+      "feature": "directory_mshr_dual_context_backpressure",
+      "testpoint": "Two distinct-set cold misses hold independent Directory contexts and refill MSHRs during memory request/response stalls",
+      "checker": "Dual-core driver response matching, unique memory IDs, peak MSHR/Directory occupancy, independent data and Directory model, and protocol-error check"
+    },
+    {
+      "id": "directory.replacement_replay_s_core0",
+      "feature": "replacement_replay_s_core0",
+      "testpoint": "Core0 replacement PutS races a Core1 same-line GetM and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, REPLACE_REPLAY state sample, final data and Directory model"
+    },
+    {
+      "id": "directory.replacement_replay_s_core1",
+      "feature": "replacement_replay_s_core1",
+      "testpoint": "Core1 replacement PutS races a Core0 same-line GetM and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, REPLACE_REPLAY state sample, final data and Directory model"
+    },
+    {
+      "id": "directory.replacement_replay_e_core0",
+      "feature": "replacement_replay_e_core0",
+      "testpoint": "Core0 replacement PutE races a Core1 same-line GetS and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, REPLACE_REPLAY state sample, final data and Directory model"
+    },
+    {
+      "id": "directory.replacement_replay_e_core1",
+      "feature": "replacement_replay_e_core1",
+      "testpoint": "Core1 replacement PutE races a Core0 same-line GetS and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, REPLACE_REPLAY state sample, final data and Directory model"
+    },
+    {
+      "id": "directory.replacement_replay_m_core0",
+      "feature": "replacement_replay_m_core0",
+      "testpoint": "Core0 dirty replacement PutM races a Core1 same-line GetS and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, dirty data comparison, REPLACE_REPLAY sample, and final Directory model"
+    },
+    {
+      "id": "directory.replacement_replay_m_core1",
+      "feature": "replacement_replay_m_core1",
+      "testpoint": "Core1 dirty replacement PutM races a Core0 same-line GetS and replays the miss",
+      "checker": "Independent replacement predictor, accepted Put/Snoop/Grant monitors, dirty data comparison, REPLACE_REPLAY sample, and final Directory model"
+    },
+    {
+      "id": "directory.snoop_ack_retry_e_owner_core0",
+      "feature": "snoop_ack_l2_retry_e_owner_core0",
+      "testpoint": "Core0's E line is replaced before its SnoopRead ACK; Core1 retries from L2",
+      "checker": "Accepted PutE/PutAck and GetS/DATA_E transaction matching, L2 hit, no DRAM/owner stream, and independent data/Directory model"
+    },
+    {
+      "id": "directory.snoop_ack_retry_e_owner_core1",
+      "feature": "snoop_ack_l2_retry_e_owner_core1",
+      "testpoint": "Core1's E line is replaced before its SnoopRead ACK; Core0 retries from L2",
+      "checker": "Accepted PutE/PutAck and GetS/DATA_E transaction matching, L2 hit, no DRAM/owner stream, and independent data/Directory model"
+    },
+    {
+      "id": "directory.snoop_ack_retry_m_owner_core0",
+      "feature": "snoop_ack_l2_retry_m_owner_core0",
+      "testpoint": "Core0's M line is replaced before its SnoopRead ACK; Core1 retries dirty data from L2",
+      "checker": "Accepted PutM/PutAck and GetS/DATA_E transaction matching, L2 hit, no DRAM/owner stream, and independent dirty-data/Directory model"
+    },
+    {
+      "id": "directory.snoop_ack_retry_m_owner_core1",
+      "feature": "snoop_ack_l2_retry_m_owner_core1",
+      "testpoint": "Core1's M line is replaced before its SnoopRead ACK; Core0 retries dirty data from L2",
+      "checker": "Accepted PutM/PutAck and GetS/DATA_E transaction matching, L2 hit, no DRAM/owner stream, and independent dirty-data/Directory model"
     },
     {
       "id": "cpu.same_line_dual_lane",
@@ -292,6 +358,41 @@
       "id": "cross.generation_counter",
       "key": "interleaving:data_ready_ack_100_generations",
       "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure"
+    },
+    {
+      "id": "cross.mshr_two_context_memory_backpressure",
+      "key": "interleaving:distinct_set_contexts_read_stalled",
+      "testpoint": "Two different-set contexts remain allocated while memory request and response channels are stalled"
+    },
+    {
+      "id": "cross.replacement_put_s_snoop_core0",
+      "key": "interleaving:put_s_snoop_core0",
+      "testpoint": "Core0 PutS overlaps Core1 same-line GetM and reaches the replacement replay path"
+    },
+    {
+      "id": "cross.replacement_put_s_snoop_core1",
+      "key": "interleaving:put_s_snoop_core1",
+      "testpoint": "Core1 PutS overlaps Core0 same-line GetM and reaches the replacement replay path"
+    },
+    {
+      "id": "cross.replacement_put_e_snoop_core0",
+      "key": "interleaving:put_e_snoop_core0",
+      "testpoint": "Core0 PutE overlaps Core1 same-line GetS and reaches the replacement replay path"
+    },
+    {
+      "id": "cross.replacement_put_e_snoop_core1",
+      "key": "interleaving:put_e_snoop_core1",
+      "testpoint": "Core1 PutE overlaps Core0 same-line GetS and reaches the replacement replay path"
+    },
+    {
+      "id": "cross.replacement_put_m_snoop_core0",
+      "key": "interleaving:put_m_snoop_core0",
+      "testpoint": "Core0 dirty PutM overlaps Core1 same-line GetS and reaches the replacement replay path"
+    },
+    {
+      "id": "cross.replacement_put_m_snoop_core1",
+      "key": "interleaving:put_m_snoop_core1",
+      "testpoint": "Core1 dirty PutM overlaps Core0 same-line GetS and reaches the replacement replay path"
     }
   ]
 }

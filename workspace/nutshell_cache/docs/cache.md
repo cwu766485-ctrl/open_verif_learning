@@ -563,7 +563,7 @@ NutShell 原始单核 L1 的权威实现仍是 Chisel；本 MESI 子系统的权
 - v1 验证边界是两个 LSU Agent 和 DCache；真实双 Core、ICache MESI、DMA coherence 不在当前实现内。
 - 已接入 256 KiB / 8-way Shared L2/Directory 阵列。
 
-当前冻结候选以 `docs/releases/v1.0.1.md` 记录的候选版本和通过的 CI 源码快照为准。任何 RTL/接口改变都必须生成新的候选快照并重新跑完整回归；仅文档或验证平台更新不得声称改变 RTL 行为。RCV-01（Directory defensive self-GetM）不属于合法 L1 可达请求；RCV-02（竞争失效后的 stale Upgrade）已有独立 Python/Toffee 集成检查。RCV-04～06 作为 v1.1 的剩余增强验证风险，不阻止本冻结范围，但不能宣称已覆盖。
+当前冻结候选以 `docs/releases/v1.0.1.md` 记录的候选版本和通过的 CI 源码快照为准。任何 RTL/接口改变都必须生成新的候选快照并重新跑完整回归；仅文档或验证平台更新不得声称改变 RTL 行为。RCV-01（Directory defensive self-GetM）不属于合法 L1 可达请求；RCV-02（竞争失效后的 stale Upgrade）已有独立 Python/Toffee 集成检查。RCV-04～06 已补充有界定向集成验证及对应 Coverage Bin，详见 `docs/releases/v1.1_verification_backlog.md`；这些结果不构成无界活性证明或全场景闭合。
 
 ---
 

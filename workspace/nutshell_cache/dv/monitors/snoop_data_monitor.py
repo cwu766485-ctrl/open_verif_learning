@@ -1,5 +1,7 @@
 """Check accepted owner-to-L2 line transfers at the subsystem boundary."""
 
+from collections import Counter
+
 from toffee import ClockCycles
 
 
@@ -24,13 +26,58 @@ class SnoopDataMonitor:
         self.transfer_grant_conflicts = []
         self.beat_errors = []
         self.shared_write_conflicts = []
+        self.replacement_state_samples = []
+        self.ready_valid_stalls = Counter()
+        self._stalled_payload = {}
         self.cycle = 0
+
+    def _check_stalled(self, channel, valid, ready, payload):
+        """Check exposed ready/valid payload stability and count held cycles."""
+        valid, ready = bool(valid), bool(ready)
+        payload = tuple(payload)
+        previous = self._stalled_payload.get(channel)
+        if previous is not None and (not valid or payload != previous):
+            raise AssertionError(
+                f"{channel}: valid/payload changed while stalled; "
+                f"expected valid=1 payload={previous}, got valid={int(valid)} "
+                f"payload={payload}"
+            )
+        if valid and not ready:
+            self.ready_valid_stalls[channel] += 1
+            self._stalled_payload[channel] = payload
+        else:
+            self._stalled_payload.pop(channel, None)
 
     async def run(self):
         d = self.dut
         while True:
             # Observe the combinational accepted-beat event before the next
             # rising edge; state machines may deassert valid at that edge.
+            self._check_stalled(
+                "directory_request",
+                d.monitor_dir_req_live_valid.value,
+                d.monitor_dir_req_live_ready.value,
+                (d.monitor_dir_req_live_addr.value,),
+            )
+            self._check_stalled(
+                "directory_transfer",
+                d.monitor_dir_xfer_live_valid.value,
+                d.monitor_dir_xfer_live_ready.value,
+                (),
+            )
+            self._check_stalled(
+                "l2_line_write",
+                d.monitor_l2_line_wr_valid.value,
+                d.monitor_l2_line_wr_ready.value,
+                (d.monitor_l2_line_wr_addr.value,
+                 d.monitor_l2_line_wr_beat.value),
+            )
+            replacement_states = int(d.monitor_l1_replace_state.value)
+            self.replacement_state_samples.append({
+                "cycle": self.cycle,
+                "core0": replacement_states & 0xF,
+                "core1": (replacement_states >> 4) & 0xF,
+            })
             snoop_valid = int(d.monitor_snoop_accept_valid.value)
             rsp_valid = int(d.monitor_snoop_rsp_valid.value)
             rsp_ready = int(d.monitor_snoop_rsp_ready.value)

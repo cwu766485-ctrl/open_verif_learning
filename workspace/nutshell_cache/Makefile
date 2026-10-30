@@ -261,18 +261,18 @@ coherence_python_build:
 	  --lang python --sim verilator -e -c
 
 coherence_python_test: coherence_python_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark" tests/coherence/test_subsystem_python.py && \
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark" tests/coherence && \
 	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
 
 coherence_python_litmus: coherence_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 -k "message_passing_litmus or false_sharing_ab or generation_counter_litmus" \
-	 tests/coherence/test_subsystem_python.py
+	 tests/coherence
 
 coherence_benchmark_v2: coherence_benchmark_v3
 
 coherence_benchmark_v3: coherence_python_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_subsystem_python.py::test_coherence_benchmark_v3
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/coherence/test_benchmark_v3.py::test_coherence_benchmark_v3
 
 coherence_benchmark_v4:
 	@if [[ ! -f .tooling/coherent_python/_UT_CoherentCachePythonWrapper.so ]]; then \
@@ -280,20 +280,20 @@ coherence_benchmark_v4:
 	fi
 	@mkdir -p reports/coherence
 	@set -o pipefail; source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
-	 tests/coherence/test_subsystem_python.py::test_coherence_benchmark_v4 \
+	 tests/coherence/test_benchmark_v4.py::test_coherence_benchmark_v4 \
 	 --junitxml=reports/coherence/benchmark_v4.junit.xml 2>&1 | tee reports/coherence/benchmark_v4.log
 	@PYTHONPATH=.:./dv python3 benchmarks/collect_coherence_v4.py
 
 # One clean Picker export, then the Python functional DV and Benchmark v2.
 coherence_python_verify: coherence_python_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark_v4" tests/coherence/test_subsystem_python.py && \
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv -m "not benchmark_v4" tests/coherence && \
 	 PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure && \
 	 PYTHONPATH=.:./dv python3 -m dv.fault_injection.run
 
 # Inject faults into the real MESI L1 controller RTL and require the
 # module-level transaction checker to detect each mutated design.
 coherence_rtl_mutation:
-	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 -m dv.mutation_testing.coherence_rtl_mutations
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 -m dv.mutation_testing.rtl_campaign
 
 # Opt-in extended constrained-random sweep. Every pytest case ID records its
 # seed; JUnit and seed configuration are retained for failure replay.
@@ -307,7 +307,7 @@ coherence_stress:
 	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_stress_coverage.json \
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 --junitxml=reports/coherence/stress/results.xml \
-	 'tests/coherence/test_subsystem_python.py::test_python_seeded_randomized_coherence'
+	 'tests/coherence/test_randomized.py::test_python_seeded_randomized_coherence'
 
 # Regression for directory/victim races when all random traffic collides in
 # one L2 set. Different L2 sets may still occupy separate Directory contexts.
@@ -322,7 +322,7 @@ coherence_dense_set_stress:
 	 COHERENCE_COVERAGE_PATH=benchmarks/results/coherence_python_dense_l2_set_coverage.json \
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 --junitxml=reports/coherence/dense_l2_stress/results.xml \
-	 'tests/coherence/test_subsystem_python.py::test_python_seeded_randomized_coherence'
+	 'tests/coherence/test_randomized.py::test_python_seeded_randomized_coherence'
 
 # Independent AXI5-channel Python agent against the line-to-AXI adapter.
 coherence_axi_python_build:

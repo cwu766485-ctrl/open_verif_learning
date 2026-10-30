@@ -3,7 +3,7 @@
 - **Status:** PASS
 - **PASS markers:** 197
 - **Functional coverage:** 38/38 (100.0%)
-- **Code line coverage:** 3152/3440 (91.6%)
+- **Code line coverage:** 2799/3088 (90.6%)
 - **Documented waivers:** 0
 
 Functional bins close only from structured `COV_EVENT` records emitted after the corresponding checker completes; PASS text is informational.

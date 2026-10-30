@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RTL = PROJECT_ROOT / "rtl" / "l1" / "MesiL1Controller.sv"
 OUT = PROJECT_ROOT / "reports" / "coherence" / "mutations"
 TB = PROJECT_ROOT / "dv" / "blocks" / "mesi_l1_controller" / "tb" / "MesiL1Controller_tb.sv"
+TB_DIR = TB.parent
 
 
 @dataclass(frozen=True)
@@ -65,6 +66,7 @@ def _run_one(mutation: Mutation) -> dict[str, object]:
             "verilator", "--binary", "--timing", "--assert", "-j", "2",
             "-Wall", "-Wno-fatal", "-Wno-BLKSEQ",
             "--top-module", "MesiL1Controller_tb", "--Mdir", str(obj),
+            f"-I{TB_DIR}",
             str(PROJECT_ROOT / "rtl/common/CoherenceProtocol.sv"),
             str(PROJECT_ROOT / "rtl/l1/MesiL1SnoopArbiter.sv"),
             str(mutant_rtl), str(TB),

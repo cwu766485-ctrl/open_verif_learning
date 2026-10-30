@@ -2,6 +2,9 @@
     // line requests must be backpressured while the four contexts are live.
     for (integer i = 0; i < NUM_MSHRS; i++)
       send_request(ctx_addr[i], ctx_src[i], ctx_txn[i], DIR_I, 2'b00, 1'b0);
+    if (monitor_active_contexts !== {NUM_MSHRS{1'b1}})
+      $fatal(1, "active-context monitor mismatch after allocation: %b",
+             monitor_active_contexts);
     @(negedge clock);
     req_valid = 1'b1;
     req_opcode = REQ_GETS;

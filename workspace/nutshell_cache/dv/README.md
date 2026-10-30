@@ -20,11 +20,18 @@ tests/ stimulus and directed/random scenarios
      -> functional coverage collector -> JSON / HTML report
 ```
 
-The subsystem migration starts with `tests/coherence/test_subsystem_python.py`:
-two CPU agents share a line-memory agent, and an independent
-`CoherenceScoreboard` predicts data and MESI transitions. The existing SV
-subsystem benches remain cross-check baselines until the corresponding Python
-scenarios, protocol checks, and coverage bins have replacements.
+The subsystem Python tests are organized by feature under `tests/coherence/`;
+`test_subsystem_python.py` remains a compatibility import only. A shared
+`CoherenceEnv` owns the packed dual-core CPU driver, line-memory agent,
+transaction monitors, coverage collector, and fresh scoreboard factory.
+Reusable `CpuAccess`/`DualCoreSequence` helpers schedule one or two core
+requests through the single packed-port driver. Feature modules hold directed,
+randomized, recovery, and benchmark scenarios without copying agents or
+models. Each scenario samples coverage only after its independent checks pass.
+
+The SystemVerilog block benches are similarly split into a short top-level
+testbench plus focused `tb/include/*.svh` signal, agent, checker, and scenario
+files. Their filelists remain owned by `dv/blocks/<block>/`.
 
 ### Dual-L1 MESI migration status
 
@@ -44,12 +51,13 @@ length.
 | SystemVerilog directed benches | Detailed module and legacy scenario cross-checks | Retained while each corresponding Python checker/bin is established |
 | SymbiYosys harnesses | Bounded safety and module invariants | Remain separate; Python simulation does not replace formal proofs |
 
-Next migration slices are randomized concurrent-context stress with stronger
-latency/backpressure crosses, then moving remaining subsystem-only SV directed
-scenarios into Python. Module-specific SV benches and formal harnesses stay in
-the regression until equivalent Python checker and coverage evidence has been
-reviewed. Formal harnesses continue to cover properties that simulation cannot
-establish.
+The current Python subsystem regression includes directed recovery, distinct
+Directory/MSHR context backpressure, both-core E/M Snoop-ACK retry, six
+S/E/M replacement-replay combinations, reset, byte masks, and seeded random
+traffic. Long stress remains a separate Make target. Module-specific SV benches
+and formal harnesses remain in regression until equivalent Python checker and
+coverage evidence is reviewed; formal continues to cover properties simulation
+cannot establish.
 
 `agents/` implements bus drivers and monitors; `protocol/` and `common/`
 define interfaces and transactions; `models/` contains the reference and RAM
