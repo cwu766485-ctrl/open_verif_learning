@@ -87,14 +87,14 @@ formal: coherence_formal
 
 coherence_formal:
 	@mkdir -p reports/formal
-	@if [[ -f .tooling/oss-cad-suite/environment ]]; then source .tooling/oss-cad-suite/environment; fi; \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_request_arbiter formal/coherence_request_arbiter.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_snoop_arbiter formal/coherence_snoop_arbiter.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_directory_progress formal/coherence_directory_progress.sby && \
-	 PATH="$(abspath .tooling/sby-install/bin):$$PATH" sby -f -d reports/formal/coherence_l1_controller formal/coherence_l1_controller.sby
+	@source $(ENV_SCRIPT); \
+	 sby -f -d reports/formal/coherence_request_arbiter formal/coherence_request_arbiter.sby && \
+	 sby -f -d reports/formal/coherence_snoop_arbiter formal/coherence_snoop_arbiter.sby && \
+	 sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
+	 sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
+	 sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
+	 sby -f -d reports/formal/coherence_directory_progress formal/coherence_directory_progress.sby && \
+	 sby -f -d reports/formal/coherence_l1_controller formal/coherence_l1_controller.sby
 
 fault_injection:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv:./Cache:./tests python3 -m dv.fault_injection.run
@@ -114,8 +114,7 @@ coherence_build:
 	@rm -rf reports/coherence/obj_dir
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert --coverage-line --coverage-branch -j $(COHERENCE_JOBS) -CFLAGS -O0 -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module CoherentCacheSubsystem_tb \
-	  --Mdir ../reports/coherence/obj_dir -f Coherence.files.f \
-	  ../tests/subsystem/rtl/CoherentCacheSubsystem_tb.sv
+	  --Mdir ../reports/coherence/obj_dir -f ../dv/blocks/coherent_cache_subsystem/filelist.f
 
 coherence_smoke: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb
@@ -158,35 +157,35 @@ coherence_l1_array:
 	@mkdir -p reports/coherence/l1_array_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1Array_tb --Mdir ../reports/coherence/l1_array_obj \
-	  -f Coherence.files.f ../tests/l1/rtl/MesiL1Array_tb.sv
+	  -f ../dv/blocks/mesi_l1_array/filelist.f
 	@reports/coherence/l1_array_obj/VMesiL1Array_tb
 
 coherence_l2_array:
 	@mkdir -p reports/coherence/l2_array_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module SharedL2DirectoryArray_tb --Mdir ../reports/coherence/l2_array_obj \
-	  -f Coherence.files.f ../tests/l2/rtl/SharedL2DirectoryArray_tb.sv
+	  -f ../dv/blocks/shared_l2_directory_array/filelist.f
 	@reports/coherence/l2_array_obj/VSharedL2DirectoryArray_tb
 
 coherence_l1_controller:
 	@mkdir -p reports/coherence/l1_controller_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1Controller_tb --Mdir ../reports/coherence/l1_controller_obj \
-	  -f Coherence.files.f ../tests/l1/rtl/MesiL1Controller_tb.sv
+	  -f ../dv/blocks/mesi_l1_controller/filelist.f
 	@reports/coherence/l1_controller_obj/VMesiL1Controller_tb
 
 coherence_directory:
 	@mkdir -p reports/coherence/directory_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module DirectoryController_tb --Mdir ../reports/coherence/directory_obj \
-	  -f Coherence.files.f ../tests/directory/rtl/DirectoryController_tb.sv
+	  -f ../dv/blocks/directory_controller/filelist.f
 	@reports/coherence/directory_obj/VDirectoryController_tb
 
 coherence_directory_mshr_bank:
 	@mkdir -p reports/coherence/directory_mshr_bank_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module DirectoryMshrBank_tb --Mdir ../reports/coherence/directory_mshr_bank_obj \
-	  -f Coherence.files.f ../tests/directory/rtl/DirectoryMshrBank_tb.sv
+	  -f ../dv/blocks/directory_mshr_bank/filelist.f
 	@reports/coherence/directory_mshr_bank_obj/VDirectoryMshrBank_tb
 
 coherence_request_arbiter:
@@ -194,29 +193,28 @@ coherence_request_arbiter:
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherenceRequestArbiter_tb --Mdir ../reports/coherence/request_arbiter_obj \
 	  common/CoherenceProtocol.sv interconnect/CoherenceRequestArbiterCore.sv \
-	  interconnect/CoherenceRequestArbiter.sv ../tests/coherence/rtl/CoherenceRequestArbiter_tb.sv
+	  -f ../dv/blocks/coherence_request_arbiter/filelist.f
 	@reports/coherence/request_arbiter_obj/VCoherenceRequestArbiter_tb
 
 coherence_snoop_arbiter:
 	@mkdir -p reports/coherence/snoop_arbiter_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module MesiL1SnoopArbiter_tb --Mdir ../reports/coherence/snoop_arbiter_obj \
-	  l1/MesiL1SnoopArbiter.sv ../tests/l1/rtl/MesiL1SnoopArbiter_tb.sv
+	  -f ../dv/blocks/mesi_l1_snoop_arbiter/filelist.f
 	@reports/coherence/snoop_arbiter_obj/VMesiL1SnoopArbiter_tb
 
 coherence_cluster:
 	@mkdir -p reports/coherence/cluster_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --unroll-count 10000 --top-module DualL1MesiCluster_tb \
-	  --Mdir ../reports/coherence/cluster_obj -f Coherence.files.f \
-	  ../tests/subsystem/rtl/DualL1MesiCluster_tb.sv
+	  --Mdir ../reports/coherence/cluster_obj -f ../dv/blocks/dual_l1_mesi_cluster/filelist.f
 	@reports/coherence/cluster_obj/VDualL1MesiCluster_tb
 
 coherence_bus_blocks:
 	@mkdir -p reports/coherence/bus_blocks_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CacheBusBlocks_tb --Mdir ../reports/coherence/bus_blocks_obj \
-	  -f Coherence.files.f ../tests/axi/rtl/CacheBusBlocks_tb.sv
+	  -f ../dv/blocks/bus_blocks/filelist.f
 	@reports/coherence/bus_blocks_obj/VCacheBusBlocks_tb
 
 coherence_axi_lint:
@@ -229,7 +227,7 @@ coherence_axi_build:
 	@mkdir -p reports/coherence/axi_e2e_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
 	  --top-module CoherentCacheAxiSubsystem_tb --Mdir ../reports/coherence/axi_e2e_obj \
-	  -f Coherence.files.f ../tests/subsystem/rtl/CoherentCacheAxiSubsystem_tb.sv
+	  -f ../dv/blocks/coherent_cache_axi_subsystem/filelist.f
 
 coherence_axi_e2e: coherence_axi_build
 	@mkdir -p reports/coherence

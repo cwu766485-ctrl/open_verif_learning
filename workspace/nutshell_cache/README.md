@@ -77,8 +77,9 @@ make coherence_benchmark_v4
 ## 目录
 
 - `rtl/`：MESI 子系统与 `rtl/legacy_l1/` 中的原单 L1 RTL。
+- `dv/blocks/`：按 DUT 归属整理的 SystemVerilog Block / Subsystem 验证入口与 Testplan。
 - `dv/`：Python agents、独立 reference model、scoreboard、monitor、coverage 与 fault injection。
-- `tests/`：Python/Toffee 测试和 SystemVerilog 模块/集成基线。
+- `tests/`：原单 L1 Python/Toffee 测试与历史测试入口；MESI SystemVerilog Block / Subsystem 验证位于 `dv/blocks/`。
 - `formal/`：SymbiYosys harness、性质和 mutation 检查。
 - `benchmarks/`：固定 workload、baseline、JSON/CSV 性能结果。
 - `docs/`、`reports/final/`：规格、验证计划、[真实 Bug 案例](docs/bug_case_studies.md)和可复现的签核材料。

@@ -1,11 +1,10 @@
 # Tests
 
-Python/Toffee pytest cases for the original single-L1 cache are under `l1/`;
-the first two-core MESI subsystem test is under `coherence/`. Verification
-infrastructure unit tests are under `unit/`. SystemVerilog module and
-subsystem benches under `l1/rtl`, `directory/rtl`, `l2/rtl`, `axi/rtl`,
-`coherence/rtl`, and `subsystem/rtl` remain migration baselines while their
-scenarios move into Python. Run the new Picker/Toffee subsystem test with
-`make coherence_python_test`; build and run individual SV baselines through
-their dedicated Make targets. Retire an SV test only after its Python
-replacement covers the same protocol behavior and checks.
+Python/Toffee pytest cases for the original single-L1 cache remain under
+`tests/l1/` with their existing imports and entry points. They are the Legacy
+L1 verification suite and are not MESI L1 block tests. Existing SystemVerilog
+block and subsystem benches now live with their actual DUT ownership under
+[`dv/blocks/`](../dv/blocks/README.md), each with `tb/`, an independent
+`filelist.f`, a README and a testplan. Shared Python agents, models, checkers,
+scoreboard and coverage stay single-source under `dv/`. Existing Make targets
+remain the build/run entry points.

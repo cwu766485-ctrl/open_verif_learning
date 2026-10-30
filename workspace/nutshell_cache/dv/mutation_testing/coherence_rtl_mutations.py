@@ -19,7 +19,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RTL = PROJECT_ROOT / "rtl" / "l1" / "MesiL1Controller.sv"
 OUT = PROJECT_ROOT / "reports" / "coherence" / "mutations"
-TB = PROJECT_ROOT / "tests" / "l1" / "rtl" / "MesiL1Controller_tb.sv"
+TB = PROJECT_ROOT / "dv" / "blocks" / "mesi_l1_controller" / "tb" / "MesiL1Controller_tb.sv"
 
 
 @dataclass(frozen=True)

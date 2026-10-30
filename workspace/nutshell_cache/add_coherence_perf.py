@@ -171,7 +171,7 @@ TASKS = r'''  // Isolated benchmark mode using the EXISTING memory model and
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--tb", type=Path,
-                    default=Path("tests/subsystem/rtl/CoherentCacheSubsystem_tb.sv"))
+                    default=Path("dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv"))
     args = ap.parse_args()
     tb = args.tb
     s = tb.read_text(encoding="utf-8")

@@ -1,6 +1,6 @@
 # APB tests
 
-The APB performance CSR is currently exercised together with the AXI line
-adapter in `tests/axi/rtl/CacheBusBlocks_tb.sv`, through
-`make coherence_bus_blocks`. A dedicated APB-only bench can be split out if the
-CSR verification grows independently.
+The APB performance CSR is exercised together with the AXI line adapter in
+`dv/blocks/bus_blocks/tb/CacheBusBlocks_tb.sv`, through
+`make coherence_bus_blocks`. There is no APB-only bench; coverage is recorded
+in `dv/blocks/bus_blocks/testplan.md`.

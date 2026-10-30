@@ -20,6 +20,7 @@
 !dv/**/*.json
 !dv/**/*.sv
 !dv/**/*.v
+!dv/**/*.f
 !tests/
 !tests/**/
 !tests/**/*.py
