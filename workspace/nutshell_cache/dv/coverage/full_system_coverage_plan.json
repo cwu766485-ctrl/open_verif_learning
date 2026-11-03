@@ -1,0 +1,681 @@
+{
+  "schema_version": 2,
+  "dut": "CoherentCacheAxiSubsystem",
+  "status": "initial_integrated_slice",
+  "coverage_credit_policy": "Credit only after an observed DUT handshake/event and a passing independent checker.",
+  "bins": [
+    {
+      "id": "FS.CPU.READ.CORE0",
+      "feature": "CPU read on core 0",
+      "classification": "required_legal",
+      "legal_preconditions": "Cacheable aligned 64-bit word; CPU request accepted and response completed.",
+      "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 0.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CPU.READ.CORE1",
+      "feature": "CPU read on core 1",
+      "classification": "required_legal",
+      "legal_preconditions": "Cacheable aligned 64-bit word; CPU request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random read operations.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 1.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CPU.WRITE.CORE0",
+      "feature": "CPU write on core 0",
+      "classification": "required_legal",
+      "legal_preconditions": "Cacheable word; nonzero legal byte mask; request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 0.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CPU.WRITE.CORE1",
+      "feature": "CPU write on core 1",
+      "classification": "required_legal",
+      "legal_preconditions": "Cacheable word; nonzero legal byte mask; request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 1.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.I_TO_E",
+      "feature": "MESI I to E",
+      "classification": "required_legal",
+      "legal_preconditions": "Line is absent from both L1s and a core issues GetS without a peer copy.",
+      "stimulus_strategy": "Cold read from core 0.",
+      "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
+      "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.I_TO_S",
+      "feature": "MESI I to S",
+      "classification": "required_legal",
+      "legal_preconditions": "Line is absent from requester L1 and present in peer L1 in a shareable state.",
+      "stimulus_strategy": "Core 0 cold read followed by core 1 read of the same line.",
+      "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
+      "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.S_TO_M",
+      "feature": "MESI S to M",
+      "classification": "required_legal",
+      "legal_preconditions": "Both L1s hold a shared copy and one core issues a write.",
+      "stimulus_strategy": "Core 1 store after both cores read the line.",
+      "required_monitor_event": "L1 metadata_commit observed for writer and peer invalidation/downgrade.",
+      "checker": "Independent CoherenceScoreboard predicts both cores' states and checks observed metadata commits.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.M_TO_S",
+      "feature": "MESI M to S",
+      "classification": "required_legal",
+      "legal_preconditions": "Peer requests shared access to a line modified by the current owner.",
+      "stimulus_strategy": "Core 1 writes then core 0 reads the same line.",
+      "required_monitor_event": "Owner snoop response and L1 metadata_commit for owner downgrade.",
+      "checker": "Independent CoherenceScoreboard checks returned latest data and observed metadata commit.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.READ_BURST",
+      "feature": "AXI read refill burst",
+      "classification": "required_legal",
+      "legal_preconditions": "Cacheable cold miss reaches AXI; 64-byte line is returned as eight 64-bit beats.",
+      "stimulus_strategy": "Directed cold miss with initialized backing memory.",
+      "required_monitor_event": "Accepted AR and eight accepted R beats ending with RLAST.",
+      "checker": "Axi4BackingMemoryAgent checks ID, address, burst shape, beat order, data, and RLAST; CPU data checked by reference model.",
+      "testcases": [
+        "test_dual_core_coherence_uses_axi_backing_memory"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.READ_OUT_OF_ORDER",
+      "feature": "Out-of-order AXI read completion across IDs",
+      "classification": "required_legal",
+      "legal_preconditions": "Two different cache lines miss concurrently and obtain distinct accepted AXI IDs.",
+      "stimulus_strategy": "Paired distinct-line CPU cold misses; memory reorder window delays earlier request.",
+      "required_monitor_event": "Two accepted AR IDs and R completion order reversed from AR acceptance order.",
+      "checker": "AXI ID/beat scoreboard checks response routing and CPU data; test asserts completion order.",
+      "testcases": [
+        "test_dual_cold_misses_overlap_and_route_axi_responses"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MSHR.OCCUPANCY_2",
+      "feature": "Two overlapping refill MSHRs",
+      "classification": "required_legal",
+      "legal_preconditions": "Two distinct set/line misses can allocate separate refill contexts.",
+      "stimulus_strategy": "Paired CPU cold misses with delayed memory response.",
+      "required_monitor_event": "Observed refill MSHR valid bitmap has population count two.",
+      "checker": "Passive occupancy monitor plus AXI transaction/CPU data scoreboard.",
+      "testcases": [
+        "test_dual_cold_misses_overlap_and_route_axi_responses"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MMIO.BYTE_MASK",
+      "feature": "MMIO byte-masked write/readback",
+      "classification": "required_legal",
+      "legal_preconditions": "CPU accesses a mapped MMIO register with a supported transfer size and nonzero byte mask.",
+      "stimulus_strategy": "Write lower bytes, then read back through the other core.",
+      "required_monitor_event": "MMIO request_accept and response_complete with matching address/mask.",
+      "checker": "Independent MMIO register model checks masked merge and returned read data.",
+      "testcases": [
+        "test_mmio_slave_byte_mask_and_apb_readonly_csr"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.APB.READONLY_ERROR",
+      "feature": "APB read-only and unmapped access errors",
+      "classification": "required_negative",
+      "legal_preconditions": "Negative accesses are deliberately issued only to read-only CSR and unmapped APB offset.",
+      "stimulus_strategy": "APB CSR read, attempted write to read-only counter, and bad-address access.",
+      "required_monitor_event": "APB access_complete with PSLVERR for both invalid operations.",
+      "checker": "ApbMasterAgent bounds access and checks PSLVERR response.",
+      "testcases": [
+        "test_mmio_slave_byte_mask_and_apb_readonly_csr"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER",
+      "feature": "Concurrent MMIO read, cache miss refill, and APB miss-counter read",
+      "classification": "required_legal",
+      "legal_preconditions": "CPU0 MMIO read response is delayed while CPU1 has an accepted cache miss and an AXI refill with source-side RVALID gaps. The integrated top holds RREADY high outside reset, so this is not receiver backpressure.",
+      "stimulus_strategy": "Launch both CPU lanes together, wait for accepted AR, then read the APB miss counter before the final R beat and before the MMIO response; inject legal gaps between R beats.",
+      "required_monitor_event": "MMIO request/response, CPU request/response, AXI AR/eight R beats, and APB access are correlated by address and cycle ordering.",
+      "checker": "CPU driver lifecycle; independent cache reference data; MMIO register model; AXI ID/beat/data checker and RVALID-gap count; APB counter value; monitor cycle-overlap assertions; no MMIO L1/Directory allocation.",
+      "testcases": [
+        "test_mmio_read_cache_miss_and_apb_miss_counter_overlap"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MMIO.CORE_ARBITRATION",
+      "feature": "Dual-core MMIO request arbitration",
+      "classification": "required_legal",
+      "legal_preconditions": "Both cores issue requests to distinct mapped MMIO addresses.",
+      "stimulus_strategy": "Paired masked writes followed by independent readbacks.",
+      "required_monitor_event": "Both MMIO request_accept/response_complete events observed at their expected addresses.",
+      "checker": "Packed CPU driver checks lane lifecycle; MMIO model checks masked register values and both readbacks.",
+      "testcases": [
+        "test_mmio_slave_byte_mask_and_apb_readonly_csr"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MMIO.CACHE_CONCURRENT",
+      "feature": "MMIO bypass during peer cache miss",
+      "classification": "required_legal",
+      "legal_preconditions": "One core issues mapped MMIO access while the other issues a cacheable cold miss.",
+      "stimulus_strategy": "Paired MMIO write and cacheable read with delayed AXI memory.",
+      "required_monitor_event": "MMIO handshake and AXI AR overlap in the same test window.",
+      "checker": "MMIO reference model and cache scoreboard independently check both responses.",
+      "testcases": [
+        "test_mmio_request_overlaps_other_core_cache_miss"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.APB.READ_DURING_AXI",
+      "feature": "APB CSR read during AXI refill",
+      "classification": "required_legal",
+      "legal_preconditions": "A cacheable refill is outstanding while an APB CSR read is issued.",
+      "stimulus_strategy": "Wait for accepted AXI AR, then read access-cycle CSR before refill completes.",
+      "required_monitor_event": "AXI read context active and APB access_complete observed.",
+      "checker": "APB master checks bounded completion; AXI agent tracks outstanding refill lifecycle.",
+      "testcases": [
+        "test_mmio_request_overlaps_other_core_cache_miss"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.RESET_CANCEL",
+      "feature": "Reset cancels AXI read and allows ID reuse",
+      "classification": "required_legal",
+      "legal_preconditions": "Delayed AXI read is outstanding when reset is asserted.",
+      "stimulus_strategy": "Start cold miss, assert reset before R completion, then repeat miss.",
+      "required_monitor_event": "System reset_cancel and a later AR reusing the cancelled ID.",
+      "checker": "AXI agent verifies cancellation/ID reuse; CPU scoreboard checks fresh returned data and no stale response.",
+      "testcases": [
+        "test_reset_cancels_outstanding_axi_read_and_reuses_id"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.ERROR_RESPONSE",
+      "feature": "AXI read response error fail-stop",
+      "classification": "required_negative",
+      "legal_preconditions": "Fault injection returns non-OK RRESP for a selected cache line.",
+      "stimulus_strategy": "Inject RRESP error during cold refill.",
+      "required_monitor_event": "Accepted R beat with error response and DUT fatal_error assertion.",
+      "checker": "Test checks fail-stop, absence of CPU success response, and agent error record.",
+      "testcases": [
+        "test_axi_read_error_fails_stop_without_success_response"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MMIO.RESET_CANCEL",
+      "feature": "Reset cancels delayed MMIO response",
+      "classification": "required_legal",
+      "legal_preconditions": "MMIO request is accepted but its response is delayed when reset is asserted.",
+      "stimulus_strategy": "Issue mapped MMIO read with long response delay, reset, then retry.",
+      "required_monitor_event": "Reset cancellation and absence of stale MMIO/CPU response.",
+      "checker": "MMIO agent tracks pending request cancellation and checks fresh retry completion.",
+      "testcases": [
+        "test_reset_cancels_pending_mmio_response"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MSHR.OCCUPANCY_4",
+      "feature": "Four simultaneous refill MSHRs",
+      "classification": "required_legal",
+      "legal_preconditions": "Four independent cache misses can be concurrently outstanding from CPU requestors.",
+      "stimulus_strategy": "Not currently generatable through the blocking dual-lane CPU API; use a dedicated block-level MSHR test.",
+      "required_monitor_event": "Four distinct active refill contexts with correctly routed completions.",
+      "checker": "Future context lifecycle checker and per-request data scoreboard.",
+      "testcases": [],
+      "status": "planned",
+      "required": false
+    },
+    {
+      "id": "FS.AXI.WRITE_OUT_OF_ORDER",
+      "feature": "Out-of-order AXI write response completion",
+      "classification": "required_legal",
+      "legal_preconditions": "Multiple accepted write transactions have distinct IDs and completed AW/W handshakes.",
+      "stimulus_strategy": "Not currently generated by the integrated cache top; standalone adapter tests cover write ID lifecycle separately.",
+      "required_monitor_event": "Distinct accepted AW/W transactions and B responses returned in a different order.",
+      "checker": "Future AXI write ID lifecycle checker.",
+      "testcases": [],
+      "status": "planned",
+      "required": false
+    },
+    {
+      "id": "FS.MESI.I_TO_M",
+      "feature": "MESI I to M",
+      "classification": "required_legal",
+      "legal_preconditions": "Line absent from both L1s; core issues a cacheable store.",
+      "stimulus_strategy": "Cold CPU store obtains writable ownership.",
+      "required_monitor_event": "Directory GetM acceptance and requester L1 metadata commit to M.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.E_TO_M",
+      "feature": "MESI E to M",
+      "classification": "required_legal",
+      "legal_preconditions": "Requester holds a clean exclusive line.",
+      "stimulus_strategy": "Local store to an E line.",
+      "required_monitor_event": "L1 metadata commit E->M after completed CPU store.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.E_TO_S",
+      "feature": "MESI E to S",
+      "classification": "required_legal",
+      "legal_preconditions": "Peer holds E and other core issues GetS.",
+      "stimulus_strategy": "Read same line from the other CPU.",
+      "required_monitor_event": "Owner snoop/read response and both L1 metadata commits to S.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.E_TO_I",
+      "feature": "MESI E to I",
+      "classification": "required_legal",
+      "legal_preconditions": "Peer holds E and other core issues GetM.",
+      "stimulus_strategy": "Remote CPU store to same line.",
+      "required_monitor_event": "Observed GetM, owner invalidation commit and requester commit to M.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.S_TO_I",
+      "feature": "MESI S to I",
+      "classification": "required_legal",
+      "legal_preconditions": "Both cores hold S and one core upgrades to M.",
+      "stimulus_strategy": "Store by one sharer.",
+      "required_monitor_event": "Observed snoop invalidate and peer metadata commit to I.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MESI.M_TO_I",
+      "feature": "MESI M to I",
+      "classification": "required_legal",
+      "legal_preconditions": "One core holds M and peer issues GetM.",
+      "stimulus_strategy": "Remote CPU store by the other core.",
+      "required_monitor_event": "Observed GetM and former owner metadata commit to I.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "testcases": [
+        "test_cold_store_silent_upgrade_and_remote_getm",
+        "test_seeded_full_system_coherence"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.SAME_LINE_DUAL_STORE",
+      "feature": "Concurrent same-line stores from both cores",
+      "classification": "required_legal",
+      "legal_preconditions": "Both blocking CPU lanes offer writes to distinct words in the same cache line; writes are accepted and completed.",
+      "stimulus_strategy": "Simultaneous paired stores followed by independent readbacks of both words.",
+      "required_monitor_event": "Both Directory request handshakes, both CPU completions, and valid final L1 metadata commits.",
+      "checker": "Independent coherence/data reference model is advanced in observed Directory acceptance order; both architectural words are read back and checked.",
+      "testcases": [
+        "test_same_line_dual_core_store_ordering_and_data"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.RACE.REPLACEMENT_PUTM_SNOOP",
+      "feature": "Dirty L1 replacement PutM concurrent with remote Snoop",
+      "classification": "required_legal",
+      "legal_preconditions": "One core has a dirty line and fills its same-set L1; the peer requests the dirty line while the owner requests a replacement line.",
+      "stimulus_strategy": "Paired remote read and fifth same-set line request with both CPU lanes active.",
+      "required_monitor_event": "PutM for the victim, Snoop accept/response for that line, and both CPU completions.",
+      "checker": "CPU data is checked against seeded/dirty values; protocol error remains clear; PutM and Snoop events are checked in the same race window.",
+      "testcases": [
+        "test_l1_replacement_putm_races_remote_snoop"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.APB.COUNTER_WRITEBACK_RESET",
+      "feature": "APB event counters, dirty writeback accounting, and reset semantics",
+      "classification": "required_legal",
+      "legal_preconditions": "Successful cold/hit/snoop accesses, same-set dirty L2 replacements, then system reset.",
+      "stimulus_strategy": "Read all CSR offsets at reset, check exact hit/miss/snoop/completion deltas, force ten dirty same-set lines, then reset and reread all CSRs.",
+      "required_monitor_event": "CPU transaction completions and AXI write handshakes/completions for dirty victims.",
+      "checker": "APB reads check exact event counts and reset-to-zero; AXI agent checks eight ordered full-strobe beats, AW/B association, serialized completion, and backing-memory writeback data.",
+      "testcases": [
+        "test_apb_counters_writeback_and_reset_semantics"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.WRITE_SERIALIZED",
+      "feature": "Integrated AXI dirty writeback burst lifecycle and serialization ordering",
+      "classification": "required_legal",
+      "legal_preconditions": "Dirty L2 replacement produces multiple line writebacks through the shared line engine.",
+      "stimulus_strategy": "Force ten dirty lines into one L2 set and observe the resulting AXI write transactions.",
+      "required_monitor_event": "Accepted AW, eight ordered W beats, matching B completion for each victim, and peak outstanding writes of one.",
+      "checker": "AXI memory agent checks IDs, addresses, beat indices, strobes, completion association, writeback contents, and serialized address order.",
+      "testcases": [
+        "test_apb_counters_writeback_and_reset_semantics"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.BRESP_ERROR",
+      "feature": "Integrated AXI write response error fail-stop",
+      "classification": "required_negative",
+      "legal_preconditions": "A dirty victim write receives an injected non-OKAY BRESP from the backing-memory agent.",
+      "stimulus_strategy": "Fill one L2 set with eight dirty lines, inject BRESP error on the ninth line's victim writeback.",
+      "required_monitor_event": "B error handshake for the selected victim followed by system fatal/error status and no successful CPU response.",
+      "checker": "AXI agent correlates B error to address; APB error CSR and CPU response/fatal state are checked.",
+      "testcases": [
+        "test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.AXI.WRITE_RESET_CANCEL",
+      "feature": "Reset cancellation of integrated AXI dirty writeback",
+      "classification": "required_legal",
+      "legal_preconditions": "System reset is asserted after dirty victim AW acceptance and before B completion.",
+      "stimulus_strategy": "Delay AXI completion, trigger a ninth same-set line, then reset during the accepted write transaction.",
+      "required_monitor_event": "Reset epoch changes, agent records cancellation of an outstanding write, and no stale CPU response or write completion occurs.",
+      "checker": "AXI reset-cancellation record, monitor reset epoch, CPU response-valid, completion log, and fatal state.",
+      "testcases": [
+        "test_reset_cancels_integrated_axi_writeback_before_b"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE",
+      "feature": "Concurrent same-address writes from both cores",
+      "classification": "required_legal",
+      "legal_preconditions": "Both CPU lanes offer legal full-word stores to the exact same cacheable address at the same time.",
+      "stimulus_strategy": "Paired same-address stores with distinct values, then read back the address.",
+      "required_monitor_event": "Both ownership requests accepted by the Directory and both CPU request lifecycles complete.",
+      "checker": "Independent reference model applies both stores in observed Directory acceptance order; final CPU read must equal the last accepted writer's value.",
+      "testcases": [
+        "test_same_address_dual_core_store_serialization"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.L2.LIVE_VICTIM_SNOOP",
+      "feature": "Inclusive L2 victim back-invalidates a resident L1 line",
+      "classification": "required_legal",
+      "legal_preconditions": "A clean line remains resident in Core0 L1 while eight other lines are allocated to the same L2 set.",
+      "stimulus_strategy": "Allocate the target first from Core0, fill seven same-set tags from Core1, then allocate a ninth tag to select the target with the L2 round-robin pointer.",
+      "required_monitor_event": "Accepted L2 victim snoop for the target/Core0 and accepted L1 metadata commit to I.",
+      "checker": "Passive victim-snoop/L1-commit monitor checks back-invalidation; a direct Core0 read must issue an AXI refill and return the independently seeded value.",
+      "testcases": [
+        "test_live_l2_victim_back_invalidates_resident_l1"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.SNOOP_WITH_REFILL",
+      "feature": "Owner Snoop while an independent cache line refills",
+      "classification": "required_legal",
+      "legal_preconditions": "Core0 owns a dirty line; while Core0 starts a different cold-line read, Core1 requests the dirty line and causes an owner Snoop.",
+      "stimulus_strategy": "Start a delayed cold refill on Core0 and issue the peer's owner read after the refill AR handshake.",
+      "required_monitor_event": "AXI AR for the cold line overlaps a Directory context and accepted Snoop/response for the dirty owner line.",
+      "checker": "CPU data scoreboard checks both values; passive events check AR/Snoop overlap, at least two active Directory contexts, and no protocol error.",
+      "testcases": [
+        "test_owner_snoop_overlaps_independent_memory_refill"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.STRESS.MIXED_CPU_MMIO_APB_AXI",
+      "feature": "Seeded mixed CPU, MMIO, APB and AXI timing traffic",
+      "classification": "required_legal",
+      "legal_preconditions": "One cacheable CPU miss and one mapped MMIO request use separate CPU lanes; APB samples the miss counter during the accepted AXI refill.",
+      "stimulus_strategy": "Four fixed reproducible seeds vary CPU lane, read/write, byte mask, MMIO operation, CPU response hold, AXI ARREADY stalls and RVALID source gaps.",
+      "required_monitor_event": "CPU/MMIO handshakes, L1 and Directory commits, MSHR allocation, L2 refill, AXI AR/R and an APB access are observed in the same operation window.",
+      "checker": "Independent coherence/data model, MMIO byte-array model, APB miss-counter expectation, AXI ID/beat/data agent, and explicit cycle-order assertions all pass before credit.",
+      "testcases": [
+        "test_seeded_cpu_mmio_apb_axi_overlap"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET",
+      "feature": "Same-set Snoop request waits for active refill retirement",
+      "classification": "required_legal",
+      "legal_preconditions": "A remote CPU request to an M-owned line is accepted while a distinct cold-line refill maps to the same L2 set.",
+      "stimulus_strategy": "Seeded resource-aware sequence creates M ownership, launches the refill and remote GetS concurrently, and selects same-set addresses.",
+      "required_monitor_event": "CPU request acceptance precedes refill_end; owner-line Directory request and Snoop acceptance occur after refill_end; eight owner-data beats and M-to-S commit are observed.",
+      "checker": "Independent CPU/reference data checks; owner-data beat index/last/value checks; Directory, Snoop, refill lifecycle ordering and no protocol-error checks. The unqualified internal conflict pulse is not used as evidence.",
+      "testcases": [
+        "test_seeded_same_and_distinct_l2_set_snoop_refill"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET",
+      "feature": "Distinct-set owner Snoop progresses during an active refill",
+      "classification": "required_legal",
+      "legal_preconditions": "A remote CPU request to an M-owned line is accepted while a distinct cold-line refill maps to another L2 set.",
+      "stimulus_strategy": "Seeded resource-aware sequence creates M ownership, launches the refill and remote GetS concurrently, and selects distinct-set addresses.",
+      "required_monitor_event": "Owner-line Directory request, Snoop acceptance/response, owner-data beats and M-to-S commit occur before refill_end.",
+      "checker": "Independent CPU/reference data checks; owner-data beat index/last/value checks; Directory, Snoop, refill lifecycle ordering and no protocol-error checks.",
+      "testcases": [
+        "test_seeded_same_and_distinct_l2_set_snoop_refill"
+      ],
+      "status": "implemented",
+      "required": true
+    }
+  ],
+  "crosses": [
+    {
+      "id": "FS.CROSS.CORE0.READ",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Core 0 read request completes with passing data checker.",
+      "stimulus_strategy": "Directed and random CPU read.",
+      "checker": "CPU handshake lifecycle and independent read-data model.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.CORE1.READ",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Core 1 read request completes with passing data checker.",
+      "stimulus_strategy": "Directed and random CPU read.",
+      "checker": "CPU handshake lifecycle and independent read-data model.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.CORE1.WRITE",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Core 1 write request completes with a legal byte mask.",
+      "stimulus_strategy": "Directed and random CPU write.",
+      "checker": "CPU lifecycle checker and reference byte-mask state update.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "MMIO operation overlaps a distinct peer cacheable miss.",
+      "stimulus_strategy": "Paired MMIO write and cold cacheable read.",
+      "checker": "Independent MMIO and cache scoreboards plus observed AXI/MMIO handshakes.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.APB_WITH_AXI_TRAFFIC",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "APB read occurs while a cache AXI refill is outstanding.",
+      "stimulus_strategy": "APB CSR read after AR acceptance and before refill completion.",
+      "checker": "APB access checker and AXI lifecycle monitor.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.MMIO_READ_CACHE_MISS_APB",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A delayed CPU0 MMIO read, CPU1 cacheable miss with outstanding AXI R beats, and APB miss-counter read have overlapping lifecycles.",
+      "stimulus_strategy": "Four-role directed cross-agent scenario with cycle ordering checked from passive monitor events.",
+      "checker": "Independent MMIO/cache data checks, APB counter check, AXI burst/backpressure checks, and explicit request-to-response overlap predicates.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.MMIO_TWO_CORE_ARB",
+      "classification": "optional_legal",
+      "required": false,
+      "legal_preconditions": "Both CPU lanes issue distinct mapped MMIO writes.",
+      "stimulus_strategy": "Paired dual-core MMIO write and subsequent readback.",
+      "checker": "Per-lane CPU lifecycle plus independent MMIO register model.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_WITH_OUTSTANDING",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "AXI or MMIO request is active when reset is asserted.",
+      "stimulus_strategy": "Delayed AXI and MMIO response reset tests.",
+      "checker": "Agent cancellation records and no-stale-response checks.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.MIXED_CPU_MMIO_APB_AXI",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A cache refill, delayed MMIO transaction, and APB miss-counter read overlap under seeded timing variation.",
+      "stimulus_strategy": "Six operations under each of four reproducible seeds, with randomized CPU lane assignment, read/write type, byte mask and response hold plus deterministic AXI/MMIO stalls.",
+      "checker": "Independent CPU and MMIO models, exact APB miss count, AXI burst checker, and monitor cycle-order checks.",
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.SNOOP_REFILL_SAME_L2_SET",
+      "classification": "required_legal",
+      "legal_preconditions": "Same-set M-owner Snoop overlaps a different-line refill and follows the same-set serialization contract.",
+      "stimulus_strategy": "Same-set branch of the seeded resource-aware scenario.",
+      "checker": "Checked CPU acceptance, Directory/Snoop/refill ordering and all returned data before credit.",
+      "testcases": [
+        "test_seeded_same_and_distinct_l2_set_snoop_refill"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET",
+      "classification": "required_legal",
+      "legal_preconditions": "Distinct-set M-owner Snoop overlaps a different-line refill and progresses before refill retirement.",
+      "stimulus_strategy": "Distinct-set branch of the seeded resource-aware scenario.",
+      "checker": "Checked CPU acceptance, Directory/Snoop/refill ordering and all returned data before credit.",
+      "testcases": [
+        "test_seeded_same_and_distinct_l2_set_snoop_refill"
+      ],
+      "status": "implemented",
+      "required": true
+    }
+  ]
+}

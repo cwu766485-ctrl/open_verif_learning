@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_python_coverage_close clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_coverage coherence_full_system_verify coherence_python_coverage_close coherence_coverage_audit coherence_shared_line_engine clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -190,6 +190,13 @@ coherence_directory_mshr_bank:
 	  -f ../dv/blocks/directory_mshr_bank/filelist.f
 	@reports/coherence/directory_mshr_bank_obj/VDirectoryMshrBank_tb
 
+coherence_shared_line_engine:
+	@mkdir -p reports/coherence/shared_line_engine_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module SharedLineEngine_tb --Mdir ../reports/coherence/shared_line_engine_obj \
+	  -f ../dv/blocks/shared_line_engine/filelist.f
+	@reports/coherence/shared_line_engine_obj/VSharedLineEngine_tb
+
 coherence_request_arbiter:
 	@mkdir -p reports/coherence/request_arbiter_obj
 	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
@@ -337,21 +344,107 @@ coherence_axi_python_build:
 coherence_axi_python_test: coherence_axi_python_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv tests/axi/test_axi4_adapter_python.py
 
+# Python/Toffee verification of the complete AXI, MMIO and APB-integrated top.
+# Uses a separate Picker output directory from the line-adapter-only tests.
+coherence_full_system_build:
+	@rm -rf .tooling/coherent_axi_python
+	@source $(ENV_SCRIPT); cd rtl && $(PICKER) export --autobuild=true \
+	  --fs Coherence.files.f ../dv/rtl/CoherentCacheAxiPythonWrapper.sv \
+	  --sname CoherentCacheAxiPythonWrapper \
+	  --tdir ../.tooling/coherent_axi_python --lang python --sim verilator -e -c
+
+coherence_full_system_smoke: coherence_full_system_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_full_system_coherence.py
+
+# Reproducible full-system random regression. Override the seed count and
+# operations for the larger functional-random and stress tiers.
+FULL_SYSTEM_RANDOM_SEED_COUNT ?= 10
+FULL_SYSTEM_RANDOM_OPERATIONS ?= 100
+FULL_SYSTEM_RANDOM_BASE_SEED ?= 0xA11CE
+FULL_SYSTEM_RANDOM_ADDRESS_COUNT ?= 12
+
+coherence_full_system_random: coherence_full_system_build
+	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEED_COUNT=$(FULL_SYSTEM_RANDOM_SEED_COUNT) \
+	  FULL_SYSTEM_RANDOM_OPERATIONS=$(FULL_SYSTEM_RANDOM_OPERATIONS) \
+	  FULL_SYSTEM_RANDOM_BASE_SEED=$(FULL_SYSTEM_RANDOM_BASE_SEED) \
+	  FULL_SYSTEM_RANDOM_ADDRESS_COUNT=$(FULL_SYSTEM_RANDOM_ADDRESS_COUNT) \
+	  PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_full_system_random.py \
+	    tests/full_system/test_mixed_agent_random.py \
+	    tests/full_system/test_resource_aware_random.py
+
+# Four-agent mixed timing stress with independent CPU/MMIO/APB/AXI checks.
+coherence_full_system_mixed: coherence_full_system_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_mixed_agent_random.py
+
+# Extended state/resource/timing-aware regression. The CPU stream has 10k
+# operations; the other campaigns add seeded four-agent overlap and set races.
+FULL_SYSTEM_MIXED_SEED_COUNT ?= 20
+FULL_SYSTEM_MIXED_ROUNDS ?= 10
+FULL_SYSTEM_RESOURCE_SEED_COUNT ?= 20
+
+coherence_full_system_stress: coherence_full_system_build
+	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEED_COUNT=20 \
+	  FULL_SYSTEM_RANDOM_OPERATIONS=500 FULL_SYSTEM_RANDOM_BASE_SEED=0x57E55 \
+	  FULL_SYSTEM_MIXED_SEED_COUNT=$(FULL_SYSTEM_MIXED_SEED_COUNT) \
+	  FULL_SYSTEM_MIXED_ROUNDS=$(FULL_SYSTEM_MIXED_ROUNDS) \
+	  FULL_SYSTEM_RESOURCE_SEED_COUNT=$(FULL_SYSTEM_RESOURCE_SEED_COUNT) \
+	  PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_full_system_random.py \
+	    tests/full_system/test_mixed_agent_random.py \
+	    tests/full_system/test_resource_aware_random.py
+
+FULL_SYSTEM_REPLAY_SEED ?= 0xA11CE
+FULL_SYSTEM_REPLAY_OPERATIONS ?= 100
+
+coherence_full_system_replay: coherence_full_system_build
+	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEEDS=$(FULL_SYSTEM_REPLAY_SEED) \
+	  FULL_SYSTEM_RANDOM_OPERATIONS=$(FULL_SYSTEM_REPLAY_OPERATIONS) \
+	  PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_full_system_random.py
+
+FULL_SYSTEM_TRACE ?= reports/full_system/full_system_trace.jsonl
+FULL_SYSTEM_REPLAY_TEST_ID ?=
+
+coherence_full_system_replay_trace: coherence_full_system_build
+	@source $(ENV_SCRIPT); FULL_SYSTEM_REPLAY_TRACE='$(FULL_SYSTEM_TRACE)' \
+	  FULL_SYSTEM_REPLAY_TEST_ID='$(FULL_SYSTEM_REPLAY_TEST_ID)' \
+	  PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_full_system_replay.py
+
+coherence_full_system_coverage: coherence_full_system_build
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.full_system_closure
+
+coherence_full_system_verify:
+	$(MAKE) COHERENCE_JOBS=$(COHERENCE_JOBS) coherence_verify
+	$(MAKE) coherence_full_system_coverage
+
 coherence_python_coverage_close:
 	@PYTHONPATH=.:./dv python3 -m dv.coverage.python_closure
+
+# Collect isolated native coverage for the AXI subsystem and key blocks. Each
+# dataset stays separate because these tops elaborate different hierarchy and
+# run different testcases; never sum their percentages into the subsystem run.
+coherence_coverage_audit:
+	@bash scripts/run_coherence_coverage_audit.sh $(COHERENCE_JOBS)
 
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only
 
-coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
+coherence_modules: coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_shared_line_engine coherence_request_arbiter coherence_snoop_arbiter coherence_cluster
 
 coherence_verify:
 	$(MAKE) coherence_modules coherence_bus_blocks coherence_axi_lint coherence_axi_e2e coherence_axi_backpressure && $(MAKE) coherence_formal && $(MAKE) coherence_regression && $(MAKE) coherence_python_verify coherence_axi_python_test coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_benchmark_v4
 
-# Remove transient build and per-test trace artifacts. Keep consolidated
-# coverage reports, formal proof logs, and experimental formal records.
+# Remove transient build/trace outputs and ignored per-run reports while
+# preserving tracked sign-off artifacts and the installed .tooling packages.
 clean:
 	rm -rf Cache picker_out .pytest_cache reports/coherence/obj_dir
 	find . -type d \( -name __pycache__ -o -name .pytest_cache \) -prune -exec rm -rf {} +
 	rm -f *.dat *.fst *.vcd *.log *.tmp *.so *.a *.o
 	rm -f reports/DUTCache_test_*.dat reports/DUTCache_test_*.fst
+	git clean -fdX -- reports/coherence reports/formal reports/full_system

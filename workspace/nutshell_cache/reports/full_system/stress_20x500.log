@@ -1,0 +1,31 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.7.0 -- /home/preston/workspace/nutshell_cache/.tooling/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/preston/workspace/open_verif_learning/workspace/nutshell_cache
+configfile: pytest.ini
+plugins: asyncio-1.4.0, reporter-html1-0.9.5, toffee-test-0.2.0, reporter-0.5.3, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 20 items
+
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[360021] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2654795790] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309231559] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963667328] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618103097] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272538866] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15926974635] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581410404] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21235846173] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890281942] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[26544717711] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[29199153480] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[31853589249] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[34508025018] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[37162460787] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[39816896556] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[42471332325] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[45125768094] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[47780203863] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[50434639632] PASSED
+
+======================== 20 passed in 69.04s (0:01:09) =========================

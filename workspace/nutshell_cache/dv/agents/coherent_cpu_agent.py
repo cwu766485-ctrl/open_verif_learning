@@ -30,6 +30,7 @@ class DualCoreCpuDriver:
         self.last_pair_accepted_at = {}
         self.last_pair_completed_at = {}
         self.transactions = []
+        self.request_group = 0
 
     @staticmethod
     def _pack(reqs):
@@ -53,6 +54,8 @@ class DualCoreCpuDriver:
         if response_stall_cycles < 0:
             raise ValueError("response_stall_cycles must be non-negative")
         reqs = (core0, core1)
+        request_group = self.request_group
+        self.request_group += 1
         desired, write, mask, addr, data = self._pack(reqs)
         if not desired:
             raise ValueError("access_pair requires at least one request")
@@ -72,59 +75,46 @@ class DualCoreCpuDriver:
         d.cpu_req_valid.value = offered
         accepted = 0
         accepted_at = {}
-        request_phase_responses = []
-
-        for cycle in range(max_cycles):
-            await ClockCycles(d, 1)
-            self.cycle += 1
-            early_valid = int(d.cpu_resp_valid.value) & desired
-            if early_valid:
-                request_phase_responses.append((
-                    self.cycle, early_valid, int(d.cpu_resp_ready.value),
-                    int(d.cpu_resp_addr.value), int(d.cpu_resp_write.value),
-                ))
-            ready = int(d.cpu_req_ready.value)
-            for core in range(2):
-                bit = 1 << core
-                if (desired & bit) and not (accepted & bit) and not (ready & bit):
-                    self.request_stall_cycles[core] += 1
-            newly = offered & ~accepted & ready
-            for core in range(2):
-                if newly & (1 << core):
-                    accepted_at[core] = self.cycle
-            accepted |= newly
-            if accepted == desired:
-                break
-            next_cycle = cycle + 1
-            offered = sum(1 << core for core, req in enumerate(reqs)
-                          if req is not None and not (accepted & (1 << core))
-                          and delays[core] <= next_cycle)
-            d.cpu_req_valid.value = offered
-        else:
-            d.cpu_req_valid.value = 0
-            raise TimeoutError(
-                f"CPU requests not accepted: wanted={desired:02b} accepted={accepted:02b} "
-                f"ready={int(d.cpu_req_ready.value):02b}"
-            )
-        d.cpu_req_valid.value = 0
-        self.last_pair_accepted_at = dict(accepted_at)
-
         results = [None, None]
         completed_at = {}
-        latched = 0
+        completed = 0
         held_payload = {}
         stall_remaining = {}
         response_trace = []
+        pending_resp_ready = 0
         seen_valid = 0
         for _ in range(max_cycles):
             await ClockCycles(d, 1)
             self.cycle += 1
+
+            # The response handshake driven in the previous iteration has
+            # now retired. Keep request acceptance and response retirement in
+            # one loop: a serialized target (for example, MMIO) may not accept
+            # lane 1 until lane 0's response is consumed.
+            for core in range(2):
+                bit = 1 << core
+                if pending_resp_ready & bit:
+                    completed |= bit
+                    completed_at[core] = self.cycle
+            pending_resp_ready = 0
+
+            req_ready = int(d.cpu_req_ready.value)
+            newly = offered & ~accepted & req_ready
+            for core in range(2):
+                bit = 1 << core
+                if newly & bit:
+                    accepted_at[core] = self.cycle
+                elif ((desired & bit) and not (accepted & bit) and
+                      (offered & bit)):
+                    self.request_stall_cycles[core] += 1
+            accepted |= newly
+
             valid = int(d.cpu_resp_valid.value) & desired
             seen_valid |= valid
-            response_trace.append((
-                self.cycle, valid, int(d.cpu_resp_ready.value),
-                int(d.cpu_resp_addr.value), int(d.cpu_resp_write.value),
-            ))
+            response_trace.append((self.cycle, valid,
+                                   int(d.cpu_resp_ready.value),
+                                   int(d.cpu_resp_addr.value),
+                                   int(d.cpu_resp_write.value)))
             if len(response_trace) > 16:
                 response_trace.pop(0)
             ready_mask = 0
@@ -132,14 +122,14 @@ class DualCoreCpuDriver:
             packed_addr = int(d.cpu_resp_addr.value)
             packed_write = int(d.cpu_resp_write.value)
             for core in held_payload:
-                if ((latched & (1 << core)) == 0 and
-                        not (valid & (1 << core))):
+                if not (valid & (1 << core)):
                     raise AssertionError(
                         f"core{core} response valid dropped while ready was low"
                     )
             for core, req in enumerate(reqs):
                 bit = 1 << core
-                if not req or not (valid & bit) or (latched & bit):
+                if (not req or not (accepted & bit) or not (valid & bit) or
+                        (completed & bit) or (pending_resp_ready & bit)):
                     continue
                 got_addr = (packed_addr >> (32 * core)) & 0xFFFFFFFF
                 got_write = (packed_write >> core) & 1
@@ -164,37 +154,51 @@ class DualCoreCpuDriver:
                     if stall_remaining[core] > 0:
                         continue
                 results[core] = got_data
-                completed_at[core] = self.cycle
-                latency = self.cycle - accepted_at[core]
-                self.latencies[core].append(latency)
-                self.transactions.append({
-                    "accepted_cycle": accepted_at[core],
-                    "response_cycle": self.cycle,
-                    "latency_cycles": latency,
-                    "core": core,
-                    "addr": req.addr & 0xFFFFFFFF,
-                    "write": int(req.write),
-                    "mask": req.mask & 0xFF,
-                    "data": got_data,
-                })
                 ready_mask |= bit
                 held_payload.pop(core, None)
                 stall_remaining.pop(core, None)
-            latched |= ready_mask
+            pending_resp_ready = ready_mask
+
+            next_cycle = _ + 1
+            offered = sum(1 << core for core, req in enumerate(reqs)
+                          if req is not None and not (accepted & (1 << core))
+                          and delays[core] <= next_cycle)
+            self.last_pair_accepted_at = dict(accepted_at)
+            d.cpu_req_valid.value = offered
             d.cpu_resp_ready.value = ready_mask
-            if latched == desired:
-                await ClockCycles(d, 1)
-                self.cycle += 1
+            if accepted == desired and completed == desired:
+                d.cpu_req_valid.value = 0
                 d.cpu_resp_ready.value = 0
+                self.last_pair_accepted_at = dict(accepted_at)
                 self.last_pair_completed_at = dict(completed_at)
+                for core, req in enumerate(reqs):
+                    if req is None:
+                        continue
+                    latency = completed_at[core] - accepted_at[core]
+                    self.latencies[core].append(latency)
+                    self.transactions.append({
+                        "accepted_cycle": accepted_at[core],
+                        "response_cycle": completed_at[core],
+                        "latency_cycles": latency,
+                        "core": core,
+                        "request_group": request_group,
+                        "addr": req.addr & 0xFFFFFFFF,
+                        "write": int(req.write),
+                        "write_data": req.data & ((1 << 64) - 1),
+                        "mask": req.mask & 0xFF,
+                        "response_data": results[core],
+                        "response_stall_cycles": response_stall_cycles,
+                        "request_delay_cycles": delays[core],
+                    })
                 return tuple(results)
         d.cpu_resp_ready.value = 0
+        d.cpu_req_valid.value = 0
         raise TimeoutError(
             f"CPU response timeout for mask={desired:02b}; valid="
             f"{int(d.cpu_resp_valid.value):02b} accepted={accepted:02b} "
-            f"latched={latched:02b} seen={seen_valid:02b} "
+            f"completed={completed:02b} seen={seen_valid:02b} "
             f"protocol_error={int(d.protocol_error.value)} "
-            f"trace={response_trace} early_responses={request_phase_responses}"
+            f"trace={response_trace}"
         )
 
     async def access(self, core: int, addr: int, *, write: bool = False,

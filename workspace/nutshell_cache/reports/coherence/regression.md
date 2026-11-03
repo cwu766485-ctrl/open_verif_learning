@@ -1,7 +1,7 @@
 # Dual-L1 MESI Regression Report
 
 - **Status:** PASS
-- **PASS markers:** 197
+- **PASS markers:** 198
 - **Functional coverage:** 38/38 (100.0%)
 - **Code line coverage:** 1596/1754 (91.0%)
 - **Documented waivers:** 0

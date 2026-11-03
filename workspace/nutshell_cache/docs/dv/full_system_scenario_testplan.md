@@ -1,0 +1,71 @@
+# Full-System Scenario Testplan
+
+Status is about evidence at the integrated `CoherentCacheAxiSubsystem` top:
+
+- **Verified**: this system-level scenario ran and its listed checker passed.
+- **Partial**: part of the scenario ran, but a required dimension or checker is
+  still missing.
+- **Open**: no integrated-top test is claimed. Separate Block/Formal evidence
+  does not silently close a system-level scenario.
+
+The scenario IDs follow the full-system DV plan. A coverage ID is credited only
+when the test observes the DUT event and its checker passes. Existing coverage
+IDs are retained. The ten legal MESI transition bins are all marked required;
+the six transitions missing from the earlier integrated slice are now sampled
+only after the independent model, observed L1 metadata commit, and CPU
+transaction checker agree.
+
+| ID | Scenario / Feature | Sequence or testcase | Checker / observed evidence | Coverage IDs | Status and remaining gap |
+| --- | --- | --- | --- | --- | --- |
+| SC01 | Cold read/write; I→E, I→M; AXI refill | `test_dual_core_coherence_uses_axi_backing_memory`; `test_cold_store_silent_upgrade_and_remote_getm`; coverage-guided MESI prelude | AXI eight-beat refill, CPU data, observed GetM for a cold store, and I→E/I→M commits checked against the independent model | `FS.MESI.I_TO_E`, `FS.MESI.I_TO_M`, `FS.AXI.READ_BURST` | Verified for cold read and direct cold store |
+| SC02 | Local hit/store; E→M/M write; byte mask | `test_cold_store_silent_upgrade_and_remote_getm`; `test_seeded_full_system_coherence` | E→M metadata commit and masked architectural data checked after completed CPU writes | `FS.MESI.E_TO_M`; CPU read/write bins | Verified for E→M and byte-mask data behavior; no dedicated latency bin |
+| SC03 | Shared read; E/M→S and SnoopRead | `test_dual_core_coherence_uses_axi_backing_memory`; `test_cold_store_silent_upgrade_and_remote_getm` | Latest owner data, snoop observation, and both L1 commits compared with independent model | `FS.MESI.E_TO_S`, `FS.MESI.M_TO_S`, `FS.MESI.I_TO_S` | Verified for directed E/M sharing paths |
+| SC04 | Shared upgrade; S→M and SnoopInvalidate | `test_cold_store_silent_upgrade_and_remote_getm`; random owner prelude | S→M requester commit and S→I peer invalidation commit checked after the CPU transaction completes | `FS.MESI.S_TO_M`, `FS.MESI.S_TO_I` | Verified for exercised upgrade paths |
+| SC05 | Remote write / GetM from a remote owner | `test_cold_store_silent_upgrade_and_remote_getm`; coverage-guided MESI prelude | Directory GetM acceptance is observed; former E/M owner commit to I and new M owner state are checked against the independent model | `FS.MESI.E_TO_I`, `FS.MESI.M_TO_I`, `FS.MESI.I_TO_M` | Verified for E and M remote-owner transfers |
+| SC06 | Same-line and same-address dual-core conflict / serialization | `test_same_line_dual_core_store_ordering_and_data`; `test_same_address_dual_core_store_serialization` | Same-line distinct-word stores are both read back; exact same-address stores advance the independent model in observed Directory acceptance order and check the final value against the last accepted writer | `FS.CONCURRENCY.SAME_LINE_DUAL_STORE`, `FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE` | Verified for paired writes on this two-lane blocking interface |
+| SC07 | Same-set replacement conflict | `test_apb_counters_writeback_and_reset_semantics`; `test_l1_replacement_putm_races_remote_snoop`; `test_live_l2_victim_back_invalidates_resident_l1` | Ten dirty addresses mapping to one L2 set force repeated L2 writeback; a fifth same-L1-set request forces a dirty L1 victim; a selected live L2 victim is checked for Core0 back-invalidation and subsequent refill | `FS.RACE.REPLACEMENT_PUTM_SNOOP`, `FS.AXI.WRITE_SERIALIZED`, `FS.L2.LIVE_VICTIM_SNOOP` | Verified for dirty L1/L2 replacement and inclusive back-invalidation of a resident clean sharer |
+| SC08 | Different-set parallel misses / context progress | `test_dual_cold_misses_overlap_and_route_axi_responses`; scheduler target `SC08_SC14_DUAL_COLD_MISS_OOO` | Two AR IDs, peak two active refill MSHRs, reverse completion order and both returned data checked | `FS.MSHR.OCCUPANCY_2` | Verified for two simultaneous contexts; not four-context CPU traffic |
+| SC09 | Dirty L1 eviction / PutM / owner data | `test_l1_replacement_putm_races_remote_snoop`; `test_apb_counters_writeback_and_reset_semantics` | Forced same-set replacement observes PutM, checks remote owner data, and checks dirty victim contents after backing-memory writeback | `FS.RACE.REPLACEMENT_PUTM_SNOOP`, `FS.AXI.WRITE_SERIALIZED` | Verified for dirty L1 victim and memory preservation |
+| SC10 | Dirty/shared L2 victim / inclusive eviction | `test_apb_counters_writeback_and_reset_semantics`; `test_live_l2_victim_back_invalidates_resident_l1` | Dirty victims are checked through full AXI writeback and backing-memory data; a separate clean/shared victim is selected while still resident in Core0 L1, then snoop acceptance, L1 I commit, and a later Core0 AXI refill/data are checked | `FS.AXI.WRITE_SERIALIZED`, `FS.APB.COUNTER_WRITEBACK_RESET`, `FS.L2.LIVE_VICTIM_SNOOP` | Verified for dirty writeback and live inclusive back-invalidation; the resident-sharer case is clean, while dirty writeback is checked separately |
+| SC11 | Snoop + Put race | `test_l1_replacement_putm_races_remote_snoop` | Concurrent peer GetS and owner same-set replacement observe PutM and Snoop accept/response in the same window; both CPU data results are checked | `FS.RACE.REPLACEMENT_PUTM_SNOOP` | Verified for dirty L1 replacement/Snoop race |
+| SC12 | Owner Snoop concurrent with refill | `test_owner_snoop_overlaps_independent_memory_refill` | Core0 starts a delayed cold-line refill; Core1 then reads a different Core0-owned M line. The checker requires the cold-line AXI AR to remain outstanding through accepted owner Snoop/response, at least two active Directory contexts, both correct CPU values, and no protocol error | `FS.CONCURRENCY.SNOOP_WITH_REFILL` | Verified for the legal cross-line Snoop/refill overlap. An external-memory refill of the same line while an M owner exists is not a legal data-source path: the owner must supply the latest line |
+| SC13 | AXI AR/R/AW/W/B stalls | Integrated refill, dirty writeback and error/reset tests; standalone AXI Adapter Python/Block tests | Integrated top checks AW and W source-side stalls, dirty AW/W/B lifecycle, BRESP error and reset cancellation; standalone adapter checks four IDs, out-of-order B and all five AXI channel stalls. Integrated top ties RREADY and BREADY high, so receiver-side R/B stalls are not reachable there | `FS.AXI.WRITE_SERIALIZED`, `FS.AXI.BRESP_ERROR`, `FS.AXI.WRITE_RESET_CANCEL` | Verified for reachable top-level paths plus adapter channel stress; integrated R/B receiver backpressure is explicitly out of scope |
+| SC14 | AXI response reordering by ID | `test_dual_cold_misses_overlap_and_route_axi_responses`; `tests/axi/test_axi4_adapter_python.py::test_axi4_four_outstanding_bursts_id_ordering_and_backpressure`; integrated dirty writeback test | Integrated reads complete out of order across two IDs; integrated line engine writebacks serialize AW/W/B and check ID/address/beat association; adapter independently returns four write responses out of order | `FS.AXI.READ_OUT_OF_ORDER`, `FS.AXI.WRITE_SERIALIZED` | Verified at the adapter for write OoO and at the integrated top for its serialized write contract; no integrated B OoO is claimed |
+| SC15 | Dual-core MMIO arbitration | `test_mmio_slave_byte_mask_and_apb_readonly_csr` | Paired distinct-address requests, request/response completion and register readbacks checked | `FS.MMIO.CORE_ARBITRATION`; optional `FS.CROSS.MMIO_TWO_CORE_ARB` | Verified for distinct-address pair; same-address arbitration is not tested |
+| SC16 | MMIO + cache miss overlap | `test_mmio_request_overlaps_other_core_cache_miss`; cross-agent directed test | MMIO and cache data checked independently; observed event ordering confirms overlapping lifecycles | `FS.MMIO.CACHE_CONCURRENT`, `FS.CROSS.MMIO_WITH_CACHE_TRAFFIC` | Verified |
+| SC17 | APB read while AXI refill is outstanding and CSR event/reset semantics | `test_mmio_request_overlaps_other_core_cache_miss`; `test_mmio_read_cache_miss_and_apb_miss_counter_overlap`; `test_apb_counters_writeback_and_reset_semantics`; `test_axi_bresp_error_fails_stop_on_dirty_victim_writeback` | APB overlap checks Miss count; event test checks exact Hit/Miss/Snoop/Completed deltas, positive access-cycle accumulation, dirty-writeback delta against accepted AXI writes, error status, and reset-to-zero for all CSR offsets | `FS.APB.READ_DURING_AXI`, `FS.APB.COUNTER_WRITEBACK_RESET`, `FS.CROSS.APB_WITH_AXI_TRAFFIC`, `FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER`, `FS.CROSS.MMIO_READ_CACHE_MISS_APB` | Verified for event, error and reset semantics; 32-bit counter wrap/saturation is not tested |
+| SC18 | CPU response backpressure/stability | Seeded random tests and directed full-system CPU driver | Driver holds response ready low and checks response valid/payload stability until handshake | CPU read/write bins | Partial: no dedicated Required stall bin or stall-duration cross |
+| SC19 | Reset during active transaction; no stale response | Existing read/MMIO reset tests; `test_reset_cancels_integrated_axi_writeback_before_b`; APB counter reset test | Outstanding AXI read, MMIO response, dirty writeback and CSR counters are checked across reset; monitor epoch/cancel records and absence of stale response/completion checked | `FS.AXI.RESET_CANCEL`, `FS.AXI.WRITE_RESET_CANCEL`, `FS.MMIO.RESET_CANCEL`, `FS.APB.COUNTER_WRITEBACK_RESET`, `FS.CROSS.RESET_WITH_OUTSTANDING` | Verified for these transaction/reset points; exhaustive reset phase × channel matrix remains open |
+| SC20 | AXI error and fail-stop | `test_axi_read_error_fails_stop_without_success_response`; `test_axi_bresp_error_fails_stop_on_dirty_victim_writeback` | Injected RRESP and BRESP errors are correlated to transactions; fail-stop/error status asserted and no successful CPU response is allowed | `FS.AXI.ERROR_RESPONSE`, `FS.AXI.BRESP_ERROR` | Verified for integrated read and write response errors |
+| SC21 | CPU0 + CPU1 + MMIO + AXI + APB lifecycle overlap | `test_mmio_read_cache_miss_and_apb_miss_counter_overlap` | Both CPU lanes, delayed MMIO response, accepted AXI refill/eight R beats and APB read are observed in one run with cycle-order checks and independent data/counter checks | `FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER`, `FS.CROSS.MMIO_READ_CACHE_MISS_APB` | Verified; R channel uses legal source `RVALID` gaps, not receiver backpressure |
+| SC22 | Sustained mixed traffic | Default 10×100 and extended 20×500 seeded random tests | Data/coherence checker runs over CPU reads/writes, masks, pairs and response stalls; 20×500 passed | CPU and selected MESI bins | Partial: long run does not sustain randomized MMIO/APB/error traffic or all channel interactions |
+| SC23 | Seeded four-agent CPU/MMIO/APB/AXI overlap | `test_seeded_cpu_mmio_apb_axi_overlap` (4 seeds × 6 operations) | Independent cache and MMIO reference checks, exact APB Miss counter, AXI ID/beat/data validation, observed MESI commits and MSHR/L2 events; checks MMIO accept < AXI AR < APB completion < final R beat < MMIO completion | `FS.STRESS.MIXED_CPU_MMIO_APB_AXI`, `FS.CROSS.MIXED_CPU_MMIO_APB_AXI`, `FS.APB.READ_DURING_AXI`, `FS.CROSS.APB_WITH_AXI_TRAFFIC` | Verified for the tested seed/operation set. CPU lane, read/write, byte mask, and response hold vary by seed; ARREADY stalls and source-side RVALID gaps are injected. Does not claim randomized reset or receiver-side AXI R backpressure |
+| SC24 | Resource-aware same-set and distinct-set Snoop/refill timing | `test_seeded_same_and_distinct_l2_set_snoop_refill` (4 seeds; both set relations) | Independent returned-data checks; checks CPU request acceptance during refill, Directory/Snoop acceptance relative to refill end, all eight owner-data beats, M→S commit and no protocol error. Does not use the unqualified `same_set_conflict` probe as proof | `FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET`, `FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET`; matching required crosses | Verified for tested seed/address set. Same-set requests enter Directory after refill retirement; distinct-set Snoop completes during refill. This is a bounded resource-aware experiment, not exhaustive set/way coverage |
+
+## Current run commands
+
+```bash
+source scripts/env.sh
+make COHERENCE_JOBS=2 coherence_verify
+make coherence_full_system_coverage
+FULL_SYSTEM_RANDOM_SEED_COUNT=20 FULL_SYSTEM_RANDOM_OPERATIONS=500 \
+FULL_SYSTEM_RANDOM_BASE_SEED=0x57E55 \
+PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -q \
+  tests/full_system/test_full_system_random.py
+```
+
+The full-system coverage closure is scoped to Required entries marked
+`implemented` in `dv/coverage/full_system_coverage_plan.json`; it is not full
+SC01–SC24 closure and is not RTL source coverage. The integrated functional
+closure includes checked state-aware transitions, seeded mixed-agent timing,
+and the bounded resource-aware same/distinct-set experiment. The four-context MSHR
+and four-ID write-response reordering claims remain at their independent
+block/adapter scopes as described above; these totals do not imply four
+concurrent CPU misses or integrated B reordering.
+The default suite skips the saved-trace replay test when no replay trace is
+provided; run `make coherence_full_system_replay_trace` separately to exercise
+that path.
+
+The complete evidence snapshot and unresolved scope are in
+[`full_system_verification_results.md`](full_system_verification_results.md)
+and `reports/full_system/`.

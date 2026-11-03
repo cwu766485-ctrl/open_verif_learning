@@ -23,9 +23,10 @@ Context allocation/completion; Directory request/transfer/grant; shared L2 looku
 | Directory MSHR concurrency | A replacement Put bypasses its same-line context only when that context is stalled Snoop-targeting the Put source | `DirectoryMshrBank_tb` directed checks and its `checker=PASS` COV_EVENT | `mshr_bank.stalled_snoop_target_put` |
 | Directory MSHR concurrency | A context blocked on snoop does not prevent other contexts from progressing | `DirectoryMshrBank_tb` directed checks and its `checker=PASS` COV_EVENT | `mshr_bank.snoop_independence` |
 | Directory MSHR concurrency | Reset cancels four active Directory contexts without residual completion | `DirectoryMshrBank_tb` directed checks and its `checker=PASS` COV_EVENT | `mshr_bank.reset_cancel` |
+| Directory MSHR output stability | Refill-start address, transaction ID, context, source and transfer kind remain stable for five cycles while `ready=0`; transaction then completes once | `xfer_start_backpressure.svh` checks every payload field, final write, grant and absence of protocol error | Dedicated block testcase; no new Functional/Cross Bin ID |
 
 ## Coverage ownership and gaps
 
 - These eight existing IDs are emitted by the MSHR block bench and are checked by `dv/coverage/coherence_closure.py`; IDs and expected meanings are unchanged.
 - **Remaining gaps:** the bench is directed and finite. It does not establish unconstrained liveness, all allocation/response permutations, arbitrary long backpressure, nor complete MSHR data-path behavior. Those remain covered only to the extent stated by existing subsystem/formal targets.
-- This move does not add coverage or claim new closure.
+- The refill-start backpressure test supplements the existing two-cycle Directory-write and Grant stalls. It does not claim exhaustive Ready/Valid timing closure or change the existing coverage-bin map.

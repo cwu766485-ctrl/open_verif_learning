@@ -1,0 +1,2641 @@
+{
+  "schema_version": 1,
+  "scope": "implemented Required bins in the integrated-top sign-off slice",
+  "dut": "CoherentCacheAxiSubsystem",
+  "testcase_exit_status": 0,
+  "required_bins": {
+    "FS.CPU.READ.CORE0": 408,
+    "FS.CPU.READ.CORE1": 419,
+    "FS.CPU.WRITE.CORE0": 297,
+    "FS.CPU.WRITE.CORE1": 274,
+    "FS.MESI.I_TO_E": 132,
+    "FS.MESI.I_TO_S": 243,
+    "FS.MESI.S_TO_M": 185,
+    "FS.MESI.M_TO_S": 203,
+    "FS.AXI.READ_BURST": 1,
+    "FS.AXI.READ_OUT_OF_ORDER": 11,
+    "FS.MSHR.OCCUPANCY_2": 11,
+    "FS.MMIO.BYTE_MASK": 1,
+    "FS.APB.READONLY_ERROR": 1,
+    "FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER": 1,
+    "FS.MMIO.CORE_ARBITRATION": 1,
+    "FS.MMIO.CACHE_CONCURRENT": 1,
+    "FS.APB.READ_DURING_AXI": 25,
+    "FS.AXI.RESET_CANCEL": 1,
+    "FS.AXI.ERROR_RESPONSE": 1,
+    "FS.MMIO.RESET_CANCEL": 1,
+    "FS.MESI.I_TO_M": 238,
+    "FS.MESI.E_TO_M": 30,
+    "FS.MESI.E_TO_S": 40,
+    "FS.MESI.E_TO_I": 32,
+    "FS.MESI.S_TO_I": 185,
+    "FS.MESI.M_TO_I": 136,
+    "FS.CONCURRENCY.SAME_LINE_DUAL_STORE": 1,
+    "FS.RACE.REPLACEMENT_PUTM_SNOOP": 1,
+    "FS.APB.COUNTER_WRITEBACK_RESET": 1,
+    "FS.AXI.WRITE_SERIALIZED": 1,
+    "FS.AXI.BRESP_ERROR": 1,
+    "FS.AXI.WRITE_RESET_CANCEL": 1,
+    "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1,
+    "FS.L2.LIVE_VICTIM_SNOOP": 1,
+    "FS.CONCURRENCY.SNOOP_WITH_REFILL": 1,
+    "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 24,
+    "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET": 2,
+    "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 2
+  },
+  "required_cross_bins": {
+    "FS.CROSS.CORE0.READ": 408,
+    "FS.CROSS.CORE1.READ": 419,
+    "FS.CROSS.CORE1.WRITE": 274,
+    "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
+    "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
+    "FS.CROSS.MMIO_READ_CACHE_MISS_APB": 1,
+    "FS.CROSS.RESET_WITH_OUTSTANDING": 2,
+    "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 24,
+    "FS.CROSS.SNOOP_REFILL_SAME_L2_SET": 2,
+    "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 2
+  },
+  "required_bins_passed": 38,
+  "required_bins_total": 38,
+  "required_cross_bins_passed": 10,
+  "required_cross_bins_total": 10,
+  "missing_bins": [],
+  "missing_cross_bins": [],
+  "bin_evidence": [
+    {
+      "id": "FS.CPU.READ.CORE0",
+      "classification": "required_legal",
+      "feature": "CPU read on core 0",
+      "legal_preconditions": "Cacheable aligned 64-bit word; CPU request accepted and response completed.",
+      "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 0.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
+      "hit_count": 408,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 40
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 32
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 54
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 37
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 38
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 35
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 33
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 38
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 39
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CPU.READ.CORE1",
+      "classification": "required_legal",
+      "feature": "CPU read on core 1",
+      "legal_preconditions": "Cacheable aligned 64-bit word; CPU request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random read operations.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 1.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
+      "hit_count": 419,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 32
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 43
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 31
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 37
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 47
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 40
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 41
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 39
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CPU.WRITE.CORE0",
+      "classification": "required_legal",
+      "feature": "CPU write on core 0",
+      "legal_preconditions": "Cacheable word; nonzero legal byte mask; request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 0.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
+      "hit_count": 297,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 31
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 27
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 24
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 26
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 28
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_owner_snoop_overlaps_independent_memory_refill",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_cancels_integrated_axi_writeback_before_b",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CPU.WRITE.CORE1",
+      "classification": "required_legal",
+      "feature": "CPU write on core 1",
+      "legal_preconditions": "Cacheable word; nonzero legal byte mask; request accepted and response completed.",
+      "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
+      "required_monitor_event": "CPU request_accept and response_complete for core 1.",
+      "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
+      "hit_count": 274,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 33
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 29
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 28
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 19
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 30
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 27
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.I_TO_E",
+      "classification": "required_legal",
+      "feature": "MESI I to E",
+      "legal_preconditions": "Line is absent from both L1s and a core issues GetS without a peer copy.",
+      "stimulus_strategy": "Cold read from core 0.",
+      "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
+      "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
+      "hit_count": 132,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 9
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 12
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 9
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.I_TO_S",
+      "classification": "required_legal",
+      "feature": "MESI I to S",
+      "legal_preconditions": "Line is absent from requester L1 and present in peer L1 in a shareable state.",
+      "stimulus_strategy": "Core 0 cold read followed by core 1 read of the same line.",
+      "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
+      "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
+      "hit_count": 243,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 19
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 27
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 26
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 26
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 26
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 17
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.S_TO_M",
+      "classification": "required_legal",
+      "feature": "MESI S to M",
+      "legal_preconditions": "Both L1s hold a shared copy and one core issues a write.",
+      "stimulus_strategy": "Core 1 store after both cores read the line.",
+      "required_monitor_event": "L1 metadata_commit observed for writer and peer invalidation/downgrade.",
+      "checker": "Independent CoherenceScoreboard predicts both cores' states and checks observed metadata commits.",
+      "hit_count": 185,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 16
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 18
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 12
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 20
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.M_TO_S",
+      "classification": "required_legal",
+      "feature": "MESI M to S",
+      "legal_preconditions": "Peer requests shared access to a line modified by the current owner.",
+      "stimulus_strategy": "Core 1 writes then core 0 reads the same line.",
+      "required_monitor_event": "Owner snoop response and L1 metadata_commit for owner downgrade.",
+      "checker": "Independent CoherenceScoreboard checks returned latest data and observed metadata commit.",
+      "hit_count": 203,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 16
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 17
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 17
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 13
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.READ_BURST",
+      "classification": "required_legal",
+      "feature": "AXI read refill burst",
+      "legal_preconditions": "Cacheable cold miss reaches AXI; 64-byte line is returned as eight 64-bit beats.",
+      "stimulus_strategy": "Directed cold miss with initialized backing memory.",
+      "required_monitor_event": "Accepted AR and eight accepted R beats ending with RLAST.",
+      "checker": "Axi4BackingMemoryAgent checks ID, address, burst shape, beat order, data, and RLAST; CPU data checked by reference model.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.READ_OUT_OF_ORDER",
+      "classification": "required_legal",
+      "feature": "Out-of-order AXI read completion across IDs",
+      "legal_preconditions": "Two different cache lines miss concurrently and obtain distinct accepted AXI IDs.",
+      "stimulus_strategy": "Paired distinct-line CPU cold misses; memory reorder window delays earlier request.",
+      "required_monitor_event": "Two accepted AR IDs and R completion order reversed from AR acceptance order.",
+      "checker": "AXI ID/beat scoreboard checks response routing and CPU data; test asserts completion order.",
+      "hit_count": 11,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MSHR.OCCUPANCY_2",
+      "classification": "required_legal",
+      "feature": "Two overlapping refill MSHRs",
+      "legal_preconditions": "Two distinct set/line misses can allocate separate refill contexts.",
+      "stimulus_strategy": "Paired CPU cold misses with delayed memory response.",
+      "required_monitor_event": "Observed refill MSHR valid bitmap has population count two.",
+      "checker": "Passive occupancy monitor plus AXI transaction/CPU data scoreboard.",
+      "hit_count": 11,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MMIO.BYTE_MASK",
+      "classification": "required_legal",
+      "feature": "MMIO byte-masked write/readback",
+      "legal_preconditions": "CPU accesses a mapped MMIO register with a supported transfer size and nonzero byte mask.",
+      "stimulus_strategy": "Write lower bytes, then read back through the other core.",
+      "required_monitor_event": "MMIO request_accept and response_complete with matching address/mask.",
+      "checker": "Independent MMIO register model checks masked merge and returned read data.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_slave_byte_mask_and_apb_readonly_csr",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.APB.READONLY_ERROR",
+      "classification": "required_negative",
+      "feature": "APB read-only and unmapped access errors",
+      "legal_preconditions": "Negative accesses are deliberately issued only to read-only CSR and unmapped APB offset.",
+      "stimulus_strategy": "APB CSR read, attempted write to read-only counter, and bad-address access.",
+      "required_monitor_event": "APB access_complete with PSLVERR for both invalid operations.",
+      "checker": "ApbMasterAgent bounds access and checks PSLVERR response.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_slave_byte_mask_and_apb_readonly_csr",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER",
+      "classification": "required_legal",
+      "feature": "Concurrent MMIO read, cache miss refill, and APB miss-counter read",
+      "legal_preconditions": "CPU0 MMIO read response is delayed while CPU1 has an accepted cache miss and an AXI refill with source-side RVALID gaps. The integrated top holds RREADY high outside reset, so this is not receiver backpressure.",
+      "stimulus_strategy": "Launch both CPU lanes together, wait for accepted AR, then read the APB miss counter before the final R beat and before the MMIO response; inject legal gaps between R beats.",
+      "required_monitor_event": "MMIO request/response, CPU request/response, AXI AR/eight R beats, and APB access are correlated by address and cycle ordering.",
+      "checker": "CPU driver lifecycle; independent cache reference data; MMIO register model; AXI ID/beat/data checker and RVALID-gap count; APB counter value; monitor cycle-overlap assertions; no MMIO L1/Directory allocation.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MMIO.CORE_ARBITRATION",
+      "classification": "required_legal",
+      "feature": "Dual-core MMIO request arbitration",
+      "legal_preconditions": "Both cores issue requests to distinct mapped MMIO addresses.",
+      "stimulus_strategy": "Paired masked writes followed by independent readbacks.",
+      "required_monitor_event": "Both MMIO request_accept/response_complete events observed at their expected addresses.",
+      "checker": "Packed CPU driver checks lane lifecycle; MMIO model checks masked register values and both readbacks.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_slave_byte_mask_and_apb_readonly_csr",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MMIO.CACHE_CONCURRENT",
+      "classification": "required_legal",
+      "feature": "MMIO bypass during peer cache miss",
+      "legal_preconditions": "One core issues mapped MMIO access while the other issues a cacheable cold miss.",
+      "stimulus_strategy": "Paired MMIO write and cacheable read with delayed AXI memory.",
+      "required_monitor_event": "MMIO handshake and AXI AR overlap in the same test window.",
+      "checker": "MMIO reference model and cache scoreboard independently check both responses.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.APB.READ_DURING_AXI",
+      "classification": "required_legal",
+      "feature": "APB CSR read during AXI refill",
+      "legal_preconditions": "A cacheable refill is outstanding while an APB CSR read is issued.",
+      "stimulus_strategy": "Wait for accepted AXI AR, then read access-cycle CSR before refill completes.",
+      "required_monitor_event": "AXI read context active and APB access_complete observed.",
+      "checker": "APB master checks bounded completion; AXI agent tracks outstanding refill lifecycle.",
+      "hit_count": 25,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.RESET_CANCEL",
+      "classification": "required_legal",
+      "feature": "Reset cancels AXI read and allows ID reuse",
+      "legal_preconditions": "Delayed AXI read is outstanding when reset is asserted.",
+      "stimulus_strategy": "Start cold miss, assert reset before R completion, then repeat miss.",
+      "required_monitor_event": "System reset_cancel and a later AR reusing the cancelled ID.",
+      "checker": "AXI agent verifies cancellation/ID reuse; CPU scoreboard checks fresh returned data and no stale response.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.ERROR_RESPONSE",
+      "classification": "required_negative",
+      "feature": "AXI read response error fail-stop",
+      "legal_preconditions": "Fault injection returns non-OK RRESP for a selected cache line.",
+      "stimulus_strategy": "Inject RRESP error during cold refill.",
+      "required_monitor_event": "Accepted R beat with error response and DUT fatal_error assertion.",
+      "checker": "Test checks fail-stop, absence of CPU success response, and agent error record.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_axi_read_error_fails_stop_without_success_response",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MMIO.RESET_CANCEL",
+      "classification": "required_legal",
+      "feature": "Reset cancels delayed MMIO response",
+      "legal_preconditions": "MMIO request is accepted but its response is delayed when reset is asserted.",
+      "stimulus_strategy": "Issue mapped MMIO read with long response delay, reset, then retry.",
+      "required_monitor_event": "Reset cancellation and absence of stale MMIO/CPU response.",
+      "checker": "MMIO agent tracks pending request cancellation and checks fresh retry completion.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_pending_mmio_response",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.I_TO_M",
+      "classification": "required_legal",
+      "feature": "MESI I to M",
+      "legal_preconditions": "Line absent from both L1s; core issues a cacheable store.",
+      "stimulus_strategy": "Cold CPU store obtains writable ownership.",
+      "required_monitor_event": "Directory GetM acceptance and requester L1 metadata commit to M.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 238,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 24
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 19
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 13
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_owner_snoop_overlaps_independent_memory_refill",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_cancels_integrated_axi_writeback_before_b",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.E_TO_M",
+      "classification": "required_legal",
+      "feature": "MESI E to M",
+      "legal_preconditions": "Requester holds a clean exclusive line.",
+      "stimulus_strategy": "Local store to an E line.",
+      "required_monitor_event": "L1 metadata commit E->M after completed CPU store.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 30,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 3
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.E_TO_S",
+      "classification": "required_legal",
+      "feature": "MESI E to S",
+      "legal_preconditions": "Peer holds E and other core issues GetS.",
+      "stimulus_strategy": "Read same line from the other CPU.",
+      "required_monitor_event": "Owner snoop/read response and both L1 metadata commits to S.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 40,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.E_TO_I",
+      "classification": "required_legal",
+      "feature": "MESI E to I",
+      "legal_preconditions": "Peer holds E and other core issues GetM.",
+      "stimulus_strategy": "Remote CPU store to same line.",
+      "required_monitor_event": "Observed GetM, owner invalidation commit and requester commit to M.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 32,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 5
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.S_TO_I",
+      "classification": "required_legal",
+      "feature": "MESI S to I",
+      "legal_preconditions": "Both cores hold S and one core upgrades to M.",
+      "stimulus_strategy": "Store by one sharer.",
+      "required_monitor_event": "Observed snoop invalidate and peer metadata commit to I.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 185,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 16
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 21
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 22
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 18
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 12
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 20
+        }
+      ]
+    },
+    {
+      "id": "FS.MESI.M_TO_I",
+      "classification": "required_legal",
+      "feature": "MESI M to I",
+      "legal_preconditions": "One core holds M and peer issues GetM.",
+      "stimulus_strategy": "Remote CPU store by the other core.",
+      "required_monitor_event": "Observed GetM and former owner metadata commit to I.",
+      "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
+      "hit_count": 136,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 19
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 13
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 15
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 9
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 16
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 17
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 17
+        }
+      ]
+    },
+    {
+      "id": "FS.CONCURRENCY.SAME_LINE_DUAL_STORE",
+      "classification": "required_legal",
+      "feature": "Concurrent same-line stores from both cores",
+      "legal_preconditions": "Both blocking CPU lanes offer writes to distinct words in the same cache line; writes are accepted and completed.",
+      "stimulus_strategy": "Simultaneous paired stores followed by independent readbacks of both words.",
+      "required_monitor_event": "Both Directory request handshakes, both CPU completions, and valid final L1 metadata commits.",
+      "checker": "Independent coherence/data reference model is advanced in observed Directory acceptance order; both architectural words are read back and checked.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.RACE.REPLACEMENT_PUTM_SNOOP",
+      "classification": "required_legal",
+      "feature": "Dirty L1 replacement PutM concurrent with remote Snoop",
+      "legal_preconditions": "One core has a dirty line and fills its same-set L1; the peer requests the dirty line while the owner requests a replacement line.",
+      "stimulus_strategy": "Paired remote read and fifth same-set line request with both CPU lanes active.",
+      "required_monitor_event": "PutM for the victim, Snoop accept/response for that line, and both CPU completions.",
+      "checker": "CPU data is checked against seeded/dirty values; protocol error remains clear; PutM and Snoop events are checked in the same race window.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.APB.COUNTER_WRITEBACK_RESET",
+      "classification": "required_legal",
+      "feature": "APB event counters, dirty writeback accounting, and reset semantics",
+      "legal_preconditions": "Successful cold/hit/snoop accesses, same-set dirty L2 replacements, then system reset.",
+      "stimulus_strategy": "Read all CSR offsets at reset, check exact hit/miss/snoop/completion deltas, force ten dirty same-set lines, then reset and reread all CSRs.",
+      "required_monitor_event": "CPU transaction completions and AXI write handshakes/completions for dirty victims.",
+      "checker": "APB reads check exact event counts and reset-to-zero; AXI agent checks eight ordered full-strobe beats, AW/B association, serialized completion, and backing-memory writeback data.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.WRITE_SERIALIZED",
+      "classification": "required_legal",
+      "feature": "Integrated AXI dirty writeback burst lifecycle and serialization ordering",
+      "legal_preconditions": "Dirty L2 replacement produces multiple line writebacks through the shared line engine.",
+      "stimulus_strategy": "Force ten dirty lines into one L2 set and observe the resulting AXI write transactions.",
+      "required_monitor_event": "Accepted AW, eight ordered W beats, matching B completion for each victim, and peak outstanding writes of one.",
+      "checker": "AXI memory agent checks IDs, addresses, beat indices, strobes, completion association, writeback contents, and serialized address order.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.BRESP_ERROR",
+      "classification": "required_negative",
+      "feature": "Integrated AXI write response error fail-stop",
+      "legal_preconditions": "A dirty victim write receives an injected non-OKAY BRESP from the backing-memory agent.",
+      "stimulus_strategy": "Fill one L2 set with eight dirty lines, inject BRESP error on the ninth line's victim writeback.",
+      "required_monitor_event": "B error handshake for the selected victim followed by system fatal/error status and no successful CPU response.",
+      "checker": "AXI agent correlates B error to address; APB error CSR and CPU response/fatal state are checked.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.AXI.WRITE_RESET_CANCEL",
+      "classification": "required_legal",
+      "feature": "Reset cancellation of integrated AXI dirty writeback",
+      "legal_preconditions": "System reset is asserted after dirty victim AW acceptance and before B completion.",
+      "stimulus_strategy": "Delay AXI completion, trigger a ninth same-set line, then reset during the accepted write transaction.",
+      "required_monitor_event": "Reset epoch changes, agent records cancellation of an outstanding write, and no stale CPU response or write completion occurs.",
+      "checker": "AXI reset-cancellation record, monitor reset epoch, CPU response-valid, completion log, and fatal state.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_cancels_integrated_axi_writeback_before_b",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE",
+      "classification": "required_legal",
+      "feature": "Concurrent same-address writes from both cores",
+      "legal_preconditions": "Both CPU lanes offer legal full-word stores to the exact same cacheable address at the same time.",
+      "stimulus_strategy": "Paired same-address stores with distinct values, then read back the address.",
+      "required_monitor_event": "Both ownership requests accepted by the Directory and both CPU request lifecycles complete.",
+      "checker": "Independent reference model applies both stores in observed Directory acceptance order; final CPU read must equal the last accepted writer's value.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.L2.LIVE_VICTIM_SNOOP",
+      "classification": "required_legal",
+      "feature": "Inclusive L2 victim back-invalidates a resident L1 line",
+      "legal_preconditions": "A clean line remains resident in Core0 L1 while eight other lines are allocated to the same L2 set.",
+      "stimulus_strategy": "Allocate the target first from Core0, fill seven same-set tags from Core1, then allocate a ninth tag to select the target with the L2 round-robin pointer.",
+      "required_monitor_event": "Accepted L2 victim snoop for the target/Core0 and accepted L1 metadata commit to I.",
+      "checker": "Passive victim-snoop/L1-commit monitor checks back-invalidation; a direct Core0 read must issue an AXI refill and return the independently seeded value.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CONCURRENCY.SNOOP_WITH_REFILL",
+      "classification": "required_legal",
+      "feature": "Owner Snoop while an independent cache line refills",
+      "legal_preconditions": "Core0 owns a dirty line; while Core0 starts a different cold-line read, Core1 requests the dirty line and causes an owner Snoop.",
+      "stimulus_strategy": "Start a delayed cold refill on Core0 and issue the peer's owner read after the refill AR handshake.",
+      "required_monitor_event": "AXI AR for the cold line overlaps a Directory context and accepted Snoop/response for the dirty owner line.",
+      "checker": "CPU data scoreboard checks both values; passive events check AR/Snoop overlap, at least two active Directory contexts, and no protocol error.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_owner_snoop_overlaps_independent_memory_refill",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.MIXED_CPU_MMIO_APB_AXI",
+      "classification": "required_legal",
+      "feature": "Seeded mixed CPU, MMIO, APB and AXI timing traffic",
+      "legal_preconditions": "One cacheable CPU miss and one mapped MMIO request use separate CPU lanes; APB samples the miss counter during the accepted AXI refill.",
+      "stimulus_strategy": "Four fixed reproducible seeds vary CPU lane, read/write, byte mask, MMIO operation, CPU response hold, AXI ARREADY stalls and RVALID source gaps.",
+      "required_monitor_event": "CPU/MMIO handshakes, L1 and Directory commits, MSHR allocation, L2 refill, AXI AR/R and an APB access are observed in the same operation window.",
+      "checker": "Independent coherence/data model, MMIO byte-array model, APB miss-counter expectation, AXI ID/beat/data agent, and explicit cycle-order assertions all pass before credit.",
+      "hit_count": 24,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET",
+      "classification": "required_legal",
+      "feature": "Same-set Snoop request waits for active refill retirement",
+      "legal_preconditions": "A remote CPU request to an M-owned line is accepted while a distinct cold-line refill maps to the same L2 set.",
+      "stimulus_strategy": "Seeded resource-aware sequence creates M ownership, launches the refill and remote GetS concurrently, and selects same-set addresses.",
+      "required_monitor_event": "CPU request acceptance precedes refill_end; owner-line Directory request and Snoop acceptance occur after refill_end; eight owner-data beats and M-to-S commit are observed.",
+      "checker": "Independent CPU/reference data checks; owner-data beat index/last/value checks; Directory, Snoop, refill lifecycle ordering and no protocol-error checks. The unqualified internal conflict pulse is not used as evidence.",
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET",
+      "classification": "required_legal",
+      "feature": "Distinct-set owner Snoop progresses during an active refill",
+      "legal_preconditions": "A remote CPU request to an M-owned line is accepted while a distinct cold-line refill maps to another L2 set.",
+      "stimulus_strategy": "Seeded resource-aware sequence creates M ownership, launches the refill and remote GetS concurrently, and selects distinct-set addresses.",
+      "required_monitor_event": "Owner-line Directory request, Snoop acceptance/response, owner-data beats and M-to-S commit occur before refill_end.",
+      "checker": "Independent CPU/reference data checks; owner-data beat index/last/value checks; Directory, Snoop, refill lifecycle ordering and no protocol-error checks.",
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "cross_evidence": [
+    {
+      "id": "FS.CROSS.CORE0.READ",
+      "classification": "required_legal",
+      "legal_preconditions": "Core 0 read request completes with passing data checker.",
+      "stimulus_strategy": "Directed and random CPU read.",
+      "checker": "CPU handshake lifecycle and independent read-data model.",
+      "hit_count": 408,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 40
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 32
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 54
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 37
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 38
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 35
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 33
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 38
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 39
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.CORE1.READ",
+      "classification": "required_legal",
+      "legal_preconditions": "Core 1 read request completes with passing data checker.",
+      "stimulus_strategy": "Directed and random CPU read.",
+      "checker": "CPU handshake lifecycle and independent read-data model.",
+      "hit_count": 419,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 32
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 43
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 31
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 37
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 47
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 40
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 41
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 39
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 36
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_line_dual_core_store_ordering_and_data",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.CORE1.WRITE",
+      "classification": "required_legal",
+      "legal_preconditions": "Core 1 write request completes with a legal byte mask.",
+      "stimulus_strategy": "Directed and random CPU write.",
+      "checker": "CPU lifecycle checker and reference byte-mask state update.",
+      "hit_count": 274,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_core_coherence_uses_axi_backing_memory",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_cold_store_silent_upgrade_and_remote_getm",
+          "seed": null,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[659918]",
+          "seed": 659918,
+          "count": 33
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2655095687]",
+          "seed": 2655095687,
+          "count": 29
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309531456]",
+          "seed": 5309531456,
+          "count": 20
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963967225]",
+          "seed": 7963967225,
+          "count": 28
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618402994]",
+          "seed": 10618402994,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272838763]",
+          "seed": 13272838763,
+          "count": 19
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15927274532]",
+          "seed": 15927274532,
+          "count": 30
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581710301]",
+          "seed": 18581710301,
+          "count": 25
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21236146070]",
+          "seed": 21236146070,
+          "count": 23
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
+          "seed": 23890581839,
+          "count": 27
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 2
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC",
+      "classification": "required_legal",
+      "legal_preconditions": "MMIO operation overlaps a distinct peer cacheable miss.",
+      "stimulus_strategy": "Paired MMIO write and cold cacheable read.",
+      "checker": "Independent MMIO and cache scoreboards plus observed AXI/MMIO handshakes.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.APB_WITH_AXI_TRAFFIC",
+      "classification": "required_legal",
+      "legal_preconditions": "APB read occurs while a cache AXI refill is outstanding.",
+      "stimulus_strategy": "APB CSR read after AR acceptance and before refill completion.",
+      "checker": "APB access checker and AXI lifecycle monitor.",
+      "hit_count": 25,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_mmio_request_overlaps_other_core_cache_miss",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.MMIO_READ_CACHE_MISS_APB",
+      "classification": "required_legal",
+      "legal_preconditions": "A delayed CPU0 MMIO read, CPU1 cacheable miss with outstanding AXI R beats, and APB miss-counter read have overlapping lifecycles.",
+      "stimulus_strategy": "Four-role directed cross-agent scenario with cycle ordering checked from passive monitor events.",
+      "checker": "Independent MMIO/cache data checks, APB counter check, AXI burst/backpressure checks, and explicit request-to-response overlap predicates.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_WITH_OUTSTANDING",
+      "classification": "required_legal",
+      "legal_preconditions": "AXI or MMIO request is active when reset is asserted.",
+      "stimulus_strategy": "Delayed AXI and MMIO response reset tests.",
+      "checker": "Agent cancellation records and no-stale-response checks.",
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_pending_mmio_response",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.MIXED_CPU_MMIO_APB_AXI",
+      "classification": "required_legal",
+      "legal_preconditions": "A cache refill, delayed MMIO transaction, and APB miss-counter read overlap under seeded timing variation.",
+      "stimulus_strategy": "Six operations under each of four reproducible seeds, with randomized CPU lane assignment, read/write type, byte mask and response hold plus deterministic AXI/MMIO stalls.",
+      "checker": "Independent CPU and MMIO models, exact APB miss count, AXI burst checker, and monitor cycle-order checks.",
+      "hit_count": 24,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
+          "seed": 53504,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
+          "seed": 53505,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506]",
+          "seed": 53506,
+          "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
+          "seed": 53507,
+          "count": 6
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.SNOOP_REFILL_SAME_L2_SET",
+      "classification": "required_legal",
+      "legal_preconditions": "Same-set M-owner Snoop overlaps a different-line refill and follows the same-set serialization contract.",
+      "stimulus_strategy": "Same-set branch of the seeded resource-aware scenario.",
+      "checker": "Checked CPU acceptance, Directory/Snoop/refill ordering and all returned data before credit.",
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153]",
+          "seed": 49153,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155]",
+          "seed": 49155,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET",
+      "classification": "required_legal",
+      "legal_preconditions": "Distinct-set M-owner Snoop overlaps a different-line refill and progresses before refill retirement.",
+      "stimulus_strategy": "Distinct-set branch of the seeded resource-aware scenario.",
+      "checker": "Checked CPU acceptance, Directory/Snoop/refill ordering and all returned data before credit.",
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
+          "seed": 49152,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
+          "seed": 49154,
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "planned_features_not_claimed": [
+    "FS.MSHR.OCCUPANCY_4",
+    "FS.AXI.WRITE_OUT_OF_ORDER"
+  ]
+}

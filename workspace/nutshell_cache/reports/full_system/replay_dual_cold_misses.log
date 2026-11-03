@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.7.0 -- /home/preston/workspace/nutshell_cache/.tooling/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/preston/workspace/open_verif_learning/workspace/nutshell_cache
+configfile: pytest.ini
+plugins: asyncio-1.4.0, reporter-html1-0.9.5, toffee-test-0.2.0, reporter-0.5.3, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 1 item
+
+tests/full_system/test_full_system_replay.py::test_replay_saved_full_system_trace PASSED
+
+============================== 1 passed in 0.62s ===============================

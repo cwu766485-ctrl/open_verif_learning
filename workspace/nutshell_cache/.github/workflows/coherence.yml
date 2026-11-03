@@ -106,3 +106,6 @@ jobs:
 
       - name: Run modular, formal, fanout, and subsystem regressions
         run: make COHERENCE_JOBS=2 coherence_verify
+
+      - name: Run integrated four-agent Python/Toffee DV
+        run: make coherence_full_system_coverage
