@@ -676,6 +676,84 @@
       ],
       "status": "implemented",
       "required": true
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_AR_STALL",
+      "feature": "Reset during AXI AR backpressure",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Reset asserted while ARVALID is held because ARREADY is low; reset cancels the miss and a post-reset retry returns the initialized data.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI request/response lifecycle monitor, reset-epoch check, no-stale-response check, and post-reset independent data check.",
+      "testcases": [
+        "test_reset_during_axi_ar_backpressure"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_R_VALID_GAP",
+      "feature": "Reset during an AXI RVALID gap",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "An AXI read has been accepted and the memory agent inserts an RVALID gap when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI cancellation record, reset-epoch check, no-stale-response check, and post-reset independent data check.",
+      "testcases": [
+        "test_reset_during_axi_r_valid_gap"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_AW_STALL",
+      "feature": "Reset during AXI AW backpressure",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A dirty L2 victim has reached AWVALID while AWREADY is low; reset cancels it before the address handshake.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AW handshake observation, reset-epoch check, no write completion after cancellation, and protocol-error check.",
+      "testcases": [
+        "test_reset_during_axi_aw_backpressure"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_W_STALL",
+      "feature": "Reset during AXI W backpressure",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A dirty victim write has started and WVALID is held while WREADY is low when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI write cancellation record, reset-epoch check, no stale completion, and protocol-error check.",
+      "testcases": [
+        "test_reset_during_axi_w_backpressure"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_CPU_RESPONSE_STALL",
+      "feature": "Reset during CPU response backpressure",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A checked CPU response is held while CPU response READY is low, then reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "Reset-epoch check, no stale CPU response, post-reset independent data check, and protocol-error check.",
+      "testcases": [
+        "test_reset_during_cpu_response_backpressure"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.RESET_MMIO_REQUEST_STALL",
+      "feature": "Reset during MMIO request backpressure",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "An MMIO request is held while request READY is low when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "MMIO handshake observation, reset-epoch check, no stale CPU/MMIO response, exactly one post-reset completion, and protocol-error check.",
+      "testcases": [
+        "test_reset_during_mmio_request_backpressure"
+      ],
+      "status": "implemented"
     }
   ]
 }

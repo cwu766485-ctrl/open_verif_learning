@@ -52,11 +52,11 @@
     "M:from_I:read:core1:source_l1:l2_none:snoop_none:beats_0": 989,
     "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0": 190,
     "M:from_I:write:core1:source_l1:l2_none:snoop_none:beats_0": 212,
-    "S:from_I:read:core0:source_l1:l2_none:snoop_none:beats_0": 16,
+    "S:from_I:read:core0:source_l1:l2_none:snoop_none:beats_0": 17,
     "S:from_I:read:core1:source_l1:l2_none:snoop_none:beats_0": 26,
     "S:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0": 13,
     "S:from_I:write:core1:source_l1:l2_none:snoop_none:beats_0": 11,
-    "S:from_S:read:core0:source_l1:l2_none:snoop_core1:beats_0": 336,
+    "S:from_S:read:core0:source_l1:l2_none:snoop_core1:beats_0": 335,
     "S:from_S:read:core1:source_l1:l2_none:snoop_core0:beats_0": 301,
     "S:from_S:write:core0:source_l1:l2_none:snoop_core1:beats_0": 216,
     "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0": 199

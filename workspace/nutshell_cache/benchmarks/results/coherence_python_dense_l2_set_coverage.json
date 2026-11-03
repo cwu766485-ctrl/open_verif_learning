@@ -52,12 +52,12 @@
     "M:from_I:read:core1:source_l1:l2_none:snoop_none:beats_0": 883,
     "M:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0": 144,
     "M:from_I:write:core1:source_l1:l2_none:snoop_none:beats_0": 147,
-    "S:from_I:read:core0:source_l1:l2_none:snoop_none:beats_0": 53,
-    "S:from_I:read:core1:source_l1:l2_none:snoop_none:beats_0": 54,
+    "S:from_I:read:core0:source_l1:l2_none:snoop_none:beats_0": 61,
+    "S:from_I:read:core1:source_l1:l2_none:snoop_none:beats_0": 63,
     "S:from_I:write:core0:source_l1:l2_none:snoop_none:beats_0": 39,
     "S:from_I:write:core1:source_l1:l2_none:snoop_none:beats_0": 34,
-    "S:from_S:read:core0:source_l1:l2_none:snoop_core1:beats_0": 180,
-    "S:from_S:read:core1:source_l1:l2_none:snoop_core0:beats_0": 160,
+    "S:from_S:read:core0:source_l1:l2_none:snoop_core1:beats_0": 172,
+    "S:from_S:read:core1:source_l1:l2_none:snoop_core0:beats_0": 151,
     "S:from_S:write:core0:source_l1:l2_none:snoop_core1:beats_0": 104,
     "S:from_S:write:core1:source_l1:l2_none:snoop_core0:beats_0": 115
   }

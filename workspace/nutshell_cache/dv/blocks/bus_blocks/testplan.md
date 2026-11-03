@@ -20,7 +20,7 @@ AXI burst fields; outstanding IDs and response routing; beat sequencing; indepen
 | Read burst | AR/R translation, beat collection and error drain | fatal checks burst fields, beats, backpressure and line error | no coherence bin; bus bench only |
 | Write burst | AW/W collection/order and B response | fatal checks payload, WLAST, held B response and error propagation | no coherence bin; bus bench only |
 | Four outstanding/ID routing | queue four reads/writes, interleave R and reorder B | fatal checks depth, ID association, payload and ordered W serialization | no coherence bin; bus bench only |
-| APB CSR | read counters/status and attempt CSR writes | fatal checks APB setup/access, read data and write rejection | no coherence bin; bus bench only |
+| APB CSR | read counters/status, attempt CSR writes, and check 32-bit wrap for all six counters | fatal checks APB setup/access, read data and write rejection; boundary test seeds internal counter Q values at `0xffff_fffe/0xffff_ffff`, then increments through the actual event inputs and checks modulo-2^32 readback | no coherence-map bin; bus bench only |
 | Unknown RID | inject unknown read response ID | fatal checks drain and protocol_error | no coherence bin; bus bench only |
 
 ## Coverage ownership and gaps
@@ -28,3 +28,5 @@ AXI burst fields; outstanding IDs and response routing; beat sequencing; indepen
 - Coverage Bin IDs are unchanged. This directory move does not add bins, mark uncovered behavior covered, or claim new closure. The maintained integrated map is `dv/coverage/coherence_map.json`; Legacy L1 coverage remains separately owned by its existing Python tests/map.
 - Shared agents, reference models, scoreboard/checkers and coverage collectors are not duplicated.
 - Related integrated bins are sampled only by the integrated subsystem regression; they are not credited to this block bench. Missing scenarios remain gaps, and this directory refactor does not claim new coverage closure.
+- APB wrap is a block-level boundary test of the same `CachePerformanceCsr` RTL used by the product. Internal counter seeding avoids a 2^32-event simulation; the test does not claim an integrated traffic-to-wrap scenario. `PREADY` is combinationally asserted during APB Access, so APB ready backpressure is not part of this RTL contract.
+- The testbench's hierarchical counter seeding is intentional gray-box stimulus. Verilator may report `MULTIDRIVEN` lint warnings for these test-only deposits; no product RTL is modified.

@@ -262,6 +262,111 @@ async def test_live_l2_victim_back_invalidates_resident_l1(full_system_env):
 
 
 @case
+async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env):
+    """A dirty inclusive victim collects its live M owner before writeback."""
+    env = await full_system_env(axi_options={
+        "latency": 6, "ar_stall_period": 3,
+        "aw_stall_period": 2, "w_stall_period": 2,
+    })
+    target = 0x0210_0000
+    owner_value = 0xD1A7_0A11_0B0B_1E55
+    expected_words = [0x7100_0000_0000_0000 | beat for beat in range(8)]
+    for beat, value in enumerate(expected_words):
+        env.seed_word(target + beat * 8, value)
+
+    # Match the clean inclusive-victim test's way placement. The target stays
+    # resident in Core0, but is explicitly made Modified after allocation.
+    for index in range(1, 7):
+        address = target + index * L2_SET_STRIDE
+        for beat in range(8):
+            env.seed_word(address + beat * 8,
+                          0x7200_0000_0000_0000 | (index << 8) | beat)
+        assert await env.cpu_access(1, address) == env.axi.read_word(address)
+
+    await env.cpu_access(0, target, write=True,
+                         data=owner_value, mask=0xFF)
+    expected_words[0] = owner_value
+
+    for index in range(7, 8):
+        address = target + index * L2_SET_STRIDE
+        for beat in range(8):
+            env.seed_word(address + beat * 8,
+                          0x7300_0000_0000_0000 | (index << 8) | beat)
+        assert await env.cpu_access(1, address) == env.axi.read_word(address)
+
+    event_start = len(env.monitor.events)
+    aw_start = len(env.axi.write_addresses)
+    w_start = len(env.axi.write_beats)
+    b_start = len(env.axi.write_completions)
+    ar_start = len(env.axi.read_addresses)
+    ninth = target + 8 * L2_SET_STRIDE
+    ninth_value = 0x7400_0000_0000_0008
+    for beat in range(8):
+        env.seed_word(ninth + beat * 8,
+                      0x7400_0000_0000_0000 | (8 << 8) | beat)
+    env.seed_word(ninth, ninth_value)
+
+    assert await env.cpu_access(1, ninth) == ninth_value
+    events = env.monitor.events[event_start:]
+    victim_select = [event for event in events
+                     if event["source"] == "l2_victim" and
+                     event["event_type"] == "select" and
+                     event["address"] == target]
+    victim_snoop = [event for event in events
+                    if event["source"] == "l2_victim" and
+                    event["event_type"] == "snoop_accept" and
+                    event["core"] == 0 and event["address"] == target]
+    invalidation = [event for event in events
+                    if event["source"] == "l1" and
+                    event["event_type"] == "metadata_commit" and
+                    event["core"] == 0 and event["address"] & ~0x3F == target and
+                    event["is_snoop"] and event["old_state"] == 3 and
+                    event["new_state"] == 0]
+    # A live Modified L1 owner is the newest copy, so the backing L2 data
+    # array may still be clean.  Check the directory's owner state instead of
+    # requiring the stale L2 data-array dirty bit to be set.
+    assert victim_select and victim_select[0]["directory_state"] == 2 and \
+        victim_select[0]["owner"] == 0, (
+            "the selected inclusive victim did not record Core0 as its M owner"
+        )
+    assert victim_snoop, "dirty live victim did not back-snoop Core0"
+    assert invalidation, "dirty owner was not invalidated by inclusive eviction"
+
+    owner_beats = [event for event in events
+                   if event["source"] == "coherence" and
+                   event["event_type"] == "owner_data_beat" and
+                   event["core"] == 0 and event["address"] & ~0x3F == target]
+    assert [event["beat"] for event in owner_beats] == list(range(8))
+    assert [event["data"] for event in owner_beats] == expected_words
+    assert [event["last"] for event in owner_beats] == [0] * 7 + [1]
+
+    victim_writes = [item for item in env.axi.write_addresses[aw_start:]
+                     if item[1] == target]
+    assert victim_writes, "dirty live victim did not reach AXI AW"
+    assert len(env.axi.write_completions[b_start:]) >= len(victim_writes)
+    for txn_id, address, _cycle in victim_writes:
+        beats = [item for item in env.axi.write_beats[w_start:]
+                 if item[0] == txn_id]
+        assert [item[1] for item in beats] == list(range(8))
+        assert [item[2] for item in beats] == expected_words
+        assert all(item[3] == 0xFF for item in beats)
+        assert any(item[0] == txn_id and item[1] == address
+                   for item in env.axi.write_completions[b_start:])
+    assert all(env.axi.read_word(target + beat * 8) == expected_words[beat]
+               for beat in range(8)), "AXI backing memory lost owner data"
+
+    # The victim must no longer hit in Core0's inclusive L1 after invalidation.
+    assert await env.cpu.access(0, target) == owner_value
+    assert any(address & ~0x3F == target
+               for _txn_id, address, _cycle in env.axi.read_addresses[ar_start:]), (
+        "Core0 did not refill the evicted target line from backing memory"
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    env.coverage.sample_checked_event("FS.L2.DIRTY_OWNER_LIVE_VICTIM",
+                                      checked=True)
+
+
+@case
 async def test_owner_snoop_overlaps_independent_memory_refill(full_system_env):
     """A dirty-owner snoop must progress beside a different cold-line refill."""
     env = await full_system_env(axi_options={"latency": 48})
@@ -461,6 +566,232 @@ async def test_reset_cancels_integrated_axi_writeback_before_b(full_system_env):
         assert int(env.dut.fatal_error.value) == 0
         env.coverage.sample_checked_event("FS.AXI.WRITE_RESET_CANCEL",
                                           checked=True)
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_axi_ar_backpressure(full_system_env):
+    """Reset cancels a miss held at the AXI AR request handshake."""
+    env = await full_system_env(axi_options={"latency": 8,
+                                              "ar_stall_period": 2})
+    address, value = 0x01E0_1008, 0xA11C_E001_0000_0001
+    env.seed_word(address, value)
+    pending = asyncio.create_task(env.cpu.access(0, address))
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: int(env.dut.axi_arvalid.value) and
+                    not int(env.dut.axi_arready.value),
+            message="AXI ARVALID held by ARREADY backpressure",
+        )
+        assert not env.axi.read_addresses, "AR handshake occurred during observed stall"
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert not env.axi.read_completions
+        assert await env.cpu_access(0, address) == value
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_AXI_AR_STALL", checked=True
+        )
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_axi_r_valid_gap(full_system_env):
+    """Reset cancels an accepted read while the memory inserts an RVALID gap."""
+    env = await full_system_env(axi_options={"latency": 1,
+                                              "r_valid_gap_period": 3})
+    address, value = 0x01E0_2008, 0xA11C_E002_0000_0002
+    env.seed_word(address, value)
+    pending = asyncio.create_task(env.cpu.access(0, address))
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: bool(env.axi.read_addresses) and
+                    not int(env.dut.axi_rvalid.value),
+            message="accepted AXI read during source RVALID gap",
+        )
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        assert env.axi.reset_cancelled["reads"] >= 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert await env.cpu_access(0, address) == value
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_AXI_R_VALID_GAP", checked=True
+        )
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_axi_aw_backpressure(full_system_env):
+    """Reset cancels a dirty victim before its stalled AW handshake."""
+    env = await full_system_env(axi_options={"latency": 12,
+                                              "aw_stall_period": 2})
+    await _dirty_l2_set(env, 8, base=0x01E0_4000)
+    ninth = 0x01E0_4000 + 8 * L2_SET_STRIDE
+    env.seed_word(ninth, 0xA11C_E004)
+    pending = asyncio.create_task(
+        env.cpu.access(0, ninth, write=True,
+                       data=0xA11C_E004_0000_0004, mask=0xFF)
+    )
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: int(env.dut.axi_awvalid.value) and
+                    not int(env.dut.axi_awready.value),
+            message="AXI AWVALID held by AWREADY backpressure",
+        )
+        assert not env.axi.write_addresses, "AW handshake occurred during observed stall"
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert not env.axi.write_completions
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_AXI_AW_STALL", checked=True
+        )
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_axi_w_backpressure(full_system_env):
+    """Reset cancels an accepted dirty write while WREADY is low."""
+    env = await full_system_env(axi_options={"latency": 12,
+                                              "w_stall_period": 2})
+    await _dirty_l2_set(env, 8, base=0x01E0_6000)
+    ninth = 0x01E0_6000 + 8 * L2_SET_STRIDE
+    env.seed_word(ninth, 0xA11C_E006)
+    pending = asyncio.create_task(
+        env.cpu.access(0, ninth, write=True,
+                       data=0xA11C_E006_0000_0006, mask=0xFF)
+    )
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: int(env.dut.axi_wvalid.value) and
+                    not int(env.dut.axi_wready.value),
+            message="AXI WVALID held by WREADY backpressure",
+        )
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        assert env.axi.reset_cancelled["writes"] >= 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert not env.axi.write_completions
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_AXI_W_STALL", checked=True
+        )
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_cpu_response_backpressure(full_system_env):
+    """Reset while a completed CPU result is held by response READY low."""
+    env = await full_system_env(axi_options={"latency": 1})
+    address, value = 0x01E0_8008, 0xA11C_E008_0000_0008
+    env.seed_word(address, value)
+    pending = asyncio.create_task(
+        env.cpu.access(0, address, response_stall_cycles=100)
+    )
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: (int(env.dut.cpu_resp_valid.value) & 1) and
+                    not (int(env.dut.cpu_resp_ready.value) & 1),
+            message="CPU response held by response backpressure",
+        )
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert await env.cpu_access(0, address) == value
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_CPU_RESPONSE_STALL", checked=True
+        )
+    finally:
+        if not pending.done():
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        env.dut.cpu_req_valid.value = 0
+        env.dut.cpu_resp_ready.value = 0
+
+
+@case
+async def test_reset_during_mmio_request_backpressure(full_system_env):
+    """Reset cancels a CPU MMIO operation stalled at the request handshake."""
+    env = await full_system_env(mmio_options={"request_stall_period": 2,
+                                               "response_delay": 1})
+    address = 0x3000_0600
+    pending = asyncio.create_task(env.cpu.access(0, address))
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: int(env.dut.mmio_req_valid.value) and
+                    not int(env.dut.mmio_req_ready.value),
+            message="MMIO request held by request READY backpressure",
+        )
+        assert not env.mmio.requests, "MMIO request accepted during observed stall"
+        old_epoch = env.monitor.reset_epoch
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == old_epoch + 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        assert int(env.dut.mmio_resp_valid.value) == 0
+        assert await env.cpu.access(0, address) == 0
+        assert len(env.mmio.completions) == 1
+        assert int(env.dut.fatal_error.value) == 0
+        env.coverage.sample_checked_cross(
+            "FS.CROSS.RESET_MMIO_REQUEST_STALL", checked=True
+        )
     finally:
         if not pending.done():
             pending.cancel()

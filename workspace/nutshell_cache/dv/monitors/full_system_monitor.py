@@ -274,17 +274,18 @@ class FullSystemMonitor:
                         owner_snoop_data=_bits(d.monitor_dir_snoop_data_to_l2))
         victim_valid = _bits(d.monitor_l2_victim_valid)
         new_victims = victim_valid & ~self._last_victim_valid
-        for core in range(2):
-            if (new_victims >> core) & 1:
-                self._event(
-                    "l2_victim", "select", core=core,
-                    address=(_bits(d.monitor_l2_victim_addr) >> (32 * core))
-                            & 0xFFFF_FFFF,
-                    directory_state=(_bits(d.monitor_l2_victim_dir_state) >>
-                                     (2 * core)) & 3,
-                    sharers=(_bits(d.monitor_l2_victim_sharers) >> core) & 1,
-                    owner=(_bits(d.monitor_l2_victim_owner_id) >> core) & 1,
-                    dirty=(_bits(d.monitor_l2_victim_dirty) >> core) & 1)
+        if new_victims:
+            # These wrapper probes describe one shared L2 victim. The valid
+            # vector is a widened scalar, while address/state/owner/dirty are
+            # scalar fields and sharers is the actual two-core bitmap. Do not
+            # decode them as per-core packed arrays.
+            self._event(
+                "l2_victim", "select",
+                address=_bits(d.monitor_l2_victim_addr) & 0xFFFF_FFFF,
+                directory_state=_bits(d.monitor_l2_victim_dir_state) & 3,
+                sharers=_bits(d.monitor_l2_victim_sharers) & 3,
+                owner=_bits(d.monitor_l2_victim_owner_id) & 1,
+                dirty=_bits(d.monitor_l2_victim_dirty) & 1)
         self._last_victim_valid = victim_valid
         if _bits(d.monitor_dir_snoop_valid):
             self._event("directory", "snoop_offer",

@@ -4,11 +4,11 @@
   "dut": "CoherentCacheAxiSubsystem",
   "testcase_exit_status": 0,
   "required_bins": {
-    "FS.CPU.READ.CORE0": 408,
-    "FS.CPU.READ.CORE1": 419,
-    "FS.CPU.WRITE.CORE0": 297,
+    "FS.CPU.READ.CORE0": 411,
+    "FS.CPU.READ.CORE1": 427,
+    "FS.CPU.WRITE.CORE0": 314,
     "FS.CPU.WRITE.CORE1": 274,
-    "FS.MESI.I_TO_E": 132,
+    "FS.MESI.I_TO_E": 143,
     "FS.MESI.I_TO_S": 243,
     "FS.MESI.S_TO_M": 185,
     "FS.MESI.M_TO_S": 203,
@@ -24,7 +24,7 @@
     "FS.AXI.RESET_CANCEL": 1,
     "FS.AXI.ERROR_RESPONSE": 1,
     "FS.MMIO.RESET_CANCEL": 1,
-    "FS.MESI.I_TO_M": 238,
+    "FS.MESI.I_TO_M": 255,
     "FS.MESI.E_TO_M": 30,
     "FS.MESI.E_TO_S": 40,
     "FS.MESI.E_TO_I": 32,
@@ -44,8 +44,8 @@
     "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 2
   },
   "required_cross_bins": {
-    "FS.CROSS.CORE0.READ": 408,
-    "FS.CROSS.CORE1.READ": 419,
+    "FS.CROSS.CORE0.READ": 411,
+    "FS.CROSS.CORE1.READ": 427,
     "FS.CROSS.CORE1.WRITE": 274,
     "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
     "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
@@ -53,12 +53,18 @@
     "FS.CROSS.RESET_WITH_OUTSTANDING": 2,
     "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 24,
     "FS.CROSS.SNOOP_REFILL_SAME_L2_SET": 2,
-    "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 2
+    "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 2,
+    "FS.CROSS.RESET_AXI_AR_STALL": 1,
+    "FS.CROSS.RESET_AXI_R_VALID_GAP": 1,
+    "FS.CROSS.RESET_AXI_AW_STALL": 1,
+    "FS.CROSS.RESET_AXI_W_STALL": 1,
+    "FS.CROSS.RESET_CPU_RESPONSE_STALL": 1,
+    "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1
   },
   "required_bins_passed": 38,
   "required_bins_total": 38,
-  "required_cross_bins_passed": 10,
-  "required_cross_bins_total": 10,
+  "required_cross_bins_passed": 16,
+  "required_cross_bins_total": 16,
   "missing_bins": [],
   "missing_cross_bins": [],
   "bin_evidence": [
@@ -70,7 +76,7 @@
       "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 408,
+      "hit_count": 411,
       "pass": true,
       "evidence": [
         {
@@ -164,6 +170,21 @@
           "count": 2
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_ar_backpressure",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_r_valid_gap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_cpu_response_backpressure",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
           "seed": 53504,
           "count": 1
@@ -213,7 +234,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 1.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 419,
+      "hit_count": 427,
       "pass": true,
       "evidence": [
         {
@@ -307,6 +328,11 @@
           "count": 8
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner",
+          "seed": null,
+          "count": 8
+        },
+        {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
           "seed": null,
           "count": 1
@@ -361,7 +387,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
-      "hit_count": 297,
+      "hit_count": 314,
       "pass": true,
       "evidence": [
         {
@@ -425,6 +451,11 @@
           "count": 28
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_owner_snoop_overlaps_independent_memory_refill",
           "seed": null,
           "count": 1
@@ -441,6 +472,16 @@
         },
         {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_cancels_integrated_axi_writeback_before_b",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_aw_backpressure",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_w_backpressure",
           "seed": null,
           "count": 8
         },
@@ -592,7 +633,7 @@
       "stimulus_strategy": "Cold read from core 0.",
       "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
       "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
-      "hit_count": 132,
+      "hit_count": 143,
       "pass": true,
       "evidence": [
         {
@@ -686,7 +727,27 @@
           "count": 9
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner",
+          "seed": null,
+          "count": 8
+        },
+        {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_apb_counters_writeback_and_reset_semantics",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_ar_backpressure",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_r_valid_gap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_cpu_response_backpressure",
           "seed": null,
           "count": 1
         },
@@ -1355,7 +1416,7 @@
       "stimulus_strategy": "Cold CPU store obtains writable ownership.",
       "required_monitor_event": "Directory GetM acceptance and requester L1 metadata commit to M.",
       "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
-      "hit_count": 238,
+      "hit_count": 255,
       "pass": true,
       "evidence": [
         {
@@ -1419,6 +1480,11 @@
           "count": 1
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_owner_snoop_overlaps_independent_memory_refill",
           "seed": null,
           "count": 1
@@ -1435,6 +1501,16 @@
         },
         {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_cancels_integrated_axi_writeback_before_b",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_aw_backpressure",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_w_backpressure",
           "seed": null,
           "count": 8
         },
@@ -2084,7 +2160,7 @@
       "legal_preconditions": "Core 0 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 408,
+      "hit_count": 411,
       "pass": true,
       "evidence": [
         {
@@ -2178,6 +2254,21 @@
           "count": 2
         },
         {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_ar_backpressure",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_r_valid_gap",
+          "seed": null,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_cpu_response_backpressure",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
           "seed": 53504,
           "count": 1
@@ -2225,7 +2316,7 @@
       "legal_preconditions": "Core 1 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 419,
+      "hit_count": 427,
       "pass": true,
       "evidence": [
         {
@@ -2315,6 +2406,11 @@
         },
         {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_live_l2_victim_back_invalidates_resident_l1",
+          "seed": null,
+          "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner",
           "seed": null,
           "count": 8
         },
@@ -2629,6 +2725,102 @@
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154]",
           "seed": 49154,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_AR_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "Reset asserted while ARVALID is held because ARREADY is low; reset cancels the miss and a post-reset retry returns the initialized data.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI request/response lifecycle monitor, reset-epoch check, no-stale-response check, and post-reset independent data check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_ar_backpressure",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_R_VALID_GAP",
+      "classification": "required_legal",
+      "legal_preconditions": "An AXI read has been accepted and the memory agent inserts an RVALID gap when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI cancellation record, reset-epoch check, no-stale-response check, and post-reset independent data check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_r_valid_gap",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_AW_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "A dirty L2 victim has reached AWVALID while AWREADY is low; reset cancels it before the address handshake.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AW handshake observation, reset-epoch check, no write completion after cancellation, and protocol-error check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_aw_backpressure",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_AXI_W_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "A dirty victim write has started and WVALID is held while WREADY is low when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "AXI write cancellation record, reset-epoch check, no stale completion, and protocol-error check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_w_backpressure",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_CPU_RESPONSE_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "A checked CPU response is held while CPU response READY is low, then reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "Reset-epoch check, no stale CPU response, post-reset independent data check, and protocol-error check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_cpu_response_backpressure",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.RESET_MMIO_REQUEST_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "An MMIO request is held while request READY is low when reset is asserted.",
+      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
+      "checker": "MMIO handshake observation, reset-epoch check, no stale CPU/MMIO response, exactly one post-reset completion, and protocol-error check.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_mmio_request_backpressure",
+          "seed": null,
           "count": 1
         }
       ]

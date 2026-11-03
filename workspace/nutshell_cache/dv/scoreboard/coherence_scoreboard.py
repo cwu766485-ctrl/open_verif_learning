@@ -27,6 +27,7 @@ class CoherenceScoreboard:
         self.directory = {}
         self.l1_evictions = []
         self.l2_evictions = []
+        self.l2_victim_selections = []
         self.pending_puts = set()
         self.track_l1_replacement = True
         self.track_l2_replacement = True
@@ -208,6 +209,12 @@ class CoherenceScoreboard:
         else:
             way = self.l2_next_way[set_index] % 8
             victim = ways[way]
+            self.l2_victim_selections.append({
+                "line": victim,
+                "directory": dict(self.directory.get(
+                    victim, self.directory_view(victim))),
+                "states": tuple(self.states[victim]),
+            })
             for core in range(2):
                 if self.states[victim][core] != "I":
                     state = self.states[victim][core]

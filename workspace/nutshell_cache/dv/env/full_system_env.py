@@ -116,6 +116,93 @@ class FullSystemEnv:
                         f"FS.MESI.{old}_TO_{new}", checked=True
                     )
 
+    def _check_l2_victim_predictions(self, victim_start, event_start):
+        """Compare inclusive victims with the independent cache model."""
+        expected_victims = self.reference.l2_victim_selections[victim_start:]
+        if not expected_victims:
+            return
+        events = self.monitor.events[event_start:]
+        observed = [event for event in events
+                    if event["source"] == "l2_victim" and
+                    event["event_type"] == "select"]
+        if len(observed) != len(expected_victims):
+            raise AssertionError(
+                "L2 victim selection count disagrees with independent model: "
+                f"observed={len(observed)} expected={len(expected_victims)}"
+            )
+
+        dir_encoding = {"I": 0, "S": 1, "U": 2}
+        mesi_encoding = {"I": 0, "S": 1, "E": 2, "M": 3}
+        for prediction, actual in zip(expected_victims, observed):
+            line = prediction["line"]
+            directory = prediction["directory"]
+            states = prediction["states"]
+            if actual["address"] != line:
+                raise AssertionError(
+                    f"L2 victim mismatch: actual={actual['address']:#x} "
+                    f"expected={line:#x}"
+                )
+            if actual["directory_state"] != dir_encoding[directory["state"]]:
+                raise AssertionError(
+                    f"L2 victim Directory state mismatch for {line:#x}: "
+                    f"actual={actual['directory_state']} expected={directory}"
+                )
+            if actual["sharers"] != directory["sharers"]:
+                raise AssertionError(
+                    f"L2 victim sharers mismatch for {line:#x}: "
+                    f"actual={actual['sharers']:#x} "
+                    f"expected={directory['sharers']:#x}"
+                )
+            if directory["state"] == "U" and actual["owner"] != directory["owner"]:
+                raise AssertionError(
+                    f"L2 victim owner mismatch for {line:#x}: "
+                    f"actual={actual['owner']} expected={directory['owner']}"
+                )
+
+            for core, state in enumerate(states):
+                if state == "I":
+                    continue
+                invalidations = [event for event in events
+                                 if event["source"] == "l1" and
+                                 event["event_type"] == "metadata_commit" and
+                                 event["core"] == core and
+                                 event["address"] & ~0x3F == line and
+                                 event["is_snoop"] and
+                                 event["old_state"] == mesi_encoding[state] and
+                                 event["new_state"] == mesi_encoding["I"]]
+                if not invalidations:
+                    raise AssertionError(
+                        f"L2 victim {line:#x} did not invalidate modeled "
+                        f"Core{core} {state} copy"
+                    )
+
+            if directory["state"] == "U":
+                expected_words = [self.reference.word(line + beat * 8)
+                                  for beat in range(8)]
+                owner_beats = [event for event in events
+                               if event["source"] == "coherence" and
+                               event["event_type"] == "owner_data_beat" and
+                               event["address"] & ~0x3F == line]
+                if ([event["beat"] for event in owner_beats] != list(range(8)) or
+                        [event["data"] for event in owner_beats] != expected_words or
+                        [event["last"] for event in owner_beats] !=
+                        [0] * 7 + [1]):
+                    raise AssertionError(
+                        f"L2 victim {line:#x} owner transfer disagrees with "
+                        "the independent data model"
+                    )
+                if not any(event["source"] == "axi" and
+                           event["event_type"] == "write_address" and
+                           event["address"] == line for event in events):
+                    raise AssertionError(
+                        f"L2 victim {line:#x} with a live owner did not reach AXI AW"
+                    )
+                if any(self.axi.read_word(line + beat * 8) != expected_words[beat]
+                       for beat in range(8)):
+                    raise AssertionError(
+                        f"L2 victim {line:#x} owner data was not preserved in memory"
+                    )
+
     async def cpu_access(self, core, addr, *, write=False, data=0, mask=0xFF,
                          **driver_options):
         if addr >= 0x3000_0000:
@@ -123,11 +210,13 @@ class FullSystemEnv:
         predicted, _ = self.reference.predict(core, addr, write=write,
                                                write_data=data, write_mask=mask)
         transition_start = len(self.reference.transitions)
+        victim_start = len(self.reference.l2_victim_selections)
         event_start = len(self.monitor.events)
         result = await self.cpu.access(core, addr, write=write, data=data,
                                        mask=mask, **driver_options)
         self.reference.observe(core, addr, write=write, write_data=data,
                                write_mask=mask, response_data=result)
+        self._check_l2_victim_predictions(victim_start, event_start)
         if not write and result != predicted:
             raise AssertionError(
                 f"CPU{core} read {addr:#x} returned {result:#018x}, "
