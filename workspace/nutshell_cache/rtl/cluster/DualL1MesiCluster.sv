@@ -115,6 +115,10 @@ module DualL1MesiCluster #(
   } replace_state_t;
 
   for (genvar core = 0; core < 2; core = core + 1) begin : cores
+    // MesiL1Controller's CPU_SEND_REQ and CPU_WAIT_GRANT enum encodings.
+    // Hit-under-miss is intentionally limited to the pre-refill wait window.
+    localparam logic [2:0] CPU_SEND_REQ_STATE = 3'd1;
+    localparam logic [2:0] CPU_WAIT_GRANT_STATE = 3'd2;
     logic [31:0] lookup_addr;
     logic ctrl_cpu_req_valid;
     logic ctrl_cpu_req_ready;
@@ -144,6 +148,18 @@ module DualL1MesiCluster #(
     logic [31:0] ctrl_resp_addr;
     logic ctrl_resp_write;
     logic [TXN_ID_WIDTH-1:0] ctrl_resp_txn_id;
+    logic hit_resp_valid_q;
+    logic [31:0] hit_resp_addr_q;
+    logic [63:0] hit_resp_data_q;
+    logic [TXN_ID_WIDTH-1:0] hit_resp_txn_id_q;
+    logic hit_bypass_started_q;
+    logic [TXN_ID_WIDTH-1:0] hit_next_txn_id_q;
+    logic [TXN_ID_WIDTH-1:0] hit_alloc_txn_id;
+    logic [TXN_ID_WIDTH-1:0] hit_alloc_txn_id_safe;
+    logic [TXN_ID_WIDTH-1:0] hit_next_txn_id;
+    logic [TXN_ID_WIDTH-1:0] hit_next_txn_id_safe;
+    logic hit_under_miss_ready;
+    logic hit_under_miss_accept;
     logic refill_valid;
     logic [2:0] refill_beat_idx;
     logic [63:0] refill_data;
@@ -226,10 +242,32 @@ module DualL1MesiCluster #(
     // A hit or cold miss with a free way skips CHECK but is replayed one cycle
     // later, shortening the path without forming a ready/valid loop.
     assign ctrl_cpu_req_valid = (replace_state_q == REPLACE_REPLAY);
-    assign cpu_req_ready[core] = (replace_state_q == REPLACE_IDLE) &&
-                                 !snoop_active_q &&
-                                 !(snoop_valid[core] && snoop_ready[core]) &&
-                                 ctrl_cpu_req_ready;
+    // While a different miss waits for its Directory grant, permit a resident
+    // read hit to bypass the blocking miss FSM. One response slot preserves
+    // payload under backpressure; writes, misses, snoops and refill cycles
+    // remain on the existing serialized path.
+    assign hit_under_miss_ready =
+      ((controller_cpu_state == CPU_SEND_REQ_STATE) ||
+       (controller_cpu_state == CPU_WAIT_GRANT_STATE)) &&
+      (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
+      !snoop_valid[core] && lookup_hit && !cpu_req_write[core] &&
+      (!hit_resp_valid_q || cpu_resp_ready[core]);
+    assign hit_under_miss_accept = cpu_req_valid[core] &&
+                                   hit_under_miss_ready;
+    assign hit_alloc_txn_id = hit_bypass_started_q ? hit_next_txn_id_q :
+      ctrl_resp_txn_id + TXN_ID_WIDTH'(1);
+    // Keep every bypass ID distinct from the still-active miss ID. This
+    // matters when a long hit stream wraps the finite transaction-ID space.
+    assign hit_alloc_txn_id_safe =
+      (hit_alloc_txn_id == ctrl_resp_txn_id) ?
+        hit_alloc_txn_id + TXN_ID_WIDTH'(1) : hit_alloc_txn_id;
+    assign hit_next_txn_id = hit_alloc_txn_id_safe + TXN_ID_WIDTH'(1);
+    assign hit_next_txn_id_safe = (hit_next_txn_id == ctrl_resp_txn_id) ?
+      hit_next_txn_id + TXN_ID_WIDTH'(1) : hit_next_txn_id;
+    assign cpu_req_ready[core] =
+      ((replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
+       !(snoop_valid[core] && snoop_ready[core]) && ctrl_cpu_req_ready) ||
+      hit_under_miss_ready;
     // A read hit needs an existing MESI copy. A write hit is silent only in
     // E/M; an S-state store requires a Directory Upgrade and counts as a miss.
     assign cpu_hit_event[core] = !reset && cpu_req_valid[core] &&
@@ -238,13 +276,18 @@ module DualL1MesiCluster #(
        (lookup_state == MESI_M));
     assign cpu_miss_event[core] = !reset && cpu_req_valid[core] &&
       cpu_req_ready[core] && !cpu_hit_event[core];
-    assign cpu_resp_valid[core] = ctrl_resp_valid &&
-      (!ctrl_resp_write || array_store_ready);
-    assign cpu_resp_addr[core] = ctrl_resp_addr;
-    assign cpu_resp_write[core] = ctrl_resp_write;
-    assign cpu_resp_txn_id[core] = ctrl_resp_txn_id;
-    assign cpu_resp_rdata[core] = lookup_word;
-    assign ctrl_resp_ready = cpu_resp_ready[core] && cpu_resp_valid[core];
+    assign cpu_resp_valid[core] = hit_resp_valid_q ||
+      (ctrl_resp_valid && (!ctrl_resp_write || array_store_ready));
+    assign cpu_resp_addr[core] = hit_resp_valid_q ? hit_resp_addr_q :
+                                                       ctrl_resp_addr;
+    assign cpu_resp_write[core] = hit_resp_valid_q ? 1'b0 : ctrl_resp_write;
+    assign cpu_resp_txn_id[core] = hit_resp_valid_q ? hit_resp_txn_id_q :
+                                                       ctrl_resp_txn_id;
+    assign cpu_resp_rdata[core] = hit_resp_valid_q ? hit_resp_data_q :
+                                                       lookup_word;
+    assign ctrl_resp_ready = !hit_resp_valid_q && cpu_resp_ready[core] &&
+                             ctrl_resp_valid &&
+                             (!ctrl_resp_write || array_store_ready);
 
     assign arb_req_is_replace = (replace_state_q == REPLACE_SEND_PUT);
     assign arb_req_valid[core] = arb_req_is_replace ? 1'b1 : controller_req_valid[core];
@@ -366,34 +409,56 @@ module DualL1MesiCluster #(
         array_rd_active_q <= 1'b0;
         array_rd_owner_evict_q <= 1'b0;
         snoop_active_q <= 1'b0;
-      end else if (cpu_req_valid[core] && cpu_req_ready[core]) begin
-        pending_cpu_addr_q <= cpu_req_addr[core];
-        pending_cpu_write_q <= cpu_req_write[core];
-        store_wmask_q <= cpu_req_wmask[core];
-        store_wdata_q <= cpu_req_wdata[core];
-        if (request_needs_replace) begin
-          replace_state_q <= REPLACE_CHECK;
-        end else begin
-          // A hit or a cold miss with a free way skips REPLACE_CHECK. Capture
-          // the allocation way now; the registered REPLAY state submits the
-          // request to the controller on the next cycle.
-          allocation_way_q <= replace_way_int;
-          replace_state_q <= REPLACE_REPLAY;
-        end
+        hit_resp_valid_q <= 1'b0;
+        hit_resp_addr_q <= '0;
+        hit_resp_data_q <= '0;
+        hit_resp_txn_id_q <= '0;
+        hit_bypass_started_q <= 1'b0;
+        hit_next_txn_id_q <= '0;
       end else begin
-        if (snoop_valid[core] && snoop_ready[core])
-          snoop_active_q <= 1'b1;
-        if (snoop_rsp_valid[core] && snoop_rsp_ready[core])
-          snoop_active_q <= 1'b0;
-        if (!array_rd_active_q && array_line_rd_valid && array_line_rd_ready) begin
-          array_rd_active_q <= 1'b1;
-          array_rd_owner_evict_q <= array_rd_select_evict;
-        end else if (array_rd_active_q && array_line_data_valid_int &&
-                     array_line_data_ready && array_line_data_last_int) begin
-          array_rd_active_q <= 1'b0;
+        if (hit_under_miss_accept) begin
+          hit_resp_valid_q <= 1'b1;
+          hit_resp_addr_q <= cpu_req_addr[core];
+          hit_resp_data_q <= lookup_word;
+          // Bypass responses advance through the ID space while skipping the
+          // active miss ID, so outstanding transactions remain distinguishable.
+          hit_resp_txn_id_q <= hit_alloc_txn_id_safe;
+          hit_next_txn_id_q <= hit_next_txn_id_safe;
+          hit_bypass_started_q <= 1'b1;
+        end else if (hit_resp_valid_q && cpu_resp_ready[core]) begin
+          hit_resp_valid_q <= 1'b0;
         end
 
-        case (replace_state_q)
+        if (cpu_req_valid[core] && cpu_req_ready[core] &&
+            !hit_under_miss_accept) begin
+          hit_bypass_started_q <= 1'b0;
+          pending_cpu_addr_q <= cpu_req_addr[core];
+          pending_cpu_write_q <= cpu_req_write[core];
+          store_wmask_q <= cpu_req_wmask[core];
+          store_wdata_q <= cpu_req_wdata[core];
+          if (request_needs_replace) begin
+            replace_state_q <= REPLACE_CHECK;
+          end else begin
+            // A hit or a cold miss with a free way skips REPLACE_CHECK. Capture
+            // the allocation way now; the registered REPLAY state submits the
+            // request to the controller on the next cycle.
+            allocation_way_q <= replace_way_int;
+            replace_state_q <= REPLACE_REPLAY;
+          end
+        end else if (!hit_under_miss_accept) begin
+          if (snoop_valid[core] && snoop_ready[core])
+            snoop_active_q <= 1'b1;
+          if (snoop_rsp_valid[core] && snoop_rsp_ready[core])
+            snoop_active_q <= 1'b0;
+          if (!array_rd_active_q && array_line_rd_valid && array_line_rd_ready) begin
+            array_rd_active_q <= 1'b1;
+            array_rd_owner_evict_q <= array_rd_select_evict;
+          end else if (array_rd_active_q && array_line_data_valid_int &&
+                       array_line_data_ready && array_line_data_last_int) begin
+            array_rd_active_q <= 1'b0;
+          end
+
+          case (replace_state_q)
           REPLACE_CHECK: begin
             allocation_way_q <= replace_way_int;
             if (request_needs_replace) begin
@@ -459,7 +524,8 @@ module DualL1MesiCluster #(
               replace_state_q <= REPLACE_IDLE;
           end
           default: begin end
-        endcase
+          endcase
+        end
       end
     end
 

@@ -14,6 +14,7 @@ module CoherentCachePythonWrapper (
   output logic [63:0] cpu_resp_addr,
   output logic [1:0] cpu_resp_write,
   output logic [127:0] cpu_resp_rdata,
+  output logic [5:0] cpu_resp_txn_id,
   output logic [1:0] perf_hit_event,
   output logic [1:0] perf_miss_event,
   output logic perf_l2_refill_hit_event,
@@ -175,6 +176,7 @@ module CoherentCachePythonWrapper (
       cpu_resp_addr[core*32 +: 32] = cpu_resp_addr_u[core];
       cpu_resp_write[core] = cpu_resp_write_u[core];
       cpu_resp_rdata[core*64 +: 64] = cpu_resp_rdata_u[core];
+      cpu_resp_txn_id[core*3 +: 3] = cpu_resp_txn_id_u[core];
       monitor_snoop_accept_valid[core] = monitor_snoop_accept_valid_u[core];
       monitor_snoop_accept_addr[core*32 +: 32] =
         monitor_snoop_accept_addr_u[core];

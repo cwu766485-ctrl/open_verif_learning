@@ -1,0 +1,37 @@
+{
+  "benchmark": "P1 L1 hit-under-miss",
+  "measurement": "Verilator cycle-level simulation; synthetic memory latency",
+  "baseline": {
+    "revision": "0304fba79b77085ec46f9ef840738a2c42e660e6",
+    "rtl_change": "before hit-under-miss bypass",
+    "workload": "one cold L1 miss plus 24 warm reads to another resident line",
+    "memory_response_delay_cycles": 80,
+    "requested_operations": 25,
+    "accepted_hit_operations": 24,
+    "window_cycles": 185,
+    "operations_per_cycle": 0.13513513513513514,
+    "hit_requests_accepted_before_miss_completion": 0,
+    "hit_responses_completed_before_miss_completion": 0,
+    "miss_latency_cycles": 113,
+    "all_response_data_checked": true
+  },
+  "optimized": {
+    "workload": "one cold L1 miss plus 24 warm reads to another resident line",
+    "memory_response_delay_cycles": 80,
+    "requested_operations": 25,
+    "accepted_hit_operations": 24,
+    "window_cycles": 113,
+    "operations_per_cycle": 0.22123893805309736,
+    "hit_requests_accepted_before_miss_completion": 24,
+    "hit_responses_completed_before_miss_completion": 24,
+    "miss_latency_cycles": 113,
+    "all_response_data_checked": true
+  },
+  "change": {
+    "window_cycles": -72,
+    "window_cycles_percent": -38.91891891891892,
+    "operations_per_cycle": 0.08610380291796221,
+    "operations_per_cycle_percent": 63.71681415929204,
+    "miss_latency_cycles": 0
+  }
+}
