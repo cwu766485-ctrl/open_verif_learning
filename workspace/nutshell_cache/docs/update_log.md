@@ -2,6 +2,10 @@
 
 所有记录按时间倒序，简要说明变更、发现的问题和修复思路。
 
+## 2026-11-04
+
+- **闭环配对 Miss 顺序、同 Set 重复替换和 refill MSHR 生命周期。** 新增独立 `MshrLifecycleChecker`，仅使用 handshake Monitor 事件和 CPU 返回值关联 MSHR slot/AXI ID、Line 地址、8 拍 R burst、8 拍 L2 refill、Directory grant 和最终 CPU 响应；新增同 Set 的反序配对冷 Miss 和两轮配对替换场景。首轮测试发现同 Set interlock 会串行执行两笔 Miss，并在 burst 完成后复用相同 AXI ID；Checker 原先只按 ID 聚合，错误把两条 Line 的 16 个 R beat 当作一次 burst。改为按 `ID + Line` 区分 burst，并检查从 Directory 接收到 CPU 返回的时序。完整 `make coherence_full_system_coverage` 通过：45 passed、1 条条件性 Trace Replay 跳过；Required Functional 42/42、Cross 20/20。仅为 DV/文档/覆盖报告变更，RTL 功能和接口未改。
+
 ## 2026-11-03
 
 - **配对访问下的脏 L2 victim Checker。** 新增双核并发场景：一个 Core 命中已有行，另一个 Core 冷 miss 到同一已满 L2 Set，并让参考模型预测的 victim 由 M Owner 持有。Checker 按实际接受顺序更新独立模型（Miss 取 Directory 握手，Hit 取 CPU 握手），再核对 victim、Directory、Snoop、8 拍 Owner 数据、AXI 写回和两个 CPU 返回值。初次失败定位到 Toffee 调度下被动 Monitor 会漏掉快速命中请求的短握手脉冲；Hit 使用 Driver 已采样的握手时刻，Miss 仍要求 Directory Monitor 观察到接受事件。定向用例和完整覆盖回归通过：43 passed、1 条条件性 Trace Replay 跳过，Required Functional 39/39、Cross 17/17。该证据仅覆盖此 hit+miss 组合，不代表 paired miss/miss 或所有 MSHR 生命周期已闭环。

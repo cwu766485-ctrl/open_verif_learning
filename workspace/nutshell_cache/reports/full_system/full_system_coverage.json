@@ -2,7 +2,7 @@
   "schema_version": 1,
   "dut": "CoherentCacheAxiSubsystem",
   "pytest_exit_status": 0,
-  "test_environment_count": 43,
+  "test_environment_count": 45,
   "runs": [
     {
       "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
@@ -263,11 +263,13 @@
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 1,
           "FS.MESI.I_TO_E": 2,
+          "FS.MSHR.LIFECYCLE_END_TO_END": 1,
           "FS.MSHR.OCCUPANCY_2": 1
         },
         "cross_bins": {
           "FS.CROSS.CORE0.READ": 1,
-          "FS.CROSS.CORE1.READ": 1
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.MSHR_LIFECYCLE_END_TO_END": 1
         }
       },
       "monitor": {
@@ -16827,6 +16829,192 @@
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 1
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+      "scenario_id": "test_paired_cold_miss_same_set_uses_directory_accept_order",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 12
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x02400000": "0xcace000000000000",
+        "0x02408000": "0xcace000000000100",
+        "0x02410000": "0xcace000000000200",
+        "0x02418000": "0xcace000000000300",
+        "0x02420000": "0xcace000000000400",
+        "0x02428000": "0xcace000000000500",
+        "0x02430000": "0xcace000000000600",
+        "0x02438000": "0xcace000000000700",
+        "0x02440000": "0x0a00000002440000",
+        "0x02448000": "0x0b00000002448000"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_MISS_ORDERING": 1,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.MESI.I_TO_E": 10
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.PAIRED_MISS_ORDERING": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 12,
+          "l2.lookup": 10,
+          "directory_context.allocate": 12,
+          "axi.read_address": 10,
+          "directory.same_set_conflict": 406,
+          "mshr.allocate": 10,
+          "axi.read_valid_gap": 212,
+          "axi.read_beat": 80,
+          "l2.refill_start": 10,
+          "l2.line_write_beat": 96,
+          "l2.refill_end": 10,
+          "directory.metadata_commit": 14,
+          "mshr.retire": 10,
+          "directory.grant_accept": 12,
+          "l1.metadata_commit": 14,
+          "cpu.response_complete": 10,
+          "cpu.request_accept": 8,
+          "directory_context.retire": 12,
+          "axi.stall": 5,
+          "directory.request_stall": 124,
+          "l2_victim.select": 2,
+          "snoop.accept": 2,
+          "l2_victim.snoop_accept": 2,
+          "coherence.owner_data_beat": 16,
+          "snoop.response": 2,
+          "axi.write_address": 2,
+          "axi.write_beat": 16,
+          "axi.write_response": 2
+        },
+        "stall_cycles": {
+          "AR": 1,
+          "directory_request": 124,
+          "W": 4
+        },
+        "mshr_occupancy_histogram": {
+          "0": 301,
+          "1": 406
+        },
+        "directory_context_histogram": {
+          "0": 42,
+          "1": 663,
+          "2": 2
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 1
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+      "scenario_id": "test_repeated_paired_misses_replace_one_l2_set",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 8
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x02800000": "0xcace000000000000",
+        "0x02808000": "0xcace000000000100",
+        "0x02810000": "0xcace000000000200",
+        "0x02818000": "0xcace000000000300",
+        "0x02820000": "0xcace000000000400",
+        "0x02828000": "0xcace000000000500",
+        "0x02830000": "0xcace000000000600",
+        "0x02838000": "0xcace000000000700",
+        "0x02840000": "0xe000000002840000",
+        "0x02848000": "0xe000000002848000",
+        "0x02850000": "0xe000000002850000",
+        "0x02858000": "0xe000000002858000"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS": 1,
+          "FS.CPU.READ.CORE0": 6,
+          "FS.CPU.READ.CORE1": 6,
+          "FS.MESI.I_TO_E": 12
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 6,
+          "FS.CROSS.CORE1.READ": 6,
+          "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 14,
+          "l2.lookup": 12,
+          "directory_context.allocate": 14,
+          "axi.read_address": 12,
+          "directory.same_set_conflict": 423,
+          "mshr.allocate": 12,
+          "axi.read_valid_gap": 192,
+          "axi.read_beat": 96,
+          "l2.refill_start": 12,
+          "l2.line_write_beat": 128,
+          "l2.refill_end": 12,
+          "directory.metadata_commit": 18,
+          "mshr.retire": 12,
+          "directory.grant_accept": 14,
+          "l1.metadata_commit": 18,
+          "cpu.response_complete": 12,
+          "cpu.request_accept": 9,
+          "directory_context.retire": 14,
+          "axi.stall": 12,
+          "directory.request_stall": 211,
+          "l2_victim.select": 4,
+          "snoop.accept": 4,
+          "l2_victim.snoop_accept": 4,
+          "coherence.owner_data_beat": 32,
+          "snoop.response": 4,
+          "axi.write_address": 4,
+          "axi.write_beat": 32,
+          "axi.write_response": 4
+        },
+        "stall_cycles": {
+          "AR": 2,
+          "directory_request": 211,
+          "W": 10
+        },
+        "mshr_occupancy_histogram": {
+          "0": 419,
+          "1": 423
+        },
+        "directory_context_histogram": {
+          "0": 48,
+          "1": 792,
+          "2": 2
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 1

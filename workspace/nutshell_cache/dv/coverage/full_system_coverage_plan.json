@@ -583,6 +583,50 @@
       ],
       "status": "implemented",
       "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_MISS_ORDERING",
+      "feature": "Same-set paired cold misses follow observed Directory acceptance order",
+      "classification": "required_legal",
+      "legal_preconditions": "Both cores issue distinct cold lines mapping to one full L2 set; core 0 is intentionally presented one cycle after core 1.",
+      "stimulus_strategy": "Fill one L2 set, then issue a delayed paired cold-miss request to both cores.",
+      "required_monitor_event": "Two accepted Directory requests for the requested lines, AXI read bursts, L2 refill writes, grants, and CPU responses.",
+      "checker": "Paired CPU scoreboard orders state updates by sampled Directory acceptance; MSHRLifecycleChecker correlates slots, AXI IDs, beats, refill writes, grants, and CPU responses.",
+      "testcases": [
+        "test_paired_cold_miss_same_set_uses_directory_accept_order"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS",
+      "feature": "Repeated paired cold misses cause multiple replacements in one L2 set",
+      "classification": "required_legal",
+      "legal_preconditions": "One L2 set is full and two rounds of paired cold misses target four distinct lines in that set.",
+      "stimulus_strategy": "Issue two checked paired-miss rounds after legally filling the target set.",
+      "required_monitor_event": "Four independently predicted and observed L2 victim selections, eight correlated refill bursts, and completed CPU responses.",
+      "checker": "Independent cache model compares the four victims in order; MSHRLifecycleChecker checks each paired refill lifecycle and returned data.",
+      "testcases": [
+        "test_repeated_paired_misses_replace_one_l2_set"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
+      "id": "FS.MSHR.LIFECYCLE_END_TO_END",
+      "feature": "Every checked integrated refill MSHR allocation retires after its AXI and L2 refill lifecycle",
+      "classification": "required_legal",
+      "legal_preconditions": "One or two distinct cacheable cold misses complete without reset or protocol error.",
+      "stimulus_strategy": "Pair independent cold misses and allow AXI read responses to complete out of order.",
+      "required_monitor_event": "MSHR slot allocate/retire, matching AXI AR ID, eight R beats, eight L2 refill writes, Directory grant, and CPU response.",
+      "checker": "MSHRLifecycleChecker independently correlates every observed slot lifecycle to its AXI ID/address, beat sequence, L2 writes, grant, and CPU response; AXI agent and CPU data checks validate payloads.",
+      "testcases": [
+        "test_dual_cold_misses_overlap_and_route_axi_responses",
+        "test_paired_cold_miss_same_set_uses_directory_accept_order",
+        "test_repeated_paired_misses_replace_one_l2_set"
+      ],
+      "status": "implemented",
+      "required": true
     }
   ],
   "crosses": [
@@ -779,6 +823,47 @@
       "checker": "FullSystemEnv orders model updates by observed CPU/Directory acceptance and compares victim identity, Directory state, L1 invalidation, all owner data beats, AXI address, and backing-memory contents.",
       "testcases": [
         "test_paired_hit_and_miss_checks_dirty_l2_victim"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.PAIRED_MISS_ORDERING",
+      "feature": "Paired same-set misses × reverse lane presentation order",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Two distinct cold lines map to the same full L2 set and core 0 is delayed by one cycle.",
+      "stimulus_strategy": "Directed paired miss with delayed core 0 request presentation.",
+      "checker": "Directory acceptance order is compared with the driver presentation order and independently predicted replacement sequence.",
+      "testcases": [
+        "test_paired_cold_miss_same_set_uses_directory_accept_order"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS",
+      "feature": "Paired miss × repeated full-set L2 replacement",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Two rounds of distinct paired cold misses target the same initially full L2 set.",
+      "stimulus_strategy": "Two consecutive paired-miss rounds against one L2 set.",
+      "checker": "Four observed victim addresses must match the independent model in order; all eight refill lifecycles pass MSHR/data checking.",
+      "testcases": [
+        "test_repeated_paired_misses_replace_one_l2_set"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.MSHR_LIFECYCLE_END_TO_END",
+      "feature": "AXI read ID × internal refill MSHR slot × CPU response",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "One or two distinct cold misses complete without reset.",
+      "stimulus_strategy": "Two concurrent misses with out-of-order AXI R completion and same-set paired-miss replacement rounds.",
+      "checker": "Every allocation/retirement is paired with its slot ID, line address, eight AXI beats, eight L2 beats, grant, and CPU response.",
+      "testcases": [
+        "test_dual_cold_misses_overlap_and_route_axi_responses",
+        "test_paired_cold_miss_same_set_uses_directory_accept_order",
+        "test_repeated_paired_misses_replace_one_l2_set"
       ],
       "status": "implemented"
     }

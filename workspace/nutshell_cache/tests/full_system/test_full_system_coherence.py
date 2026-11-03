@@ -7,6 +7,7 @@ from toffee import ClockCycles
 from toffee_test import case
 
 from dv.agents.coherent_cpu_agent import CpuRequest
+from dv.checkers.mshr_lifecycle_checker import MshrLifecycleChecker
 from dv.sequences.full_system_sequences import run_legal_mesi_transition_scenario
 
 
@@ -87,6 +88,7 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     env.seed_word(addr0, value0)
     env.seed_word(addr1, value1)
 
+    event_start = len(env.monitor.events)
     result0, result1 = await env.cpu_access_pair(
         CpuRequest(addr0), CpuRequest(addr1)
     )
@@ -101,8 +103,21 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
         item[0] for item in reversed(first_two_ar)
     ], f"AXI R completions were not out of order: AR={first_two_ar}, R={first_two_r}"
     assert env.monitor.mshr_occupancy_histogram[2] > 0
+    lifecycle = MshrLifecycleChecker.check(
+        env.monitor.events[event_start:],
+        expected_lines={addr0, addr1},
+        expected_words={addr0: value0, addr1: value1},
+        expected_cores={addr0: 0, addr1: 1},
+    )
+    assert lifecycle["mshr_allocations"] == 2
+    assert lifecycle["mshr_retirements"] == 2
+    assert lifecycle["axi_read_beats"] == lifecycle["l2_refill_beats"] == 16
     env.coverage.sample_checked_event("FS.AXI.READ_OUT_OF_ORDER", checked=True)
     env.coverage.sample_checked_event("FS.MSHR.OCCUPANCY_2", checked=True)
+    env.coverage.sample_checked_event("FS.MSHR.LIFECYCLE_END_TO_END",
+                                      checked=True)
+    env.coverage.sample_checked_cross("FS.CROSS.MSHR_LIFECYCLE_END_TO_END",
+                                      checked=True)
     assert int(env.dut.protocol_error.value) == 0
 
 

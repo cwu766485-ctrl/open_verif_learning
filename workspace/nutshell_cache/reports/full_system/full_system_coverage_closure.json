@@ -4,11 +4,11 @@
   "dut": "CoherentCacheAxiSubsystem",
   "testcase_exit_status": 0,
   "required_bins": {
-    "FS.CPU.READ.CORE0": 416,
-    "FS.CPU.READ.CORE1": 432,
+    "FS.CPU.READ.CORE0": 427,
+    "FS.CPU.READ.CORE1": 443,
     "FS.CPU.WRITE.CORE0": 315,
     "FS.CPU.WRITE.CORE1": 274,
-    "FS.MESI.I_TO_E": 152,
+    "FS.MESI.I_TO_E": 174,
     "FS.MESI.I_TO_S": 243,
     "FS.MESI.S_TO_M": 185,
     "FS.MESI.M_TO_S": 203,
@@ -42,11 +42,14 @@
     "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 24,
     "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET": 2,
     "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 2,
-    "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1
+    "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1,
+    "FS.CONCURRENCY.PAIRED_MISS_ORDERING": 1,
+    "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS": 1,
+    "FS.MSHR.LIFECYCLE_END_TO_END": 1
   },
   "required_cross_bins": {
-    "FS.CROSS.CORE0.READ": 416,
-    "FS.CROSS.CORE1.READ": 432,
+    "FS.CROSS.CORE0.READ": 427,
+    "FS.CROSS.CORE1.READ": 443,
     "FS.CROSS.CORE1.WRITE": 274,
     "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
     "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
@@ -61,12 +64,15 @@
     "FS.CROSS.RESET_AXI_W_STALL": 1,
     "FS.CROSS.RESET_CPU_RESPONSE_STALL": 1,
     "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1,
-    "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1
+    "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1,
+    "FS.CROSS.PAIRED_MISS_ORDERING": 1,
+    "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS": 1,
+    "FS.CROSS.MSHR_LIFECYCLE_END_TO_END": 1
   },
-  "required_bins_passed": 39,
-  "required_bins_total": 39,
-  "required_cross_bins_passed": 17,
-  "required_cross_bins_total": 17,
+  "required_bins_passed": 42,
+  "required_bins_total": 42,
+  "required_cross_bins_passed": 20,
+  "required_cross_bins_total": 20,
   "missing_bins": [],
   "missing_cross_bins": [],
   "bin_evidence": [
@@ -78,7 +84,7 @@
       "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 416,
+      "hit_count": 427,
       "pass": true,
       "evidence": [
         {
@@ -212,6 +218,16 @@
           "count": 5
         },
         {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 6
+        },
+        {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
           "seed": 49152,
           "count": 1
@@ -241,7 +257,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 1.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 432,
+      "hit_count": 443,
       "pass": true,
       "evidence": [
         {
@@ -368,6 +384,16 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
           "seed": null,
           "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 6
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -650,7 +676,7 @@
       "stimulus_strategy": "Cold read from core 0.",
       "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
       "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
-      "hit_count": 152,
+      "hit_count": 174,
       "pass": true,
       "evidence": [
         {
@@ -787,6 +813,16 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
           "seed": null,
           "count": 9
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 10
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 12
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -2196,6 +2232,60 @@
           "count": 1
         }
       ]
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_MISS_ORDERING",
+      "classification": "required_legal",
+      "feature": "Same-set paired cold misses follow observed Directory acceptance order",
+      "legal_preconditions": "Both cores issue distinct cold lines mapping to one full L2 set; core 0 is intentionally presented one cycle after core 1.",
+      "stimulus_strategy": "Fill one L2 set, then issue a delayed paired cold-miss request to both cores.",
+      "required_monitor_event": "Two accepted Directory requests for the requested lines, AXI read bursts, L2 refill writes, grants, and CPU responses.",
+      "checker": "Paired CPU scoreboard orders state updates by sampled Directory acceptance; MSHRLifecycleChecker correlates slots, AXI IDs, beats, refill writes, grants, and CPU responses.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS",
+      "classification": "required_legal",
+      "feature": "Repeated paired cold misses cause multiple replacements in one L2 set",
+      "legal_preconditions": "One L2 set is full and two rounds of paired cold misses target four distinct lines in that set.",
+      "stimulus_strategy": "Issue two checked paired-miss rounds after legally filling the target set.",
+      "required_monitor_event": "Four independently predicted and observed L2 victim selections, eight correlated refill bursts, and completed CPU responses.",
+      "checker": "Independent cache model compares the four victims in order; MSHRLifecycleChecker checks each paired refill lifecycle and returned data.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.MSHR.LIFECYCLE_END_TO_END",
+      "classification": "required_legal",
+      "feature": "Every checked integrated refill MSHR allocation retires after its AXI and L2 refill lifecycle",
+      "legal_preconditions": "One or two distinct cacheable cold misses complete without reset or protocol error.",
+      "stimulus_strategy": "Pair independent cold misses and allow AXI read responses to complete out of order.",
+      "required_monitor_event": "MSHR slot allocate/retire, matching AXI AR ID, eight R beats, eight L2 refill writes, Directory grant, and CPU response.",
+      "checker": "MSHRLifecycleChecker independently correlates every observed slot lifecycle to its AXI ID/address, beat sequence, L2 writes, grant, and CPU response; AXI agent and CPU data checks validate payloads.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": null,
+          "count": 1
+        }
+      ]
     }
   ],
   "cross_evidence": [
@@ -2205,7 +2295,7 @@
       "legal_preconditions": "Core 0 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 416,
+      "hit_count": 427,
       "pass": true,
       "evidence": [
         {
@@ -2339,6 +2429,16 @@
           "count": 5
         },
         {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 6
+        },
+        {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
           "seed": 49152,
           "count": 1
@@ -2366,7 +2466,7 @@
       "legal_preconditions": "Core 1 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 432,
+      "hit_count": 443,
       "pass": true,
       "evidence": [
         {
@@ -2493,6 +2593,16 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
           "seed": null,
           "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 5
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 6
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -2891,6 +3001,54 @@
       "evidence": [
         {
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.PAIRED_MISS_ORDERING",
+      "classification": "required_legal",
+      "legal_preconditions": "Two distinct cold lines map to the same full L2 set and core 0 is delayed by one cycle.",
+      "stimulus_strategy": "Directed paired miss with delayed core 0 request presentation.",
+      "checker": "Directory acceptance order is compared with the driver presentation order and independently predicted replacement sequence.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_cold_miss_same_set_uses_directory_accept_order",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS",
+      "classification": "required_legal",
+      "legal_preconditions": "Two rounds of distinct paired cold misses target the same initially full L2 set.",
+      "stimulus_strategy": "Two consecutive paired-miss rounds against one L2 set.",
+      "checker": "Four observed victim addresses must match the independent model in order; all eight refill lifecycles pass MSHR/data checking.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.MSHR_LIFECYCLE_END_TO_END",
+      "classification": "required_legal",
+      "legal_preconditions": "One or two distinct cold misses complete without reset.",
+      "stimulus_strategy": "Two concurrent misses with out-of-order AXI R completion and same-set paired-miss replacement rounds.",
+      "checker": "Every allocation/retirement is paired with its slot ID, line address, eight AXI beats, eight L2 beats, grant, and CPU response.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
           "seed": null,
           "count": 1
         }
