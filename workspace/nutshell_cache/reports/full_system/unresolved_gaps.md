@@ -17,8 +17,8 @@ not classify these items as confirmed RTL defects.
 | APB | Integrated tests check exact Hit/Miss/Snoop/Completed deltas, positive access-cycle accumulation, dirty-writeback count against observed AXI writes, error status after BRESP failure, reset-to-zero for all CSR offsets, and APB read during AXI refill. `make coherence_bus_blocks` seeds each 32-bit CSR counter at the boundary, increments through real event inputs, and checks modulo-2^32 APB readback. | **Closed for integrated event/reset behavior and block-level wrap.** No test accumulates 2^32 integrated cache events. APB PREADY is combinationally immediate, so PREADY backpressure is not a supported scenario. |
 | Backpressure / reset cross | New directed full-system tests reset during AXI ARREADY stall, an AXI RVALID gap, AXI AWREADY stall, AXI WREADY stall, CPU response READY-low, and MMIO request READY-low. Existing directed tests exercise delayed MMIO response, refill, owner snoop, writeback and Directory request stalls. | The tested reset/stall points pass, but this is not a complete Cartesian cross. Integrated AXI RREADY/BREADY are tied high and APB PREADY is immediate, so those receiver-side stalls cannot be generated at this top. Snoop/Grant/Directory stalls are not all crossed with reset and unrelated traffic. |
 | Replacement / Snoop | Integrated same-set dirty L1 replacement racing a remote GetS checks PutM, Snoop accept/response, both CPU results and protocol status. Clean and dirty live inclusive L2 victim tests check independent victim identity/Directory prediction, resident L1 invalidation, and (for a live U owner) all eight owner-data beats, AXI writeback contents and later refill. A legal cross-line owner-Snoop/refill overlap also passes. | **Closed for these directed clean-sharer, dirty-owner, and cross-line overlap scenarios.** Exhaustively crossing both cores, every victim MESI state, and every Snoop/Put timing point remains open. |
-| Reference model | CPU-visible data, byte masks, selected MESI/Directory commits, exact same-address store ordering, and dirty writeback contents are checked independently. Serial L2 replacement now compares the model's predicted victim line, Directory state/owner/sharers, resident L1 invalidations, and live-owner writeback data against observed events. | This victim checker is called from the serialized `cpu_access` path. Full independent correlation of paired-lane L2 replacements and every internal MSHR allocation/retirement remains open. |
-| Random feedback | Reproducible seeded scenarios and checked coverage run; extended stress passed 20 × 500 CPU operations, 20 × 10 mixed CPU/MMIO/APB/AXI rounds, and 20 resource-aware same/distinct-set seeds. The integrated coverage suite closes 38/38 implemented Required bins and 16/16 implemented Required crosses, including six explicit reset × supported-stall crosses. | The scheduler does not adapt across every Directory, Snoop, MSHR, L2, AXI, MMIO, and APB bin. Larger planned tiers (100×500, 200×2000, 500×4000) were not run in this evidence set. |
+| Reference model | CPU-visible data, byte masks, selected MESI/Directory commits, exact same-address store ordering, and dirty writeback contents are checked independently. Serial L2 replacement compares model-predicted victim and Directory metadata against observed events. A paired CPU hit plus opposite-core cold miss now checks a same-set dirty-owner victim, snoop invalidation, owner data, AXI writeback, and both CPU results against the independent model. | The paired-lane checker covers this targeted hit+miss replacement scenario. Paired miss/miss ordering, multiple same-set paired replacements, and full independent correlation of every internal MSHR allocation/retirement remain open. |
+| Random feedback | Reproducible seeded scenarios and checked coverage run; extended stress passed 20 × 500 CPU operations, 20 × 10 mixed CPU/MMIO/APB/AXI rounds, and 20 resource-aware same/distinct-set seeds. The integrated coverage suite closes 39/39 implemented Required bins and 17/17 implemented Required crosses, including the paired dirty-victim bin and six explicit reset × supported-stall crosses. | The scheduler does not adapt across every Directory, Snoop, MSHR, L2, AXI, MMIO, and APB bin. Larger planned tiers (100×500, 200×2000, 500×4000) were not run in this evidence set. |
 | Replay | A committed 103-event trace was replayed successfully with scenario selection and configuration. | Scheduling is reevaluated at runtime; a general waveform exporter and failure-trace minimizer are not implemented. Replay is not cycle-identical. |
 | Formal | Existing component/bounded Formal targets in `coherence_verify` pass. | No new unbounded proof of the complete integrated system is claimed. |
 
@@ -54,16 +54,16 @@ interfaces. The scope column is part of the claim.
 
 ## Closure boundary
 
-- The sign-off scenario run closes 38/38 implemented Required functional bins
-  and 16/16 implemented Required cross bins. Planned/unreachable full-system
+- The sign-off scenario run closes 39/39 implemented Required functional bins
+  and 17/17 implemented Required cross bins. Planned/unreachable full-system
   features remain uncounted; in particular `FS.MSHR.OCCUPANCY_4` remains a
   Block-level result, not a system-level bin.
 - `make COHERENCE_JOBS=2 coherence_verify` passed locally, including Blocks,
   Formal, subsystem regression, Python/AXI regressions, stress, mutation and
   Benchmark v4. `make coherence_full_system_stress` passed its 60 seeded
-  environments. `make coherence_full_system_coverage` passed 42 environments
-  with one conditional saved-trace replay skipped; closure was 38/38 Required
-  functional bins and 16/16 Required crosses. These are separate commands and
+  environments. `make coherence_full_system_coverage` passed 43 environments
+  with one conditional saved-trace replay skipped; closure was 39/39 Required
+  functional bins and 17/17 Required crosses. These are separate commands and
   scopes; `coherence_verify` alone does not run the full-system coverage target.
 - Verilator reported testbench empty-pin and RTL unused-signal warnings during
   the run. They were not treated as functional failures and have not been

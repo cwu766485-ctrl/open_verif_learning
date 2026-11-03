@@ -569,6 +569,20 @@
       ],
       "status": "implemented",
       "required": true
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM",
+      "feature": "Paired CPU hit/miss traffic with a dirty inclusive L2 victim",
+      "classification": "required_legal",
+      "legal_preconditions": "Each L1 has four resident lines in one L2 set; one modeled resident is M-owned, and a paired hit plus opposite-core miss causes inclusive eviction.",
+      "stimulus_strategy": "Fill one L2 set through legal CPU reads, promote the independently predicted next L2 victim to M, then issue a hit/miss pair from both cores.",
+      "required_monitor_event": "Paired CPU accepts/completions, one matching L2 victim selection, owner snoop/data beats, and AXI writeback.",
+      "checker": "FullSystemEnv orders model updates by observed CPU/Directory acceptance and compares victim identity, Directory state, L1 invalidation, all owner data beats, AXI address, and backing-memory contents.",
+      "testcases": [
+        "test_paired_hit_and_miss_checks_dirty_l2_victim"
+      ],
+      "status": "implemented",
+      "required": true
     }
   ],
   "crosses": [
@@ -752,6 +766,19 @@
       "checker": "MMIO handshake observation, reset-epoch check, no stale CPU/MMIO response, exactly one post-reset completion, and protocol-error check.",
       "testcases": [
         "test_reset_during_mmio_request_backpressure"
+      ],
+      "status": "implemented"
+    },
+    {
+      "id": "FS.CROSS.PAIRED_L2_DIRTY_VICTIM",
+      "feature": "Paired CPU traffic × same-set dirty L2 victim",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Each L1 has four resident lines in one L2 set; one modeled resident is M-owned, and a paired hit plus opposite-core miss causes inclusive eviction.",
+      "stimulus_strategy": "Fill one L2 set through legal CPU reads, promote the independently predicted next L2 victim to M, then issue a hit/miss pair from both cores.",
+      "checker": "FullSystemEnv orders model updates by observed CPU/Directory acceptance and compares victim identity, Directory state, L1 invalidation, all owner data beats, AXI address, and backing-memory contents.",
+      "testcases": [
+        "test_paired_hit_and_miss_checks_dirty_l2_victim"
       ],
       "status": "implemented"
     }

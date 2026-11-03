@@ -2,7 +2,7 @@
   "schema_version": 1,
   "dut": "CoherentCacheAxiSubsystem",
   "pytest_exit_status": 0,
-  "test_environment_count": 42,
+  "test_environment_count": 43,
   "runs": [
     {
       "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
@@ -16682,6 +16682,154 @@
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+      "scenario_id": "test_paired_hit_and_miss_checks_dirty_l2_victim",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 12
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x02000000": "0xcace000000000000",
+        "0x02000008": "0xcace000000000001",
+        "0x02000010": "0xcace000000000002",
+        "0x02000018": "0xcace000000000003",
+        "0x02000020": "0xcace000000000004",
+        "0x02000028": "0xcace000000000005",
+        "0x02000030": "0xcace000000000006",
+        "0x02000038": "0xcace000000000007",
+        "0x02008000": "0xcace000000000100",
+        "0x02008008": "0xcace000000000101",
+        "0x02008010": "0xcace000000000102",
+        "0x02008018": "0xcace000000000103",
+        "0x02008020": "0xcace000000000104",
+        "0x02008028": "0xcace000000000105",
+        "0x02008030": "0xcace000000000106",
+        "0x02008038": "0xcace000000000107",
+        "0x02010000": "0xcace000000000200",
+        "0x02010008": "0xcace000000000201",
+        "0x02010010": "0xcace000000000202",
+        "0x02010018": "0xcace000000000203",
+        "0x02010020": "0xcace000000000204",
+        "0x02010028": "0xcace000000000205",
+        "0x02010030": "0xcace000000000206",
+        "0x02010038": "0xcace000000000207",
+        "0x02018000": "0xcace000000000300",
+        "0x02018008": "0xcace000000000301",
+        "0x02018010": "0xcace000000000302",
+        "0x02018018": "0xcace000000000303",
+        "0x02018020": "0xcace000000000304",
+        "0x02018028": "0xcace000000000305",
+        "0x02018030": "0xcace000000000306",
+        "0x02018038": "0xcace000000000307",
+        "0x02020000": "0xcace000000000400",
+        "0x02020008": "0xcace000000000401",
+        "0x02020010": "0xcace000000000402",
+        "0x02020018": "0xcace000000000403",
+        "0x02020020": "0xcace000000000404",
+        "0x02020028": "0xcace000000000405",
+        "0x02020030": "0xcace000000000406",
+        "0x02020038": "0xcace000000000407",
+        "0x02028000": "0xcace000000000500",
+        "0x02028008": "0xcace000000000501",
+        "0x02028010": "0xcace000000000502",
+        "0x02028018": "0xcace000000000503",
+        "0x02028020": "0xcace000000000504",
+        "0x02028028": "0xcace000000000505",
+        "0x02028030": "0xcace000000000506",
+        "0x02028038": "0xcace000000000507",
+        "0x02030000": "0xcace000000000600",
+        "0x02030008": "0xcace000000000601",
+        "0x02030010": "0xcace000000000602",
+        "0x02030018": "0xcace000000000603",
+        "0x02030020": "0xcace000000000604",
+        "0x02030028": "0xcace000000000605",
+        "0x02030030": "0xcace000000000606",
+        "0x02030038": "0xcace000000000607",
+        "0x02038000": "0xcace000000000700",
+        "0x02038008": "0xcace000000000701",
+        "0x02038010": "0xcace000000000702",
+        "0x02038018": "0xcace000000000703",
+        "0x02038020": "0xcace000000000704",
+        "0x02038028": "0xcace000000000705",
+        "0x02038030": "0xcace000000000706",
+        "0x02038038": "0xcace000000000707",
+        "0x02040000": "0xf111000002040000"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.MESI.E_TO_M": 1,
+          "FS.MESI.I_TO_E": 9
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 10,
+          "l2.lookup": 9,
+          "directory_context.allocate": 10,
+          "axi.read_address": 9,
+          "directory.same_set_conflict": 362,
+          "mshr.allocate": 9,
+          "axi.read_valid_gap": 189,
+          "axi.read_beat": 72,
+          "l2.refill_start": 9,
+          "l2.line_write_beat": 80,
+          "l2.refill_end": 9,
+          "directory.metadata_commit": 11,
+          "mshr.retire": 9,
+          "directory.grant_accept": 10,
+          "l1.metadata_commit": 12,
+          "cpu.response_complete": 11,
+          "cpu.request_accept": 9,
+          "directory_context.retire": 10,
+          "axi.stall": 5,
+          "l2_victim.select": 1,
+          "snoop.accept": 1,
+          "l2_victim.snoop_accept": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1,
+          "axi.write_address": 1,
+          "axi.write_beat": 8,
+          "axi.write_response": 1
+        },
+        "stall_cycles": {
+          "AR": 2,
+          "AW": 1,
+          "W": 2
+        },
+        "mshr_occupancy_histogram": {
+          "0": 234,
+          "1": 362
+        },
+        "directory_context_histogram": {
+          "0": 46,
+          "1": 550
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 1
       }
     },
     {

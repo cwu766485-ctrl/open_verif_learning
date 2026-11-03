@@ -4,11 +4,11 @@
   "dut": "CoherentCacheAxiSubsystem",
   "testcase_exit_status": 0,
   "required_bins": {
-    "FS.CPU.READ.CORE0": 411,
-    "FS.CPU.READ.CORE1": 427,
-    "FS.CPU.WRITE.CORE0": 314,
+    "FS.CPU.READ.CORE0": 416,
+    "FS.CPU.READ.CORE1": 432,
+    "FS.CPU.WRITE.CORE0": 315,
     "FS.CPU.WRITE.CORE1": 274,
-    "FS.MESI.I_TO_E": 143,
+    "FS.MESI.I_TO_E": 152,
     "FS.MESI.I_TO_S": 243,
     "FS.MESI.S_TO_M": 185,
     "FS.MESI.M_TO_S": 203,
@@ -25,7 +25,7 @@
     "FS.AXI.ERROR_RESPONSE": 1,
     "FS.MMIO.RESET_CANCEL": 1,
     "FS.MESI.I_TO_M": 255,
-    "FS.MESI.E_TO_M": 30,
+    "FS.MESI.E_TO_M": 31,
     "FS.MESI.E_TO_S": 40,
     "FS.MESI.E_TO_I": 32,
     "FS.MESI.S_TO_I": 185,
@@ -41,11 +41,12 @@
     "FS.CONCURRENCY.SNOOP_WITH_REFILL": 1,
     "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 24,
     "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET": 2,
-    "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 2
+    "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 2,
+    "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1
   },
   "required_cross_bins": {
-    "FS.CROSS.CORE0.READ": 411,
-    "FS.CROSS.CORE1.READ": 427,
+    "FS.CROSS.CORE0.READ": 416,
+    "FS.CROSS.CORE1.READ": 432,
     "FS.CROSS.CORE1.WRITE": 274,
     "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
     "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
@@ -59,12 +60,13 @@
     "FS.CROSS.RESET_AXI_AW_STALL": 1,
     "FS.CROSS.RESET_AXI_W_STALL": 1,
     "FS.CROSS.RESET_CPU_RESPONSE_STALL": 1,
-    "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1
+    "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1,
+    "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1
   },
-  "required_bins_passed": 38,
-  "required_bins_total": 38,
-  "required_cross_bins_passed": 16,
-  "required_cross_bins_total": 16,
+  "required_bins_passed": 39,
+  "required_bins_total": 39,
+  "required_cross_bins_passed": 17,
+  "required_cross_bins_total": 17,
   "missing_bins": [],
   "missing_cross_bins": [],
   "bin_evidence": [
@@ -76,7 +78,7 @@
       "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 411,
+      "hit_count": 416,
       "pass": true,
       "evidence": [
         {
@@ -205,6 +207,11 @@
           "count": 2
         },
         {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 5
+        },
+        {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
           "seed": 49152,
           "count": 1
@@ -234,7 +241,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 1.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 427,
+      "hit_count": 432,
       "pass": true,
       "evidence": [
         {
@@ -358,6 +365,11 @@
           "count": 4
         },
         {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 5
+        },
+        {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
           "seed": 49152,
           "count": 1
@@ -387,7 +399,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
-      "hit_count": 314,
+      "hit_count": 315,
       "pass": true,
       "evidence": [
         {
@@ -504,6 +516,11 @@
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
           "seed": 53507,
           "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -633,7 +650,7 @@
       "stimulus_strategy": "Cold read from core 0.",
       "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
       "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
-      "hit_count": 143,
+      "hit_count": 152,
       "pass": true,
       "evidence": [
         {
@@ -765,6 +782,11 @@
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
           "seed": 53507,
           "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 9
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -1564,7 +1586,7 @@
       "stimulus_strategy": "Local store to an E line.",
       "required_monitor_event": "L1 metadata commit E->M after completed CPU store.",
       "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
-      "hit_count": 30,
+      "hit_count": 31,
       "pass": true,
       "evidence": [
         {
@@ -1621,6 +1643,11 @@
           "test_id": "tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890581839]",
           "seed": 23890581839,
           "count": 3
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 1
         }
       ]
     },
@@ -2151,6 +2178,24 @@
           "count": 1
         }
       ]
+    },
+    {
+      "id": "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM",
+      "classification": "required_legal",
+      "feature": "Paired CPU hit/miss traffic with a dirty inclusive L2 victim",
+      "legal_preconditions": "Each L1 has four resident lines in one L2 set; one modeled resident is M-owned, and a paired hit plus opposite-core miss causes inclusive eviction.",
+      "stimulus_strategy": "Fill one L2 set through legal CPU reads, promote the independently predicted next L2 victim to M, then issue a hit/miss pair from both cores.",
+      "required_monitor_event": "Paired CPU accepts/completions, one matching L2 victim selection, owner snoop/data beats, and AXI writeback.",
+      "checker": "FullSystemEnv orders model updates by observed CPU/Directory acceptance and compares victim identity, Directory state, L1 invalidation, all owner data beats, AXI address, and backing-memory contents.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 1
+        }
+      ]
     }
   ],
   "cross_evidence": [
@@ -2160,7 +2205,7 @@
       "legal_preconditions": "Core 0 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 411,
+      "hit_count": 416,
       "pass": true,
       "evidence": [
         {
@@ -2289,6 +2334,11 @@
           "count": 2
         },
         {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 5
+        },
+        {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
           "seed": 49152,
           "count": 1
@@ -2316,7 +2366,7 @@
       "legal_preconditions": "Core 1 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 427,
+      "hit_count": 432,
       "pass": true,
       "evidence": [
         {
@@ -2438,6 +2488,11 @@
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507]",
           "seed": 53507,
           "count": 4
+        },
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
+          "seed": null,
+          "count": 5
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -2820,6 +2875,22 @@
       "evidence": [
         {
           "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_mmio_request_backpressure",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.PAIRED_L2_DIRTY_VICTIM",
+      "classification": "required_legal",
+      "legal_preconditions": "Each L1 has four resident lines in one L2 set; one modeled resident is M-owned, and a paired hit plus opposite-core miss causes inclusive eviction.",
+      "stimulus_strategy": "Fill one L2 set through legal CPU reads, promote the independently predicted next L2 victim to M, then issue a hit/miss pair from both cores.",
+      "checker": "FullSystemEnv orders model updates by observed CPU/Directory acceptance and compares victim identity, Directory state, L1 invalidation, all owner data beats, AXI address, and backing-memory contents.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_paired_l2_replacement.py::test_paired_hit_and_miss_checks_dirty_l2_victim",
           "seed": null,
           "count": 1
         }

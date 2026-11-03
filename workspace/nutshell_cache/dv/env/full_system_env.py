@@ -260,6 +260,7 @@ class FullSystemEnv:
             raise ValueError("cpu_access_pair needs at least one request")
         lines = []
         expected = {}
+        pre_state = {}
         transition_start = len(self.reference.transitions)
         for core, req in present:
             if not isinstance(req, CpuRequest):
@@ -270,15 +271,58 @@ class FullSystemEnv:
             if line in lines:
                 raise ValueError("paired checker requires distinct cache lines")
             lines.append(line)
+            pre_state[core] = self.reference.states[line][core]
             expected[core] = self.reference.predict(
                 core, req.addr, write=req.write, write_data=req.data,
                 write_mask=req.mask
             )[0]
 
         event_start = len(self.monitor.events)
+        victim_start = len(self.reference.l2_victim_selections)
         results = await self.cpu.access_pair(core0, core1, **driver_options)
-        observed_by_line = {}
+
+        # Advance the architectural model in the order the DUT actually
+        # admitted each operation. A cache hit has no Directory request, so
+        # its CPU handshake is the ordering point. An L1 miss is ordered at
+        # the corresponding accepted Directory request; this matters when two
+        # paired misses contend for a same-set L2 entry.
+        events = self.monitor.events[event_start:]
+        ordered = []
         for core, req in present:
+            line = req.addr & ~0x3F
+            cpu_accept = next((event for event in events
+                               if event["source"] == "cpu" and
+                               event["event_type"] == "request_accept" and
+                               event["core"] == core and
+                               event["address"] == (req.addr & 0xFFFF_FFFF)),
+                              None)
+            accepted_cycle = self.cpu.last_pair_accepted_at.get(core, 0)
+            if accepted_cycle <= 0:
+                raise AssertionError(
+                    f"paired CPU{core} request {req.addr:#x} has no sampled handshake"
+                )
+            if pre_state[core] == "I":
+                ordering_event = next((event for event in events
+                                       if event["source"] == "directory" and
+                                       event["event_type"] == "request_accept" and
+                                       (event["address"] & ~0x3F) == line), None)
+                if ordering_event is None:
+                    raise AssertionError(
+                        f"paired CPU{core} miss {req.addr:#x} has no accepted "
+                        "Directory request"
+                    )
+            else:
+                # The driver samples VALID && READY in the transaction loop.
+                # A same-cycle hit response can make the passive sampler miss
+                # the short request pulse under Toffee scheduler ordering.
+                accepted_cycle = (cpu_accept["cycle"] if cpu_accept else
+                                  accepted_cycle)
+                ordering_event = None
+            if pre_state[core] == "I":
+                accepted_cycle = ordering_event["cycle"]
+            ordered.append((accepted_cycle, core, req))
+
+        for _cycle, core, req in sorted(ordered, key=lambda item: (item[0], item[1])):
             result = results[core]
             if not req.write and result != expected[core]:
                 raise AssertionError(
@@ -288,6 +332,12 @@ class FullSystemEnv:
             self.reference.observe(core, req.addr, write=req.write,
                                    write_data=req.data, write_mask=req.mask,
                                    response_data=result)
+
+        # Check commits only after both architectural updates have been
+        # applied. The second same-set miss may inclusively evict the first
+        # line, so checking against a half-updated model would be order-biased.
+        observed_by_line = {}
+        for _cycle, core, req in sorted(ordered, key=lambda item: (item[0], item[1])):
             line = req.addr & ~0x3F
             if line not in observed_by_line:
                 observed_by_line[line] = self._check_observed_commits(
@@ -297,6 +347,7 @@ class FullSystemEnv:
                              self.cpu.last_pair_accepted_at[core],
                              self.cpu.last_pair_completed_at[core],
                              transition_start, observed_by_line[line])
+        self._check_l2_victim_predictions(victim_start, event_start)
         return results[0], results[1]
 
     def coverage_report(self):
