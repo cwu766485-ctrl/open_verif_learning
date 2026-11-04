@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-10-31 15:49 +08.
+Generated: 2026-11-04 11:20 +08.
 
 ## Scope and source manifest
 
@@ -16,23 +16,23 @@ Each row is one top/build and its documented run set. These denominators are not
 
 | Dataset | Line hit/total | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Full coherent subsystem regression | 858/1006 | 450/536 | 19916/26978 | 30/54 | 7/48 |
-| AXI cache subsystem E2E (five fixed seeds) | 916/1082 | 498/612 | 15559/31836 | 30/54 | 4/48 |
+| Full coherent subsystem regression | 843/998 | 461/556 | 19980/27474 | 30/54 | 7/48 |
+| AXI cache subsystem E2E (five fixed seeds) | 901/1074 | 509/632 | 15623/32332 | 30/54 | 4/48 |
 | DirectoryController block | 117/188 | 30/42 | 236/612 | 9/10 | 2/9 |
 | DirectoryMshrBank block | 167/292 | 100/128 | 1063/2904 | 31/40 | 11/36 |
 | SharedLineEngine block | 101/104 | 44/52 | 304/648 | N/A | N/A |
 | MesiL1Controller block | 104/132 | 40/46 | 629/1804 | 7/7 | 2/6 |
 | SharedL2DirectoryArray block | 75/79 | 65/74 | 197/1778 | N/A | N/A |
-| Bus blocks | 67/68 | 70/76 | 682/2450 | N/A | N/A |
+| Bus blocks | 67/68 | 70/76 | 1100/2450 | N/A | N/A |
 
 ## Gap inventory
 
-The detailed `coverage_closure_matrix.csv` contains **994 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
+The detailed `coverage_closure_matrix.csv` contains **1026 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
 
 | Primary subsystem gap type | Unhit points |
 | --- | ---: |
-| LCOV RTL line | 148 |
-| Verilator branch | 86 |
+| LCOV RTL line | 155 |
+| Verilator branch | 95 |
 | FSM state | 24 |
 | FSM arc | 41 |
 
@@ -42,7 +42,7 @@ The matrix records source path, source line, Block, branch/state/arc identity, f
 
 Functional coverage closure artifact: 49/49 required bins (49 total records).
 Cross coverage closure artifact: 19/19 required bins (19 total records).
-The full local `coherence_verify` run at source SHA `9797623ae2c63563f9419c743e4b91e03c0e0d9b` refreshed the Python closure artifact; its log reports 49/49 functional bins. Cross closure is 19/19 in the generated artifact. The report generator reads these observations but does not independently recalculate functional coverage. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
+These are the latest existing closure JSON observations, not newly rerun closure from this report generator. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
 
@@ -59,7 +59,19 @@ The full local `coherence_verify` run at source SHA `9797623ae2c63563f9419c743e4
 
 ## Regression evidence and remaining status
 
-Local `make COHERENCE_JOBS=2 coherence_verify` result: **PASS** at tested source SHA `9797623ae2c63563f9419c743e4b91e03c0e0d9b` (2026-10-31 07:29:57 UTC); log: `reports/closure/coherence_verify_final.log`. The run included 7 bounded formal tasks, Python 36 passed/1 deselected, 9 checker fault injections, AXI Python 3 passed, standard and dense-set stress 20 seeds each, RTL mutation 4/4, and Benchmark v4 24 validated rows.
+No final-candidate full-regression status file is present.
 This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
 
 **Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.
+
+## DE/DV next-phase regression evidence
+
+The 2026-11-04 regression candidate passed `coherence_verify`,
+`coherence_full_system_verify`, `coherence_hit_under_miss`,
+`coherence_full_system_stress`, and `coherence_coverage_audit`. Integrated
+Python coverage is 52/52 Required and 28/28 Cross; H-u-M and paired-miss tests
+are checked in the full-system feature report. These functional results do
+not close the raw RTL points above because the Python/Toffee instrumented build
+does not emit compatible Verilator source-coverage points. See
+[`de_dv_next_phase_signoff.md`](de_dv_next_phase_signoff.md) for the exact
+scenario and stress evidence. Raw coverage sign-off remains OPEN.

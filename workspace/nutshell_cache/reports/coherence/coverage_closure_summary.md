@@ -8,8 +8,8 @@ Zero count means unobserved in that raw dataset. It is not an unreachable-code w
 | --- | --- | ---: |
 | AXI cache subsystem E2E (five fixed seeds) | FSM arc | 44 |
 | AXI cache subsystem E2E (five fixed seeds) | FSM state | 24 |
-| AXI cache subsystem E2E (five fixed seeds) | LCOV RTL line | 166 |
-| AXI cache subsystem E2E (five fixed seeds) | Verilator branch | 114 |
+| AXI cache subsystem E2E (five fixed seeds) | LCOV RTL line | 173 |
+| AXI cache subsystem E2E (five fixed seeds) | Verilator branch | 123 |
 | Bus blocks | LCOV RTL line | 1 |
 | Bus blocks | Verilator branch | 6 |
 | DirectoryController block | FSM arc | 7 |
@@ -22,27 +22,27 @@ Zero count means unobserved in that raw dataset. It is not an unreachable-code w
 | DirectoryMshrBank block | Verilator branch | 28 |
 | Full coherent subsystem regression | FSM arc | 41 |
 | Full coherent subsystem regression | FSM state | 24 |
-| Full coherent subsystem regression | LCOV RTL line | 148 |
-| Full coherent subsystem regression | Verilator branch | 86 |
+| Full coherent subsystem regression | LCOV RTL line | 155 |
+| Full coherent subsystem regression | Verilator branch | 95 |
 | MesiL1Controller block | FSM arc | 4 |
 | MesiL1Controller block | LCOV RTL line | 28 |
 | MesiL1Controller block | Verilator branch | 6 |
 | SharedL2DirectoryArray block | LCOV RTL line | 4 |
 | SharedL2DirectoryArray block | Verilator branch | 9 |
-| SharedLineEngine block | LCOV RTL line | 98 |
-| SharedLineEngine block | Verilator branch | 42 |
+| SharedLineEngine block | LCOV RTL line | 3 |
+| SharedLineEngine block | Verilator branch | 8 |
 
 Risk totals below describe only the primary subsystem run; rows across different runs are not pooled.
 
 | Primary dataset risk label | Points |
 | --- | ---: |
-| High | 210 |
+| High | 226 |
 | Medium | 89 |
 | Low | 0 |
 
-**Open high-risk points:** 210 (none are waived by this report).
+**Open high-risk points:** 226 (none are waived by this report).
 
-Primary-run review accounting: 85 points fall in hand-authored source-range reviews; 214 are mapped to source/path but not individually reviewed. All remain open until their prescribed test/proof evidence is verified.
+Primary-run review accounting: 85 points fall in hand-authored source-range reviews; 230 are mapped to source/path but not individually reviewed. All remain open until their prescribed test/proof evidence is verified.
 
 Waiver inventory: zero approved or automatic waivers. The header-only `coverage_closure_waivers.csv` is retained as the explicit waiver record.
 

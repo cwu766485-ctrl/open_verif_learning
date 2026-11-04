@@ -47,8 +47,8 @@ async def test_seeded_cpu_mmio_apb_axi_overlap(full_system_env, seed):
     )
     env.trace_scenario_id = "SEEDED_MIXED_CPU_MMIO_APB_AXI"
     rounds = int(os.environ.get("FULL_SYSTEM_MIXED_ROUNDS", "6"))
-    if not 1 <= rounds <= 100:
-        raise ValueError("FULL_SYSTEM_MIXED_ROUNDS must be in [1, 100]")
+    if not 1 <= rounds <= 2000:
+        raise ValueError("FULL_SYSTEM_MIXED_ROUNDS must be in [1, 2000]")
     env.trace_config.update({"mixed_random_seed": seed, "rounds": rounds})
 
     mmio_addrs = (0x3000_1200, 0x3000_1208)
@@ -56,6 +56,9 @@ async def test_seeded_cpu_mmio_apb_axi_overlap(full_system_env, seed):
         env.mmio.words[address] = 0xA500_0000_0000_0000 | (seed << 8) | index
 
     checked_rounds = []
+    # Keep the generated prefix available even if a checker fails mid-seed.
+    # The seed plus this operation list is sufficient to replay the stimulus.
+    env.trace_operations = checked_rounds
     for operation in range(rounds):
         cache_core = (operation + seed) & 1
         mmio_core = 1 - cache_core
@@ -88,6 +91,24 @@ async def test_seeded_cpu_mmio_apb_axi_overlap(full_system_env, seed):
         ar_start = len(env.axi.read_addresses)
         group = env.cpu.request_group
         response_stall = rng.randrange(1, 4)
+
+        operation_record = {
+            "operation": operation,
+            "cache_core": cache_core,
+            "cache_address": word_addr,
+            "cache_write": write,
+            "cache_data": write_data,
+            "cache_mask": write_mask,
+            "cache_initial_data": initial,
+            "mmio_core": mmio_core,
+            "mmio_address": mmio_addr,
+            "mmio_write": mmio_write,
+            "mmio_data": mmio_data,
+            "mmio_mask": mmio_mask,
+            "mmio_initial_data": mmio_old,
+            "response_stall_cycles": response_stall,
+        }
+        checked_rounds.append(operation_record)
 
         async def apb_read_during_this_refill():
             for _ in range(300):
@@ -205,15 +226,9 @@ async def test_seeded_cpu_mmio_apb_axi_overlap(full_system_env, seed):
         env.coverage.sample_checked_event("FS.APB.READ_DURING_AXI", checked=True)
         env.coverage.sample_checked_cross("FS.CROSS.APB_WITH_AXI_TRAFFIC",
                                           checked=True)
-        checked_rounds.append({
-            "operation": operation, "cache_core": cache_core,
-            "cache_address": word_addr, "cache_write": write,
-            "mmio_core": mmio_core, "mmio_address": mmio_addr,
-            "mmio_write": mmio_write, "apb_miss_count": apb_misses,
-            "response_stall_cycles": response_stall,
-        })
+        operation_record["apb_miss_count"] = apb_misses
+        operation_record["checker_status"] = "passed"
 
-    env.trace_operations = checked_rounds
     assert len(env.axi.read_addresses) - len(env.axi.read_completions) == 0
     assert env.axi.stalls["AR"] > 0, "randomized AR backpressure was not exercised"
     assert env.axi.valid_gaps["R"] > 0, "randomized R source gaps were not exercised"

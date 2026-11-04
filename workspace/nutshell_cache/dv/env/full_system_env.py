@@ -45,6 +45,8 @@ class FullSystemEnv:
         self.trace_test_status = "incomplete"
         self.trace_failure_context = None
         self.trace_operations = []
+        self.trace_protocol_error = None
+        self.trace_fatal_error = None
 
     def seed_word(self, addr, value):
         """Seed independent CPU-visible and backing-memory models before use."""

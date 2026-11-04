@@ -10,16 +10,16 @@ Main subsystem smoke, multisnoop, five seeded regressions and Directory MSHR reg
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 858/1006 | 148 |
-| branch | 450/536 | 86 |
-| toggle | 19916/26978 | 7062 |
+| line | 843/998 | 155 |
+| branch | 461/556 | 95 |
+| toggle | 19980/27474 | 7494 |
 | fsm_state | 30/54 | 24 |
 | fsm_arc | 7/48 | 41 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 59/62 | 54/62 | 5066/6300 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 65/82 | 5130/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 468/648 | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 114/188 | 29/42 | 497/612 | 18/40 | 4/36 |
 | `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 863/2292 | N/A | N/A |
@@ -46,9 +46,9 @@ Five official AXI E2E seeds merged only within this identical top/build/test def
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 916/1082 | 166 |
-| branch | 498/612 | 114 |
-| toggle | 15559/31836 | 16277 |
+| line | 901/1074 | 173 |
+| branch | 509/632 | 123 |
+| toggle | 15623/32332 | 16709 |
 | fsm_state | 30/54 | 24 |
 | fsm_arc | 4/48 | 44 |
 
@@ -57,7 +57,7 @@ Five official AXI E2E seeds merged only within this identical top/build/test def
 | `rtl/bus/apb/CachePerformanceCsr.sv` | 13/17 | 7/8 | 117/558 | N/A | N/A |
 | `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | 50/51 | 57/68 | 793/1892 | N/A | N/A |
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 260/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 59/62 | 55/62 | 3792/6300 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 66/82 | 3856/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 66/104 | 34/52 | 309/648 | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 113/188 | 27/42 | 282/612 | 18/40 | 2/36 |
 | `rtl/directory/DirectoryMshrBank.sv` | 91/104 | 70/86 | 516/2292 | N/A | N/A |
@@ -264,14 +264,14 @@ Standalone AXI line adapter and APB CSR tests, including malformed response and 
 | --- | ---: | ---: |
 | line | 67/68 | 1 |
 | branch | 70/76 | 6 |
-| toggle | 682/2450 | 1768 |
+| toggle | 1100/2450 | 1350 |
 | fsm_state | N/A | N/A |
 | fsm_arc | N/A | N/A |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/bus/apb/CachePerformanceCsr.sv` | 16/17 | 8/8 | 51/558 | N/A | N/A |
-| `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | 51/51 | 62/68 | 631/1892 | N/A | N/A |
+| `rtl/bus/apb/CachePerformanceCsr.sv` | 16/17 | 8/8 | 433/558 | N/A | N/A |
+| `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | 51/51 | 62/68 | 667/1892 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 

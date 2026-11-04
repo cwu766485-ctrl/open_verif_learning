@@ -4,11 +4,11 @@
   "dut": "CoherentCacheAxiSubsystem",
   "testcase_exit_status": 0,
   "required_bins": {
-    "FS.CPU.READ.CORE0": 427,
+    "FS.CPU.READ.CORE0": 435,
     "FS.CPU.READ.CORE1": 443,
-    "FS.CPU.WRITE.CORE0": 315,
+    "FS.CPU.WRITE.CORE0": 316,
     "FS.CPU.WRITE.CORE1": 274,
-    "FS.MESI.I_TO_E": 174,
+    "FS.MESI.I_TO_E": 182,
     "FS.MESI.I_TO_S": 243,
     "FS.MESI.S_TO_M": 185,
     "FS.MESI.M_TO_S": 203,
@@ -24,7 +24,7 @@
     "FS.AXI.RESET_CANCEL": 1,
     "FS.AXI.ERROR_RESPONSE": 1,
     "FS.MMIO.RESET_CANCEL": 1,
-    "FS.MESI.I_TO_M": 255,
+    "FS.MESI.I_TO_M": 256,
     "FS.MESI.E_TO_M": 31,
     "FS.MESI.E_TO_S": 40,
     "FS.MESI.E_TO_I": 32,
@@ -45,10 +45,20 @@
     "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1,
     "FS.CONCURRENCY.PAIRED_MISS_ORDERING": 1,
     "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS": 1,
-    "FS.MSHR.LIFECYCLE_END_TO_END": 1
+    "FS.MSHR.LIFECYCLE_END_TO_END": 1,
+    "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
+    "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": 1,
+    "FS.HIT_UNDER_MISS.RESPONSE_STALL": 1,
+    "FS.HIT_UNDER_MISS.RESET_CANCEL": 1,
+    "FS.HIT_UNDER_MISS.TXN_ID_WRAP": 1,
+    "FS.STRESS.RESET_AR_STALL": 1,
+    "FS.STRESS.RESET_R_GAP": 1,
+    "FS.STRESS.RESET_CPU_RESPONSE_STALL": 1,
+    "FS.STRESS.RESET_MMIO_REQUEST_STALL": 1,
+    "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 4
   },
   "required_cross_bins": {
-    "FS.CROSS.CORE0.READ": 427,
+    "FS.CROSS.CORE0.READ": 435,
     "FS.CROSS.CORE1.READ": 443,
     "FS.CROSS.CORE1.WRITE": 274,
     "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
@@ -67,12 +77,20 @@
     "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1,
     "FS.CROSS.PAIRED_MISS_ORDERING": 1,
     "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS": 1,
-    "FS.CROSS.MSHR_LIFECYCLE_END_TO_END": 1
+    "FS.CROSS.MSHR_LIFECYCLE_END_TO_END": 1,
+    "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": 1,
+    "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": 1,
+    "FS.CROSS.HIT_UNDER_MISS_X_RESET": 1,
+    "FS.CROSS.STRESS_RESET_AR_STALL": 1,
+    "FS.CROSS.STRESS_RESET_R_GAP": 1,
+    "FS.CROSS.STRESS_RESET_CPU_RESPONSE_STALL": 1,
+    "FS.CROSS.STRESS_RESET_MMIO_REQUEST_STALL": 1,
+    "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 4
   },
-  "required_bins_passed": 42,
-  "required_bins_total": 42,
-  "required_cross_bins_passed": 20,
-  "required_cross_bins_total": 20,
+  "required_bins_passed": 52,
+  "required_bins_total": 52,
+  "required_cross_bins_passed": 28,
+  "required_cross_bins_total": 28,
   "missing_bins": [],
   "missing_cross_bins": [],
   "bin_evidence": [
@@ -84,7 +102,7 @@
       "stimulus_strategy": "Directed MESI sequence and seeded random read operations.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard checks returned read data.",
-      "hit_count": 427,
+      "hit_count": 435,
       "pass": true,
       "evidence": [
         {
@@ -193,6 +211,11 @@
           "count": 1
         },
         {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
           "seed": 53504,
           "count": 1
@@ -226,6 +249,41 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
           "seed": null,
           "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+          "seed": 59251,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -425,7 +483,7 @@
       "stimulus_strategy": "Directed ownership sequence and seeded random writes with byte masks.",
       "required_monitor_event": "CPU request_accept and response_complete for core 0.",
       "checker": "DualCoreCpuDriver lifecycle checks; CoherenceScoreboard applies the byte mask and checks subsequent reads.",
-      "hit_count": 315,
+      "hit_count": 316,
       "pass": true,
       "evidence": [
         {
@@ -522,6 +580,11 @@
           "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_w_backpressure",
           "seed": null,
           "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+          "seed": null,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
@@ -676,7 +739,7 @@
       "stimulus_strategy": "Cold read from core 0.",
       "required_monitor_event": "L1 metadata_commit observed for the requesting core.",
       "checker": "Independent CoherenceScoreboard predicts state; observed commit is compared after checked transaction completion.",
-      "hit_count": 174,
+      "hit_count": 182,
       "pass": true,
       "evidence": [
         {
@@ -795,6 +858,11 @@
           "count": 1
         },
         {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505]",
           "seed": 53505,
           "count": 4
@@ -823,6 +891,41 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
           "seed": null,
           "count": 12
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+          "seed": 59251,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -1474,7 +1577,7 @@
       "stimulus_strategy": "Cold CPU store obtains writable ownership.",
       "required_monitor_event": "Directory GetM acceptance and requester L1 metadata commit to M.",
       "checker": "FullSystemEnv advances an independent coherence/data scoreboard from CPU transactions and credits only after observed L1 metadata commits agree with the model and CPU completion.",
-      "hit_count": 255,
+      "hit_count": 256,
       "pass": true,
       "evidence": [
         {
@@ -1571,6 +1674,11 @@
           "test_id": "tests/full_system/test_full_system_signoff.py::test_reset_during_axi_w_backpressure",
           "seed": null,
           "count": 8
+        },
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+          "seed": null,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
@@ -2286,6 +2394,201 @@
           "count": 1
         }
       ]
+    },
+    {
+      "id": "FS.HIT_UNDER_MISS.PENDING_MISS_HIT",
+      "classification": "required_legal",
+      "feature": "Resident L1 read hit completes while another line's refill is pending",
+      "legal_preconditions": "The pending line has an accepted AXI AR and Directory request; a different resident line is read on the same CPU lane.",
+      "stimulus_strategy": "Directed full AXI-integrated top testcase with deterministic memory latency and explicit outstanding-request tracking.",
+      "required_monitor_event": "Observed CPU and AXI handshakes; coverage is sampled only after the independent data/transaction checker passes.",
+      "checker": "Four-agent integrated-top test with checked CPU response address/data/ID, AXI AR/R ID and line correlation, and independent reference data.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.HIT_UNDER_MISS.SNOOP_PROGRESS",
+      "classification": "required_legal",
+      "feature": "Remote owner snoop completes while core0 has another pending miss",
+      "legal_preconditions": "Core0 owns line B in M and waits for the refill of distinct line A while core1 reads B.",
+      "stimulus_strategy": "Directed full AXI-integrated top testcase with deterministic memory latency and explicit outstanding-request tracking.",
+      "required_monitor_event": "Observed CPU and AXI handshakes; coverage is sampled only after the independent data/transaction checker passes.",
+      "checker": "Independent coherence scoreboard checks the latest owner data; monitor must observe the core0 snoop accept before miss A completes.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.HIT_UNDER_MISS.RESPONSE_STALL",
+      "classification": "required_legal",
+      "feature": "Hit-under-miss bypass response remains stable while stalled",
+      "legal_preconditions": "CPU response READY is low after a resident hit is accepted during a pending miss.",
+      "stimulus_strategy": "Directed full AXI-integrated top testcase with deterministic memory latency and explicit outstanding-request tracking.",
+      "required_monitor_event": "Observed CPU and AXI handshakes; coverage is sampled only after the independent data/transaction checker passes.",
+      "checker": "CPU response VALID/address/data/write/ID are checked stable for four cycles and then checked at handshake.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.HIT_UNDER_MISS.RESET_CANCEL",
+      "classification": "required_legal",
+      "feature": "Reset cancels an AXI-integrated pending miss and allows retry",
+      "legal_preconditions": "A miss has reached AXI AR but no R completion has occurred when reset is asserted.",
+      "stimulus_strategy": "Directed full AXI-integrated top testcase with deterministic memory latency and explicit outstanding-request tracking.",
+      "required_monitor_event": "Observed CPU and AXI handshakes; coverage is sampled only after the independent data/transaction checker passes.",
+      "checker": "Reset epoch and AXI cancellation are checked, stale CPU response is forbidden, and retry data is checked by the independent reference model.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.HIT_UNDER_MISS.TXN_ID_WRAP",
+      "classification": "required_legal",
+      "feature": "Bypass response transaction IDs wrap without aliasing a live miss",
+      "legal_preconditions": "At least one live miss remains outstanding while more than one complete 3-bit response-ID space of resident hits is serviced.",
+      "stimulus_strategy": "Directed full AXI-integrated top testcase with deterministic memory latency and explicit outstanding-request tracking.",
+      "required_monitor_event": "Observed CPU and AXI handshakes; coverage is sampled only after the independent data/transaction checker passes.",
+      "checker": "Every hit response is matched by address/data; its ID must differ from the live miss ID, and the observed sequence must wrap.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.RESET_AR_STALL",
+      "classification": "required_legal",
+      "feature": "Seeded reset during AXI AR backpressure with successful retry",
+      "legal_preconditions": "A cacheable miss is held at ARVALID while ARREADY is low; reset then cancels the request before any memory acceptance.",
+      "stimulus_strategy": "Seeded recovery campaign selects AR stall by deterministic timing seed.",
+      "required_monitor_event": "Observed ARVALID/!ARREADY, reset epoch increment, no stale CPU response, and post-reset refill.",
+      "checker": "AXI handshake agent, reset-epoch monitor, and independent CPU data scoreboard.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+          "seed": 59248,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.RESET_R_GAP",
+      "classification": "required_legal",
+      "feature": "Seeded reset during an accepted AXI read source gap with successful retry",
+      "legal_preconditions": "A refill AR has been accepted and the AXI memory source is between R beats when reset is asserted.",
+      "stimulus_strategy": "Seeded recovery campaign selects a source-side RVALID gap and random reset hold length.",
+      "required_monitor_event": "Observed accepted AR and absent RVALID during an incomplete line, reset epoch increment, and retry refill.",
+      "checker": "AXI agent cancellation accounting, stale-response check, and independent CPU data scoreboard.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+          "seed": 59249,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.RESET_CPU_RESPONSE_STALL",
+      "classification": "required_legal",
+      "feature": "Seeded reset while a CPU response is held by backpressure",
+      "legal_preconditions": "A cache miss completes while the CPU response READY remains low.",
+      "stimulus_strategy": "Seeded recovery campaign varies memory latency and response hold duration before reset.",
+      "required_monitor_event": "Observed response VALID with READY low, reset epoch increment, no stale response, and successful retry.",
+      "checker": "CPU response handshake, reset monitor, and independent CPU data scoreboard.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+          "seed": 59250,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.RESET_MMIO_REQUEST_STALL",
+      "classification": "required_legal",
+      "feature": "Seeded reset while an MMIO request is backpressured",
+      "legal_preconditions": "MMIO request VALID is asserted while device request READY is low.",
+      "stimulus_strategy": "Seeded recovery campaign selects MMIO request stall and varies stall period and reset duration.",
+      "required_monitor_event": "Observed request stall, reset epoch increment, canceled request, no stale response, and one checked retry completion.",
+      "checker": "MMIO handshake/cancellation checks and readback against the independent MMIO model.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59251]",
+          "seed": 59251,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION",
+      "classification": "required_error",
+      "feature": "Seeded AXI RRESP fault at a randomized beat followed by reset and recovery",
+      "legal_preconditions": "The backing-memory block injects SLVERR on one selected beat of an otherwise legal eight-beat refill.",
+      "stimulus_strategy": "Seed selects one of eight R beats and varies AR/R timing; the fault is disabled after fail-stop reset.",
+      "required_monitor_event": "The selected R ID/address/beat/RESP is observed and DUT fail-stop is asserted without a successful CPU response.",
+      "checker": "AXI memory protocol checker, no-success-response check, and post-reset independent data scoreboard.",
+      "hit_count": 4,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+          "seed": 59251,
+          "count": 1
+        }
+      ]
     }
   ],
   "cross_evidence": [
@@ -2295,7 +2598,7 @@
       "legal_preconditions": "Core 0 read request completes with passing data checker.",
       "stimulus_strategy": "Directed and random CPU read.",
       "checker": "CPU handshake lifecycle and independent read-data model.",
-      "hit_count": 427,
+      "hit_count": 435,
       "pass": true,
       "evidence": [
         {
@@ -2404,6 +2707,11 @@
           "count": 1
         },
         {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        },
+        {
           "test_id": "tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504]",
           "seed": 53504,
           "count": 1
@@ -2437,6 +2745,41 @@
           "test_id": "tests/full_system/test_paired_l2_replacement.py::test_repeated_paired_misses_replace_one_l2_set",
           "seed": null,
           "count": 6
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+          "seed": 59251,
+          "count": 1
         },
         {
           "test_id": "tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152]",
@@ -3050,6 +3393,149 @@
         {
           "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
           "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL",
+      "classification": "required_legal",
+      "legal_preconditions": "A same-core resident hit completes before an AXI-backed pending miss; both responses are uniquely associated by address and their protocol IDs.",
+      "stimulus_strategy": "Deterministic directed test with explicit timing waits and response correlation.",
+      "checker": "The directed hit-under-miss checker verifies CPU data/address/IDs and AXI AR/R completion ID/address before sampling.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.HIT_UNDER_MISS_X_SNOOP",
+      "classification": "required_legal",
+      "legal_preconditions": "A different-core GetS snoops a core0 M owner while core0 waits for an unrelated AXI refill.",
+      "stimulus_strategy": "Deterministic directed test with explicit timing waits and response correlation.",
+      "checker": "The independent coherence scoreboard checks owner data and the monitor observes the owner snoop before the pending miss response.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.HIT_UNDER_MISS_X_RESET",
+      "classification": "required_legal",
+      "legal_preconditions": "Reset occurs with an accepted AXI read and outstanding CPU miss, followed by a fresh request to the same line.",
+      "stimulus_strategy": "Deterministic directed test with explicit timing waits and response correlation.",
+      "checker": "AXI cancellation, reset epoch, absence of stale CPU response, and post-reset data are all checked.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request",
+          "seed": null,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.STRESS_RESET_AR_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "Reset occurs during observed ARVALID/!ARREADY and the same line later retries successfully.",
+      "stimulus_strategy": "Seeded interface-stall phase selection.",
+      "checker": "AXI handshake, reset-epoch, stale-response, and data checkers.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+          "seed": 59248,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.STRESS_RESET_R_GAP",
+      "classification": "required_legal",
+      "legal_preconditions": "Reset occurs after AR acceptance while RVALID is low and before RLAST.",
+      "stimulus_strategy": "Seeded interface-stall phase selection.",
+      "checker": "AXI cancellation, reset-epoch, stale-response, and retry data checks.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+          "seed": 59249,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.STRESS_RESET_CPU_RESPONSE_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "A valid CPU response is held with READY low when reset is asserted.",
+      "stimulus_strategy": "Seeded interface-stall phase selection.",
+      "checker": "CPU handshake stability, reset-epoch, stale-response, and retry data checks.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+          "seed": 59250,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.STRESS_RESET_MMIO_REQUEST_STALL",
+      "classification": "required_legal",
+      "legal_preconditions": "Reset occurs while an MMIO request is valid and the device is not ready.",
+      "stimulus_strategy": "Seeded interface-stall phase selection.",
+      "checker": "MMIO cancellation/no-stale-response and one successful retried read.",
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59251]",
+          "seed": 59251,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.STRESS_AXI_ERROR_RECOVERY",
+      "classification": "required_error",
+      "legal_preconditions": "A selected refill beat returns SLVERR; the DUT fail-stops and recovers only after reset.",
+      "stimulus_strategy": "Seeded beat and timing selection with deterministic replay configuration.",
+      "checker": "Error address/beat/response correlation, no data success on fault, reset recovery, and independent data readback.",
+      "hit_count": 4,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+          "seed": 59248,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+          "seed": 59249,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+          "seed": 59250,
+          "count": 1
+        },
+        {
+          "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+          "seed": 59251,
           "count": 1
         }
       ]

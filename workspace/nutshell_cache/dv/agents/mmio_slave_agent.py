@@ -30,7 +30,20 @@ class MmioSlaveAgent:
         self.stalls = Counter()
         self.reset_cancelled = 0
         self._held_request = None
+        self._forced_request_stall = 0
         self.observation_callback = None
+
+    def force_request_stall(self, cycles):
+        """Hold request READY low for a deterministic number of active cycles.
+
+        This controls the testbench slave only; it does not alter the DUT or
+        bypass the normal request VALID/READY protocol checker.
+        """
+        if cycles < 1:
+            raise ValueError("forced MMIO request stall must be at least one cycle")
+        if self._forced_request_stall:
+            raise RuntimeError("an MMIO request stall is already armed")
+        self._forced_request_stall = cycles
 
     @staticmethod
     def _merge(old, data, mask):
@@ -60,7 +73,11 @@ class MmioSlaveAgent:
                 await ClockCycles(d, 1)
                 continue
 
-            ready = int(self.cycle % self.request_stall_period != 0)
+            if self._forced_request_stall:
+                ready = 0
+                self._forced_request_stall -= 1
+            else:
+                ready = int(self.cycle % self.request_stall_period != 0)
             d.mmio_req_ready.value = ready
             if response is None and pending is not None and pending["due"] <= self.cycle:
                 response = pending
@@ -71,6 +88,11 @@ class MmioSlaveAgent:
                 d.mmio_resp_rdata.value = response["data"]
 
             await ClockCycles(d, 1)
+            # Reset can assert while this agent is suspended at the clock
+            # edge. The synchronous reset cancels the held request, so skip
+            # normal VALID/READY stability checks for that sampled edge.
+            if int(d.reset.value):
+                continue
             req = (
                 int(d.mmio_req_addr.value), int(d.mmio_req_size.value),
                 int(d.mmio_req_write.value), int(d.mmio_req_wmask.value),

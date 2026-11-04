@@ -58,6 +58,9 @@ def pytest_sessionfinish(session, exitstatus):
                 for address, value in sorted(env.axi.seeded_words.items())
             },
             "coverage": env.coverage_report(),
+            # Every FullSystemEnv is scoped to one pytest testcase/seed, so
+            # its checked counters are that run's coverage delta from zero.
+            "coverage_delta": env.coverage_report(),
             "monitor": {
                 "event_counts": dict(env.monitor.counts),
                 "stall_cycles": dict(env.monitor.stall_cycles),
@@ -72,6 +75,23 @@ def pytest_sessionfinish(session, exitstatus):
                 "reset_epoch": env.monitor.reset_epoch,
                 "axi_peak_reads": env.axi.peak_reads,
                 "axi_peak_writes": env.axi.peak_writes,
+                "cpu_request_accepts": sum(
+                    1 for event in env.monitor.events
+                    if event["source"] == "cpu" and
+                    event["event_type"] == "request_accept"
+                ),
+                "cpu_response_completions": sum(
+                    1 for event in env.monitor.events
+                    if event["source"] == "cpu" and
+                    event["event_type"] == "response_complete"
+                ),
+                "replay_records": sum(
+                    1 for item in env.trace_operations
+                    if item.get("kind") == "replay"
+                ),
+                "protocol_error": env.trace_protocol_error,
+                "fatal_error": env.trace_fatal_error,
+                "axi_error_count": len(env.axi.errors),
             },
         } for env in envs],
     }
@@ -91,6 +111,16 @@ def pytest_sessionfinish(session, exitstatus):
                 "scenario_id": env.trace_scenario_id,
                 "seed": env.trace_seed,
                 "configuration": env.trace_config,
+                "coverage_delta": env.coverage_report(),
+                "transaction_count": sum(
+                    1 for event in env.monitor.events
+                    if event["source"] == "cpu" and
+                    event["event_type"] == "request_accept"
+                ),
+                "replay_count": sum(
+                    1 for item in env.trace_operations
+                    if item.get("kind") == "replay"
+                ),
                 "test_status": env.trace_test_status,
                 "failure_context": env.trace_failure_context,
                 "initial_backing_memory": {
@@ -120,6 +150,11 @@ def pytest_runtest_makereport(item, call):
             continue
         if report.when == "call":
             env.trace_test_status = "failed" if report.failed else "passed"
+            # Snapshot scalar RTL status while the Toffee DUT handle is alive.
+            # Reading these live XData pins from pytest_sessionfinish can hit
+            # stale simulator backing storage after reset-heavy tests.
+            env.trace_protocol_error = int(env.dut.protocol_error.value)
+            env.trace_fatal_error = int(env.dut.fatal_error.value)
         if report.failed:
             env.trace_failure_context = report.longreprtext
 

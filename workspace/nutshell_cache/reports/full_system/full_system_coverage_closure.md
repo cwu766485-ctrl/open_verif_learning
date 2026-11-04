@@ -2,7 +2,7 @@
 
 - DUT: `CoherentCacheAxiSubsystem`
 - Scope: implemented Required bins in the integrated-top sign-off slice
-- Required bins: 42/42
-- Required cross bins: 20/20
+- Required bins: 52/52
+- Required cross bins: 28/28
 
 This report covers only entries marked implemented in the plan. Planned full-system features remain open and are not counted as hits.

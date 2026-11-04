@@ -294,13 +294,15 @@ coherence_benchmark_v4:
 	@PYTHONPATH=.:./dv python3 benchmarks/collect_coherence_v4.py
 
 # Focused P1 benchmark and response-hold check for L1 hit-under-miss.
-coherence_hit_under_miss: coherence_python_build
+coherence_hit_under_miss: coherence_python_build coherence_full_system_build
 	@mkdir -p benchmarks/results reports/rtl_optimization
 	@source $(ENV_SCRIPT); HIT_UNDER_MISS_REQUIRED=1 \
 	 HIT_UNDER_MISS_RESULT=reports/rtl_optimization/hit_under_miss_after.json \
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 tests/coherence/test_hit_under_miss.py
 	@python3 benchmarks/collect_hit_under_miss.py
+	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_hit_under_miss_axi.py
 
 # One clean Picker export, then the Python functional DV and Benchmark v2.
 coherence_python_verify: coherence_python_build
@@ -388,22 +390,29 @@ coherence_full_system_mixed: coherence_full_system_build
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_mixed_agent_random.py
 
-# Extended state/resource/timing-aware regression. The CPU stream has 10k
-# operations; the other campaigns add seeded four-agent overlap and set races.
-FULL_SYSTEM_MIXED_SEED_COUNT ?= 20
-FULL_SYSTEM_MIXED_ROUNDS ?= 10
+# Extended state/resource/timing-aware regression. Both the CPU-directed
+# stream and the four-role CPU/MMIO/APB/AXI campaign start at 100 x 500.
+FULL_SYSTEM_STRESS_SEED_COUNT ?= 100
+FULL_SYSTEM_STRESS_OPERATIONS ?= 500
+FULL_SYSTEM_MIXED_SEED_COUNT ?= 100
+FULL_SYSTEM_MIXED_ROUNDS ?= 500
 FULL_SYSTEM_RESOURCE_SEED_COUNT ?= 20
+FULL_SYSTEM_RECOVERY_SEED_COUNT ?= 20
 
 coherence_full_system_stress: coherence_full_system_build
-	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEED_COUNT=20 \
-	  FULL_SYSTEM_RANDOM_OPERATIONS=500 FULL_SYSTEM_RANDOM_BASE_SEED=0x57E55 \
+	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEED_COUNT=$(FULL_SYSTEM_STRESS_SEED_COUNT) \
+	  FULL_SYSTEM_RANDOM_OPERATIONS=$(FULL_SYSTEM_STRESS_OPERATIONS) \
+	  FULL_SYSTEM_RANDOM_BASE_SEED=0x57E55 \
 	  FULL_SYSTEM_MIXED_SEED_COUNT=$(FULL_SYSTEM_MIXED_SEED_COUNT) \
 	  FULL_SYSTEM_MIXED_ROUNDS=$(FULL_SYSTEM_MIXED_ROUNDS) \
 	  FULL_SYSTEM_RESOURCE_SEED_COUNT=$(FULL_SYSTEM_RESOURCE_SEED_COUNT) \
+	  FULL_SYSTEM_RECOVERY_SEED_COUNT=$(FULL_SYSTEM_RECOVERY_SEED_COUNT) \
 	  PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_random.py \
 	    tests/full_system/test_mixed_agent_random.py \
-	    tests/full_system/test_resource_aware_random.py
+	    tests/full_system/test_resource_aware_random.py \
+	    tests/full_system/test_randomized_recovery.py
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.full_system_stress_summary
 
 FULL_SYSTEM_REPLAY_SEED ?= 0xA11CE
 FULL_SYSTEM_REPLAY_OPERATIONS ?= 100
