@@ -529,6 +529,20 @@
       "required": true
     },
     {
+      "id": "FS.XAGENT.OWNER_TRANSFER_REFILL_APB",
+      "feature": "Dirty-owner data transfer, unrelated AXI refill, and APB Snoop-counter observation",
+      "classification": "required_legal",
+      "legal_preconditions": "Core0 owns a dirty line; Core0 misses on a different L2 set while Core1 reads the dirty line; APB reads the Snoop counter after the owner response and before the unrelated refill completes.",
+      "stimulus_strategy": "Directed two-core owner transfer with deterministic AR stalls and RVALID gaps, plus a concurrent APB counter read.",
+      "required_monitor_event": "AXI AR/RLAST, owner Snoop accept/response, all eight owner-data beats, both L1 commits, final Directory sharers, and APB access_complete are observed with the required cycle ordering.",
+      "checker": "Independent CoherenceScoreboard checks owner/refill data and final MESI/Directory state; AXI agent checks burst/ID/data; APB CSR value equals the single accepted Snoop; protocol/fatal status remains clear.",
+      "testcases": [
+        "test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
+      ],
+      "status": "implemented",
+      "required": true
+    },
+    {
       "id": "FS.STRESS.MIXED_CPU_MMIO_APB_AXI",
       "feature": "Seeded mixed CPU, MMIO, APB and AXI timing traffic",
       "classification": "required_legal",
@@ -864,6 +878,18 @@
       ],
       "status": "implemented",
       "required": true
+    },
+    {
+      "id": "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A modified owner transfers its line to a peer during an unrelated distinct-set AXI refill, while APB samples the Snoop counter before the refill's final beat.",
+      "stimulus_strategy": "Directed legal M-owner prelude; overlap owner GetS, refill AR/R pacing, and APB CSR read.",
+      "checker": "Independent data/MESI/Directory model, eight-beat owner-data check, AXI ID/burst checker, APB count check, cycle-order assertions, and no-error checks.",
+      "testcases": [
+        "test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
+      ],
+      "status": "implemented"
     },
     {
       "id": "FS.CROSS.RESET_AXI_AR_STALL",

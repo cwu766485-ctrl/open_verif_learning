@@ -1,6 +1,6 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-01 14:55 +08.
+Generated from the full regression artifacts on 2026-11-04 23:40 +08.
 
 ## Scope and source accounting
 
@@ -16,10 +16,10 @@ Each normalized (source, line) record is counted once. Hit + missed must equal t
 
 | Category | Hit | Total | Missed | Reconciliation |
 | --- | ---: | ---: | ---: | --- |
-| Product RTL | 858 | 1006 | 148 | 858 + 148 = 1006 |
+| Product RTL | 843 | 998 | 155 | 843 + 155 = 998 |
 | Testbench | 738 | 748 | 10 | 738 + 10 = 748 |
 | Generated/Other | 0 | 0 | 0 | 0 + 0 = 0 |
-| **All source records** | **1596** | **1754** | **158** | **1596 + 158 = 1754** |
+| **All source records** | **1581** | **1746** | **165** | **1581 + 165 = 1746** |
 
 ## Native Verilator coverage by source category
 
@@ -27,7 +27,7 @@ Native point totals are parsed from merged coverage.dat by point type; point hit
 
 | Category | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: |
-| Product RTL | 450/536 | 19916/26978 | 30/54 | 7/48 |
+| Product RTL | 461/556 | 19980/27474 | 30/54 | 7/48 |
 | Testbench | 235/266 | 4060/6628 | N/A (0 points) | N/A (0 points) |
 | Generated/Other | N/A (0 points) | N/A (0 points) | N/A (0 points) | N/A (0 points) |
 
@@ -40,7 +40,7 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | `rtl/bus/apb/CachePerformanceCsr.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 59/62 | 3 | 54/62 | 5066/6300 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 10 | 65/82 | 5130/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 468/648 | N/A | N/A |
 | `rtl/common/CoherenceProtocol.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 114/188 | 74 | 29/42 | 497/612 | 18/40 | 4/36 |
@@ -56,7 +56,7 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | `rtl/top/CoherentCacheAxiSubsystem.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 5610/7286 | N/A | N/A |
 
-## Every uncovered Product RTL line (148 lines)
+## Every uncovered Product RTL line (155 lines)
 
 Each missed executable source line is linked to its original RTL path and line. Categories are source-context review labels: the default/FSM label is only an unreachability candidate, never a proof; error labels identify checks/actions, and legal/recovery labels identify paths for which directed stimulus is appropriate. No category automatically waives a line.
 
@@ -64,14 +64,21 @@ Each missed executable source line is linked to its original RTL path and line. 
 | --- | ---: |
 | FSM/default 防御分支（不可达候选，未证明） | 10 |
 | 合法恢复 / 重试路径未命中 | 13 |
-| 合法路径未命中 | 29 |
+| 合法路径未命中 | 36 |
 | 非法协议检测 / 错误处理 | 96 |
 
 | Source line | Review category | Source text |
 | --- | --- | --- |
-| [`rtl/cluster/DualL1MesiCluster.sv:407`](../rtl/cluster/DualL1MesiCluster.sv#L407) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
-| [`rtl/cluster/DualL1MesiCluster.sv:408`](../rtl/cluster/DualL1MesiCluster.sv#L408) | 非法协议检测 / 错误处理 | `replace_protocol_error_q <= 1'b1;` |
-| [`rtl/cluster/DualL1MesiCluster.sv:409`](../rtl/cluster/DualL1MesiCluster.sv#L409) | 非法协议检测 / 错误处理 | `replace_state_q <= REPLACE_ERROR;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:419`](../rtl/cluster/DualL1MesiCluster.sv#L419) | 合法路径未命中 | `if (hit_under_miss_accept) begin` |
+| [`rtl/cluster/DualL1MesiCluster.sv:420`](../rtl/cluster/DualL1MesiCluster.sv#L420) | 合法路径未命中 | `hit_resp_valid_q <= 1'b1;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:421`](../rtl/cluster/DualL1MesiCluster.sv#L421) | 合法路径未命中 | `hit_resp_addr_q <= cpu_req_addr[core];` |
+| [`rtl/cluster/DualL1MesiCluster.sv:422`](../rtl/cluster/DualL1MesiCluster.sv#L422) | 合法路径未命中 | `hit_resp_data_q <= lookup_word;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:425`](../rtl/cluster/DualL1MesiCluster.sv#L425) | 合法路径未命中 | `hit_resp_txn_id_q <= hit_alloc_txn_id_safe;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:426`](../rtl/cluster/DualL1MesiCluster.sv#L426) | 合法路径未命中 | `hit_next_txn_id_q <= hit_next_txn_id_safe;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:427`](../rtl/cluster/DualL1MesiCluster.sv#L427) | 合法路径未命中 | `hit_bypass_started_q <= 1'b1;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:472`](../rtl/cluster/DualL1MesiCluster.sv#L472) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
+| [`rtl/cluster/DualL1MesiCluster.sv:473`](../rtl/cluster/DualL1MesiCluster.sv#L473) | 非法协议检测 / 错误处理 | `replace_protocol_error_q <= 1'b1;` |
+| [`rtl/cluster/DualL1MesiCluster.sv:474`](../rtl/cluster/DualL1MesiCluster.sv#L474) | 非法协议检测 / 错误处理 | `replace_state_q <= REPLACE_ERROR;` |
 | [`rtl/coherence/SharedLineEngine.sv:133`](../rtl/coherence/SharedLineEngine.sv#L133) | 非法协议检测 / 错误处理 | `if (mem_r_protocol_bad) begin` |
 | [`rtl/coherence/SharedLineEngine.sv:134`](../rtl/coherence/SharedLineEngine.sv#L134) | 非法协议检测 / 错误处理 | `memory_adapter_protocol_error <= 1'b1;` |
 | [`rtl/coherence/SharedLineEngine.sv:135`](../rtl/coherence/SharedLineEngine.sv#L135) | 非法协议检测 / 错误处理 | `engine_state_q <= ENGINE_ERROR;` |
@@ -222,7 +229,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 
 | RTL module | Raw gap | Suggested Testpoint / checker |
 | --- | ---: | --- |
-| `rtl/cluster/DualL1MesiCluster.sv` | 3 (407–409) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/cluster/DualL1MesiCluster.sv` | 10 (419–422, 425–427, 472–474) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/coherence/SharedLineEngine.sv` | 31 (133–135, 141–143, 182–184, 191–193, 232–235, 246–248, 276, 278–280, 331–334, 348, 366–368) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/directory/DirectoryController.sv` | 74 (238–241, 299–302, 353, 356–364, 366–369, 388–389, 392–401, 413–418, 438–441, 467, 470, 475–478, 483–493, 495–498, 501–504, 529, 531–534) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/directory/DirectoryMshrBank.sv` | 10 (339–341, 362–365, 372–374) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |

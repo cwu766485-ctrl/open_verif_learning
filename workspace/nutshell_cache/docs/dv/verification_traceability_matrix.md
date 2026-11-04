@@ -19,6 +19,7 @@ added to Python functional coverage.
 | L2 live victim invalidation / dirty owner preservation | `SC07/SC10` | Victim, Snoop, metadata invalidation, owner beats, AXI writeback | Independent directory/data model and memory readback | `FS.L2.LIVE_VICTIM_SNOOP`, serialized writeback bins; Closed for directed variants |
 | Hit-under-miss on the full AXI top | `tests/full_system/test_hit_under_miss_axi.py` | Pending miss AXI ID/address plus resident hit response address/data/ID | Independent CPU data model, AXI ID correlation, response stability | `FS.HIT_UNDER_MISS.*`, `FS.CROSS.HIT_UNDER_MISS_*`; Closed for resident-hit bypass cases |
 | Hit-under-miss with remote Snoop progress | `test_axi_top_snoop_completes_during_other_line_pending_miss` | Pending unrelated refill and owner Snoop accepted/completed | Owner's latest data, MESI commits, CPU response checks | H-u-M Snoop cross; Closed for tested cross-line case |
+| Dirty-owner transfer + AXI refill + APB counter | `test_dirty_owner_transfer_during_refill_with_apb_snoop_count` | M→S owner transfer, eight owner-data beats, unrelated AXI AR/R, APB Snoop-count read and cycle order | Independent MESI/data/Directory model, AXI burst/ID checker, APB count equals one accepted Snoop | `FS.XAGENT.OWNER_TRANSFER_REFILL_APB`; `FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET`; directed case Closed |
 | Hit-under-miss reset cancellation | `test_axi_top_reset_cancels_pending_hit_under_miss_request` | Reset epoch, canceled AXI context, no stale response, retry | AXI agent cancellation and reference data | H-u-M reset bin; Closed |
 | Reset during AR stall, R gap, CPU response stall, MMIO request stall | `test_seeded_reset_during_randomized_stall` | Each seeded phase is explicitly observed before reset; reset epoch and retry | AXI/MMIO handshakes, stale response exclusion, independent returned data | `FS.STRESS.RESET_*`; targeted and stress evidence recorded in campaign output |
 | AXI R error beat injection and recovery | `test_seeded_axi_read_error_beat_and_recovery` | Chosen beat address/RESP, fail-stop, reset and retry | Error correlated to selected beat; no success response; retry matches memory model | `FS.STRESS.AXI_R_ERROR_BEAT_INJECTION`; targeted and stress evidence recorded |
@@ -46,6 +47,10 @@ The stress campaign records one row per seed in
 `reports/full_system/stress_seed_summary.csv`, including configured workload,
 observed handshakes, checked-bin deltas, and replay command. There is no failing
 seed in a passing campaign; trace minimization is not claimed as implemented.
+
+The directed owner-transfer/refill/APB scenario is run by
+`make coherence_full_system_cross_closure`; it complements the larger random
+campaigns, which do not guarantee this exact three-way overlap.
 
 ## Reproduction
 
