@@ -29,13 +29,13 @@ Executed from the project root after `source scripts/env.sh`:
 | Command | Result | Evidence / scope |
 | --- | --- | --- |
 | `make COHERENCE_JOBS=2 coherence_verify` | PASS | Existing block, formal, subsystem, Python/Toffee, AXI, stress, mutation and benchmark regression chain |
-| `make COHERENCE_JOBS=2 coherence_full_system_verify` | PASS | Includes the above plus integrated full-system regression; coverage runner reported 56 passed and 1 replay test skipped because no replay trace was supplied |
+| `make COHERENCE_JOBS=2 coherence_full_system_verify` | PASS | Includes the above plus integrated full-system regression; 57 passed and 1 replay test skipped because no replay trace was supplied |
 | `make COHERENCE_JOBS=2 coherence_hit_under_miss` | PASS | Blocking-L1 H-u-M tests and three full AXI-top H-u-M tests |
 | `make COHERENCE_JOBS=2 coherence_full_system_stress` | PASS | 260/260 seeded environments; detailed totals below |
 | `make COHERENCE_JOBS=2 coherence_coverage_audit` | PASS | Independent subsystem, AXI and block coverage collection completed; raw gaps remain open |
 
-The full-system feature closure artifact reports **52/52 Required bins** and
-**28/28 Required Cross bins**. The separate legacy Python coherence closure is
+The full-system feature closure artifact was refreshed on 2026-11-05 and reports
+**53/53 Required bins** and **29/29 Required Cross bins**. The separate legacy Python coherence closure is
 **49/49** and **19/19**. These are separate coverage plans; their counts are
 not combined. The integrated closure JSON has exit status 0 and no missing
 required entries.
@@ -165,8 +165,12 @@ created in this phase.
 
 - `docs/dv/verification_traceability_matrix.md`: testcase → observed event →
   checker → checked coverage mapping and response-order contract.
-- `reports/full_system/full_system_coverage_closure.json`: 52/52 Required and
-  28/28 Cross evidence.
+- `reports/full_system/full_system_coverage.json`: raw 57-run integrated-top
+  evidence, including the owner-transfer/refill/APB testcase.
+- `reports/full_system/full_system_coverage_closure.json`: 53/53 Required and
+  29/29 Cross evidence from that raw run.
+- `docs/dv/coverage_evidence_refresh_2026-11-05.md`: report consistency and
+  testcase-to-monitor/checker evidence for the refresh.
 - `reports/full_system/stress_seed_summary.csv` and
   `reports/full_system/stress_campaign_summary.md`: per-seed regression
   outcomes.

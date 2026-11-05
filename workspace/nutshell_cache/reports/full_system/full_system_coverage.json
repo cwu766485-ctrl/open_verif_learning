@@ -2,7 +2,7 @@
   "schema_version": 1,
   "dut": "CoherentCacheAxiSubsystem",
   "pytest_exit_status": 0,
-  "test_environment_count": 45,
+  "test_environment_count": 57,
   "runs": [
     {
       "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
@@ -27,6 +27,17 @@
         "0x00408008": "0x13579bdf2468ace0"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.XAGENT.MMIO_READ_CACHE_MISS_APB_COUNTER": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.MMIO_READ_CACHE_MISS_APB": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE1": 1,
           "FS.MESI.I_TO_E": 1,
@@ -74,7 +85,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -94,6 +111,27 @@
         "0x00002408": "0x0123456789abcdef"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.READ_BURST": 1,
+          "FS.CPU.READ.CORE0": 2,
+          "FS.CPU.READ.CORE1": 2,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.E_TO_S": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_S": 3,
+          "FS.MESI.M_TO_S": 2,
+          "FS.MESI.S_TO_I": 2,
+          "FS.MESI.S_TO_M": 2
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE1.WRITE": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.READ_BURST": 1,
           "FS.CPU.READ.CORE0": 2,
@@ -152,7 +190,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -174,6 +218,30 @@
         "0x00030008": "0x959ef8713231c2ca"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 3,
+          "FS.CPU.READ.CORE1": 2,
+          "FS.CPU.WRITE.CORE0": 2,
+          "FS.CPU.WRITE.CORE1": 2,
+          "FS.MESI.E_TO_I": 1,
+          "FS.MESI.E_TO_M": 1,
+          "FS.MESI.E_TO_S": 1,
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 2,
+          "FS.MESI.I_TO_S": 2,
+          "FS.MESI.M_TO_I": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.MESI.S_TO_I": 1,
+          "FS.MESI.S_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 3,
+          "FS.CROSS.CORE0.WRITE": 2,
+          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE1.WRITE": 2
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 3,
           "FS.CPU.READ.CORE1": 2,
@@ -235,7 +303,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 5,
+        "cpu_response_completions": 9,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -258,6 +332,21 @@
         "0x00401048": "0xb0b1b2b3b4b5b6b7"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.MESI.I_TO_E": 2,
+          "FS.MSHR.LIFECYCLE_END_TO_END": 1,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.MSHR_LIFECYCLE_END_TO_END": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
           "FS.CPU.READ.CORE0": 1,
@@ -310,7 +399,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 0,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -328,6 +423,16 @@
       "generated_operations": [],
       "initial_backing_memory": {},
       "coverage": {
+        "bins": {
+          "FS.APB.READONLY_ERROR": 1,
+          "FS.MMIO.BYTE_MASK": 1,
+          "FS.MMIO.CORE_ARBITRATION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.MMIO_TWO_CORE_ARB": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READONLY_ERROR": 1,
           "FS.MMIO.BYTE_MASK": 1,
@@ -356,7 +461,13 @@
         "max_directory_contexts": 0,
         "reset_epoch": 0,
         "axi_peak_reads": 0,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -378,6 +489,19 @@
         "0x00404008": "0xd15ea5ed12345678"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.READ_DURING_AXI": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MMIO.CACHE_CONCURRENT": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.APB_WITH_AXI_TRAFFIC": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 1,
           "FS.CPU.READ.CORE1": 1,
@@ -427,7 +551,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -450,6 +580,17 @@
         "0x00405008": "0xfacecafe01234567"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.RESET_CANCEL": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_WITH_OUTSTANDING": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.RESET_CANCEL": 1,
           "FS.CPU.READ.CORE0": 1,
@@ -495,7 +636,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -522,6 +669,14 @@
           "FS.CROSS.RESET_WITH_OUTSTANDING": 1
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.MMIO.RESET_CANCEL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.RESET_WITH_OUTSTANDING": 1
+        }
+      },
       "monitor": {
         "event_counts": {
           "cpu.request_accept": 2,
@@ -541,7 +696,13 @@
         "max_directory_contexts": 0,
         "reset_epoch": 1,
         "axi_peak_reads": 0,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -566,6 +727,12 @@
         "0x00406008": "0xa5a55a5a01234567"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.ERROR_RESPONSE": 1
+        },
+        "cross_bins": {}
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.ERROR_RESPONSE": 1
         },
@@ -596,7 +763,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 0,
+        "replay_records": 0,
+        "protocol_error": 1,
+        "fatal_error": 1,
+        "axi_error_count": 1
       }
     },
     {
@@ -2003,6 +2176,32 @@
           "FS.CROSS.CORE1.WRITE": 33
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 40,
+          "FS.CPU.READ.CORE1": 32,
+          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.WRITE.CORE1": 33,
+          "FS.MESI.E_TO_I": 3,
+          "FS.MESI.E_TO_M": 4,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 24,
+          "FS.MESI.I_TO_S": 19,
+          "FS.MESI.M_TO_I": 19,
+          "FS.MESI.M_TO_S": 16,
+          "FS.MESI.S_TO_I": 16,
+          "FS.MESI.S_TO_M": 16,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 40,
+          "FS.CROSS.CORE0.WRITE": 25,
+          "FS.CROSS.CORE1.READ": 32,
+          "FS.CROSS.CORE1.WRITE": 33
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 69,
@@ -2048,7 +2247,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 65,
+        "cpu_response_completions": 130,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -3444,6 +3649,32 @@
           "FS.CROSS.CORE1.WRITE": 29
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 32,
+          "FS.CPU.READ.CORE1": 43,
+          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.WRITE.CORE1": 29,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 4,
+          "FS.MESI.I_TO_E": 8,
+          "FS.MESI.I_TO_M": 19,
+          "FS.MESI.I_TO_S": 27,
+          "FS.MESI.M_TO_I": 13,
+          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.S_TO_I": 22,
+          "FS.MESI.S_TO_M": 22,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 32,
+          "FS.CROSS.CORE0.WRITE": 25,
+          "FS.CROSS.CORE1.READ": 43,
+          "FS.CROSS.CORE1.WRITE": 29
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 76,
@@ -3491,7 +3722,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 68,
+        "cpu_response_completions": 129,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -4843,6 +5080,32 @@
           "FS.CROSS.CORE1.WRITE": 20
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 54,
+          "FS.CPU.READ.CORE1": 31,
+          "FS.CPU.WRITE.CORE0": 20,
+          "FS.CPU.WRITE.CORE1": 20,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 6,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 10,
+          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.M_TO_I": 6,
+          "FS.MESI.M_TO_S": 20,
+          "FS.MESI.S_TO_I": 21,
+          "FS.MESI.S_TO_M": 21,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 54,
+          "FS.CROSS.CORE0.WRITE": 20,
+          "FS.CROSS.CORE1.READ": 31,
+          "FS.CROSS.CORE1.WRITE": 20
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 67,
@@ -4888,7 +5151,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 53,
+        "cpu_response_completions": 125,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -6229,6 +6498,32 @@
           "FS.CROSS.CORE1.WRITE": 28
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 37,
+          "FS.CPU.READ.CORE1": 37,
+          "FS.CPU.WRITE.CORE0": 22,
+          "FS.CPU.WRITE.CORE1": 28,
+          "FS.MESI.E_TO_I": 3,
+          "FS.MESI.E_TO_M": 4,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 20,
+          "FS.MESI.I_TO_S": 20,
+          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.M_TO_S": 17,
+          "FS.MESI.S_TO_I": 15,
+          "FS.MESI.S_TO_M": 15,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 37,
+          "FS.CROSS.CORE0.WRITE": 22,
+          "FS.CROSS.CORE1.READ": 37,
+          "FS.CROSS.CORE1.WRITE": 28
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 65,
@@ -6274,7 +6569,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 69,
+        "cpu_response_completions": 124,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -7659,6 +7960,32 @@
           "FS.CROSS.CORE1.WRITE": 23
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 38,
+          "FS.CPU.READ.CORE1": 36,
+          "FS.CPU.WRITE.CORE0": 31,
+          "FS.CPU.WRITE.CORE1": 23,
+          "FS.MESI.E_TO_I": 5,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.S_TO_I": 21,
+          "FS.MESI.S_TO_M": 21,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 38,
+          "FS.CROSS.CORE0.WRITE": 31,
+          "FS.CROSS.CORE1.READ": 36,
+          "FS.CROSS.CORE1.WRITE": 23
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 79,
@@ -7706,7 +8033,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 68,
+        "cpu_response_completions": 128,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -9091,6 +9424,32 @@
           "FS.CROSS.CORE1.WRITE": 19
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 35,
+          "FS.CPU.READ.CORE1": 47,
+          "FS.CPU.WRITE.CORE0": 27,
+          "FS.CPU.WRITE.CORE1": 19,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 3,
+          "FS.MESI.E_TO_S": 5,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 13,
+          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.M_TO_I": 9,
+          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.S_TO_I": 22,
+          "FS.MESI.S_TO_M": 22,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 35,
+          "FS.CROSS.CORE0.WRITE": 27,
+          "FS.CROSS.CORE1.READ": 47,
+          "FS.CROSS.CORE1.WRITE": 19
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 71,
@@ -9136,7 +9495,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 56,
+        "cpu_response_completions": 128,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -10499,6 +10864,32 @@
           "FS.CROSS.CORE1.WRITE": 30
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 33,
+          "FS.CPU.READ.CORE1": 40,
+          "FS.CPU.WRITE.CORE0": 23,
+          "FS.CPU.WRITE.CORE1": 30,
+          "FS.MESI.E_TO_I": 4,
+          "FS.MESI.E_TO_M": 3,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_S": 20,
+          "FS.MESI.M_TO_I": 16,
+          "FS.MESI.M_TO_S": 17,
+          "FS.MESI.S_TO_I": 15,
+          "FS.MESI.S_TO_M": 15,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 33,
+          "FS.CROSS.CORE0.WRITE": 23,
+          "FS.CROSS.CORE1.READ": 40,
+          "FS.CROSS.CORE1.WRITE": 30
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 67,
@@ -10544,7 +10935,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 61,
+        "cpu_response_completions": 126,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -11929,6 +12326,32 @@
           "FS.CROSS.CORE1.WRITE": 25
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 38,
+          "FS.CPU.READ.CORE1": 41,
+          "FS.CPU.WRITE.CORE0": 24,
+          "FS.CPU.WRITE.CORE1": 25,
+          "FS.MESI.E_TO_I": 3,
+          "FS.MESI.E_TO_M": 3,
+          "FS.MESI.E_TO_S": 2,
+          "FS.MESI.I_TO_E": 8,
+          "FS.MESI.I_TO_M": 15,
+          "FS.MESI.I_TO_S": 25,
+          "FS.MESI.M_TO_I": 8,
+          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.S_TO_I": 18,
+          "FS.MESI.S_TO_M": 18,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 38,
+          "FS.CROSS.CORE0.WRITE": 24,
+          "FS.CROSS.CORE1.READ": 41,
+          "FS.CROSS.CORE1.WRITE": 25
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 66,
@@ -11974,7 +12397,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 60,
+        "cpu_response_completions": 128,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -13315,6 +13744,32 @@
           "FS.CROSS.CORE1.WRITE": 23
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 36,
+          "FS.CPU.READ.CORE1": 39,
+          "FS.CPU.WRITE.CORE0": 26,
+          "FS.CPU.WRITE.CORE1": 23,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 3,
+          "FS.MESI.E_TO_S": 4,
+          "FS.MESI.I_TO_E": 9,
+          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_S": 17,
+          "FS.MESI.M_TO_I": 17,
+          "FS.MESI.M_TO_S": 13,
+          "FS.MESI.S_TO_I": 12,
+          "FS.MESI.S_TO_M": 12,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 36,
+          "FS.CROSS.CORE0.WRITE": 26,
+          "FS.CROSS.CORE1.READ": 39,
+          "FS.CROSS.CORE1.WRITE": 23
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 60,
@@ -13360,7 +13815,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 60,
+        "cpu_response_completions": 124,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -14767,6 +15228,32 @@
           "FS.CROSS.CORE1.WRITE": 27
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.READ_OUT_OF_ORDER": 1,
+          "FS.CPU.READ.CORE0": 39,
+          "FS.CPU.READ.CORE1": 36,
+          "FS.CPU.WRITE.CORE0": 28,
+          "FS.CPU.WRITE.CORE1": 27,
+          "FS.MESI.E_TO_I": 5,
+          "FS.MESI.E_TO_M": 3,
+          "FS.MESI.E_TO_S": 4,
+          "FS.MESI.I_TO_E": 12,
+          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_S": 25,
+          "FS.MESI.M_TO_I": 17,
+          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.S_TO_I": 20,
+          "FS.MESI.S_TO_M": 20,
+          "FS.MSHR.OCCUPANCY_2": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 39,
+          "FS.CROSS.CORE0.WRITE": 28,
+          "FS.CROSS.CORE1.READ": 36,
+          "FS.CROSS.CORE1.WRITE": 27
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 79,
@@ -14814,7 +15301,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 61,
+        "cpu_response_completions": 130,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -14837,6 +15330,19 @@
         "0x00601008": "0x1112131415161718"
       },
       "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.SAME_LINE_DUAL_STORE": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE1.READ": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CONCURRENCY.SAME_LINE_DUAL_STORE": 1,
           "FS.CPU.READ.CORE0": 1,
@@ -14890,7 +15396,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 4,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -14912,6 +15424,17 @@
         "0x00603008": "0x1111222233334444"
       },
       "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1,
           "FS.CPU.READ.CORE0": 1,
@@ -14963,7 +15486,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -14989,6 +15518,19 @@
         "0x00a20000": "0x5566778899aabbcc"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 1,
+          "FS.RACE.REPLACEMENT_PUTM_SNOOP": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE1.WRITE": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE1": 3,
           "FS.CPU.WRITE.CORE1": 1,
@@ -15044,7 +15586,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15074,6 +15622,18 @@
         "0x02040000": "0xa000000000000008"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 8,
+          "FS.L2.LIVE_VICTIM_SNOOP": 1,
+          "FS.MESI.I_TO_E": 9
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE1.READ": 8
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 8,
@@ -15131,7 +15691,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 10,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15239,6 +15805,19 @@
           "FS.CROSS.CORE1.READ": 8
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 8,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.L2.DIRTY_OWNER_LIVE_VICTIM": 1,
+          "FS.MESI.I_TO_E": 8,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 8
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 14,
@@ -15286,7 +15865,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 10,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15309,6 +15894,16 @@
         "0x02208000": "0xbeef000000000042"
       },
       "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.SNOOP_WITH_REFILL": 1,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CONCURRENCY.SNOOP_WITH_REFILL": 1,
           "FS.CPU.WRITE.CORE0": 1,
@@ -15357,7 +15952,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15391,6 +15992,24 @@
         "0x0144a000": "0x0000000000001009"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.COUNTER_WRITEBACK_RESET": 1,
+          "FS.AXI.WRITE_SERIALIZED": 1,
+          "FS.CPU.READ.CORE0": 2,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.CPU.WRITE.CORE0": 10,
+          "FS.MESI.E_TO_S": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 10,
+          "FS.MESI.I_TO_S": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.WRITE": 10,
+          "FS.CROSS.CORE1.READ": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.COUNTER_WRITEBACK_RESET": 1,
           "FS.AXI.WRITE_SERIALIZED": 1,
@@ -15456,7 +16075,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 13,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15486,6 +16111,16 @@
         "0x01842000": "0x0000000000009999"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.BRESP_ERROR": 1,
+          "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_M": 8
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 8
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.BRESP_ERROR": 1,
           "FS.CPU.WRITE.CORE0": 8,
@@ -15538,7 +16173,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 8,
+        "replay_records": 0,
+        "protocol_error": 1,
+        "fatal_error": 1,
+        "axi_error_count": 1
       }
     },
     {
@@ -15569,6 +16210,16 @@
         "0x01c42000": "0x000000000000aaaa"
       },
       "coverage": {
+        "bins": {
+          "FS.AXI.WRITE_RESET_CANCEL": 1,
+          "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_M": 8
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 8
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.AXI.WRITE_RESET_CANCEL": 1,
           "FS.CPU.WRITE.CORE0": 8,
@@ -15618,7 +16269,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 8,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15641,6 +16298,16 @@
         "0x01e01008": "0xa11ce00100000001"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_AXI_AR_STALL": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.MESI.I_TO_E": 1
@@ -15688,7 +16355,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15711,6 +16384,16 @@
         "0x01e02008": "0xa11ce00200000002"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_AXI_R_VALID_GAP": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.MESI.I_TO_E": 1
@@ -15755,7 +16438,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15786,6 +16475,16 @@
         "0x01e44000": "0x00000000a11ce004"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_M": 8
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 8,
+          "FS.CROSS.RESET_AXI_AW_STALL": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.WRITE.CORE0": 8,
           "FS.MESI.I_TO_M": 8
@@ -15836,7 +16535,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 8,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15867,6 +16572,16 @@
         "0x01e46000": "0x00000000a11ce006"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_M": 8
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 8,
+          "FS.CROSS.RESET_AXI_W_STALL": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.WRITE.CORE0": 8,
           "FS.MESI.I_TO_M": 8
@@ -15918,7 +16633,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 8,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -15940,6 +16661,16 @@
         "0x01e08008": "0xa11ce00800000008"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_CPU_RESPONSE_STALL": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.MESI.I_TO_E": 1
@@ -15983,7 +16714,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16009,6 +16746,12 @@
           "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1
         }
       },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {
+          "FS.CROSS.RESET_MMIO_REQUEST_STALL": 1
+        }
+      },
       "monitor": {
         "event_counts": {
           "cpu.request_accept": 2,
@@ -16028,7 +16771,268 @@
         "max_directory_contexts": 0,
         "reset_epoch": 1,
         "axi_peak_reads": 0,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+      "scenario_id": "test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00404008": "0xa11ce00112345678",
+        "0x00404088": "0xb22df00287654321"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
+          "FS.HIT_UNDER_MISS.RESPONSE_STALL": 1,
+          "FS.HIT_UNDER_MISS.TXN_ID_WRAP": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
+          "FS.HIT_UNDER_MISS.RESPONSE_STALL": 1,
+          "FS.HIT_UNDER_MISS.TXN_ID_WRAP": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 168,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 130,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 16,
+          "directory_context.retire": 2,
+          "cpu.request_accept": 12
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 37,
+          "1": 168
+        },
+        "directory_context_histogram": {
+          "0": 9,
+          "1": 196
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 12,
+        "cpu_response_completions": 16,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+      "scenario_id": "test_axi_top_snoop_completes_during_other_line_pending_miss",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00606008": "0xc33e000311112222",
+        "0x00606088": "0x0102030405060708"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": 1,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": 1,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 3,
+          "l2.lookup": 2,
+          "directory_context.allocate": 3,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 136,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 110,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 24,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 3,
+          "mshr.retire": 2,
+          "directory.grant_accept": 3,
+          "l1.metadata_commit": 4,
+          "cpu.response_complete": 4,
+          "directory_context.retire": 3,
+          "cpu.request_accept": 1,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 37,
+          "1": 148
+        },
+        "directory_context_histogram": {
+          "0": 9,
+          "1": 152,
+          "2": 24
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 4,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request",
+      "scenario_id": "test_axi_top_reset_cancels_pending_hit_under_miss_request",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 80
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00808008": "0xe5500005aaaabbbb"
+      },
+      "coverage": {
+        "bins": {
+          "FS.HIT_UNDER_MISS.RESET_CANCEL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.HIT_UNDER_MISS_X_RESET": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.HIT_UNDER_MISS.RESET_CANCEL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.HIT_UNDER_MISS_X_RESET": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 112,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 92,
+          "system.reset_cancel": 1,
+          "cpu.request_accept": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 35,
+          "1": 112
+        },
+        "directory_context_histogram": {
+          "0": 19,
+          "1": 128
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16062,66 +17066,108 @@
           "cache_core": 0,
           "cache_address": 2097160,
           "cache_write": true,
+          "cache_data": 7663595298238762958,
+          "cache_mask": 246,
+          "cache_initial_data": 6295932386304316047,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806464,
+          "response_stall_cycles": 1,
           "apb_miss_count": 1,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 1,
           "cache_core": 1,
           "cache_address": 2097232,
           "cache_write": true,
+          "cache_data": 7752997041842511205,
+          "cache_mask": 184,
+          "cache_initial_data": 1303718868488699181,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": true,
+          "mmio_data": 15584541809259547639,
+          "mmio_mask": 218,
+          "mmio_initial_data": 11889503016271806465,
+          "response_stall_cycles": 3,
           "apb_miss_count": 2,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 2,
           "cache_core": 0,
           "cache_address": 2097288,
           "cache_write": true,
+          "cache_data": 7175380176807559568,
+          "cache_mask": 249,
+          "cache_initial_data": 1019306814825060965,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806464,
+          "response_stall_cycles": 2,
           "apb_miss_count": 3,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         },
         {
           "operation": 3,
           "cache_core": 1,
           "cache_address": 2097384,
           "cache_write": true,
+          "cache_data": 4744505574980756482,
+          "cache_mask": 68,
+          "cache_initial_data": 17499145312932707909,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": true,
+          "mmio_data": 2442064520321015547,
+          "mmio_mask": 11,
+          "mmio_initial_data": 15584425261038406401,
+          "response_stall_cycles": 3,
           "apb_miss_count": 4,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 4,
           "cache_core": 0,
           "cache_address": 2097432,
           "cache_write": true,
+          "cache_data": 3382701105504203299,
+          "cache_mask": 128,
+          "cache_initial_data": 2487623003376273133,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806464,
+          "response_stall_cycles": 1,
           "apb_miss_count": 5,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 5,
           "cache_core": 1,
           "cache_address": 2097488,
           "cache_write": true,
+          "cache_data": 7981662372903429794,
+          "cache_mask": 42,
+          "cache_initial_data": 9451912542441794896,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 15584425259360689915,
+          "response_stall_cycles": 1,
           "apb_miss_count": 6,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -16133,6 +17179,25 @@
         "0x00200150": "0x832bf061044d6d50"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.READ_DURING_AXI": 6,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE0": 5,
+          "FS.CPU.WRITE.CORE1": 3,
+          "FS.MESI.I_TO_M": 6,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+        },
+        "cross_bins": {
+          "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE0.WRITE": 5,
+          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE1.WRITE": 3,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
           "FS.CPU.READ.CORE0": 1,
@@ -16191,7 +17256,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 12,
+        "cpu_response_completions": 12,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16225,66 +17296,108 @@
           "cache_core": 1,
           "cache_address": 2101248,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 13642531114028390194,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": true,
+          "mmio_data": 11649660903959017944,
+          "mmio_mask": 43,
+          "mmio_initial_data": 11889503016271806720,
+          "response_stall_cycles": 1,
           "apb_miss_count": 1,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 1,
           "cache_core": 0,
           "cache_address": 2101360,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 5405325684624648159,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806721,
+          "response_stall_cycles": 2,
           "apb_miss_count": 2,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         },
         {
           "operation": 2,
           "cache_core": 1,
           "cache_address": 2101392,
           "cache_write": true,
+          "cache_data": 11833544621697199545,
+          "cache_mask": 156,
+          "cache_initial_data": 13863025207065595344,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889758105620298200,
+          "response_stall_cycles": 3,
           "apb_miss_count": 3,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 3,
           "cache_core": 0,
           "cache_address": 2101456,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 2084605900684142687,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806721,
+          "response_stall_cycles": 3,
           "apb_miss_count": 4,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 4,
           "cache_core": 1,
           "cache_address": 2101560,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 9086765566019053620,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889758105620298200,
+          "response_stall_cycles": 1,
           "apb_miss_count": 5,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 5,
           "cache_core": 0,
           "cache_address": 2101592,
           "cache_write": true,
+          "cache_data": 12353993406440646163,
+          "cache_mask": 188,
+          "cache_initial_data": 5967623516767864593,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": true,
+          "mmio_data": 6253858402351836983,
+          "mmio_mask": 171,
+          "mmio_initial_data": 11889503016271806721,
+          "response_stall_cycles": 3,
           "apb_miss_count": 6,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -16296,6 +17409,26 @@
         "0x00201158": "0x52d141f87e374711"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.READ_DURING_AXI": 6,
+          "FS.CPU.READ.CORE0": 4,
+          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.WRITE.CORE0": 2,
+          "FS.CPU.WRITE.CORE1": 2,
+          "FS.MESI.I_TO_E": 4,
+          "FS.MESI.I_TO_M": 2,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+        },
+        "cross_bins": {
+          "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
+          "FS.CROSS.CORE0.READ": 4,
+          "FS.CROSS.CORE0.WRITE": 2,
+          "FS.CROSS.CORE1.READ": 4,
+          "FS.CROSS.CORE1.WRITE": 2,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
           "FS.CPU.READ.CORE0": 4,
@@ -16355,7 +17488,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 12,
+        "cpu_response_completions": 12,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16389,66 +17528,108 @@
           "cache_core": 0,
           "cache_address": 2105344,
           "cache_write": true,
+          "cache_data": 7695042131722405602,
+          "cache_mask": 17,
+          "cache_initial_data": 3479174794810681245,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": true,
+          "mmio_data": 11458012720631793540,
+          "mmio_mask": 40,
+          "mmio_initial_data": 11889503016271806976,
+          "response_stall_cycles": 3,
           "apb_miss_count": 1,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 1,
           "cache_core": 1,
           "cache_address": 2105448,
           "cache_write": true,
+          "cache_data": 2308844249607618925,
+          "cache_mask": 193,
+          "cache_initial_data": 10066606797623953326,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806977,
+          "response_stall_cycles": 2,
           "apb_miss_count": 2,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         },
         {
           "operation": 2,
           "cache_core": 0,
           "cache_address": 2105512,
           "cache_write": true,
+          "cache_data": 10940304651824049294,
+          "cache_mask": 203,
+          "cache_initial_data": 8668000142960503120,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889512915047350784,
+          "response_stall_cycles": 3,
           "apb_miss_count": 3,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 3,
           "cache_core": 1,
           "cache_address": 2105536,
           "cache_write": true,
+          "cache_data": 2494992731655924994,
+          "cache_mask": 236,
+          "cache_initial_data": 8194258601558430299,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271806977,
+          "response_stall_cycles": 3,
           "apb_miss_count": 4,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 4,
           "cache_core": 0,
           "cache_address": 2105600,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 13451217370464309231,
           "mmio_core": 1,
           "mmio_address": 805310976,
           "mmio_write": true,
+          "mmio_data": 2436631274845363754,
+          "mmio_mask": 19,
+          "mmio_initial_data": 11889512915047350784,
+          "response_stall_cycles": 3,
           "apb_miss_count": 5,
-          "response_stall_cycles": 3
+          "checker_status": "passed"
         },
         {
           "operation": 5,
           "cache_core": 1,
           "cache_address": 2105712,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 5770189323809648332,
           "mmio_core": 0,
           "mmio_address": 805310984,
           "mmio_write": true,
+          "mmio_data": 16654234604405233192,
+          "mmio_mask": 50,
+          "mmio_initial_data": 11889503016271806977,
+          "response_stall_cycles": 2,
           "apb_miss_count": 6,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -16460,6 +17641,26 @@
         "0x00202170": "0x5013d49e446ceecc"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.READ_DURING_AXI": 6,
+          "FS.CPU.READ.CORE0": 3,
+          "FS.CPU.READ.CORE1": 2,
+          "FS.CPU.WRITE.CORE0": 3,
+          "FS.CPU.WRITE.CORE1": 4,
+          "FS.MESI.I_TO_E": 2,
+          "FS.MESI.I_TO_M": 4,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+        },
+        "cross_bins": {
+          "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
+          "FS.CROSS.CORE0.READ": 3,
+          "FS.CROSS.CORE0.WRITE": 3,
+          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE1.WRITE": 4,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
           "FS.CPU.READ.CORE0": 3,
@@ -16519,7 +17720,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 12,
+        "cpu_response_completions": 12,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16553,66 +17760,108 @@
           "cache_core": 1,
           "cache_address": 2109480,
           "cache_write": true,
+          "cache_data": 7096288871597652656,
+          "cache_mask": 211,
+          "cache_initial_data": 6463478941741169595,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": true,
+          "mmio_data": 3443467086872758970,
+          "mmio_mask": 184,
+          "mmio_initial_data": 11889503016271807232,
+          "response_stall_cycles": 1,
           "apb_miss_count": 1,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 1,
           "cache_core": 0,
           "cache_address": 2109528,
           "cache_write": true,
+          "cache_data": 3067550982205979271,
+          "cache_mask": 66,
+          "cache_initial_data": 6198536016699495594,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11889503016271807233,
+          "response_stall_cycles": 2,
           "apb_miss_count": 2,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         },
         {
           "operation": 2,
           "cache_core": 1,
           "cache_address": 2109568,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 14880137492464332039,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 3386890616554193664,
+          "response_stall_cycles": 1,
           "apb_miss_count": 3,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 3,
           "cache_core": 0,
           "cache_address": 2109672,
           "cache_write": true,
+          "cache_data": 9584985093847814771,
+          "cache_mask": 217,
+          "cache_initial_data": 13028405905602729981,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": true,
+          "mmio_data": 830644550927967038,
+          "mmio_mask": 89,
+          "mmio_initial_data": 11889503016271807233,
+          "response_stall_cycles": 1,
           "apb_miss_count": 4,
-          "response_stall_cycles": 1
+          "checker_status": "passed"
         },
         {
           "operation": 4,
           "cache_core": 1,
           "cache_address": 2109728,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 17475077451154270987,
           "mmio_core": 0,
           "mmio_address": 805310976,
           "mmio_write": true,
+          "mmio_data": 15469165449824631616,
+          "mmio_mask": 54,
+          "mmio_initial_data": 3386890616554193664,
+          "response_stall_cycles": 2,
           "apb_miss_count": 5,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         },
         {
           "operation": 5,
           "cache_core": 0,
           "cache_address": 2109760,
           "cache_write": false,
+          "cache_data": 0,
+          "cache_mask": 255,
+          "cache_initial_data": 17367025170867810103,
           "mmio_core": 1,
           "mmio_address": 805310984,
           "mmio_write": false,
+          "mmio_data": 0,
+          "mmio_mask": 255,
+          "mmio_initial_data": 11927503037654958910,
+          "response_stall_cycles": 2,
           "apb_miss_count": 6,
-          "response_stall_cycles": 2
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -16624,6 +17873,26 @@
         "0x00203140": "0xf1041160e2d7ef37"
       },
       "coverage": {
+        "bins": {
+          "FS.APB.READ_DURING_AXI": 6,
+          "FS.CPU.READ.CORE0": 2,
+          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.WRITE.CORE0": 4,
+          "FS.CPU.WRITE.CORE1": 2,
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 3,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+        },
+        "cross_bins": {
+          "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
+          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.WRITE": 4,
+          "FS.CROSS.CORE1.READ": 4,
+          "FS.CROSS.CORE1.WRITE": 2,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
           "FS.CPU.READ.CORE0": 2,
@@ -16683,7 +17952,107 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 12,
+        "cpu_response_completions": 12,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_owner_transfer_apb_cross.py::test_dirty_owner_transfer_during_refill_with_apb_snoop_count",
+      "scenario_id": "test_dirty_owner_transfer_during_refill_with_apb_snoop_count",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 96,
+            "ar_stall_period": 3,
+            "r_valid_gap_period": 3,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x02400000": "0xa500000000000000",
+        "0x02400008": "0xa500000000000001",
+        "0x02400010": "0xa500000000000002",
+        "0x02400018": "0xa500000000000003",
+        "0x02400020": "0xa500000000000004",
+        "0x02400028": "0xa500000000000005",
+        "0x02400030": "0xa500000000000006",
+        "0x02400038": "0xa500000000000007",
+        "0x02400040": "0x6d4520a19b3c7e8f"
+      },
+      "coverage": {
+        "bins": {
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "directory.request_accept": 3,
+          "l2.lookup": 2,
+          "directory_context.allocate": 3,
+          "directory.same_set_conflict": 234,
+          "mshr.allocate": 2,
+          "axi.read_address": 2,
+          "axi.read_valid_gap": 207,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 24,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 3,
+          "mshr.retire": 2,
+          "directory.grant_accept": 3,
+          "l1.metadata_commit": 4,
+          "cpu.response_complete": 3,
+          "directory_context.retire": 3,
+          "cpu.request_accept": 2,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1,
+          "apb.access_complete": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 39,
+          "1": 246
+        },
+        "directory_context_histogram": {
+          "0": 11,
+          "1": 250,
+          "2": 24
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16784,6 +18153,22 @@
           "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1
         }
       },
+      "coverage_delta": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_L2_DIRTY_VICTIM": 1,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.MESI.E_TO_M": 1,
+          "FS.MESI.I_TO_E": 9
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.PAIRED_L2_DIRTY_VICTIM": 1
+        }
+      },
       "monitor": {
         "event_counts": {
           "directory.request_accept": 10,
@@ -16831,7 +18216,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 9,
+        "cpu_response_completions": 11,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16862,6 +18253,19 @@
         "0x02448000": "0x0b00000002448000"
       },
       "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_MISS_ORDERING": 1,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.MESI.I_TO_E": 10
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.PAIRED_MISS_ORDERING": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CONCURRENCY.PAIRED_MISS_ORDERING": 1,
           "FS.CPU.READ.CORE0": 5,
@@ -16923,7 +18327,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 8,
+        "cpu_response_completions": 10,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -16956,6 +18366,19 @@
         "0x02858000": "0xe000000002858000"
       },
       "coverage": {
+        "bins": {
+          "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS": 1,
+          "FS.CPU.READ.CORE0": 6,
+          "FS.CPU.READ.CORE1": 6,
+          "FS.MESI.I_TO_E": 12
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 6,
+          "FS.CROSS.CORE1.READ": 6,
+          "FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CONCURRENCY.PAIRED_SAME_SET_REPLACEMENTS": 1,
           "FS.CPU.READ.CORE0": 6,
@@ -17017,7 +18440,837 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 1
+        "axi_peak_writes": 1,
+        "cpu_request_accepts": 9,
+        "cpu_response_completions": 12,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248]",
+      "scenario_id": "RANDOMIZED_RESET_PHASE",
+      "seed": 59248,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 4,
+            "ar_stall_period": 2,
+            "r_valid_gap_period": 0
+          },
+          "mmio": {
+            "request_stall_period": 2,
+            "response_delay": 1
+          }
+        },
+        "recovery_seed": 59248,
+        "reset_phase": "ar_stall"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "reset_phase",
+          "phase": "ar_stall",
+          "cache_address": 6347816,
+          "seed": 59248,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0060dc28": "0xd6f6bb6c67b80052"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_AR_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_AR_STALL": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_AR_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_AR_STALL": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 1,
+          "directory.same_set_conflict": 40,
+          "mshr.allocate": 1,
+          "axi.stall": 1,
+          "axi.read_valid_gap": 21,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 31,
+          "1": 40
+        },
+        "directory_context_histogram": {
+          "0": 15,
+          "1": 56
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249]",
+      "scenario_id": "RANDOMIZED_RESET_PHASE",
+      "seed": 59249,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 5,
+            "ar_stall_period": 3,
+            "r_valid_gap_period": 4
+          },
+          "mmio": {
+            "request_stall_period": 3,
+            "response_delay": 1
+          }
+        },
+        "recovery_seed": 59249,
+        "reset_phase": "r_gap"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "reset_phase",
+          "phase": "r_gap",
+          "cache_address": 6347840,
+          "seed": 59249,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0060dc40": "0x8bfa797a1faeb382"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_R_GAP": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_R_GAP": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_R_GAP": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_R_GAP": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "directory.same_set_conflict": 40,
+          "mshr.allocate": 2,
+          "axi.read_address": 2,
+          "axi.read_valid_gap": 20,
+          "system.reset_cancel": 1,
+          "axi.stall": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 31,
+          "1": 40
+        },
+        "directory_context_histogram": {
+          "0": 15,
+          "1": 56
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250]",
+      "scenario_id": "RANDOMIZED_RESET_PHASE",
+      "seed": 59250,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 1,
+            "ar_stall_period": 4,
+            "r_valid_gap_period": 0
+          },
+          "mmio": {
+            "request_stall_period": 4,
+            "response_delay": 1
+          }
+        },
+        "recovery_seed": 59250,
+        "reset_phase": "cpu_response"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "reset_phase",
+          "phase": "cpu_response",
+          "cache_address": 6347912,
+          "seed": 59250,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0060dc88": "0x042fdca42f20008a"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_CPU_RESPONSE_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_CPU_RESPONSE_STALL": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.RESET_CPU_RESPONSE_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_RESET_CPU_RESPONSE_STALL": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 68,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 30,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 42,
+          "1": 68
+        },
+        "directory_context_histogram": {
+          "0": 15,
+          "1": 95
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59251]",
+      "scenario_id": "RANDOMIZED_RESET_PHASE",
+      "seed": 59251,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2,
+            "ar_stall_period": 5,
+            "r_valid_gap_period": 0
+          },
+          "mmio": {
+            "request_stall_period": 5,
+            "response_delay": 1
+          }
+        },
+        "recovery_seed": 59251,
+        "reset_phase": "mmio_request"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "reset_phase",
+          "phase": "mmio_request",
+          "cache_address": 6348000,
+          "seed": 59251,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0060dce0": "0x6bc387bffec01a1a"
+      },
+      "coverage": {
+        "bins": {
+          "FS.STRESS.RESET_MMIO_REQUEST_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.STRESS_RESET_MMIO_REQUEST_STALL": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.STRESS.RESET_MMIO_REQUEST_STALL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.STRESS_RESET_MMIO_REQUEST_STALL": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "mmio.request_accept": 1,
+          "mmio.response_complete": 1,
+          "cpu.response_complete": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 40
+        },
+        "directory_context_histogram": {
+          "0": 40
+        },
+        "max_mshr_occupancy": 0,
+        "max_directory_contexts": 0,
+        "reset_epoch": 1,
+        "axi_peak_reads": 0,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248]",
+      "scenario_id": "RANDOMIZED_AXI_READ_ERROR_RECOVERY",
+      "seed": 59248,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 4,
+            "ar_stall_period": 2,
+            "r_valid_gap_period": 3,
+            "read_error_addrs": [
+              7396376
+            ]
+          },
+          "mmio": {}
+        },
+        "recovery_seed": 59248,
+        "error_line": 7396352,
+        "error_beat": 3,
+        "expected_axi_response": 2
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "axi_read_error",
+          "line": 7396352,
+          "beat": 3,
+          "address": 7396376,
+          "seed": 59248,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0070dc00": "0x5a550bd09af7d108",
+        "0x0070dc08": "0xef2da79543944f18",
+        "0x0070dc10": "0xbc7e6a4a48f3d553",
+        "0x0070dc18": "0x5e4516fd534b9a2c",
+        "0x0070dc20": "0xb99cdafa846cbf74",
+        "0x0070dc28": "0x9bd61b4e32b860d8",
+        "0x0070dc30": "0x5747ff3700d62eb4",
+        "0x0070dc38": "0x5c700d8ef6b8e100"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "directory.same_set_conflict": 67,
+          "mshr.allocate": 2,
+          "axi.read_address": 2,
+          "axi.stall": 2,
+          "axi.read_valid_gap": 42,
+          "axi.read_beat": 13,
+          "system.reset_cancel": 1,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 2
+        },
+        "mshr_occupancy_histogram": {
+          "0": 26,
+          "1": 67
+        },
+        "directory_context_histogram": {
+          "0": 10,
+          "1": 83
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 1
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249]",
+      "scenario_id": "RANDOMIZED_AXI_READ_ERROR_RECOVERY",
+      "seed": 59249,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 5,
+            "ar_stall_period": 3,
+            "r_valid_gap_period": 4,
+            "read_error_addrs": [
+              7396472
+            ]
+          },
+          "mmio": {}
+        },
+        "recovery_seed": 59249,
+        "error_line": 7396416,
+        "error_beat": 7,
+        "expected_axi_response": 2
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "axi_read_error",
+          "line": 7396416,
+          "beat": 7,
+          "address": 7396472,
+          "seed": 59249,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0070dc40": "0x4673dfec5374b66f",
+        "0x0070dc48": "0xae7082da9daab29f",
+        "0x0070dc50": "0x1ad312a2e18d1a47",
+        "0x0070dc58": "0xefa4637da62067a1",
+        "0x0070dc60": "0x3eaee2aacd1497f2",
+        "0x0070dc68": "0xc37fff906f617a1a",
+        "0x0070dc70": "0x00968524679acb82",
+        "0x0070dc78": "0x6363c6ce95fa2999"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "directory.same_set_conflict": 71,
+          "mshr.allocate": 2,
+          "axi.read_address": 2,
+          "axi.read_valid_gap": 42,
+          "axi.read_beat": 16,
+          "axi.stall": 1,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 26,
+          "1": 71
+        },
+        "directory_context_histogram": {
+          "0": 10,
+          "1": 87
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 1
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250]",
+      "scenario_id": "RANDOMIZED_AXI_READ_ERROR_RECOVERY",
+      "seed": 59250,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 1,
+            "ar_stall_period": 4,
+            "r_valid_gap_period": 2,
+            "read_error_addrs": [
+              7396504
+            ]
+          },
+          "mmio": {}
+        },
+        "recovery_seed": 59250,
+        "error_line": 7396480,
+        "error_beat": 3,
+        "expected_axi_response": 2
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "axi_read_error",
+          "line": 7396480,
+          "beat": 3,
+          "address": 7396504,
+          "seed": 59250,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0070dc80": "0x231b3c20eeb4bdfd",
+        "0x0070dc88": "0xd0992488c7be8924",
+        "0x0070dc90": "0x025591005194ef5f",
+        "0x0070dc98": "0x940e5df052269d5f",
+        "0x0070dca0": "0xa40465cf65cb0e83",
+        "0x0070dca8": "0x0f90b0e6b674d6d1",
+        "0x0070dcb0": "0x31d1014d198b3c79",
+        "0x0070dcb8": "0x3a5fa1dd7ed3dcd4"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 65,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 42,
+          "axi.read_beat": 12,
+          "system.reset_cancel": 1,
+          "axi.stall": 1,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 26,
+          "1": 65
+        },
+        "directory_context_histogram": {
+          "0": 10,
+          "1": 81
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 1
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251]",
+      "scenario_id": "RANDOMIZED_AXI_READ_ERROR_RECOVERY",
+      "seed": 59251,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2,
+            "ar_stall_period": 5,
+            "r_valid_gap_period": 3,
+            "read_error_addrs": [
+              7396568
+            ]
+          },
+          "mmio": {}
+        },
+        "recovery_seed": 59251,
+        "error_line": 7396544,
+        "error_beat": 3,
+        "expected_axi_response": 2
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "axi_read_error",
+          "line": 7396544,
+          "beat": 3,
+          "address": 7396568,
+          "seed": 59251,
+          "checker_status": "passed"
+        }
+      ],
+      "initial_backing_memory": {
+        "0x0070dcc0": "0xfbe2dd0d94b3acd5",
+        "0x0070dcc8": "0x0c410d75fe7a82ca",
+        "0x0070dcd0": "0xf36c2f00b0bed077",
+        "0x0070dcd8": "0xf498f33ce3fb4da3",
+        "0x0070dce0": "0x483419e6b27409d1",
+        "0x0070dce8": "0x8a07206c646e2330",
+        "0x0070dcf0": "0x023953eab9c9e77f",
+        "0x0070dcf8": "0x0c9e9518eb4547f0"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 1
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 61,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 37,
+          "axi.read_beat": 13,
+          "system.reset_cancel": 1,
+          "axi.stall": 1,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 26,
+          "1": 61
+        },
+        "directory_context_histogram": {
+          "0": 10,
+          "1": 77
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 1
       }
     },
     {
@@ -17048,6 +19301,24 @@
         "0x02400040": "0x8e6160e28cfa887d"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 1,
@@ -17104,7 +19375,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -17135,6 +19412,24 @@
         "0x02408100": "0xf5200d16e7690a77"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.SNOOP_REFILL_SAME_L2_SET": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 1,
@@ -17195,7 +19490,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -17226,6 +19527,24 @@
         "0x02400240": "0x4ca79e71bc2fbd3c"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.CORE1.WRITE": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 1,
@@ -17285,7 +19604,13 @@
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     },
     {
@@ -17316,6 +19641,24 @@
         "0x02408300": "0xa687d3c2b1822545"
       },
       "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.CPU.READ.CORE1": 1,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_SAME_L2_SET": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.CORE1.READ": 1,
+          "FS.CROSS.CORE1.WRITE": 1,
+          "FS.CROSS.SNOOP_REFILL_SAME_L2_SET": 1
+        }
+      },
+      "coverage_delta": {
         "bins": {
           "FS.CPU.READ.CORE0": 1,
           "FS.CPU.READ.CORE1": 1,
@@ -17376,7 +19719,13 @@
         "max_directory_contexts": 1,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
-        "axi_peak_writes": 0
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 1,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
       }
     }
   ]

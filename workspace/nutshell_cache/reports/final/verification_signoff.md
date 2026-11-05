@@ -2,7 +2,7 @@
 
 **Status: OPEN for final sign-off; local DE/DV regression candidate passes.**
 
-On base `f16b7f14d7478c9148f0e0632e1183f9d71df50f`, the following local gates
+On candidate `fd6ca87a2418ab9cae737b2b73dead6ca5dd5ef5`, the following local gates
 passed after `source scripts/env.sh`:
 
 - `make COHERENCE_JOBS=2 coherence_verify`
@@ -11,7 +11,7 @@ passed after `source scripts/env.sh`:
 - `make COHERENCE_JOBS=2 coherence_full_system_stress`
 - `make COHERENCE_JOBS=2 coherence_coverage_audit`
 
-Integrated feature coverage is 52/52 Required and 28/28 Required Cross. The
+Integrated feature coverage is 53/53 Required and 29/29 Required Cross. The
 separate Python coherence plan remains 49/49 and 19/19. Four-agent stress
 completed 260/260 seed environments with zero final protocol/fatal errors.
 Details and testcase/checker evidence are in

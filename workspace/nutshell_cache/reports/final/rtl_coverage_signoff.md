@@ -69,7 +69,7 @@ This is local evidence only; it does not establish a remote GitHub Actions resul
 The 2026-11-04 regression candidate passed `coherence_verify`,
 `coherence_full_system_verify`, `coherence_hit_under_miss`,
 `coherence_full_system_stress`, and `coherence_coverage_audit`. Integrated
-Python coverage is 52/52 Required and 28/28 Cross; H-u-M and paired-miss tests
+Python coverage is 53/53 Required and 29/29 Cross; H-u-M and paired-miss tests
 are checked in the full-system feature report. These functional results do
 not close the raw RTL points above because the Python/Toffee instrumented build
 does not emit compatible Verilator source-coverage points. See
