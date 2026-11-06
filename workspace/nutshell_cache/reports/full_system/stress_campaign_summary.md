@@ -1,6 +1,6 @@
 # Four-Agent Full-System Stress Campaign
 
-- Raw source: `reports/full_system/full_system_coverage.json` (schema 1).
+- Raw source: `reports/full_system/stress/full_system_coverage.json` (schema 1).
 - Pytest exit status: `0`; environments: **260**.
 - One CSV row per testcase seed records config, coverage delta, observed transactions/events, error counters, and a replay command.
 - CPU random uses 500 configured sequence operations per seed; the generated operation list includes two sequence prelude records. Mixed CPU/MMIO/APB/AXI uses 500 checked rounds per seed. Resource-aware runs check one owner store plus two paired reads. Random recovery runs select one reset phase or one AXI error beat per seed.
@@ -9,8 +9,8 @@
 
 | Scenario | Seeds / status | Configured ops or rounds | CPU accepts / completions | Directory req | Snoop accepts | AXI AR / R beats | MMIO req / rsp | APB | Protocol / final-fatal / observed AXI errors | Replay |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| FULL_SYSTEM_RANDOM | 100/100 PASS | 50000 | 28188 / 58665 | 27811 | 26611 | 1200 / 9600 | 0 / 0 | 0 | 0/0/0 | 0 |
-| SEEDED_MIXED_CPU_MMIO_APB_AXI | 100/100 PASS | 50000 | 100000 / 100000 | 50000 | 0 | 50000 / 400000 | 50000 / 50000 | 50000 | 0/0/0 | 0 |
+| FULL_SYSTEM_RANDOM | 100/100 PASS | 50000 | 58475 / 58958 | 28114 | 26714 | 1400 / 11200 | 0 / 0 | 200 | 0/0/0 | 0 |
+| SEEDED_MIXED_CPU_MMIO_APB_AXI | 100/100 PASS | 50000 | 100300 / 100300 | 50430 | 100 | 50200 / 401600 | 50000 / 50000 | 50200 | 0/0/0 | 0 |
 | RESOURCE_AWARE_SNOOP_REFILL | 20/20 PASS | 60 | 20 / 60 | 60 | 20 | 40 / 320 | 0 / 0 | 0 | 0/0/0 | 0 |
 | RANDOMIZED_RESET_PHASE | 20/20 PASS | 20 | 40 / 20 | 30 | 0 | 25 / 160 | 5 / 5 | 0 | 0/0/0 | 0 |
 | RANDOMIZED_AXI_READ_ERROR_RECOVERY | 20/20 PASS | 20 | 40 / 20 | 40 | 0 | 40 / 265 | 0 / 0 | 0 | 0/0/20 | 0 |
@@ -22,44 +22,54 @@
 | Checked bin | Hits |
 | --- | ---: |
 | `FS.AXI.READ_OUT_OF_ORDER` | 100 |
-| `FS.CPU.READ.CORE0` | 17681 |
-| `FS.CPU.READ.CORE1` | 17729 |
-| `FS.CPU.WRITE.CORE0` | 11612 |
-| `FS.CPU.WRITE.CORE1` | 11643 |
-| `FS.CROSS.CORE0.READ` | 17681 |
-| `FS.CROSS.CORE0.WRITE` | 11612 |
-| `FS.CROSS.CORE1.READ` | 17729 |
-| `FS.CROSS.CORE1.WRITE` | 11643 |
-| `FS.MESI.E_TO_I` | 263 |
-| `FS.MESI.E_TO_M` | 271 |
-| `FS.MESI.E_TO_S` | 358 |
-| `FS.MESI.I_TO_E` | 892 |
-| `FS.MESI.I_TO_M` | 7038 |
-| `FS.MESI.I_TO_S` | 10212 |
-| `FS.MESI.M_TO_I` | 6467 |
-| `FS.MESI.M_TO_S` | 9854 |
-| `FS.MESI.S_TO_I` | 9669 |
-| `FS.MESI.S_TO_M` | 9669 |
+| `FS.CPU.READ.CORE0` | 17771 |
+| `FS.CPU.READ.CORE1` | 17823 |
+| `FS.CPU.WRITE.CORE0` | 11662 |
+| `FS.CPU.WRITE.CORE1` | 11702 |
+| `FS.CROSS.CORE0.READ` | 17771 |
+| `FS.CROSS.CORE0.WRITE` | 11662 |
+| `FS.CROSS.CORE1.READ` | 17823 |
+| `FS.CROSS.CORE1.WRITE` | 11702 |
+| `FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET` | 100 |
+| `FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET` | 100 |
+| `FS.MESI.E_TO_I` | 266 |
+| `FS.MESI.E_TO_M` | 273 |
+| `FS.MESI.E_TO_S` | 361 |
+| `FS.MESI.I_TO_E` | 1000 |
+| `FS.MESI.I_TO_M` | 7164 |
+| `FS.MESI.I_TO_S` | 10297 |
+| `FS.MESI.M_TO_I` | 6498 |
+| `FS.MESI.M_TO_S` | 9936 |
+| `FS.MESI.S_TO_I` | 9653 |
+| `FS.MESI.S_TO_M` | 9653 |
 | `FS.MSHR.OCCUPANCY_2` | 100 |
+| `FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET` | 100 |
+| `FS.XAGENT.OWNER_TRANSFER_REFILL_APB` | 100 |
 
 ### `SEEDED_MIXED_CPU_MMIO_APB_AXI`
 
 | Checked bin | Hits |
 | --- | ---: |
 | `FS.APB.READ_DURING_AXI` | 50000 |
-| `FS.CPU.READ.CORE0` | 24848 |
-| `FS.CPU.READ.CORE1` | 25026 |
-| `FS.CPU.WRITE.CORE0` | 25152 |
-| `FS.CPU.WRITE.CORE1` | 24974 |
+| `FS.CPU.READ.CORE0` | 24948 |
+| `FS.CPU.READ.CORE1` | 25126 |
+| `FS.CPU.WRITE.CORE0` | 25200 |
+| `FS.CPU.WRITE.CORE1` | 25026 |
 | `FS.CROSS.APB_WITH_AXI_TRAFFIC` | 50000 |
-| `FS.CROSS.CORE0.READ` | 24848 |
-| `FS.CROSS.CORE0.WRITE` | 25152 |
-| `FS.CROSS.CORE1.READ` | 25026 |
-| `FS.CROSS.CORE1.WRITE` | 24974 |
+| `FS.CROSS.CORE0.READ` | 24948 |
+| `FS.CROSS.CORE0.WRITE` | 25200 |
+| `FS.CROSS.CORE1.READ` | 25126 |
+| `FS.CROSS.CORE1.WRITE` | 25026 |
 | `FS.CROSS.MIXED_CPU_MMIO_APB_AXI` | 50000 |
-| `FS.MESI.I_TO_E` | 24998 |
-| `FS.MESI.I_TO_M` | 25002 |
+| `FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET` | 100 |
+| `FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET` | 100 |
+| `FS.MESI.I_TO_E` | 25098 |
+| `FS.MESI.I_TO_M` | 25102 |
+| `FS.MESI.I_TO_S` | 100 |
+| `FS.MESI.M_TO_S` | 100 |
+| `FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET` | 100 |
 | `FS.STRESS.MIXED_CPU_MMIO_APB_AXI` | 50000 |
+| `FS.XAGENT.OWNER_TRANSFER_REFILL_APB` | 100 |
 
 ### `RESOURCE_AWARE_SNOOP_REFILL`
 
@@ -112,5 +122,5 @@
 
 - The CSV stores the exact test ID, seed, configuration, and a one-seed command for each run.
 - AXI error campaign counts are deliberate injected SLVERR events; each seed passes only after the DUT suppresses successful data, resets, and returns the independently expected data on retry. The final-fatal column is sampled after recovery.
-- For future failures, `conftest.py` captures the generated operation prefix and failure context in `full_system_coverage.json` and cycle/event data in `full_system_trace.jsonl`; the replay target accepts a saved trace/test ID. No trace minimizer is implemented yet.
-- The raw JSON is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.
+- `conftest.py` captures generated operations, failure context, and cycle/event data; the replay target accepts a saved trace/test ID. `dv.sequences.trace_minimizer` provides an order-preserving delta-debugging primitive that requires a caller-supplied replay predicate and retains marked legal preludes. It is not yet wired to automatic simulator replay; no failing seed occurred in this campaign, so no real DUT failure trace was minimized.
+- The stress raw JSON is separate from the sign-off coverage dataset. It is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.

@@ -1,111 +1,38 @@
 # Unresolved Full-System Verification Gaps
 
-Status snapshot: 2026-11-04 (Asia/Singapore)
-Verification base SHA: `341e6411bd1c545b6e3de691144e19468cc01a50`; this report records the local DV upgrade relative to that baseline.
-Product RTL changes in the full-system DV implementation: none
+Status snapshot: 2026-11-06 (Asia/Singapore)
+Tested RTL/DV source SHA: `14542f52bef5a42560cc615a5db104e3122dbd33`
+Decision: **OPEN**
 
-This list records work not evidenced as complete by the current tests. It does
-not classify these items as confirmed RTL defects.
+This report records open evidence obligations, not confirmed RTL defects. See [`docs/dv/closure_phase2_execution_2026-11-06.md`](../../docs/dv/closure_phase2_execution_2026-11-06.md) for the six-phase execution record and actual regression outputs.
 
-## Integrated full-system gaps
+## Cross-Agent scenario gaps
 
-| Area | Current evidence | Remaining gap / risk |
+| Scenario | Current evidence | Remaining gap |
 | --- | --- | --- |
-| CPU concurrency | Distinct cold misses overlap as two AXI IDs; paired same-line writes and exact same-address writes are checked against observed Directory acceptance order and final architectural data. | The integrated CPU API has two blocking lanes, so four CPU misses cannot be outstanding. The independent Directory MSHR bank test does fill all four contexts, route out-of-order refill responses, sustain progress around a snoop-blocked context, and cancel all four on reset. This is Block-level evidence, not four-requestor system-level evidence. |
-| AXI read/write | Integrated read refill and two-ID out-of-order reads pass. Integrated dirty writeback checks AW, eight ordered W beats, full strobes, B association, serialized completion and backing-memory data. Integrated BRESP fail-stop and reset cancellation pass. AXI adapter Python regression passes four outstanding IDs, out-of-order B completion, channel backpressure, error and reset/ID reuse. | SharedLineEngine emits one cache victim write at a time, so integrated B reordering is not generated. The subsystem also ties RREADY high; receiver-side R backpressure is adapter-level only. |
-| MMIO | Masked register writes/readback, dual-core requests, readonly APB errors, MMIO/cache overlap, delayed-response reset, and request-side stall/reset are checked. | Request stall and delayed response are covered separately; all MMIO request/response timing combinations with both CPU lanes, cache traffic and APB sampling are not exhaustively crossed. |
-| APB | Integrated tests check exact Hit/Miss/Snoop/Completed deltas, positive access-cycle accumulation, dirty-writeback count against observed AXI writes, error status after BRESP failure, reset-to-zero for all CSR offsets, and APB read during AXI refill. `make coherence_bus_blocks` seeds each 32-bit CSR counter at the boundary, increments through real event inputs, and checks modulo-2^32 APB readback. | **Closed for integrated event/reset behavior and block-level wrap.** No test accumulates 2^32 integrated cache events. APB PREADY is combinationally immediate, so PREADY backpressure is not a supported scenario. |
-| Backpressure / reset cross | New directed full-system tests reset during AXI ARREADY stall, an AXI RVALID gap, AXI AWREADY stall, AXI WREADY stall, CPU response READY-low, and MMIO request READY-low. Existing directed tests exercise delayed MMIO response, refill, owner snoop, writeback and Directory request stalls. | The tested reset/stall points pass, but this is not a complete Cartesian cross. Integrated AXI RREADY/BREADY are tied high and APB PREADY is immediate, so those receiver-side stalls cannot be generated at this top. Snoop/Grant/Directory stalls are not all crossed with reset and unrelated traffic. |
-| Replacement / Snoop | Integrated same-set dirty L1 replacement racing a remote GetS checks PutM, Snoop accept/response, both CPU results and protocol status. Clean and dirty live inclusive L2 victim tests check independent victim identity/Directory prediction, resident L1 invalidation, and (for a live U owner) all eight owner-data beats, AXI writeback contents and later refill. A legal cross-line owner-Snoop/refill overlap also passes. | **Closed for these directed clean-sharer, dirty-owner, and cross-line overlap scenarios.** Exhaustively crossing both cores, every victim MESI state, and every Snoop/Put timing point remains open. |
-| Reference model | CPU-visible data, byte masks, selected MESI/Directory commits, exact same-address store ordering, and dirty writeback contents are checked independently. Paired hit/miss victim checking is complemented by paired cold misses, reverse presentation order, repeated same-set replacements, and slot-to-AXI-to-fill-to-response lifecycle correlation. | **Closed for the three requested paired-miss scenarios.** They do not prove four CPU misses at the integrated top or exhaustive replacement/snoop timing combinations. |
-| Random feedback | Reproducible seeded scenarios and checked coverage run; extended stress passed 20 × 500 CPU operations, 20 × 10 mixed CPU/MMIO/APB/AXI rounds, and 20 resource-aware same/distinct-set seeds. The integrated coverage suite closes 42/42 implemented Required bins and 20/20 implemented Required crosses, including paired victim/miss bins, refill-MSHR lifecycle and six explicit reset × supported-stall crosses. | The scheduler does not adapt across every Directory, Snoop, MSHR, L2, AXI, MMIO, and APB bin. Larger planned tiers (100×500, 200×2000, 500×4000) were not run in this evidence set. |
-| Replay | A committed 103-event trace was replayed successfully with scenario selection and configuration. | Scheduling is reevaluated at runtime; a general waveform exporter and failure-trace minimizer are not implemented. Replay is not cycle-identical. |
-| Formal | Existing component/bounded Formal targets in `coherence_verify` pass. | No new unbounded proof of the complete integrated system is claimed. |
+| CR01 Owner Transfer × AXI Refill × APB | Directed checked case and 100 random/mixed observations. | Closed for the tested distinct-set overlap only; no exhaustive address/stall matrix. |
+| CR02 Shared Upgrade × MMIO Pending | Shared upgrade and MMIO/cache overlap are checked separately. | No same-window checker proving both lifecycles and data/order in one scenario. |
+| CR03 Dirty L1 Victim × AXI Writeback Stall | Dirty L1 victim and source-side writeback stall tests pass. | Required overlap has not been established by a joint monitor/checker. |
+| CR04 Dirty L2 Victim × Snoop × APB | L2 victim handling, Snoop, and APB checks exist in directed tests. | No checker proves the three-way timing/data relationship in one scenario. |
+| CR05 Same-Set Directory Conflict × AXI Stall | Same-set conflict and AXI stall paths have evidence. | Same-transaction context correlation and overlap check are open. |
+| CR06 Two Cold Misses × OoO R × APB | Two refill IDs/reverse R completion and APB-overlap tests pass separately. | Three-way same-window checker is open. |
+| CR07 Hit-under-Miss × Remote Snoop | Directed AXI-top different-line owner Snoop during pending refill passes. | Closed for that cross-line scenario; exhaustive same-set and stall crosses remain open. |
+| CR08 Reset × Directory/Snoop/Grant Pending | Reset during selected AXI/CPU/MMIO stalls and outstanding transactions passes. | Pending Directory/Snoop/Grant phase combinations are not fully constructed or checked. |
+| CR09 AXI Error × Fail-Stop × Reset | Read and write response errors, fail-stop, reset and recovery have individual evidence. | Cross of RRESP/BRESP error kind with error lifecycle and reset epoch is open. |
+| CR10 Ownership Ping-Pong × MMIO/APB | Ownership transfer and mixed-agent traffic are exercised. | No joint checker closes repeated ping-pong with concurrent MMIO and APB activity. |
 
-## RTL code-coverage gaps
+Four Directory MSHR contexts are covered at the independent block boundary. The integrated CPU has two blocking lanes and cannot issue four simultaneous CPU misses. Integrated AXI RREADY/BREADY are tied high; APB PREADY is immediate; CPU has no upstream request tag; MMIO has no error response. These constraints are not counted as reachable system-level crosses.
 
-The Product RTL raw audit reports line 858/1006, branch 450/536, toggle
-19916/26978, FSM state 30/54, and FSM arc 7/48. There are 148 missed Product
-RTL executable LCOV lines. Four manifest sources did not produce executable
-line points in the selected run; see
-[`rtl_coverage_summary.md`](rtl_coverage_summary.md).
+## RTL coverage gaps
 
-Missed lines have source-context labels in
-[`docs/coverage_audit_phase1.md`](../../docs/coverage_audit_phase1.md), but
-this is not a completed formal reachability or waiver review. The remaining
-work is to map each line/branch/state/arc to a specification feature,
-test/checker or proof; review defensive/error paths; then decide whether a
-directed test, fault injection, proof, or justified waiver is appropriate. No
-unresolved RTL point is automatically waived here.
+Primary coherent-subsystem raw results are 843/998 lines, 461/556 branches, 19980/27474 toggles, 30/54 FSM states, and 7/48 FSM arcs. The full point matrix contains 1,026 dataset-scoped zero-count records spanning separate subsystem/AXI/Block datasets. All are **OPEN**, none are auto-waived, and reviewed/eligible coverage is not calculated. The matrix keeps per-top denominators separate; Python functional coverage is not merged with Verilator source coverage.
 
-## Requested scenario closure
+For every point, resolution requires a source-linked feature/reachability review and test/checker, fault injection, formal evidence, reviewed waiver, or justified N/A. A source keyword or a hit in another top is not closure evidence.
 
-The scenarios that prompted this sign-off are closed at the following verified
-interfaces. The scope column is part of the claim.
+## Other limits
 
-| Scenario | Evidence | Status / scope limit |
-| --- | --- | --- |
-| Four concurrent MSHR contexts | `make coherence_directory_mshr_bank`: 4 contexts allocated together, refills routed by ID and completed out of order, duplicate suppression, progress around a snoop-blocked context, reset cancellation; MSHR bounded Formal passes in `coherence_verify` | **Closed at DirectoryMshrBank block level.** The integrated CPU has two blocking lanes, so four CPU misses cannot be issued simultaneously. |
-| AXI dirty write, error, reset and OoO response | `test_apb_counters_writeback_and_reset_semantics` checks integrated AW, eight ordered W beats, matching B and backing-memory data; `test_axi_bresp_error_fails_stop_on_dirty_victim_writeback` and `test_reset_cancels_integrated_axi_writeback_before_b` cover BRESP fail-stop and reset cancellation; `test_axi4_four_outstanding_bursts_id_ordering_and_backpressure` checks four write IDs and out-of-order B at the adapter | **Closed at system/adapter boundaries.** Integrated writebacks are serialized by SharedLineEngine; B reordering is adapter-level, not integrated-top behavior. |
-| APB event counters and reset | Integrated exact event deltas, dirty-writeback accounting, error status and reset-to-zero; `make coherence_bus_blocks` also checks the modulo-2^32 boundary of all six counters. | **Closed at the integrated event/reset and CSR block wrap scopes.** No claim of accumulating 2^32 integrated events. |
-| Same-address dual-core ordering | `test_same_address_dual_core_store_serialization` observes both Directory accepts, advances the independent data model in that order, and checks final readback against the last accepted writer | **Closed for the two-lane paired-store case.** No claim is made about an external CPU memory model beyond the interface contract. |
-| Replacement and Snoop races | `test_l1_replacement_putm_races_remote_snoop`; `test_live_l2_victim_back_invalidates_resident_l1`; `test_dirty_l2_victim_snoops_live_modified_owner`; cross-line owner-Snoop/refill overlap. | **Closed for these directed cases.** Exhaustive core × victim MESI state × timing combinations remain outside this sign-off. The dirty-owner case checks the live L1 Owner and its writeback; the stale L2 data-array dirty bit is not used as the oracle. |
-| Reset × implemented stalls | Six `test_reset_during_*` cases in `tests/full_system/test_full_system_signoff.py` cross reset with AR, R gap, AW, W, CPU response and MMIO request stalls. Each checks reset epoch, stale response cancellation, and recovery where applicable; each also samples its own Required Cross Bin only after its checker passes. | **Closed for these six interface points and represented in the Cross Coverage report.** This is not reset × every protocol stall; RREADY/BREADY backpressure is unsupported at the integrated top, and the remaining Directory/Snoop/Grant combinations need additional tests if required. |
-
-## Paired miss and refill-MSHR closure
-
-`MshrLifecycleChecker` uses only sampled monitor events and CPU-driver
-responses. It correlates each slot allocate/retire in the checked test window
-to the AXI read ID/address, the complete ordered eight-beat R burst, eight
-accepted L2 refill writes, a Directory grant, and the routed CPU response.
-The AXI memory agent independently checks each returned data beat; the
-architectural checker checks the CPU data and the cache model checks replacement
-victims.
-
-- `test_dual_cold_misses_overlap_and_route_axi_responses` checks two different
-  L2 sets, two simultaneous refill slots, and out-of-order AXI R completion.
-- `test_paired_cold_miss_same_set_uses_directory_accept_order` delays Core 0
-  by one cycle and checks that Directory acceptance and model update order
-  follow Core 1 then Core 0.
-- `test_repeated_paired_misses_replace_one_l2_set` executes two paired miss
-  rounds after filling one L2 set and compares four observed victim addresses
-  against the independent model in order.
-
-These checks close the three previously listed gaps for these integrated
-scenarios. The integrated CPU top has two blocking request lanes, so this is
-not evidence of four simultaneous CPU misses; four MSHR contexts remain covered
-by the independent Directory MSHR bank test. Exhaustive core × victim-state ×
-cycle timing combinations remain outside this directed closure.
-
-## Closure boundary
-
-- The sign-off scenario run closes 42/42 implemented Required functional bins
-  and 20/20 implemented Required cross bins. Planned/unreachable full-system
-  features remain uncounted; in particular `FS.MSHR.OCCUPANCY_4` remains a
-  Block-level result, not a system-level bin.
-- `make coherence_full_system_coverage` passed locally after these DV changes:
-  45 passed, 1 conditional saved-trace replay skipped; Required Functional
-  42/42 and Required Cross 20/20. The three new Required functional bins and
-  their three crosses each have checked testcase evidence. This target rebuilds
-  the integrated Verilator/Toffee wrapper and runs the complete full-system
-  pytest suite.
-- `make COHERENCE_JOBS=2 coherence_verify` passed locally on the recorded
-  baseline before these test-only changes, including Blocks,
-  Formal, subsystem regression, Python/AXI regressions, stress, mutation and
-  Benchmark v4. `make coherence_full_system_stress` passed its 60 seeded
-  environments on that baseline. These are separate commands and
-  scopes; `coherence_verify` alone does not run the full-system coverage target.
-- Verilator reported testbench empty-pin and RTL unused-signal warnings during
-  the run. They were not treated as functional failures and have not been
-  represented as warning-free lint.
-- PPA, STA, real SRAM macro mapping, silicon/physical integration, and
-  application-level CPU benchmarks are outside this verification result.
-- No full RTL code-coverage closure or release freeze is claimed: the raw RTL
-  coverage/reachability audit above remains open, as do the explicitly scoped
-  exhaustive timing and integration limits.
-
-## Remote status
-
-The results above are local results for the DV delta. A GitHub Actions result
-for a commit containing these changes has not yet been verified; local
-Regression PASS is not remote CI PASS.
+- All six Phase 2 local regression gates passed; there were no failing seeds and thus no DUT failure trace to minimize.
+- The trace minimizer is a unit-tested order-preserving primitive, not an automatic simulator callback.
+- Formal evidence is component/bounded; no unbounded complete-system proof is claimed.
+- Candidate branch CI is pending publication; the passing Actions run on base SHA `9b281f3` is not candidate evidence.
+- PPA, STA, physical SRAM macro mapping, and chip-level implementation are excluded.

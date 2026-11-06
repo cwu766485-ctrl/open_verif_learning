@@ -843,122 +843,139 @@
           ]
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 1524647872,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37748768,
+          "owner_write_data": 3141702277613861807,
+          "owner_write_mask": 78,
+          "refill_address": 37748856,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 3,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37748800
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 426,
+          "snoop_response_cycle": 437,
+          "refill_last_cycle": 486,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "index": 0,
           "kind": "dual_lane",
           "requests": [
             {
               "core": 0,
-              "address": 17694800,
+              "address": 17694936,
               "write": true,
-              "data": 17272089718537472782,
-              "mask": 64
+              "data": 9085560730319589155,
+              "mask": 68
             },
             {
               "core": 1,
-              "address": 17695072,
-              "write": false,
-              "data": 0,
-              "mask": 255
+              "address": 17695312,
+              "write": true,
+              "data": 11273207995983680484,
+              "mask": 133
             }
           ],
-          "response_stall_cycles": 0
+          "response_stall_cycles": 1
         },
         {
           "index": 1,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 17694896,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            },
-            {
-              "core": 1,
-              "address": 17695336,
-              "write": true,
-              "data": 17121684441762715465,
-              "mask": 120
-            }
-          ],
-          "response_stall_cycles": 2
+          "core": 1,
+          "address": 17695176,
+          "kind": "single",
+          "write": true,
+          "data": 8860193332041330094,
+          "mask": 196,
+          "response_stall_cycles": 1
         },
         {
           "index": 2,
+          "core": 0,
+          "address": 17694800,
+          "kind": "single",
+          "write": true,
+          "data": 2629874481686551573,
+          "mask": 133,
+          "response_stall_cycles": 0
+        },
+        {
+          "index": 3,
           "core": 1,
-          "address": 17695000,
+          "address": 17694864,
+          "kind": "single",
+          "write": true,
+          "data": 6907465603363351566,
+          "mask": 90,
+          "response_stall_cycles": 0
+        },
+        {
+          "index": 4,
+          "core": 1,
+          "address": 17695472,
+          "kind": "single",
+          "write": true,
+          "data": 12974288847066973470,
+          "mask": 252,
+          "response_stall_cycles": 0
+        },
+        {
+          "index": 5,
+          "core": 0,
+          "address": 17694888,
           "kind": "single",
           "write": false,
           "data": 0,
           "mask": 255,
           "response_stall_cycles": 2
-        },
-        {
-          "index": 3,
-          "core": 0,
-          "address": 17695312,
-          "kind": "single",
-          "write": false,
-          "data": 0,
-          "mask": 255,
-          "response_stall_cycles": 1
-        },
-        {
-          "index": 4,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 17694928,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            },
-            {
-              "core": 1,
-              "address": 17695208,
-              "write": true,
-              "data": 2672881909292921195,
-              "mask": 48
-            }
-          ],
-          "response_stall_cycles": 1
-        },
-        {
-          "index": 5,
-          "core": 1,
-          "address": 17694792,
-          "kind": "single",
-          "write": true,
-          "data": 14643978146799883458,
-          "mask": 34,
-          "response_stall_cycles": 1
         },
         {
           "index": 6,
           "core": 0,
-          "address": 17695368,
+          "address": 17695048,
           "kind": "single",
-          "write": false,
-          "data": 0,
-          "mask": 255,
-          "response_stall_cycles": 0
+          "write": true,
+          "data": 4756418456094954677,
+          "mask": 69,
+          "response_stall_cycles": 1
         },
         {
           "index": 7,
-          "core": 1,
-          "address": 17695008,
+          "core": 0,
+          "address": 17695424,
           "kind": "single",
           "write": true,
-          "data": 7466836162809263152,
-          "mask": 178,
+          "data": 10175846816071312413,
+          "mask": 230,
           "response_stall_cycles": 0
         },
         {
           "index": 8,
-          "core": 0,
-          "address": 17694880,
+          "core": 1,
+          "address": 17695120,
+          "kind": "single",
+          "write": true,
+          "data": 12106842426022352615,
+          "mask": 251,
+          "response_stall_cycles": 1
+        },
+        {
+          "index": 9,
+          "core": 1,
+          "address": 17694992,
           "kind": "single",
           "write": false,
           "data": 0,
@@ -966,24 +983,14 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 9,
-          "core": 1,
-          "address": 17695392,
-          "kind": "single",
-          "write": true,
-          "data": 13124180202466342555,
-          "mask": 135,
-          "response_stall_cycles": 1
-        },
-        {
           "index": 10,
           "core": 1,
-          "address": 17695072,
+          "address": 17694872,
           "kind": "single",
-          "write": true,
-          "data": 1616456040788039560,
-          "mask": 40,
-          "response_stall_cycles": 0
+          "write": false,
+          "data": 0,
+          "mask": 255,
+          "response_stall_cycles": 1
         },
         {
           "index": 11,
@@ -2148,108 +2155,131 @@
         "0x010e02e0": "0x040e15ca0404b404",
         "0x010e02e8": "0x050f14cb0505b505",
         "0x010e02f0": "0x060c17c80606b606",
-        "0x010e02f8": "0x070d16c90707b707"
+        "0x010e02f8": "0x070d16c90707b707",
+        "0x02400000": "0xe6dabf3c490066f5",
+        "0x02400008": "0x240799f8416dcc2c",
+        "0x02400010": "0x9e86d8720bf90a1f",
+        "0x02400018": "0xa8e397145eacffb6",
+        "0x02400020": "0x4872f278b12cf6b9",
+        "0x02400028": "0x9f772b960e386fee",
+        "0x02400030": "0xff70e5631e0561c8",
+        "0x02400038": "0x2ae4ed54817a2925",
+        "0x02400040": "0xcc6c33c46cf3191f",
+        "0x02400048": "0x84156a9eeeb6779a",
+        "0x02400050": "0x940224c7b61f074c",
+        "0x02400058": "0x186dd2944fc99424",
+        "0x02400060": "0xf4dbf4b7701b4292",
+        "0x02400068": "0x1f88cb9f5d4d0273",
+        "0x02400070": "0x0b1038f0a6be2ef6",
+        "0x02400078": "0x07ecf1a2f7c1447f"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 40,
-          "FS.CPU.READ.CORE1": 32,
-          "FS.CPU.WRITE.CORE0": 25,
-          "FS.CPU.WRITE.CORE1": 33,
-          "FS.MESI.E_TO_I": 3,
-          "FS.MESI.E_TO_M": 4,
+          "FS.CPU.READ.CORE0": 37,
+          "FS.CPU.READ.CORE1": 33,
+          "FS.CPU.WRITE.CORE0": 29,
+          "FS.CPU.WRITE.CORE1": 32,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 1,
           "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 24,
-          "FS.MESI.I_TO_S": 19,
-          "FS.MESI.M_TO_I": 19,
-          "FS.MESI.M_TO_S": 16,
+          "FS.MESI.I_TO_E": 7,
+          "FS.MESI.I_TO_M": 27,
+          "FS.MESI.I_TO_S": 20,
+          "FS.MESI.M_TO_I": 18,
+          "FS.MESI.M_TO_S": 17,
           "FS.MESI.S_TO_I": 16,
           "FS.MESI.S_TO_M": 16,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 40,
-          "FS.CROSS.CORE0.WRITE": 25,
-          "FS.CROSS.CORE1.READ": 32,
-          "FS.CROSS.CORE1.WRITE": 33
+          "FS.CROSS.CORE0.READ": 37,
+          "FS.CROSS.CORE0.WRITE": 29,
+          "FS.CROSS.CORE1.READ": 33,
+          "FS.CROSS.CORE1.WRITE": 32,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 40,
-          "FS.CPU.READ.CORE1": 32,
-          "FS.CPU.WRITE.CORE0": 25,
-          "FS.CPU.WRITE.CORE1": 33,
-          "FS.MESI.E_TO_I": 3,
-          "FS.MESI.E_TO_M": 4,
+          "FS.CPU.READ.CORE0": 37,
+          "FS.CPU.READ.CORE1": 33,
+          "FS.CPU.WRITE.CORE0": 29,
+          "FS.CPU.WRITE.CORE1": 32,
+          "FS.MESI.E_TO_I": 2,
+          "FS.MESI.E_TO_M": 1,
           "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 24,
-          "FS.MESI.I_TO_S": 19,
-          "FS.MESI.M_TO_I": 19,
-          "FS.MESI.M_TO_S": 16,
+          "FS.MESI.I_TO_E": 7,
+          "FS.MESI.I_TO_M": 27,
+          "FS.MESI.I_TO_S": 20,
+          "FS.MESI.M_TO_I": 18,
+          "FS.MESI.M_TO_S": 17,
           "FS.MESI.S_TO_I": 16,
           "FS.MESI.S_TO_M": 16,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 40,
-          "FS.CROSS.CORE0.WRITE": 25,
-          "FS.CROSS.CORE1.READ": 32,
-          "FS.CROSS.CORE1.WRITE": 33
+          "FS.CROSS.CORE0.READ": 37,
+          "FS.CROSS.CORE0.WRITE": 29,
+          "FS.CROSS.CORE1.READ": 33,
+          "FS.CROSS.CORE1.WRITE": 32,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 69,
-          "l2.lookup": 12,
-          "directory_context.allocate": 69,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 299,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 141,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 424,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 69,
-          "mshr.retire": 12,
-          "directory.grant_accept": 69,
-          "l1.metadata_commit": 130,
-          "cpu.response_complete": 130,
-          "directory_context.retire": 69,
-          "cpu.request_accept": 65,
-          "snoop.accept": 57,
-          "directory.snoop_offer": 57,
-          "coherence.owner_data_beat": 328,
-          "snoop.response": 57,
-          "directory.request_stall": 3,
-          "directory.transfer_stall": 11
+          "directory.request_accept": 70,
+          "l2.lookup": 14,
+          "directory_context.allocate": 70,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 499,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 265,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 432,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 70,
+          "mshr.retire": 14,
+          "directory.grant_accept": 70,
+          "l1.metadata_commit": 127,
+          "cpu.response_complete": 131,
+          "directory_context.retire": 70,
+          "cpu.request_accept": 126,
+          "snoop.accept": 56,
+          "directory.snoop_offer": 56,
+          "coherence.owner_data_beat": 320,
+          "snoop.response": 56,
+          "directory.request_stall": 2,
+          "apb.access_complete": 2
         },
         "stall_cycles": {
-          "directory_request": 3,
-          "directory_transfer": 11
+          "directory_request": 2
         },
         "mshr_occupancy_histogram": {
-          "0": 1649,
-          "1": 289,
-          "2": 62
+          "0": 1664,
+          "1": 501,
+          "2": 22
         },
         "directory_context_histogram": {
-          "0": 485,
-          "1": 1305,
-          "2": 210
+          "0": 494,
+          "1": 1537,
+          "2": 156
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 65,
-        "cpu_response_completions": 130,
+        "cpu_request_accepts": 126,
+        "cpu_response_completions": 131,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -2303,6 +2333,35 @@
             "FS.MESI.M_TO_I"
           ],
           "description": "Build all required legal MESI transitions using CPU traffic."
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 3584007567,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37752616,
+          "owner_write_data": 6376880448472450105,
+          "owner_write_mask": 191,
+          "refill_address": 37752648,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37752640
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 375,
+          "snoop_response_cycle": 386,
+          "refill_last_cycle": 450,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
         },
         {
           "kind": "directed_target",
@@ -3621,110 +3680,133 @@
         "0x00c702e0": "0x9a458f830404b404",
         "0x00c702e8": "0x9b448e820505b505",
         "0x00c702f0": "0x98478d810606b606",
-        "0x00c702f8": "0x99468c800707b707"
+        "0x00c702f8": "0x99468c800707b707",
+        "0x02400f00": "0xa48bc72de49bc671",
+        "0x02400f08": "0xa99101024b68547d",
+        "0x02400f10": "0xe04114396d3b2ffa",
+        "0x02400f18": "0x6ae2e3586d2ff707",
+        "0x02400f20": "0x05b38bb98d2ca788",
+        "0x02400f28": "0x63ac5bac9b9baa78",
+        "0x02400f30": "0xaa941db57c223d17",
+        "0x02400f38": "0xdc42b2c5aba2a097",
+        "0x02400f40": "0xf97f912db648df7c",
+        "0x02400f48": "0x090375e32ed5c1e8",
+        "0x02400f50": "0x991e638c34317690",
+        "0x02400f58": "0xaac12cff30650205",
+        "0x02400f60": "0x6a5abeed170fe309",
+        "0x02400f68": "0x4ff5e8341225a91c",
+        "0x02400f70": "0xc6c2324e4964fe1e",
+        "0x02400f78": "0x4f7249161a57fe65"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 32,
-          "FS.CPU.READ.CORE1": 43,
-          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.READ.CORE0": 33,
+          "FS.CPU.READ.CORE1": 44,
+          "FS.CPU.WRITE.CORE0": 26,
           "FS.CPU.WRITE.CORE1": 29,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 2,
           "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 8,
-          "FS.MESI.I_TO_M": 19,
-          "FS.MESI.I_TO_S": 27,
+          "FS.MESI.I_TO_E": 9,
+          "FS.MESI.I_TO_M": 20,
+          "FS.MESI.I_TO_S": 28,
           "FS.MESI.M_TO_I": 13,
-          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.M_TO_S": 24,
           "FS.MESI.S_TO_I": 22,
           "FS.MESI.S_TO_M": 22,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 32,
-          "FS.CROSS.CORE0.WRITE": 25,
-          "FS.CROSS.CORE1.READ": 43,
-          "FS.CROSS.CORE1.WRITE": 29
+          "FS.CROSS.CORE0.READ": 33,
+          "FS.CROSS.CORE0.WRITE": 26,
+          "FS.CROSS.CORE1.READ": 44,
+          "FS.CROSS.CORE1.WRITE": 29,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 32,
-          "FS.CPU.READ.CORE1": 43,
-          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.READ.CORE0": 33,
+          "FS.CPU.READ.CORE1": 44,
+          "FS.CPU.WRITE.CORE0": 26,
           "FS.CPU.WRITE.CORE1": 29,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 2,
           "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 8,
-          "FS.MESI.I_TO_M": 19,
-          "FS.MESI.I_TO_S": 27,
+          "FS.MESI.I_TO_E": 9,
+          "FS.MESI.I_TO_M": 20,
+          "FS.MESI.I_TO_S": 28,
           "FS.MESI.M_TO_I": 13,
-          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.M_TO_S": 24,
           "FS.MESI.S_TO_I": 22,
           "FS.MESI.S_TO_M": 22,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 32,
-          "FS.CROSS.CORE0.WRITE": 25,
-          "FS.CROSS.CORE1.READ": 43,
-          "FS.CROSS.CORE1.WRITE": 29
+          "FS.CROSS.CORE0.READ": 33,
+          "FS.CROSS.CORE0.WRITE": 26,
+          "FS.CROSS.CORE1.READ": 44,
+          "FS.CROSS.CORE1.WRITE": 29,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 76,
-          "l2.lookup": 12,
-          "directory_context.allocate": 76,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 361,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 221,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 432,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 76,
-          "mshr.retire": 12,
-          "directory.grant_accept": 76,
-          "l1.metadata_commit": 142,
-          "cpu.response_complete": 129,
-          "directory_context.retire": 76,
-          "cpu.request_accept": 68,
-          "snoop.accept": 64,
-          "directory.snoop_offer": 64,
-          "coherence.owner_data_beat": 336,
-          "snoop.response": 64,
+          "directory.request_accept": 79,
+          "l2.lookup": 14,
+          "directory_context.allocate": 79,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 483,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 316,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 456,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 79,
+          "mshr.retire": 14,
+          "directory.grant_accept": 79,
+          "l1.metadata_commit": 146,
+          "cpu.response_complete": 132,
+          "directory_context.retire": 79,
+          "cpu.request_accept": 128,
+          "snoop.accept": 65,
+          "directory.snoop_offer": 65,
+          "coherence.owner_data_beat": 344,
+          "snoop.response": 65,
+          "apb.access_complete": 2,
           "directory.request_stall": 1,
-          "directory.transfer_stall": 11,
-          "axi.stall": 1
+          "directory.transfer_stall": 11
         },
         "stall_cycles": {
           "directory_request": 1,
-          "directory_transfer": 11,
-          "AR": 1
+          "directory_transfer": 11
         },
         "mshr_occupancy_histogram": {
-          "0": 1727,
-          "1": 413,
+          "0": 1765,
+          "1": 548,
           "2": 28
         },
         "directory_context_histogram": {
-          "0": 484,
-          "1": 1504,
-          "2": 180
+          "0": 494,
+          "1": 1643,
+          "2": 204
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 68,
-        "cpu_response_completions": 129,
+        "cpu_request_accepts": 128,
+        "cpu_response_completions": 132,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -3780,6 +3862,35 @@
           "description": "Build all required legal MESI transitions using CPU traffic."
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 1554799102,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37752360,
+          "owner_write_data": 7245346649359059205,
+          "owner_write_mask": 220,
+          "refill_address": 37752416,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 3,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37752384
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 356,
+          "snoop_response_cycle": 367,
+          "refill_last_cycle": 428,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "kind": "directed_target",
           "scenario_id": "SC08_SC14_DUAL_COLD_MISS_OOO",
           "bins": [
@@ -3788,8 +3899,8 @@
           ],
           "description": "Overlap distinct misses and reverse AXI R completion order.",
           "request_delays": {
-            "0": 1,
-            "1": 0
+            "0": 0,
+            "1": 1
           },
           "forced_read_reorder_group": 2,
           "accepted_ids": [
@@ -3804,7 +3915,7 @@
         {
           "index": 0,
           "core": 1,
-          "address": 8388864,
+          "address": 8388648,
           "kind": "single",
           "write": false,
           "data": 0,
@@ -3813,33 +3924,22 @@
         },
         {
           "index": 1,
-          "core": 0,
-          "address": 8388936,
+          "core": 1,
+          "address": 8389064,
+          "kind": "single",
+          "write": true,
+          "data": 4853741949647197425,
+          "mask": 140,
+          "response_stall_cycles": 2
+        },
+        {
+          "index": 2,
+          "core": 1,
+          "address": 8389072,
           "kind": "single",
           "write": false,
           "data": 0,
           "mask": 255,
-          "response_stall_cycles": 1
-        },
-        {
-          "index": 2,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 8388872,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            },
-            {
-              "core": 1,
-              "address": 8389144,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
           "response_stall_cycles": 1
         },
         {
@@ -5052,99 +5152,124 @@
         "0x008002e0": "0x387d01440404b404",
         "0x008002e8": "0x397c00450505b505",
         "0x008002f0": "0x3a7f03460606b606",
-        "0x008002f8": "0x3b7e02470707b707"
+        "0x008002f8": "0x3b7e02470707b707",
+        "0x02400e00": "0x63fd261c5daf6acc",
+        "0x02400e08": "0x040c88ac7a9fa5c7",
+        "0x02400e10": "0x68c20152c84e16af",
+        "0x02400e18": "0xa93e3041ba1076eb",
+        "0x02400e20": "0xc8c3bc89c69a6a1f",
+        "0x02400e28": "0x28cb98d0184b735b",
+        "0x02400e30": "0x9bcfee8834beaa6c",
+        "0x02400e38": "0xa3f3a8c01453f7b3",
+        "0x02400e40": "0xc5eeb4ec71122e3d",
+        "0x02400e48": "0xa3e83300ea1fbdd2",
+        "0x02400e50": "0x96739d33e24ba08b",
+        "0x02400e58": "0x8c0b496121af3035",
+        "0x02400e60": "0x541038fdc9cce0e2",
+        "0x02400e68": "0x0d626ce8f85e9246",
+        "0x02400e70": "0xbe3ab311324e766b",
+        "0x02400e78": "0x7c9c26018467e195"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 54,
-          "FS.CPU.READ.CORE1": 31,
-          "FS.CPU.WRITE.CORE0": 20,
-          "FS.CPU.WRITE.CORE1": 20,
-          "FS.MESI.E_TO_I": 2,
+          "FS.CPU.READ.CORE0": 53,
+          "FS.CPU.READ.CORE1": 32,
+          "FS.CPU.WRITE.CORE0": 21,
+          "FS.CPU.WRITE.CORE1": 21,
+          "FS.MESI.E_TO_I": 1,
           "FS.MESI.E_TO_M": 2,
           "FS.MESI.E_TO_S": 6,
           "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 10,
-          "FS.MESI.I_TO_S": 26,
-          "FS.MESI.M_TO_I": 6,
-          "FS.MESI.M_TO_S": 20,
+          "FS.MESI.I_TO_M": 12,
+          "FS.MESI.I_TO_S": 27,
+          "FS.MESI.M_TO_I": 7,
+          "FS.MESI.M_TO_S": 21,
           "FS.MESI.S_TO_I": 21,
           "FS.MESI.S_TO_M": 21,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 54,
-          "FS.CROSS.CORE0.WRITE": 20,
-          "FS.CROSS.CORE1.READ": 31,
-          "FS.CROSS.CORE1.WRITE": 20
+          "FS.CROSS.CORE0.READ": 53,
+          "FS.CROSS.CORE0.WRITE": 21,
+          "FS.CROSS.CORE1.READ": 32,
+          "FS.CROSS.CORE1.WRITE": 21,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 54,
-          "FS.CPU.READ.CORE1": 31,
-          "FS.CPU.WRITE.CORE0": 20,
-          "FS.CPU.WRITE.CORE1": 20,
-          "FS.MESI.E_TO_I": 2,
+          "FS.CPU.READ.CORE0": 53,
+          "FS.CPU.READ.CORE1": 32,
+          "FS.CPU.WRITE.CORE0": 21,
+          "FS.CPU.WRITE.CORE1": 21,
+          "FS.MESI.E_TO_I": 1,
           "FS.MESI.E_TO_M": 2,
           "FS.MESI.E_TO_S": 6,
           "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 10,
-          "FS.MESI.I_TO_S": 26,
-          "FS.MESI.M_TO_I": 6,
-          "FS.MESI.M_TO_S": 20,
+          "FS.MESI.I_TO_M": 12,
+          "FS.MESI.I_TO_S": 27,
+          "FS.MESI.M_TO_I": 7,
+          "FS.MESI.M_TO_S": 21,
           "FS.MESI.S_TO_I": 21,
           "FS.MESI.S_TO_M": 21,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 54,
-          "FS.CROSS.CORE0.WRITE": 20,
-          "FS.CROSS.CORE1.READ": 31,
-          "FS.CROSS.CORE1.WRITE": 20
+          "FS.CROSS.CORE0.READ": 53,
+          "FS.CROSS.CORE0.WRITE": 21,
+          "FS.CROSS.CORE1.READ": 32,
+          "FS.CROSS.CORE1.WRITE": 21,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 67,
-          "l2.lookup": 12,
-          "directory_context.allocate": 67,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 380,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 172,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 368,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 67,
-          "mshr.retire": 12,
-          "directory.grant_accept": 67,
-          "l1.metadata_commit": 124,
-          "cpu.response_complete": 125,
-          "directory_context.retire": 67,
-          "cpu.request_accept": 53,
-          "snoop.accept": 55,
-          "directory.snoop_offer": 55,
-          "coherence.owner_data_beat": 272,
-          "snoop.response": 55,
-          "directory.request_stall": 2,
-          "axi.stall": 4
+          "directory.request_accept": 70,
+          "l2.lookup": 14,
+          "directory_context.allocate": 70,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 508,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 261,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 392,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 70,
+          "mshr.retire": 14,
+          "directory.grant_accept": 70,
+          "l1.metadata_commit": 128,
+          "cpu.response_complete": 127,
+          "directory_context.retire": 70,
+          "cpu.request_accept": 123,
+          "snoop.accept": 56,
+          "directory.snoop_offer": 56,
+          "coherence.owner_data_beat": 280,
+          "snoop.response": 56,
+          "apb.access_complete": 2,
+          "directory.request_stall": 1,
+          "axi.stall": 1
         },
         "stall_cycles": {
-          "directory_request": 2,
-          "AR": 4
+          "directory_request": 1,
+          "AR": 1
         },
         "mshr_occupancy_histogram": {
-          "0": 1537,
-          "1": 366,
+          "0": 1602,
+          "1": 494,
           "2": 26
         },
         "directory_context_histogram": {
-          "0": 482,
-          "1": 1299,
+          "0": 495,
+          "1": 1479,
           "2": 148
         },
         "max_mshr_occupancy": 2,
@@ -5152,8 +5277,8 @@
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 53,
-        "cpu_response_completions": 125,
+        "cpu_request_accepts": 123,
+        "cpu_response_completions": 127,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -5209,6 +5334,35 @@
           "description": "Build all required legal MESI transitions using CPU traffic."
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 522270509,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37752096,
+          "owner_write_data": 16317112276475628436,
+          "owner_write_mask": 112,
+          "refill_address": 37752128,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 1,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37752128
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 338,
+          "snoop_response_cycle": 349,
+          "refill_last_cycle": 407,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "kind": "directed_target",
           "scenario_id": "SC08_SC14_DUAL_COLD_MISS_OOO",
           "bins": [
@@ -5217,7 +5371,7 @@
           ],
           "description": "Overlap distinct misses and reverse AXI R completion order.",
           "request_delays": {
-            "0": 0,
+            "0": 1,
             "1": 0
           },
           "forced_read_reorder_group": 2,
@@ -5232,59 +5386,38 @@
         },
         {
           "index": 0,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 20513224,
-              "write": true,
-              "data": 13400807372075124923,
-              "mask": 36
-            },
-            {
-              "core": 1,
-              "address": 20513032,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
-          "response_stall_cycles": 2
+          "core": 1,
+          "address": 20513352,
+          "kind": "single",
+          "write": true,
+          "data": 13400807372075124923,
+          "mask": 36,
+          "response_stall_cycles": 1
         },
         {
           "index": 1,
           "core": 1,
-          "address": 20513528,
+          "address": 20513512,
           "kind": "single",
-          "write": true,
-          "data": 13868452681330605806,
-          "mask": 182,
+          "write": false,
+          "data": 0,
+          "mask": 255,
           "response_stall_cycles": 0
         },
         {
           "index": 2,
-          "core": 0,
-          "address": 20512776,
+          "core": 1,
+          "address": 20513472,
           "kind": "single",
           "write": true,
-          "data": 2238115801650493897,
-          "mask": 21,
-          "response_stall_cycles": 1
+          "data": 2310001382434521061,
+          "mask": 228,
+          "response_stall_cycles": 0
         },
         {
           "index": 3,
-          "core": 1,
-          "address": 20513064,
-          "kind": "single",
-          "write": true,
-          "data": 1940355943289658632,
-          "mask": 173,
-          "response_stall_cycles": 2
-        },
-        {
-          "index": 4,
           "core": 0,
-          "address": 20512824,
+          "address": 20513352,
           "kind": "single",
           "write": false,
           "data": 0,
@@ -5292,9 +5425,30 @@
           "response_stall_cycles": 2
         },
         {
+          "index": 4,
+          "kind": "dual_lane",
+          "requests": [
+            {
+              "core": 0,
+              "address": 20513136,
+              "write": true,
+              "data": 5908606670940132233,
+              "mask": 50
+            },
+            {
+              "core": 1,
+              "address": 20513360,
+              "write": true,
+              "data": 11197904815174665239,
+              "mask": 134
+            }
+          ],
+          "response_stall_cycles": 0
+        },
+        {
           "index": 5,
-          "core": 1,
-          "address": 20513432,
+          "core": 0,
+          "address": 20513448,
           "kind": "single",
           "write": false,
           "data": 0,
@@ -5303,36 +5457,57 @@
         },
         {
           "index": 6,
-          "core": 1,
-          "address": 20513136,
+          "core": 0,
+          "address": 20513408,
           "kind": "single",
-          "write": true,
-          "data": 5193809575250167167,
-          "mask": 189,
-          "response_stall_cycles": 2
+          "write": false,
+          "data": 0,
+          "mask": 255,
+          "response_stall_cycles": 1
         },
         {
           "index": 7,
-          "core": 0,
-          "address": 20513520,
+          "core": 1,
+          "address": 20513040,
           "kind": "single",
-          "write": true,
-          "data": 12956585255800823564,
-          "mask": 41,
-          "response_stall_cycles": 1
+          "write": false,
+          "data": 0,
+          "mask": 255,
+          "response_stall_cycles": 0
         },
         {
           "index": 8,
-          "core": 0,
-          "address": 20513528,
+          "core": 1,
+          "address": 20512952,
           "kind": "single",
-          "write": true,
-          "data": 9626520716120755921,
-          "mask": 208,
-          "response_stall_cycles": 1
+          "write": false,
+          "data": 0,
+          "mask": 255,
+          "response_stall_cycles": 0
         },
         {
           "index": 9,
+          "kind": "dual_lane",
+          "requests": [
+            {
+              "core": 0,
+              "address": 20513144,
+              "write": false,
+              "data": 0,
+              "mask": 255
+            },
+            {
+              "core": 1,
+              "address": 20513328,
+              "write": false,
+              "data": 0,
+              "mask": 255
+            }
+          ],
+          "response_stall_cycles": 2
+        },
+        {
+          "index": 10,
           "core": 1,
           "address": 20513328,
           "kind": "single",
@@ -5342,7 +5517,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 10,
+          "index": 11,
           "core": 1,
           "address": 20513336,
           "kind": "single",
@@ -5352,7 +5527,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 11,
+          "index": 12,
           "core": 0,
           "address": 20512776,
           "kind": "single",
@@ -5362,7 +5537,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 12,
+          "index": 13,
           "core": 0,
           "address": 20513128,
           "kind": "single",
@@ -5372,7 +5547,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 13,
+          "index": 14,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5393,7 +5568,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 14,
+          "index": 15,
           "core": 0,
           "address": 20512840,
           "kind": "single",
@@ -5403,7 +5578,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 15,
+          "index": 16,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5424,7 +5599,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 16,
+          "index": 17,
           "core": 1,
           "address": 20513408,
           "kind": "single",
@@ -5434,7 +5609,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 17,
+          "index": 18,
           "core": 0,
           "address": 20513080,
           "kind": "single",
@@ -5444,7 +5619,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 18,
+          "index": 19,
           "core": 1,
           "address": 20512800,
           "kind": "single",
@@ -5454,7 +5629,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 19,
+          "index": 20,
           "core": 1,
           "address": 20513440,
           "kind": "single",
@@ -5464,7 +5639,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 20,
+          "index": 21,
           "core": 0,
           "address": 20512800,
           "kind": "single",
@@ -5474,7 +5649,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 21,
+          "index": 22,
           "core": 1,
           "address": 20513320,
           "kind": "single",
@@ -5484,7 +5659,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 22,
+          "index": 23,
           "core": 0,
           "address": 20512888,
           "kind": "single",
@@ -5494,7 +5669,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 23,
+          "index": 24,
           "core": 1,
           "address": 20512936,
           "kind": "single",
@@ -5504,7 +5679,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 24,
+          "index": 25,
           "core": 0,
           "address": 20513288,
           "kind": "single",
@@ -5514,7 +5689,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 25,
+          "index": 26,
           "core": 0,
           "address": 20512792,
           "kind": "single",
@@ -5524,7 +5699,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 26,
+          "index": 27,
           "core": 1,
           "address": 20513480,
           "kind": "single",
@@ -5534,7 +5709,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 27,
+          "index": 28,
           "core": 0,
           "address": 20512968,
           "kind": "single",
@@ -5544,7 +5719,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 28,
+          "index": 29,
           "core": 1,
           "address": 20513320,
           "kind": "single",
@@ -5554,7 +5729,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 29,
+          "index": 30,
           "core": 1,
           "address": 20512912,
           "kind": "single",
@@ -5564,7 +5739,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 30,
+          "index": 31,
           "core": 1,
           "address": 20512792,
           "kind": "single",
@@ -5574,7 +5749,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 31,
+          "index": 32,
           "core": 1,
           "address": 20513200,
           "kind": "single",
@@ -5584,7 +5759,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 32,
+          "index": 33,
           "core": 0,
           "address": 20513016,
           "kind": "single",
@@ -5594,7 +5769,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 33,
+          "index": 34,
           "core": 1,
           "address": 20513320,
           "kind": "single",
@@ -5604,7 +5779,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 34,
+          "index": 35,
           "core": 1,
           "address": 20513024,
           "kind": "single",
@@ -5614,7 +5789,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 35,
+          "index": 36,
           "core": 1,
           "address": 20513216,
           "kind": "single",
@@ -5624,7 +5799,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 36,
+          "index": 37,
           "core": 1,
           "address": 20512792,
           "kind": "single",
@@ -5634,7 +5809,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 37,
+          "index": 38,
           "core": 0,
           "address": 20513104,
           "kind": "single",
@@ -5644,7 +5819,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 38,
+          "index": 39,
           "core": 1,
           "address": 20512984,
           "kind": "single",
@@ -5654,7 +5829,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 39,
+          "index": 40,
           "core": 1,
           "address": 20513296,
           "kind": "single",
@@ -5664,7 +5839,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 40,
+          "index": 41,
           "core": 0,
           "address": 20512952,
           "kind": "single",
@@ -5674,7 +5849,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 41,
+          "index": 42,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5695,7 +5870,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 42,
+          "index": 43,
           "core": 1,
           "address": 20512992,
           "kind": "single",
@@ -5705,7 +5880,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 43,
+          "index": 44,
           "core": 0,
           "address": 20513528,
           "kind": "single",
@@ -5715,7 +5890,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 44,
+          "index": 45,
           "core": 1,
           "address": 20513312,
           "kind": "single",
@@ -5725,7 +5900,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 45,
+          "index": 46,
           "core": 1,
           "address": 20513296,
           "kind": "single",
@@ -5735,7 +5910,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 46,
+          "index": 47,
           "core": 1,
           "address": 20513296,
           "kind": "single",
@@ -5745,7 +5920,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 47,
+          "index": 48,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5766,7 +5941,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 48,
+          "index": 49,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5787,7 +5962,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 49,
+          "index": 50,
           "core": 1,
           "address": 20513328,
           "kind": "single",
@@ -5797,7 +5972,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 50,
+          "index": 51,
           "core": 0,
           "address": 20512928,
           "kind": "single",
@@ -5807,7 +5982,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 51,
+          "index": 52,
           "core": 0,
           "address": 20513128,
           "kind": "single",
@@ -5817,7 +5992,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 52,
+          "index": 53,
           "core": 1,
           "address": 20513384,
           "kind": "single",
@@ -5827,7 +6002,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 53,
+          "index": 54,
           "core": 1,
           "address": 20512840,
           "kind": "single",
@@ -5837,7 +6012,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 54,
+          "index": 55,
           "core": 0,
           "address": 20513408,
           "kind": "single",
@@ -5847,7 +6022,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 55,
+          "index": 56,
           "core": 0,
           "address": 20513528,
           "kind": "single",
@@ -5857,7 +6032,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 56,
+          "index": 57,
           "kind": "dual_lane",
           "requests": [
             {
@@ -5878,7 +6053,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 57,
+          "index": 58,
           "core": 0,
           "address": 20512936,
           "kind": "single",
@@ -5888,7 +6063,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 58,
+          "index": 59,
           "core": 0,
           "address": 20513264,
           "kind": "single",
@@ -5898,7 +6073,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 59,
+          "index": 60,
           "core": 1,
           "address": 20513296,
           "kind": "single",
@@ -5908,7 +6083,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 60,
+          "index": 61,
           "core": 1,
           "address": 20513064,
           "kind": "single",
@@ -5918,7 +6093,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 61,
+          "index": 62,
           "core": 0,
           "address": 20513160,
           "kind": "single",
@@ -5928,7 +6103,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 62,
+          "index": 63,
           "core": 1,
           "address": 20513432,
           "kind": "single",
@@ -5938,7 +6113,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 63,
+          "index": 64,
           "core": 1,
           "address": 20513088,
           "kind": "single",
@@ -5948,7 +6123,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 64,
+          "index": 65,
           "core": 1,
           "address": 20513352,
           "kind": "single",
@@ -5958,7 +6133,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 65,
+          "index": 66,
           "core": 1,
           "address": 20513088,
           "kind": "single",
@@ -5968,7 +6143,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 66,
+          "index": 67,
           "core": 1,
           "address": 20513032,
           "kind": "single",
@@ -5978,7 +6153,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 67,
+          "index": 68,
           "core": 1,
           "address": 20512856,
           "kind": "single",
@@ -5988,7 +6163,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 68,
+          "index": 69,
           "core": 0,
           "address": 20512856,
           "kind": "single",
@@ -5998,7 +6173,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 69,
+          "index": 70,
           "core": 0,
           "address": 20513368,
           "kind": "single",
@@ -6008,7 +6183,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 70,
+          "index": 71,
           "core": 0,
           "address": 20512864,
           "kind": "single",
@@ -6018,7 +6193,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 71,
+          "index": 72,
           "core": 1,
           "address": 20512904,
           "kind": "single",
@@ -6028,7 +6203,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 72,
+          "index": 73,
           "core": 0,
           "address": 20513416,
           "kind": "single",
@@ -6038,7 +6213,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 73,
+          "index": 74,
           "core": 0,
           "address": 20513024,
           "kind": "single",
@@ -6048,7 +6223,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 74,
+          "index": 75,
           "core": 1,
           "address": 20513368,
           "kind": "single",
@@ -6058,7 +6233,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 75,
+          "index": 76,
           "core": 0,
           "address": 20512768,
           "kind": "single",
@@ -6068,7 +6243,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 76,
+          "index": 77,
           "kind": "dual_lane",
           "requests": [
             {
@@ -6089,7 +6264,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 77,
+          "index": 78,
           "kind": "dual_lane",
           "requests": [
             {
@@ -6110,7 +6285,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 78,
+          "index": 79,
           "core": 1,
           "address": 20513128,
           "kind": "single",
@@ -6120,7 +6295,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 79,
+          "index": 80,
           "core": 1,
           "address": 20512872,
           "kind": "single",
@@ -6130,7 +6305,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 80,
+          "index": 81,
           "kind": "dual_lane",
           "requests": [
             {
@@ -6151,7 +6326,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 81,
+          "index": 82,
           "core": 1,
           "address": 20512848,
           "kind": "single",
@@ -6161,7 +6336,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 82,
+          "index": 83,
           "core": 0,
           "address": 20512936,
           "kind": "single",
@@ -6171,7 +6346,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 83,
+          "index": 84,
           "core": 0,
           "address": 20513216,
           "kind": "single",
@@ -6181,7 +6356,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 84,
+          "index": 85,
           "core": 1,
           "address": 20512792,
           "kind": "single",
@@ -6191,7 +6366,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 85,
+          "index": 86,
           "core": 0,
           "address": 20513272,
           "kind": "single",
@@ -6201,7 +6376,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 86,
+          "index": 87,
           "core": 1,
           "address": 20513096,
           "kind": "single",
@@ -6211,7 +6386,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 87,
+          "index": 88,
           "kind": "dual_lane",
           "requests": [
             {
@@ -6232,7 +6407,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 88,
+          "index": 89,
           "core": 0,
           "address": 20512776,
           "kind": "single",
@@ -6242,7 +6417,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 89,
+          "index": 90,
           "core": 1,
           "address": 20513288,
           "kind": "single",
@@ -6252,7 +6427,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 90,
+          "index": 91,
           "core": 0,
           "address": 20512872,
           "kind": "single",
@@ -6262,7 +6437,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 91,
+          "index": 92,
           "core": 1,
           "address": 20513072,
           "kind": "single",
@@ -6272,7 +6447,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 92,
+          "index": 93,
           "core": 0,
           "address": 20512768,
           "kind": "single",
@@ -6282,7 +6457,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 93,
+          "index": 94,
           "core": 0,
           "address": 20512824,
           "kind": "single",
@@ -6292,7 +6467,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 94,
+          "index": 95,
           "core": 0,
           "address": 20513024,
           "kind": "single",
@@ -6302,7 +6477,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 95,
+          "index": 96,
           "kind": "dual_lane",
           "requests": [
             {
@@ -6323,7 +6498,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 96,
+          "index": 97,
           "core": 0,
           "address": 20512784,
           "kind": "single",
@@ -6333,7 +6508,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 97,
+          "index": 98,
           "core": 1,
           "address": 20513384,
           "kind": "single",
@@ -6343,7 +6518,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 98,
+          "index": 99,
           "core": 0,
           "address": 20512888,
           "kind": "single",
@@ -6351,27 +6526,6 @@
           "data": 5061372262998210589,
           "mask": 105,
           "response_stall_cycles": 2
-        },
-        {
-          "index": 99,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 20513328,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            },
-            {
-              "core": 1,
-              "address": 20513448,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
-          "response_stall_cycles": 0
         }
       ],
       "initial_backing_memory": {
@@ -6470,108 +6624,133 @@
         "0x013902e0": "0xdeb47afd0404b404",
         "0x013902e8": "0xdfb57bfc0505b505",
         "0x013902f0": "0xdcb678ff0606b606",
-        "0x013902f8": "0xddb779fe0707b707"
+        "0x013902f8": "0xddb779fe0707b707",
+        "0x02400d00": "0xd6c795a678f9dfa0",
+        "0x02400d08": "0x6c8d4d60da928b6b",
+        "0x02400d10": "0x6398ccaf41cb24e5",
+        "0x02400d18": "0xcf98dadaad42c789",
+        "0x02400d20": "0x465b529a3dbf896a",
+        "0x02400d28": "0x78f25d37855fdb0c",
+        "0x02400d30": "0x88e625d53f49e92e",
+        "0x02400d38": "0xb44a40dbd6e87e05",
+        "0x02400d40": "0x624261147f48c317",
+        "0x02400d48": "0xc6f5ca5a3063e0f4",
+        "0x02400d50": "0x22ddfe4f021e3c27",
+        "0x02400d58": "0x80ba8fb3e387411a",
+        "0x02400d60": "0x926ea3fef57c6930",
+        "0x02400d68": "0xb2495e19cbc56c28",
+        "0x02400d70": "0x75f3d954dfea253b",
+        "0x02400d78": "0x79a63c9ee3b7482e"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 37,
-          "FS.CPU.READ.CORE1": 37,
-          "FS.CPU.WRITE.CORE0": 22,
-          "FS.CPU.WRITE.CORE1": 28,
+          "FS.CPU.READ.CORE0": 40,
+          "FS.CPU.READ.CORE1": 39,
+          "FS.CPU.WRITE.CORE0": 19,
+          "FS.CPU.WRITE.CORE1": 29,
           "FS.MESI.E_TO_I": 3,
-          "FS.MESI.E_TO_M": 4,
-          "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 20,
-          "FS.MESI.I_TO_S": 20,
-          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 5,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 16,
+          "FS.MESI.I_TO_S": 22,
+          "FS.MESI.M_TO_I": 10,
           "FS.MESI.M_TO_S": 17,
-          "FS.MESI.S_TO_I": 15,
-          "FS.MESI.S_TO_M": 15,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.S_TO_I": 18,
+          "FS.MESI.S_TO_M": 18,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 37,
-          "FS.CROSS.CORE0.WRITE": 22,
-          "FS.CROSS.CORE1.READ": 37,
-          "FS.CROSS.CORE1.WRITE": 28
+          "FS.CROSS.CORE0.READ": 40,
+          "FS.CROSS.CORE0.WRITE": 19,
+          "FS.CROSS.CORE1.READ": 39,
+          "FS.CROSS.CORE1.WRITE": 29,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 37,
-          "FS.CPU.READ.CORE1": 37,
-          "FS.CPU.WRITE.CORE0": 22,
-          "FS.CPU.WRITE.CORE1": 28,
+          "FS.CPU.READ.CORE0": 40,
+          "FS.CPU.READ.CORE1": 39,
+          "FS.CPU.WRITE.CORE0": 19,
+          "FS.CPU.WRITE.CORE1": 29,
           "FS.MESI.E_TO_I": 3,
-          "FS.MESI.E_TO_M": 4,
-          "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 20,
-          "FS.MESI.I_TO_S": 20,
-          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 5,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 16,
+          "FS.MESI.I_TO_S": 22,
+          "FS.MESI.M_TO_I": 10,
           "FS.MESI.M_TO_S": 17,
-          "FS.MESI.S_TO_I": 15,
-          "FS.MESI.S_TO_M": 15,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.S_TO_I": 18,
+          "FS.MESI.S_TO_M": 18,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 37,
-          "FS.CROSS.CORE0.WRITE": 22,
-          "FS.CROSS.CORE1.READ": 37,
-          "FS.CROSS.CORE1.WRITE": 28
+          "FS.CROSS.CORE0.READ": 40,
+          "FS.CROSS.CORE0.WRITE": 19,
+          "FS.CROSS.CORE1.READ": 39,
+          "FS.CROSS.CORE1.WRITE": 29,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 65,
-          "l2.lookup": 12,
-          "directory_context.allocate": 65,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 309,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 99,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 400,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 65,
-          "mshr.retire": 12,
-          "directory.grant_accept": 65,
+          "directory.request_accept": 67,
+          "l2.lookup": 14,
+          "directory_context.allocate": 67,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 419,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 205,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 392,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 67,
+          "mshr.retire": 14,
+          "directory.grant_accept": 67,
           "l1.metadata_commit": 122,
-          "cpu.response_complete": 124,
-          "directory_context.retire": 65,
-          "cpu.request_accept": 69,
+          "cpu.response_complete": 127,
+          "directory_context.retire": 67,
+          "cpu.request_accept": 122,
           "snoop.accept": 53,
           "directory.snoop_offer": 53,
-          "coherence.owner_data_beat": 304,
+          "coherence.owner_data_beat": 280,
           "snoop.response": 53,
-          "directory.request_stall": 3,
-          "axi.stall": 3
+          "apb.access_complete": 2,
+          "axi.stall": 4,
+          "directory.request_stall": 2
         },
         "stall_cycles": {
-          "directory_request": 3,
-          "AR": 3
+          "AR": 4,
+          "directory_request": 2
         },
         "mshr_occupancy_histogram": {
-          "0": 1573,
-          "1": 219,
-          "2": 90
+          "0": 1544,
+          "1": 441,
+          "2": 24
         },
         "directory_context_histogram": {
-          "0": 482,
-          "1": 1166,
-          "2": 234
+          "0": 490,
+          "1": 1349,
+          "2": 170
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 69,
-        "cpu_response_completions": 124,
+        "cpu_request_accepts": 122,
+        "cpu_response_completions": 127,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -6649,13 +6828,42 @@
           ]
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 2428380080,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37748776,
+          "owner_write_data": 7033672128303157018,
+          "owner_write_mask": 178,
+          "refill_address": 37748832,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37748800
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 465,
+          "snoop_response_cycle": 476,
+          "refill_last_cycle": 526,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "index": 0,
-          "core": 1,
-          "address": 15860208,
+          "core": 0,
+          "address": 15860376,
           "kind": "single",
-          "write": true,
-          "data": 10860744376025001494,
-          "mask": 57,
+          "write": false,
+          "data": 0,
+          "mask": 255,
           "response_stall_cycles": 1
         },
         {
@@ -7932,110 +8140,135 @@
         "0x00f202e0": "0x7ce3fcb60404b404",
         "0x00f202e8": "0x7de2fdb70505b505",
         "0x00f202f0": "0x7ee1feb40606b606",
-        "0x00f202f8": "0x7fe0ffb50707b707"
+        "0x00f202f8": "0x7fe0ffb50707b707",
+        "0x02400000": "0xc3dc9d35e1fe77b3",
+        "0x02400008": "0x6f8bf8cb3406cd0a",
+        "0x02400010": "0xb2bae389764c3f57",
+        "0x02400018": "0x7928775db5435887",
+        "0x02400020": "0x5c85c8fc39fe7d74",
+        "0x02400028": "0xb560db9ea0a11e16",
+        "0x02400030": "0x5ef6984627c83bac",
+        "0x02400038": "0x906e1be38ea0098f",
+        "0x02400040": "0xf8f9e210d02c19ab",
+        "0x02400048": "0xe9397bfd6869deb3",
+        "0x02400050": "0x25e2331758de6b1b",
+        "0x02400058": "0x07cda9c41ebd8204",
+        "0x02400060": "0xf7103b1dfa86a07a",
+        "0x02400068": "0x240de3ed6b4df098",
+        "0x02400070": "0xe2399d0599825c52",
+        "0x02400078": "0x4b53c4db4ec24f6c"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 38,
-          "FS.CPU.READ.CORE1": 36,
-          "FS.CPU.WRITE.CORE0": 31,
-          "FS.CPU.WRITE.CORE1": 23,
+          "FS.CPU.READ.CORE0": 40,
+          "FS.CPU.READ.CORE1": 37,
+          "FS.CPU.WRITE.CORE0": 32,
+          "FS.CPU.WRITE.CORE1": 22,
           "FS.MESI.E_TO_I": 5,
           "FS.MESI.E_TO_M": 2,
-          "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.E_TO_S": 4,
+          "FS.MESI.I_TO_E": 12,
           "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.I_TO_S": 27,
           "FS.MESI.M_TO_I": 15,
           "FS.MESI.M_TO_S": 23,
           "FS.MESI.S_TO_I": 21,
           "FS.MESI.S_TO_M": 21,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 38,
-          "FS.CROSS.CORE0.WRITE": 31,
-          "FS.CROSS.CORE1.READ": 36,
-          "FS.CROSS.CORE1.WRITE": 23
+          "FS.CROSS.CORE0.READ": 40,
+          "FS.CROSS.CORE0.WRITE": 32,
+          "FS.CROSS.CORE1.READ": 37,
+          "FS.CROSS.CORE1.WRITE": 22,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 38,
-          "FS.CPU.READ.CORE1": 36,
-          "FS.CPU.WRITE.CORE0": 31,
-          "FS.CPU.WRITE.CORE1": 23,
+          "FS.CPU.READ.CORE0": 40,
+          "FS.CPU.READ.CORE1": 37,
+          "FS.CPU.WRITE.CORE0": 32,
+          "FS.CPU.WRITE.CORE1": 22,
           "FS.MESI.E_TO_I": 5,
           "FS.MESI.E_TO_M": 2,
-          "FS.MESI.E_TO_S": 3,
-          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.E_TO_S": 4,
+          "FS.MESI.I_TO_E": 12,
           "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.I_TO_S": 27,
           "FS.MESI.M_TO_I": 15,
           "FS.MESI.M_TO_S": 23,
           "FS.MESI.S_TO_I": 21,
           "FS.MESI.S_TO_M": 21,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 38,
-          "FS.CROSS.CORE0.WRITE": 31,
-          "FS.CROSS.CORE1.READ": 36,
-          "FS.CROSS.CORE1.WRITE": 23
+          "FS.CROSS.CORE0.READ": 40,
+          "FS.CROSS.CORE0.WRITE": 32,
+          "FS.CROSS.CORE1.READ": 37,
+          "FS.CROSS.CORE1.WRITE": 22,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 79,
-          "l2.lookup": 12,
-          "directory_context.allocate": 79,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 364,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 253,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 464,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 79,
-          "mshr.retire": 12,
-          "directory.grant_accept": 79,
-          "l1.metadata_commit": 148,
-          "cpu.response_complete": 128,
-          "directory_context.retire": 79,
-          "cpu.request_accept": 68,
-          "snoop.accept": 67,
-          "directory.snoop_offer": 67,
-          "coherence.owner_data_beat": 368,
-          "snoop.response": 67,
+          "directory.request_accept": 82,
+          "l2.lookup": 14,
+          "directory_context.allocate": 82,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 546,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 359,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 488,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 82,
+          "mshr.retire": 14,
+          "directory.grant_accept": 82,
+          "l1.metadata_commit": 152,
+          "cpu.response_complete": 131,
+          "directory_context.retire": 82,
+          "cpu.request_accept": 126,
+          "snoop.accept": 68,
+          "directory.snoop_offer": 68,
+          "coherence.owner_data_beat": 376,
+          "snoop.response": 68,
           "axi.stall": 3,
-          "directory.request_stall": 1,
-          "directory.transfer_stall": 22
+          "directory.request_stall": 2,
+          "apb.access_complete": 2,
+          "directory.transfer_stall": 11
         },
         "stall_cycles": {
           "AR": 3,
-          "directory_request": 1,
-          "directory_transfer": 22
+          "directory_request": 2,
+          "directory_transfer": 11
         },
         "mshr_occupancy_histogram": {
-          "0": 1810,
-          "1": 443,
+          "0": 1837,
+          "1": 590,
           "2": 28
         },
         "directory_context_histogram": {
-          "0": 473,
-          "1": 1634,
-          "2": 174
+          "0": 484,
+          "1": 1773,
+          "2": 198
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 68,
-        "cpu_response_completions": 128,
+        "cpu_request_accepts": 126,
+        "cpu_response_completions": 131,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -8111,6 +8344,35 @@
             1,
             0
           ]
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 3009749907,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37749544,
+          "owner_write_data": 14621074327807710980,
+          "owner_write_mask": 165,
+          "refill_address": 37749608,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 3,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37749568
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 440,
+          "snoop_response_cycle": 451,
+          "refill_last_cycle": 500,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
         },
         {
           "index": 0,
@@ -9396,108 +9658,133 @@
         "0x00ab02e0": "0x131b766f0404b404",
         "0x00ab02e8": "0x121a776e0505b505",
         "0x00ab02f0": "0x1119746d0606b606",
-        "0x00ab02f8": "0x1018756c0707b707"
+        "0x00ab02f8": "0x1018756c0707b707",
+        "0x02400300": "0xfc327fe6089e1d3b",
+        "0x02400308": "0x446d69b834cdc9f9",
+        "0x02400310": "0xb9d1c7ac5eaec6e3",
+        "0x02400318": "0x88f7a5c9d8dfbc21",
+        "0x02400320": "0xc0858e4bb13c2ed2",
+        "0x02400328": "0x7c2c4ac78be3b8d0",
+        "0x02400330": "0x5e30cf7601a77c42",
+        "0x02400338": "0x24a2d61373de56b5",
+        "0x02400340": "0xa692c554a04a150a",
+        "0x02400348": "0xbba67b2edd894327",
+        "0x02400350": "0x2db1a55cf97c11a4",
+        "0x02400358": "0xf7406c9818025be9",
+        "0x02400360": "0x2d89db4d017e1503",
+        "0x02400368": "0x3d77e5c884d2c74a",
+        "0x02400370": "0xdec662186254d717",
+        "0x02400378": "0x7503c5084ff87d8f"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 35,
-          "FS.CPU.READ.CORE1": 47,
+          "FS.CPU.READ.CORE0": 36,
+          "FS.CPU.READ.CORE1": 48,
           "FS.CPU.WRITE.CORE0": 27,
-          "FS.CPU.WRITE.CORE1": 19,
+          "FS.CPU.WRITE.CORE1": 20,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 5,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 13,
-          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 14,
+          "FS.MESI.I_TO_S": 27,
           "FS.MESI.M_TO_I": 9,
-          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.M_TO_S": 22,
           "FS.MESI.S_TO_I": 22,
           "FS.MESI.S_TO_M": 22,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 35,
+          "FS.CROSS.CORE0.READ": 36,
           "FS.CROSS.CORE0.WRITE": 27,
-          "FS.CROSS.CORE1.READ": 47,
-          "FS.CROSS.CORE1.WRITE": 19
+          "FS.CROSS.CORE1.READ": 48,
+          "FS.CROSS.CORE1.WRITE": 20,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 35,
-          "FS.CPU.READ.CORE1": 47,
+          "FS.CPU.READ.CORE0": 36,
+          "FS.CPU.READ.CORE1": 48,
           "FS.CPU.WRITE.CORE0": 27,
-          "FS.CPU.WRITE.CORE1": 19,
+          "FS.CPU.WRITE.CORE1": 20,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 5,
-          "FS.MESI.I_TO_E": 10,
-          "FS.MESI.I_TO_M": 13,
-          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 14,
+          "FS.MESI.I_TO_S": 27,
           "FS.MESI.M_TO_I": 9,
-          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.M_TO_S": 22,
           "FS.MESI.S_TO_I": 22,
           "FS.MESI.S_TO_M": 22,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 35,
+          "FS.CROSS.CORE0.READ": 36,
           "FS.CROSS.CORE0.WRITE": 27,
-          "FS.CROSS.CORE1.READ": 47,
-          "FS.CROSS.CORE1.WRITE": 19
+          "FS.CROSS.CORE1.READ": 48,
+          "FS.CROSS.CORE1.WRITE": 20,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 71,
-          "l2.lookup": 12,
-          "directory_context.allocate": 71,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 389,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 181,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 392,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 71,
-          "mshr.retire": 12,
-          "directory.grant_accept": 71,
-          "l1.metadata_commit": 133,
-          "cpu.response_complete": 128,
-          "directory_context.retire": 71,
-          "cpu.request_accept": 56,
-          "snoop.accept": 59,
-          "directory.snoop_offer": 59,
-          "coherence.owner_data_beat": 296,
-          "snoop.response": 59,
+          "directory.request_accept": 74,
+          "l2.lookup": 14,
+          "directory_context.allocate": 74,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 496,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 289,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 416,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 74,
+          "mshr.retire": 14,
+          "directory.grant_accept": 74,
+          "l1.metadata_commit": 137,
+          "cpu.response_complete": 131,
+          "directory_context.retire": 74,
+          "cpu.request_accept": 126,
+          "snoop.accept": 60,
+          "directory.snoop_offer": 60,
+          "coherence.owner_data_beat": 304,
+          "snoop.response": 60,
           "directory.request_stall": 2,
-          "axi.stall": 2
+          "axi.stall": 2,
+          "apb.access_complete": 2
         },
         "stall_cycles": {
           "directory_request": 2,
           "AR": 2
         },
         "mshr_occupancy_histogram": {
-          "0": 1635,
-          "1": 330,
-          "2": 59
+          "0": 1676,
+          "1": 487,
+          "2": 49
         },
         "directory_context_histogram": {
-          "0": 481,
-          "1": 1402,
-          "2": 141
+          "0": 494,
+          "1": 1563,
+          "2": 155
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 56,
-        "cpu_response_completions": 128,
+        "cpu_request_accepts": 126,
+        "cpu_response_completions": 131,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -9553,6 +9840,35 @@
           "description": "Build all required legal MESI transitions using CPU traffic."
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 2400331382,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37750312,
+          "owner_write_data": 14200656542315136645,
+          "owner_write_mask": 182,
+          "refill_address": 37750360,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37750336
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 350,
+          "snoop_response_cycle": 361,
+          "refill_last_cycle": 425,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "kind": "directed_target",
           "scenario_id": "SC08_SC14_DUAL_COLD_MISS_OOO",
           "bins": [
@@ -9562,7 +9878,7 @@
           "description": "Overlap distinct misses and reverse AXI R completion order.",
           "request_delays": {
             "0": 0,
-            "1": 0
+            "1": 1
           },
           "forced_read_reorder_group": 2,
           "accepted_ids": [
@@ -9577,35 +9893,25 @@
         {
           "index": 0,
           "core": 0,
-          "address": 6553824,
+          "address": 6554032,
           "kind": "single",
-          "write": true,
-          "data": 7739036655528822553,
-          "mask": 223,
+          "write": false,
+          "data": 0,
+          "mask": 255,
           "response_stall_cycles": 2
         },
         {
           "index": 1,
           "core": 1,
-          "address": 6554136,
+          "address": 6554256,
           "kind": "single",
-          "write": false,
-          "data": 0,
-          "mask": 255,
-          "response_stall_cycles": 2
-        },
-        {
-          "index": 2,
-          "core": 0,
-          "address": 6553768,
-          "kind": "single",
-          "write": false,
-          "data": 0,
-          "mask": 255,
+          "write": true,
+          "data": 14076480445680411320,
+          "mask": 46,
           "response_stall_cycles": 1
         },
         {
-          "index": 3,
+          "index": 2,
           "core": 1,
           "address": 6553776,
           "kind": "single",
@@ -9615,7 +9921,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 4,
+          "index": 3,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9636,7 +9942,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 5,
+          "index": 4,
           "core": 0,
           "address": 6553752,
           "kind": "single",
@@ -9646,7 +9952,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 6,
+          "index": 5,
           "core": 1,
           "address": 6554216,
           "kind": "single",
@@ -9656,7 +9962,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 7,
+          "index": 6,
           "core": 1,
           "address": 6554208,
           "kind": "single",
@@ -9666,7 +9972,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 8,
+          "index": 7,
           "core": 0,
           "address": 6554344,
           "kind": "single",
@@ -9676,7 +9982,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 9,
+          "index": 8,
           "core": 0,
           "address": 6553760,
           "kind": "single",
@@ -9686,7 +9992,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 10,
+          "index": 9,
           "core": 1,
           "address": 6554008,
           "kind": "single",
@@ -9696,7 +10002,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 11,
+          "index": 10,
           "core": 1,
           "address": 6553864,
           "kind": "single",
@@ -9706,7 +10012,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 12,
+          "index": 11,
           "core": 1,
           "address": 6554224,
           "kind": "single",
@@ -9716,7 +10022,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 13,
+          "index": 12,
           "core": 0,
           "address": 6553912,
           "kind": "single",
@@ -9726,7 +10032,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 14,
+          "index": 13,
           "core": 0,
           "address": 6553728,
           "kind": "single",
@@ -9736,7 +10042,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 15,
+          "index": 14,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9757,7 +10063,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 16,
+          "index": 15,
           "core": 1,
           "address": 6553736,
           "kind": "single",
@@ -9767,7 +10073,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 17,
+          "index": 16,
           "core": 0,
           "address": 6554304,
           "kind": "single",
@@ -9777,7 +10083,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 18,
+          "index": 17,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9798,7 +10104,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 19,
+          "index": 18,
           "core": 1,
           "address": 6554072,
           "kind": "single",
@@ -9808,7 +10114,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 20,
+          "index": 19,
           "core": 1,
           "address": 6554152,
           "kind": "single",
@@ -9818,7 +10124,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 21,
+          "index": 20,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9839,7 +10145,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 22,
+          "index": 21,
           "core": 1,
           "address": 6553936,
           "kind": "single",
@@ -9849,7 +10155,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 23,
+          "index": 22,
           "core": 1,
           "address": 6554160,
           "kind": "single",
@@ -9859,7 +10165,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 24,
+          "index": 23,
           "core": 1,
           "address": 6553864,
           "kind": "single",
@@ -9869,7 +10175,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 25,
+          "index": 24,
           "core": 0,
           "address": 6554288,
           "kind": "single",
@@ -9879,7 +10185,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 26,
+          "index": 25,
           "core": 1,
           "address": 6553816,
           "kind": "single",
@@ -9889,7 +10195,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 27,
+          "index": 26,
           "core": 1,
           "address": 6553976,
           "kind": "single",
@@ -9899,7 +10205,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 28,
+          "index": 27,
           "core": 0,
           "address": 6554128,
           "kind": "single",
@@ -9909,7 +10215,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 29,
+          "index": 28,
           "core": 0,
           "address": 6554288,
           "kind": "single",
@@ -9919,7 +10225,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 30,
+          "index": 29,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9940,7 +10246,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 31,
+          "index": 30,
           "kind": "dual_lane",
           "requests": [
             {
@@ -9961,7 +10267,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 32,
+          "index": 31,
           "core": 0,
           "address": 6553760,
           "kind": "single",
@@ -9971,7 +10277,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 33,
+          "index": 32,
           "core": 1,
           "address": 6553792,
           "kind": "single",
@@ -9981,7 +10287,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 34,
+          "index": 33,
           "core": 0,
           "address": 6554296,
           "kind": "single",
@@ -9991,7 +10297,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 35,
+          "index": 34,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10012,7 +10318,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 36,
+          "index": 35,
           "core": 0,
           "address": 6554240,
           "kind": "single",
@@ -10022,7 +10328,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 37,
+          "index": 36,
           "core": 1,
           "address": 6553600,
           "kind": "single",
@@ -10032,7 +10338,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 38,
+          "index": 37,
           "core": 0,
           "address": 6553640,
           "kind": "single",
@@ -10042,7 +10348,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 39,
+          "index": 38,
           "core": 1,
           "address": 6553744,
           "kind": "single",
@@ -10052,7 +10358,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 40,
+          "index": 39,
           "core": 0,
           "address": 6554216,
           "kind": "single",
@@ -10062,7 +10368,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 41,
+          "index": 40,
           "core": 0,
           "address": 6553728,
           "kind": "single",
@@ -10072,7 +10378,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 42,
+          "index": 41,
           "core": 1,
           "address": 6554136,
           "kind": "single",
@@ -10082,7 +10388,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 43,
+          "index": 42,
           "core": 1,
           "address": 6553768,
           "kind": "single",
@@ -10092,7 +10398,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 44,
+          "index": 43,
           "core": 1,
           "address": 6554296,
           "kind": "single",
@@ -10102,7 +10408,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 45,
+          "index": 44,
           "core": 0,
           "address": 6553632,
           "kind": "single",
@@ -10112,7 +10418,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 46,
+          "index": 45,
           "core": 1,
           "address": 6554104,
           "kind": "single",
@@ -10122,7 +10428,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 47,
+          "index": 46,
           "core": 1,
           "address": 6553624,
           "kind": "single",
@@ -10132,7 +10438,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 48,
+          "index": 47,
           "core": 0,
           "address": 6554344,
           "kind": "single",
@@ -10142,7 +10448,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 49,
+          "index": 48,
           "core": 0,
           "address": 6554072,
           "kind": "single",
@@ -10152,7 +10458,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 50,
+          "index": 49,
           "core": 1,
           "address": 6553664,
           "kind": "single",
@@ -10162,7 +10468,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 51,
+          "index": 50,
           "core": 1,
           "address": 6554216,
           "kind": "single",
@@ -10172,7 +10478,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 52,
+          "index": 51,
           "core": 0,
           "address": 6553856,
           "kind": "single",
@@ -10182,7 +10488,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 53,
+          "index": 52,
           "core": 1,
           "address": 6553752,
           "kind": "single",
@@ -10192,7 +10498,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 54,
+          "index": 53,
           "core": 1,
           "address": 6553920,
           "kind": "single",
@@ -10202,7 +10508,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 55,
+          "index": 54,
           "core": 0,
           "address": 6554296,
           "kind": "single",
@@ -10212,7 +10518,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 56,
+          "index": 55,
           "core": 0,
           "address": 6554208,
           "kind": "single",
@@ -10222,7 +10528,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 57,
+          "index": 56,
           "core": 0,
           "address": 6553872,
           "kind": "single",
@@ -10232,7 +10538,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 58,
+          "index": 57,
           "core": 1,
           "address": 6554008,
           "kind": "single",
@@ -10242,7 +10548,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 59,
+          "index": 58,
           "core": 1,
           "address": 6554336,
           "kind": "single",
@@ -10252,7 +10558,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 60,
+          "index": 59,
           "core": 0,
           "address": 6553680,
           "kind": "single",
@@ -10262,7 +10568,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 61,
+          "index": 60,
           "core": 1,
           "address": 6554288,
           "kind": "single",
@@ -10272,7 +10578,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 62,
+          "index": 61,
           "core": 1,
           "address": 6553632,
           "kind": "single",
@@ -10282,7 +10588,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 63,
+          "index": 62,
           "core": 1,
           "address": 6553776,
           "kind": "single",
@@ -10292,7 +10598,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 64,
+          "index": 63,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10313,7 +10619,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 65,
+          "index": 64,
           "core": 1,
           "address": 6553680,
           "kind": "single",
@@ -10323,7 +10629,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 66,
+          "index": 65,
           "core": 1,
           "address": 6554096,
           "kind": "single",
@@ -10333,7 +10639,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 67,
+          "index": 66,
           "core": 0,
           "address": 6553712,
           "kind": "single",
@@ -10343,7 +10649,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 68,
+          "index": 67,
           "core": 0,
           "address": 6553712,
           "kind": "single",
@@ -10353,7 +10659,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 69,
+          "index": 68,
           "core": 1,
           "address": 6554304,
           "kind": "single",
@@ -10363,7 +10669,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 70,
+          "index": 69,
           "core": 0,
           "address": 6553856,
           "kind": "single",
@@ -10373,7 +10679,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 71,
+          "index": 70,
           "core": 0,
           "address": 6554344,
           "kind": "single",
@@ -10383,7 +10689,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 72,
+          "index": 71,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10404,7 +10710,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 73,
+          "index": 72,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10425,7 +10731,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 74,
+          "index": 73,
           "core": 0,
           "address": 6553648,
           "kind": "single",
@@ -10435,7 +10741,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 75,
+          "index": 74,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10456,7 +10762,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 76,
+          "index": 75,
           "core": 0,
           "address": 6554120,
           "kind": "single",
@@ -10466,7 +10772,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 77,
+          "index": 76,
           "core": 1,
           "address": 6554064,
           "kind": "single",
@@ -10476,7 +10782,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 78,
+          "index": 77,
           "core": 0,
           "address": 6553632,
           "kind": "single",
@@ -10486,7 +10792,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 79,
+          "index": 78,
           "core": 1,
           "address": 6554328,
           "kind": "single",
@@ -10496,7 +10802,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 80,
+          "index": 79,
           "core": 1,
           "address": 6554360,
           "kind": "single",
@@ -10506,7 +10812,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 81,
+          "index": 80,
           "core": 1,
           "address": 6554304,
           "kind": "single",
@@ -10516,7 +10822,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 82,
+          "index": 81,
           "core": 1,
           "address": 6553792,
           "kind": "single",
@@ -10526,7 +10832,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 83,
+          "index": 82,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10547,7 +10853,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 84,
+          "index": 83,
           "core": 0,
           "address": 6554024,
           "kind": "single",
@@ -10557,7 +10863,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 85,
+          "index": 84,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10578,7 +10884,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 86,
+          "index": 85,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10599,7 +10905,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 87,
+          "index": 86,
           "core": 1,
           "address": 6553888,
           "kind": "single",
@@ -10609,7 +10915,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 88,
+          "index": 87,
           "core": 0,
           "address": 6553704,
           "kind": "single",
@@ -10619,7 +10925,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 89,
+          "index": 88,
           "core": 1,
           "address": 6554136,
           "kind": "single",
@@ -10629,7 +10935,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 90,
+          "index": 89,
           "core": 1,
           "address": 6554280,
           "kind": "single",
@@ -10639,7 +10945,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 91,
+          "index": 90,
           "core": 1,
           "address": 6554296,
           "kind": "single",
@@ -10649,7 +10955,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 92,
+          "index": 91,
           "core": 1,
           "address": 6554360,
           "kind": "single",
@@ -10659,7 +10965,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 93,
+          "index": 92,
           "core": 1,
           "address": 6553664,
           "kind": "single",
@@ -10669,7 +10975,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 94,
+          "index": 93,
           "core": 1,
           "address": 6554032,
           "kind": "single",
@@ -10679,7 +10985,7 @@
           "response_stall_cycles": 1
         },
         {
-          "index": 95,
+          "index": 94,
           "core": 0,
           "address": 6554192,
           "kind": "single",
@@ -10689,7 +10995,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 96,
+          "index": 95,
           "kind": "dual_lane",
           "requests": [
             {
@@ -10710,7 +11016,7 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 97,
+          "index": 96,
           "core": 1,
           "address": 6553880,
           "kind": "single",
@@ -10720,7 +11026,7 @@
           "response_stall_cycles": 0
         },
         {
-          "index": 98,
+          "index": 97,
           "core": 1,
           "address": 6553720,
           "kind": "single",
@@ -10730,9 +11036,19 @@
           "response_stall_cycles": 2
         },
         {
-          "index": 99,
+          "index": 98,
           "core": 1,
           "address": 6554264,
+          "kind": "single",
+          "write": false,
+          "data": 0,
+          "mask": 255,
+          "response_stall_cycles": 2
+        },
+        {
+          "index": 99,
+          "core": 0,
+          "address": 6554232,
           "kind": "single",
           "write": false,
           "data": 0,
@@ -10836,99 +11152,124 @@
         "0x006402e0": "0xb152e8200404b404",
         "0x006402e8": "0xb053e9210505b505",
         "0x006402f0": "0xb350ea220606b606",
-        "0x006402f8": "0xb251eb230707b707"
+        "0x006402f8": "0xb251eb230707b707",
+        "0x02400600": "0xa17fb32fe50e9e31",
+        "0x02400608": "0x9645aa1196484572",
+        "0x02400610": "0x8bf62c63485fb0f5",
+        "0x02400618": "0xa14c05cd10ec92c5",
+        "0x02400620": "0xa619a28c16e08c7c",
+        "0x02400628": "0x26c9679ad40df816",
+        "0x02400630": "0x0125cd9c8847984e",
+        "0x02400638": "0x6d8e514776bf8b7b",
+        "0x02400640": "0x382ae0b618ef84d0",
+        "0x02400648": "0xc45c1082f76ce111",
+        "0x02400650": "0xfc30252dfcc4ce9f",
+        "0x02400658": "0x8ac3533abb5bc5ef",
+        "0x02400660": "0x6055bca41d4f0861",
+        "0x02400668": "0x4aebc2f1d3003f04",
+        "0x02400670": "0x9a60045902d446f9",
+        "0x02400678": "0x7c45ec22df036aa3"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 33,
+          "FS.CPU.READ.CORE0": 35,
           "FS.CPU.READ.CORE1": 40,
           "FS.CPU.WRITE.CORE0": 23,
-          "FS.CPU.WRITE.CORE1": 30,
-          "FS.MESI.E_TO_I": 4,
+          "FS.CPU.WRITE.CORE1": 31,
+          "FS.MESI.E_TO_I": 3,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 3,
           "FS.MESI.I_TO_E": 10,
           "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 20,
-          "FS.MESI.M_TO_I": 16,
-          "FS.MESI.M_TO_S": 17,
-          "FS.MESI.S_TO_I": 15,
-          "FS.MESI.S_TO_M": 15,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.I_TO_S": 22,
+          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.M_TO_S": 19,
+          "FS.MESI.S_TO_I": 16,
+          "FS.MESI.S_TO_M": 16,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 33,
+          "FS.CROSS.CORE0.READ": 35,
           "FS.CROSS.CORE0.WRITE": 23,
           "FS.CROSS.CORE1.READ": 40,
-          "FS.CROSS.CORE1.WRITE": 30
+          "FS.CROSS.CORE1.WRITE": 31,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 33,
+          "FS.CPU.READ.CORE0": 35,
           "FS.CPU.READ.CORE1": 40,
           "FS.CPU.WRITE.CORE0": 23,
-          "FS.CPU.WRITE.CORE1": 30,
-          "FS.MESI.E_TO_I": 4,
+          "FS.CPU.WRITE.CORE1": 31,
+          "FS.MESI.E_TO_I": 3,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 3,
           "FS.MESI.I_TO_E": 10,
           "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 20,
-          "FS.MESI.M_TO_I": 16,
-          "FS.MESI.M_TO_S": 17,
-          "FS.MESI.S_TO_I": 15,
-          "FS.MESI.S_TO_M": 15,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.I_TO_S": 22,
+          "FS.MESI.M_TO_I": 15,
+          "FS.MESI.M_TO_S": 19,
+          "FS.MESI.S_TO_I": 16,
+          "FS.MESI.S_TO_M": 16,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 33,
+          "FS.CROSS.CORE0.READ": 35,
           "FS.CROSS.CORE0.WRITE": 23,
           "FS.CROSS.CORE1.READ": 40,
-          "FS.CROSS.CORE1.WRITE": 30
+          "FS.CROSS.CORE1.WRITE": 31,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 67,
-          "l2.lookup": 12,
-          "directory_context.allocate": 67,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 376,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 155,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 416,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 67,
-          "mshr.retire": 12,
-          "directory.grant_accept": 67,
-          "l1.metadata_commit": 125,
-          "cpu.response_complete": 126,
-          "directory_context.retire": 67,
-          "cpu.request_accept": 61,
-          "snoop.accept": 55,
-          "directory.snoop_offer": 55,
+          "directory.request_accept": 70,
+          "l2.lookup": 14,
+          "directory_context.allocate": 70,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 492,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 245,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 432,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 70,
+          "mshr.retire": 14,
+          "directory.grant_accept": 70,
+          "l1.metadata_commit": 129,
+          "cpu.response_complete": 129,
+          "directory_context.retire": 70,
+          "cpu.request_accept": 125,
+          "snoop.accept": 56,
+          "directory.snoop_offer": 56,
           "coherence.owner_data_beat": 320,
-          "snoop.response": 55,
+          "snoop.response": 56,
+          "apb.access_complete": 2,
           "directory.request_stall": 1,
-          "axi.stall": 1
+          "axi.stall": 3
         },
         "stall_cycles": {
           "directory_request": 1,
-          "AR": 1
+          "AR": 3
         },
         "mshr_occupancy_histogram": {
-          "0": 1677,
-          "1": 354,
+          "0": 1711,
+          "1": 482,
           "2": 22
         },
         "directory_context_histogram": {
-          "0": 482,
-          "1": 1487,
+          "0": 493,
+          "1": 1638,
           "2": 84
         },
         "max_mshr_occupancy": 2,
@@ -10936,8 +11277,8 @@
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 61,
-        "cpu_response_completions": 126,
+        "cpu_request_accepts": 125,
+        "cpu_response_completions": 129,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -10993,6 +11334,35 @@
           "description": "Build all required legal MESI transitions using CPU traffic."
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 2217550403,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37749544,
+          "owner_write_data": 11697040415796342462,
+          "owner_write_mask": 132,
+          "refill_address": 37749592,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 3,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37749568
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 370,
+          "snoop_response_cycle": 381,
+          "refill_last_cycle": 442,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "kind": "directed_target",
           "scenario_id": "SC08_SC14_DUAL_COLD_MISS_OOO",
           "bins": [
@@ -11001,7 +11371,7 @@
           ],
           "description": "Overlap distinct misses and reverse AXI R completion order.",
           "request_delays": {
-            "0": 1,
+            "0": 0,
             "1": 0
           },
           "forced_read_reorder_group": 2,
@@ -12298,108 +12668,133 @@
         "0x011d02e0": "0x578a61d90404b404",
         "0x011d02e8": "0x568b60d80505b505",
         "0x011d02f0": "0x558863db0606b606",
-        "0x011d02f8": "0x548962da0707b707"
+        "0x011d02f8": "0x548962da0707b707",
+        "0x02400300": "0xbc6df0a13bbdecfd",
+        "0x02400308": "0xed9f8fa1ef2286e7",
+        "0x02400310": "0x17711ea976221a47",
+        "0x02400318": "0x0cede5e3323fb029",
+        "0x02400320": "0x0e27251a22643516",
+        "0x02400328": "0xa2aebf528bac81c7",
+        "0x02400330": "0xa551a0b8ba94b122",
+        "0x02400338": "0x6b748cc7bafe6539",
+        "0x02400340": "0x87fc8efdbf29d593",
+        "0x02400348": "0x50ff09af351acdfc",
+        "0x02400350": "0xe80d2143a198e558",
+        "0x02400358": "0xc1e394294a4d592f",
+        "0x02400360": "0xf5d5229479b00b4d",
+        "0x02400368": "0x1196e356691e7ebf",
+        "0x02400370": "0xa2a834f7eb6c5679",
+        "0x02400378": "0x015d22b82fbb0b45"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 38,
-          "FS.CPU.READ.CORE1": 41,
+          "FS.CPU.READ.CORE0": 39,
+          "FS.CPU.READ.CORE1": 42,
           "FS.CPU.WRITE.CORE0": 24,
-          "FS.CPU.WRITE.CORE1": 25,
+          "FS.CPU.WRITE.CORE1": 26,
           "FS.MESI.E_TO_I": 3,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 2,
-          "FS.MESI.I_TO_E": 8,
-          "FS.MESI.I_TO_M": 15,
-          "FS.MESI.I_TO_S": 25,
+          "FS.MESI.I_TO_E": 9,
+          "FS.MESI.I_TO_M": 16,
+          "FS.MESI.I_TO_S": 26,
           "FS.MESI.M_TO_I": 8,
-          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.M_TO_S": 24,
           "FS.MESI.S_TO_I": 18,
           "FS.MESI.S_TO_M": 18,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 38,
+          "FS.CROSS.CORE0.READ": 39,
           "FS.CROSS.CORE0.WRITE": 24,
-          "FS.CROSS.CORE1.READ": 41,
-          "FS.CROSS.CORE1.WRITE": 25
+          "FS.CROSS.CORE1.READ": 42,
+          "FS.CROSS.CORE1.WRITE": 26,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 38,
-          "FS.CPU.READ.CORE1": 41,
+          "FS.CPU.READ.CORE0": 39,
+          "FS.CPU.READ.CORE1": 42,
           "FS.CPU.WRITE.CORE0": 24,
-          "FS.CPU.WRITE.CORE1": 25,
+          "FS.CPU.WRITE.CORE1": 26,
           "FS.MESI.E_TO_I": 3,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 2,
-          "FS.MESI.I_TO_E": 8,
-          "FS.MESI.I_TO_M": 15,
-          "FS.MESI.I_TO_S": 25,
+          "FS.MESI.I_TO_E": 9,
+          "FS.MESI.I_TO_M": 16,
+          "FS.MESI.I_TO_S": 26,
           "FS.MESI.M_TO_I": 8,
-          "FS.MESI.M_TO_S": 23,
+          "FS.MESI.M_TO_S": 24,
           "FS.MESI.S_TO_I": 18,
           "FS.MESI.S_TO_M": 18,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 38,
+          "FS.CROSS.CORE0.READ": 39,
           "FS.CROSS.CORE0.WRITE": 24,
-          "FS.CROSS.CORE1.READ": 41,
-          "FS.CROSS.CORE1.WRITE": 25
+          "FS.CROSS.CORE1.READ": 42,
+          "FS.CROSS.CORE1.WRITE": 26,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 66,
-          "l2.lookup": 12,
-          "directory_context.allocate": 66,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 427,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 205,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 384,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 66,
-          "mshr.retire": 12,
-          "directory.grant_accept": 66,
-          "l1.metadata_commit": 123,
-          "cpu.response_complete": 128,
-          "directory_context.retire": 66,
-          "cpu.request_accept": 60,
-          "snoop.accept": 54,
-          "directory.snoop_offer": 54,
-          "coherence.owner_data_beat": 288,
-          "snoop.response": 54,
-          "axi.stall": 1,
+          "directory.request_accept": 69,
+          "l2.lookup": 14,
+          "directory_context.allocate": 69,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 547,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 298,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 408,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 69,
+          "mshr.retire": 14,
+          "directory.grant_accept": 69,
+          "l1.metadata_commit": 127,
+          "cpu.response_complete": 131,
+          "directory_context.retire": 69,
+          "cpu.request_accept": 126,
+          "snoop.accept": 55,
+          "directory.snoop_offer": 55,
+          "coherence.owner_data_beat": 296,
+          "snoop.response": 55,
+          "axi.stall": 2,
+          "apb.access_complete": 2,
           "directory.request_stall": 1
         },
         "stall_cycles": {
-          "AR": 1,
+          "AR": 2,
           "directory_request": 1
         },
         "mshr_occupancy_histogram": {
-          "0": 1603,
-          "1": 398,
-          "2": 29
+          "0": 1644,
+          "1": 529,
+          "2": 30
         },
         "directory_context_histogram": {
-          "0": 475,
-          "1": 1482,
-          "2": 73
+          "0": 488,
+          "1": 1617,
+          "2": 98
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 60,
-        "cpu_response_completions": 128,
+        "cpu_request_accepts": 126,
+        "cpu_response_completions": 131,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -12477,25 +12872,43 @@
           ]
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 167177788,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37751816,
+          "owner_write_data": 5935275809551508241,
+          "owner_write_mask": 230,
+          "refill_address": 37751920,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37751872
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 418,
+          "snoop_response_cycle": 429,
+          "refill_last_cycle": 475,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "index": 0,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 14025208,
-              "write": true,
-              "data": 6832989286538303501,
-              "mask": 38
-            },
-            {
-              "core": 1,
-              "address": 14025048,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
-          "response_stall_cycles": 1
+          "core": 1,
+          "address": 14025192,
+          "kind": "single",
+          "write": true,
+          "data": 8291643762395552865,
+          "mask": 21,
+          "response_stall_cycles": 0
         },
         {
           "index": 1,
@@ -13716,108 +14129,133 @@
         "0x00d602e0": "0xf5c1db920404b404",
         "0x00d602e8": "0xf4c0da930505b505",
         "0x00d602f0": "0xf7c3d9900606b606",
-        "0x00d602f8": "0xf6c2d8910707b707"
+        "0x00d602f8": "0xf6c2d8910707b707",
+        "0x02400c00": "0x6aa2a3cb27d5297a",
+        "0x02400c08": "0x10b042b46fc49a9d",
+        "0x02400c10": "0x67d8ca9f107c51a6",
+        "0x02400c18": "0xd8ff5fdc1e03b59e",
+        "0x02400c20": "0xcf0f617713ca53b2",
+        "0x02400c28": "0x6da7453cb3c3c2cd",
+        "0x02400c30": "0x4c11bfdbd79148dd",
+        "0x02400c38": "0xfac0d703d0ef2348",
+        "0x02400c40": "0x265e45cb7f85becd",
+        "0x02400c48": "0x68779390ba5eccac",
+        "0x02400c50": "0xfa8aa911123a4f28",
+        "0x02400c58": "0x26e210732e61209b",
+        "0x02400c60": "0x4eb399b5d600e844",
+        "0x02400c68": "0x933184371d4e8ee5",
+        "0x02400c70": "0x6a661346fddb048b",
+        "0x02400c78": "0x25c7d0fb5956be06"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 36,
+          "FS.CPU.READ.CORE0": 37,
           "FS.CPU.READ.CORE1": 39,
-          "FS.CPU.WRITE.CORE0": 26,
-          "FS.CPU.WRITE.CORE1": 23,
+          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.WRITE.CORE1": 25,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 9,
-          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 23,
           "FS.MESI.I_TO_S": 17,
           "FS.MESI.M_TO_I": 17,
           "FS.MESI.M_TO_S": 13,
-          "FS.MESI.S_TO_I": 12,
-          "FS.MESI.S_TO_M": 12,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.S_TO_I": 11,
+          "FS.MESI.S_TO_M": 11,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 36,
-          "FS.CROSS.CORE0.WRITE": 26,
+          "FS.CROSS.CORE0.READ": 37,
+          "FS.CROSS.CORE0.WRITE": 25,
           "FS.CROSS.CORE1.READ": 39,
-          "FS.CROSS.CORE1.WRITE": 23
+          "FS.CROSS.CORE1.WRITE": 25,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
-          "FS.CPU.READ.CORE0": 36,
+          "FS.CPU.READ.CORE0": 37,
           "FS.CPU.READ.CORE1": 39,
-          "FS.CPU.WRITE.CORE0": 26,
-          "FS.CPU.WRITE.CORE1": 23,
+          "FS.CPU.WRITE.CORE0": 25,
+          "FS.CPU.WRITE.CORE1": 25,
           "FS.MESI.E_TO_I": 2,
           "FS.MESI.E_TO_M": 3,
           "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 9,
-          "FS.MESI.I_TO_M": 22,
+          "FS.MESI.I_TO_E": 10,
+          "FS.MESI.I_TO_M": 23,
           "FS.MESI.I_TO_S": 17,
           "FS.MESI.M_TO_I": 17,
           "FS.MESI.M_TO_S": 13,
-          "FS.MESI.S_TO_I": 12,
-          "FS.MESI.S_TO_M": 12,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MESI.S_TO_I": 11,
+          "FS.MESI.S_TO_M": 11,
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.READ": 36,
-          "FS.CROSS.CORE0.WRITE": 26,
+          "FS.CROSS.CORE0.READ": 37,
+          "FS.CROSS.CORE0.WRITE": 25,
           "FS.CROSS.CORE1.READ": 39,
-          "FS.CROSS.CORE1.WRITE": 23
+          "FS.CROSS.CORE1.WRITE": 25,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 60,
-          "l2.lookup": 12,
-          "directory_context.allocate": 60,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 343,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 141,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 384,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 60,
-          "mshr.retire": 12,
-          "directory.grant_accept": 60,
+          "directory.request_accept": 61,
+          "l2.lookup": 14,
+          "directory_context.allocate": 61,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 489,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 241,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 400,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 61,
+          "mshr.retire": 14,
+          "directory.grant_accept": 61,
           "l1.metadata_commit": 111,
-          "cpu.response_complete": 124,
-          "directory_context.retire": 60,
-          "cpu.request_accept": 60,
-          "snoop.accept": 48,
-          "directory.snoop_offer": 48,
+          "cpu.response_complete": 126,
+          "directory_context.retire": 61,
+          "cpu.request_accept": 120,
+          "snoop.accept": 47,
+          "directory.snoop_offer": 47,
           "coherence.owner_data_beat": 288,
-          "snoop.response": 48,
-          "axi.stall": 6,
-          "directory.request_stall": 3
+          "snoop.response": 47,
+          "axi.stall": 5,
+          "directory.request_stall": 1,
+          "apb.access_complete": 2
         },
         "stall_cycles": {
-          "AR": 6,
-          "directory_request": 3
+          "AR": 5,
+          "directory_request": 1
         },
         "mshr_occupancy_histogram": {
-          "0": 1528,
-          "1": 294,
-          "2": 61
+          "0": 1574,
+          "1": 474,
+          "2": 27
         },
         "directory_context_histogram": {
-          "0": 483,
-          "1": 1245,
-          "2": 155
+          "0": 494,
+          "1": 1474,
+          "2": 107
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 60,
-        "cpu_response_completions": 124,
+        "cpu_request_accepts": 120,
+        "cpu_response_completions": 126,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -13873,6 +14311,35 @@
           "description": "Build all required legal MESI transitions using CPU traffic."
         },
         {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 3854285147,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37751552,
+          "owner_write_data": 10747358605772128563,
+          "owner_write_mask": 219,
+          "refill_address": 37751616,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 3,
+          "apb_snoop_count": 6,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37751616
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 361,
+          "snoop_response_cycle": 372,
+          "refill_last_cycle": 442,
+          "checker_status": "passed",
+          "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample."
+        },
+        {
           "kind": "directed_target",
           "scenario_id": "SC08_SC14_DUAL_COLD_MISS_OOO",
           "bins": [
@@ -13896,44 +14363,22 @@
         },
         {
           "index": 0,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 9372136,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            },
-            {
-              "core": 1,
-              "address": 9371936,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
-          "response_stall_cycles": 0
+          "core": 1,
+          "address": 9372320,
+          "kind": "single",
+          "write": true,
+          "data": 581117347942512711,
+          "mask": 239,
+          "response_stall_cycles": 1
         },
         {
           "index": 1,
-          "kind": "dual_lane",
-          "requests": [
-            {
-              "core": 0,
-              "address": 9371952,
-              "write": true,
-              "data": 9859479620719546536,
-              "mask": 141
-            },
-            {
-              "core": 1,
-              "address": 9372000,
-              "write": false,
-              "data": 0,
-              "mask": 255
-            }
-          ],
+          "core": 1,
+          "address": 9372208,
+          "kind": "single",
+          "write": true,
+          "data": 16128114595846030275,
+          "mask": 121,
           "response_stall_cycles": 1
         },
         {
@@ -15200,110 +15645,133 @@
         "0x008f02e0": "0x8bf95d4b0404b404",
         "0x008f02e8": "0x8af85c4a0505b505",
         "0x008f02f0": "0x89fb5f490606b606",
-        "0x008f02f8": "0x88fa5e480707b707"
+        "0x008f02f8": "0x88fa5e480707b707",
+        "0x02400b00": "0x1e97c14053cd8d6d",
+        "0x02400b08": "0xf73ea4d7360edd9e",
+        "0x02400b10": "0xb0c6af9b133624a0",
+        "0x02400b18": "0xbc43af40e6ad5715",
+        "0x02400b20": "0x2a8ad7db8cf706d4",
+        "0x02400b28": "0xb9ae17781bcd23d0",
+        "0x02400b30": "0xec88dce16fe093c9",
+        "0x02400b38": "0xfbd5b30c825a38ca",
+        "0x02400b40": "0x9ea62b4d40f225c0",
+        "0x02400b48": "0x41f74e81f11dfa2c",
+        "0x02400b50": "0x26819a78fd94c5dc",
+        "0x02400b58": "0x985b0b11fa09ad04",
+        "0x02400b60": "0xef3910f35eef9a99",
+        "0x02400b68": "0xcbcd22dc685ea669",
+        "0x02400b70": "0xd589f46da090d506",
+        "0x02400b78": "0xdb5780680e959065"
       },
       "coverage": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
           "FS.CPU.READ.CORE0": 39,
-          "FS.CPU.READ.CORE1": 36,
-          "FS.CPU.WRITE.CORE0": 28,
-          "FS.CPU.WRITE.CORE1": 27,
+          "FS.CPU.READ.CORE1": 35,
+          "FS.CPU.WRITE.CORE0": 27,
+          "FS.CPU.WRITE.CORE1": 30,
           "FS.MESI.E_TO_I": 5,
-          "FS.MESI.E_TO_M": 3,
-          "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 12,
-          "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 25,
-          "FS.MESI.M_TO_I": 17,
-          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 24,
+          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.M_TO_I": 16,
+          "FS.MESI.M_TO_S": 23,
           "FS.MESI.S_TO_I": 20,
           "FS.MESI.S_TO_M": 20,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.CORE0.READ": 39,
-          "FS.CROSS.CORE0.WRITE": 28,
-          "FS.CROSS.CORE1.READ": 36,
-          "FS.CROSS.CORE1.WRITE": 27
+          "FS.CROSS.CORE0.WRITE": 27,
+          "FS.CROSS.CORE1.READ": 35,
+          "FS.CROSS.CORE1.WRITE": 30,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.AXI.READ_OUT_OF_ORDER": 1,
           "FS.CPU.READ.CORE0": 39,
-          "FS.CPU.READ.CORE1": 36,
-          "FS.CPU.WRITE.CORE0": 28,
-          "FS.CPU.WRITE.CORE1": 27,
+          "FS.CPU.READ.CORE1": 35,
+          "FS.CPU.WRITE.CORE0": 27,
+          "FS.CPU.WRITE.CORE1": 30,
           "FS.MESI.E_TO_I": 5,
-          "FS.MESI.E_TO_M": 3,
-          "FS.MESI.E_TO_S": 4,
-          "FS.MESI.I_TO_E": 12,
-          "FS.MESI.I_TO_M": 22,
-          "FS.MESI.I_TO_S": 25,
-          "FS.MESI.M_TO_I": 17,
-          "FS.MESI.M_TO_S": 21,
+          "FS.MESI.E_TO_M": 2,
+          "FS.MESI.E_TO_S": 3,
+          "FS.MESI.I_TO_E": 11,
+          "FS.MESI.I_TO_M": 24,
+          "FS.MESI.I_TO_S": 26,
+          "FS.MESI.M_TO_I": 16,
+          "FS.MESI.M_TO_S": 23,
           "FS.MESI.S_TO_I": 20,
           "FS.MESI.S_TO_M": 20,
-          "FS.MSHR.OCCUPANCY_2": 1
+          "FS.MSHR.OCCUPANCY_2": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.CORE0.READ": 39,
-          "FS.CROSS.CORE0.WRITE": 28,
-          "FS.CROSS.CORE1.READ": 36,
-          "FS.CROSS.CORE1.WRITE": 27
+          "FS.CROSS.CORE0.WRITE": 27,
+          "FS.CROSS.CORE1.READ": 35,
+          "FS.CROSS.CORE1.WRITE": 30,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "directory.request_accept": 79,
-          "l2.lookup": 12,
-          "directory_context.allocate": 79,
-          "axi.read_address": 12,
-          "directory.same_set_conflict": 309,
-          "mshr.allocate": 12,
-          "axi.read_valid_gap": 166,
-          "axi.read_beat": 96,
-          "l2.refill_start": 12,
-          "l2.line_write_beat": 472,
-          "l2.refill_end": 12,
-          "directory.metadata_commit": 79,
-          "mshr.retire": 12,
-          "directory.grant_accept": 79,
-          "l1.metadata_commit": 149,
-          "cpu.response_complete": 130,
-          "directory_context.retire": 79,
-          "cpu.request_accept": 61,
+          "directory.request_accept": 81,
+          "l2.lookup": 14,
+          "directory_context.allocate": 81,
+          "axi.read_address": 14,
+          "directory.same_set_conflict": 533,
+          "mshr.allocate": 14,
+          "axi.read_valid_gap": 288,
+          "axi.read_beat": 112,
+          "l2.refill_start": 14,
+          "l2.line_write_beat": 488,
+          "l2.refill_end": 14,
+          "directory.metadata_commit": 81,
+          "mshr.retire": 14,
+          "directory.grant_accept": 81,
+          "l1.metadata_commit": 150,
+          "cpu.response_complete": 131,
+          "directory_context.retire": 81,
+          "cpu.request_accept": 126,
           "snoop.accept": 67,
           "directory.snoop_offer": 67,
           "coherence.owner_data_beat": 376,
           "snoop.response": 67,
-          "directory.request_stall": 2,
           "axi.stall": 3,
-          "directory.transfer_stall": 22
+          "apb.access_complete": 2,
+          "directory.request_stall": 1
         },
         "stall_cycles": {
-          "directory_request": 2,
           "AR": 3,
-          "directory_transfer": 22
+          "directory_request": 1
         },
         "mshr_occupancy_histogram": {
-          "0": 1825,
-          "1": 320,
-          "2": 54
+          "0": 1866,
+          "1": 522,
+          "2": 23
         },
         "directory_context_histogram": {
-          "0": 476,
-          "1": 1521,
-          "2": 202
+          "0": 487,
+          "1": 1767,
+          "2": 157
         },
         "max_mshr_occupancy": 2,
         "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 2,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 61,
-        "cpu_response_completions": 130,
+        "cpu_request_accepts": 126,
+        "cpu_response_completions": 131,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -17168,6 +17636,34 @@
           "response_stall_cycles": 1,
           "apb_miss_count": 6,
           "checker_status": "passed"
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 53504,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37748776,
+          "owner_write_data": 2249141254530231455,
+          "owner_write_mask": 13,
+          "refill_address": 37748848,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 1,
+          "apb_snoop_count": 1,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37748800
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 521,
+          "snoop_response_cycle": 532,
+          "refill_last_cycle": 575,
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -17176,89 +17672,124 @@
         "0x00200088": "0x0e254e25c6c85a65",
         "0x002000e8": "0xf2d973f29a4bbe45",
         "0x00200118": "0x2285cff10b5546ed",
-        "0x00200150": "0x832bf061044d6d50"
+        "0x00200150": "0x832bf061044d6d50",
+        "0x02400000": "0x4b3e3d2d21c4bb5f",
+        "0x02400008": "0xbae2c6d91217bd67",
+        "0x02400010": "0x6b982dbb7fad5d65",
+        "0x02400018": "0xa9eec913b777f89d",
+        "0x02400020": "0xd8476a3480238bf7",
+        "0x02400028": "0x924c2151d9f90aad",
+        "0x02400030": "0xc6c85a6516902708",
+        "0x02400038": "0xe3d2fbc90e254e25",
+        "0x02400040": "0x6394124106fe8190",
+        "0x02400048": "0x499bee08f836426b",
+        "0x02400050": "0x53e415de4c9a458f",
+        "0x02400058": "0xf2d973f29a4bbe45",
+        "0x02400060": "0xd796a402a6a0ebde",
+        "0x02400068": "0x43d032a341d7deae",
+        "0x02400070": "0x1c519efbd05705e8",
+        "0x02400078": "0x0aba3ffa21e3f4be"
       },
       "coverage": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 1,
-          "FS.CPU.READ.CORE1": 3,
-          "FS.CPU.WRITE.CORE0": 5,
+          "FS.CPU.READ.CORE0": 2,
+          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.WRITE.CORE0": 6,
           "FS.CPU.WRITE.CORE1": 3,
-          "FS.MESI.I_TO_M": 6,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 7,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 1,
-          "FS.CROSS.CORE0.WRITE": 5,
-          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.WRITE": 6,
+          "FS.CROSS.CORE1.READ": 4,
           "FS.CROSS.CORE1.WRITE": 3,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 1,
-          "FS.CPU.READ.CORE1": 3,
-          "FS.CPU.WRITE.CORE0": 5,
+          "FS.CPU.READ.CORE0": 2,
+          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.WRITE.CORE0": 6,
           "FS.CPU.WRITE.CORE1": 3,
-          "FS.MESI.I_TO_M": 6,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 7,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 1,
-          "FS.CROSS.CORE0.WRITE": 5,
-          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.WRITE": 6,
+          "FS.CROSS.CORE1.READ": 4,
           "FS.CROSS.CORE1.WRITE": 3,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 12,
+          "cpu.request_accept": 15,
           "mmio.request_accept": 6,
-          "directory.request_accept": 6,
-          "l2.lookup": 6,
-          "directory_context.allocate": 6,
-          "directory.same_set_conflict": 323,
-          "mshr.allocate": 6,
-          "axi.read_address": 6,
-          "axi.stall": 6,
-          "axi.read_valid_gap": 206,
-          "apb.access_complete": 6,
-          "axi.read_beat": 48,
-          "l2.refill_start": 6,
-          "l2.line_write_beat": 48,
-          "l2.refill_end": 6,
-          "directory.metadata_commit": 6,
-          "mshr.retire": 6,
-          "directory.grant_accept": 6,
+          "directory.request_accept": 9,
+          "l2.lookup": 8,
+          "directory_context.allocate": 9,
+          "directory.same_set_conflict": 434,
+          "mshr.allocate": 8,
+          "axi.read_address": 8,
+          "axi.stall": 8,
+          "axi.read_valid_gap": 289,
+          "apb.access_complete": 8,
+          "axi.read_beat": 64,
+          "l2.refill_start": 8,
+          "l2.line_write_beat": 72,
+          "l2.refill_end": 8,
+          "directory.metadata_commit": 9,
+          "mshr.retire": 8,
+          "directory.grant_accept": 9,
           "mmio.response_complete": 6,
-          "cpu.response_complete": 12,
-          "l1.metadata_commit": 6,
-          "directory_context.retire": 6
+          "cpu.response_complete": 15,
+          "l1.metadata_commit": 10,
+          "directory_context.retire": 9,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
         },
         "stall_cycles": {
-          "AR": 6
+          "AR": 8
         },
         "mshr_occupancy_histogram": {
-          "0": 115,
-          "1": 323
+          "0": 154,
+          "1": 446
         },
         "directory_context_histogram": {
-          "0": 31,
-          "1": 407
+          "0": 42,
+          "1": 534,
+          "2": 24
         },
         "max_mshr_occupancy": 1,
-        "max_directory_contexts": 1,
+        "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 12,
-        "cpu_response_completions": 12,
+        "cpu_request_accepts": 15,
+        "cpu_response_completions": 15,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -17398,6 +17929,34 @@
           "response_stall_cycles": 3,
           "apb_miss_count": 6,
           "checker_status": "passed"
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 53505,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37749032,
+          "owner_write_data": 11401911222450101210,
+          "owner_write_mask": 162,
+          "refill_address": 37749064,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 1,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37749056
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 493,
+          "snoop_response_cycle": 504,
+          "refill_last_cycle": 546,
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -17406,91 +17965,124 @@
         "0x00201090": "0xc0635bf9f36e4dd0",
         "0x002010d0": "0x1cee02059ef6285f",
         "0x00201138": "0x7e1aad2377d12834",
-        "0x00201158": "0x52d141f87e374711"
+        "0x00201158": "0x52d141f87e374711",
+        "0x02400100": "0xe67bb2592a9851fb",
+        "0x02400108": "0xe01beb3e005ca4b7",
+        "0x02400110": "0x4f58e7df67689594",
+        "0x02400118": "0x31d8f81f4b039312",
+        "0x02400120": "0x4447eac853727594",
+        "0x02400128": "0xf36e4dd024ef557b",
+        "0x02400130": "0xa67bb2cec0635bf9",
+        "0x02400138": "0xa4393222f9feedb9",
+        "0x02400140": "0x78cba21f9b6b063e",
+        "0x02400148": "0xb0ea970f92f8060d",
+        "0x02400150": "0x247310a6956931f2",
+        "0x02400158": "0x1cee02059ef6285f",
+        "0x02400160": "0x2cd600e9644e7427",
+        "0x02400168": "0x708ba53c876d94a4",
+        "0x02400170": "0x7e1aad2377d12834",
+        "0x02400178": "0x3d0005e416d12908"
       },
       "coverage": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 4,
-          "FS.CPU.READ.CORE1": 4,
-          "FS.CPU.WRITE.CORE0": 2,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.CPU.WRITE.CORE0": 3,
           "FS.CPU.WRITE.CORE1": 2,
-          "FS.MESI.I_TO_E": 4,
-          "FS.MESI.I_TO_M": 2,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 5,
+          "FS.MESI.I_TO_M": 3,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 4,
-          "FS.CROSS.CORE0.WRITE": 2,
-          "FS.CROSS.CORE1.READ": 4,
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE0.WRITE": 3,
+          "FS.CROSS.CORE1.READ": 5,
           "FS.CROSS.CORE1.WRITE": 2,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 4,
-          "FS.CPU.READ.CORE1": 4,
-          "FS.CPU.WRITE.CORE0": 2,
+          "FS.CPU.READ.CORE0": 5,
+          "FS.CPU.READ.CORE1": 5,
+          "FS.CPU.WRITE.CORE0": 3,
           "FS.CPU.WRITE.CORE1": 2,
-          "FS.MESI.I_TO_E": 4,
-          "FS.MESI.I_TO_M": 2,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 5,
+          "FS.MESI.I_TO_M": 3,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 4,
-          "FS.CROSS.CORE0.WRITE": 2,
-          "FS.CROSS.CORE1.READ": 4,
+          "FS.CROSS.CORE0.READ": 5,
+          "FS.CROSS.CORE0.WRITE": 3,
+          "FS.CROSS.CORE1.READ": 5,
           "FS.CROSS.CORE1.WRITE": 2,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 12,
+          "cpu.request_accept": 15,
           "mmio.request_accept": 6,
-          "directory.request_accept": 6,
-          "l2.lookup": 6,
-          "directory_context.allocate": 6,
-          "directory.same_set_conflict": 291,
-          "mshr.allocate": 6,
-          "axi.read_address": 6,
-          "axi.stall": 6,
-          "axi.read_valid_gap": 174,
-          "apb.access_complete": 6,
-          "axi.read_beat": 48,
-          "l2.refill_start": 6,
-          "l2.line_write_beat": 48,
-          "l2.refill_end": 6,
-          "directory.metadata_commit": 6,
-          "mshr.retire": 6,
-          "directory.grant_accept": 6,
-          "l1.metadata_commit": 6,
+          "directory.request_accept": 9,
+          "l2.lookup": 8,
+          "directory_context.allocate": 9,
+          "directory.same_set_conflict": 395,
+          "mshr.allocate": 8,
+          "axi.read_address": 8,
+          "axi.stall": 8,
+          "axi.read_valid_gap": 251,
+          "apb.access_complete": 8,
+          "axi.read_beat": 64,
+          "l2.refill_start": 8,
+          "l2.line_write_beat": 72,
+          "l2.refill_end": 8,
+          "directory.metadata_commit": 9,
+          "mshr.retire": 8,
+          "directory.grant_accept": 9,
+          "l1.metadata_commit": 10,
           "mmio.response_complete": 6,
-          "cpu.response_complete": 12,
-          "directory_context.retire": 6
+          "cpu.response_complete": 15,
+          "directory_context.retire": 9,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
         },
         "stall_cycles": {
-          "AR": 6
+          "AR": 8
         },
         "mshr_occupancy_histogram": {
-          "0": 125,
-          "1": 291
+          "0": 164,
+          "1": 407
         },
         "directory_context_histogram": {
-          "0": 41,
-          "1": 375
+          "0": 52,
+          "1": 495,
+          "2": 24
         },
         "max_mshr_occupancy": 1,
-        "max_directory_contexts": 1,
+        "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 12,
-        "cpu_response_completions": 12,
+        "cpu_request_accepts": 15,
+        "cpu_response_completions": 15,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -17630,6 +18222,34 @@
           "response_stall_cycles": 2,
           "apb_miss_count": 6,
           "checker_status": "passed"
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 53506,
+          "owner_core": 0,
+          "snooper_core": 1,
+          "owner_address": 37749272,
+          "owner_write_data": 1199081482728654860,
+          "owner_write_mask": 153,
+          "refill_address": 37749368,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 0,
+          "apb_snoop_count": 1,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37749312
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 507,
+          "snoop_response_cycle": 518,
+          "refill_last_cycle": 562,
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -17638,91 +18258,124 @@
         "0x002020a8": "0x784aec347a322950",
         "0x002020c0": "0x71b7dac87794525b",
         "0x00202100": "0xbaac52ee4b16cfef",
-        "0x00202170": "0x5013d49e446ceecc"
+        "0x00202170": "0x5013d49e446ceecc",
+        "0x02400200": "0x9f0309dcbd2a4784",
+        "0x02400208": "0xbfab45fb278ad2f4",
+        "0x02400210": "0x19e887ae5e429c3d",
+        "0x02400218": "0x978889d68bb3c58c",
+        "0x02400220": "0x200aa99cbb90c16d",
+        "0x02400228": "0x1b5bea88c0b020f1",
+        "0x02400230": "0x84c6efb67c917a76",
+        "0x02400238": "0x7a3229505b106ae2",
+        "0x02400240": "0xdf13ceaa784aec34",
+        "0x02400248": "0x97d3c51dda86ac8e",
+        "0x02400250": "0x669f3221ca78a693",
+        "0x02400258": "0x0382a5eba3efc0fd",
+        "0x02400260": "0x71b7dac87794525b",
+        "0x02400268": "0x9f886d02aac5d814",
+        "0x02400270": "0xeb09c86a229ffeab",
+        "0x02400278": "0x841f6ee86b3db89c"
       },
       "coverage": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 3,
-          "FS.CPU.READ.CORE1": 2,
-          "FS.CPU.WRITE.CORE0": 3,
+          "FS.CPU.READ.CORE0": 4,
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE0": 4,
           "FS.CPU.WRITE.CORE1": 4,
-          "FS.MESI.I_TO_E": 2,
-          "FS.MESI.I_TO_M": 4,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 5,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 3,
-          "FS.CROSS.CORE0.WRITE": 3,
-          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE0.READ": 4,
+          "FS.CROSS.CORE0.WRITE": 4,
+          "FS.CROSS.CORE1.READ": 3,
           "FS.CROSS.CORE1.WRITE": 4,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 3,
-          "FS.CPU.READ.CORE1": 2,
-          "FS.CPU.WRITE.CORE0": 3,
+          "FS.CPU.READ.CORE0": 4,
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE0": 4,
           "FS.CPU.WRITE.CORE1": 4,
-          "FS.MESI.I_TO_E": 2,
-          "FS.MESI.I_TO_M": 4,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 5,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 3,
-          "FS.CROSS.CORE0.WRITE": 3,
-          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE0.READ": 4,
+          "FS.CROSS.CORE0.WRITE": 4,
+          "FS.CROSS.CORE1.READ": 3,
           "FS.CROSS.CORE1.WRITE": 4,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 12,
+          "cpu.request_accept": 15,
           "mmio.request_accept": 6,
-          "directory.request_accept": 6,
-          "l2.lookup": 6,
-          "directory_context.allocate": 6,
-          "directory.same_set_conflict": 305,
-          "mshr.allocate": 6,
-          "axi.read_address": 6,
-          "axi.stall": 6,
-          "axi.read_valid_gap": 188,
-          "apb.access_complete": 6,
-          "axi.read_beat": 48,
-          "l2.refill_start": 6,
-          "l2.line_write_beat": 48,
-          "l2.refill_end": 6,
-          "directory.metadata_commit": 6,
-          "mshr.retire": 6,
-          "directory.grant_accept": 6,
+          "directory.request_accept": 9,
+          "l2.lookup": 8,
+          "directory_context.allocate": 9,
+          "directory.same_set_conflict": 412,
+          "mshr.allocate": 8,
+          "axi.read_address": 8,
+          "axi.stall": 8,
+          "axi.read_valid_gap": 268,
+          "apb.access_complete": 8,
+          "axi.read_beat": 64,
+          "l2.refill_start": 8,
+          "l2.line_write_beat": 72,
+          "l2.refill_end": 8,
+          "directory.metadata_commit": 9,
+          "mshr.retire": 8,
+          "directory.grant_accept": 9,
           "mmio.response_complete": 6,
-          "cpu.response_complete": 12,
-          "l1.metadata_commit": 6,
-          "directory_context.retire": 6
+          "cpu.response_complete": 15,
+          "l1.metadata_commit": 10,
+          "directory_context.retire": 9,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
         },
         "stall_cycles": {
-          "AR": 6
+          "AR": 8
         },
         "mshr_occupancy_histogram": {
-          "0": 124,
-          "1": 305
+          "0": 163,
+          "1": 424
         },
         "directory_context_histogram": {
-          "0": 40,
-          "1": 389
+          "0": 51,
+          "1": 512,
+          "2": 24
         },
         "max_mshr_occupancy": 1,
-        "max_directory_contexts": 1,
+        "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 12,
-        "cpu_response_completions": 12,
+        "cpu_request_accepts": 15,
+        "cpu_response_completions": 15,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -17862,6 +18515,34 @@
           "response_stall_cycles": 2,
           "apb_miss_count": 6,
           "checker_status": "passed"
+        },
+        {
+          "kind": "checked_coherence_prelude",
+          "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+          "seed": 53507,
+          "owner_core": 1,
+          "snooper_core": 0,
+          "owner_address": 37749528,
+          "owner_write_data": 9737550611575633536,
+          "owner_write_mask": 99,
+          "refill_address": 37749608,
+          "request_release_policy": "after_refill_ar_handshake",
+          "memory_latency_cycles": 48,
+          "response_stall_cycles": 2,
+          "apb_snoop_count": 1,
+          "refill_lifecycle": {
+            "refill_lines": [
+              37749568
+            ],
+            "mshr_allocations": 1,
+            "mshr_retirements": 1,
+            "axi_read_beats": 8,
+            "l2_refill_beats": 8
+          },
+          "snoop_accept_cycle": 501,
+          "snoop_response_cycle": 512,
+          "refill_last_cycle": 554,
+          "checker_status": "passed"
         }
       ],
       "initial_backing_memory": {
@@ -17870,91 +18551,124 @@
         "0x00203080": "0xce80de36074eed07",
         "0x002030e8": "0xb4ce3224c90d57fd",
         "0x00203120": "0xf283f25ada7d2b0b",
-        "0x00203140": "0xf1041160e2d7ef37"
+        "0x00203140": "0xf1041160e2d7ef37",
+        "0x02400300": "0xaf09b31bd2a1d369",
+        "0x02400308": "0x2fc9a7123ccccaba",
+        "0x02400310": "0x35758f02b763e454",
+        "0x02400318": "0x7ad694aa3da7e0f9",
+        "0x02400320": "0xe0a325bd56059faa",
+        "0x02400328": "0x2a92215da0c9ba87",
+        "0x02400330": "0x073d1c344171047f",
+        "0x02400338": "0x0ecd9ac5610c054d",
+        "0x02400340": "0xce80de36074eed07",
+        "0x02400348": "0x6ffda31521b1535c",
+        "0x02400350": "0x10910056f93e2af1",
+        "0x02400358": "0xc90d57fd5d9ee4eb",
+        "0x02400360": "0xfb1fcb80b4ce3224",
+        "0x02400368": "0x8504b528d0369273",
+        "0x02400370": "0xb8fd158ad851288c",
+        "0x02400378": "0x0b870ad170ace33e"
       },
       "coverage": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 2,
-          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.READ.CORE0": 3,
+          "FS.CPU.READ.CORE1": 5,
           "FS.CPU.WRITE.CORE0": 4,
-          "FS.CPU.WRITE.CORE1": 2,
-          "FS.MESI.I_TO_E": 3,
-          "FS.MESI.I_TO_M": 3,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CPU.WRITE.CORE1": 3,
+          "FS.MESI.I_TO_E": 4,
+          "FS.MESI.I_TO_M": 4,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.READ": 3,
           "FS.CROSS.CORE0.WRITE": 4,
-          "FS.CROSS.CORE1.READ": 4,
-          "FS.CROSS.CORE1.WRITE": 2,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.CORE1.WRITE": 3,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "coverage_delta": {
         "bins": {
           "FS.APB.READ_DURING_AXI": 6,
-          "FS.CPU.READ.CORE0": 2,
-          "FS.CPU.READ.CORE1": 4,
+          "FS.CPU.READ.CORE0": 3,
+          "FS.CPU.READ.CORE1": 5,
           "FS.CPU.WRITE.CORE0": 4,
-          "FS.CPU.WRITE.CORE1": 2,
-          "FS.MESI.I_TO_E": 3,
-          "FS.MESI.I_TO_M": 3,
-          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CPU.WRITE.CORE1": 3,
+          "FS.MESI.I_TO_E": 4,
+          "FS.MESI.I_TO_M": 4,
+          "FS.MESI.I_TO_S": 1,
+          "FS.MESI.M_TO_S": 1,
+          "FS.RESOURCE.SNOOP_REFILL_DISTINCT_L2_SET": 1,
+          "FS.STRESS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.XAGENT.OWNER_TRANSFER_REFILL_APB": 1
         },
         "cross_bins": {
           "FS.CROSS.APB_WITH_AXI_TRAFFIC": 6,
-          "FS.CROSS.CORE0.READ": 2,
+          "FS.CROSS.CORE0.READ": 3,
           "FS.CROSS.CORE0.WRITE": 4,
-          "FS.CROSS.CORE1.READ": 4,
-          "FS.CROSS.CORE1.WRITE": 2,
-          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6
+          "FS.CROSS.CORE1.READ": 5,
+          "FS.CROSS.CORE1.WRITE": 3,
+          "FS.CROSS.MIXED_CPU_MMIO_APB_AXI": 6,
+          "FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET": 1,
+          "FS.CROSS.SNOOP_REFILL_DISTINCT_L2_SET": 1
         }
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 12,
+          "cpu.request_accept": 15,
           "mmio.request_accept": 6,
-          "directory.request_accept": 6,
-          "l2.lookup": 6,
-          "directory_context.allocate": 6,
-          "directory.same_set_conflict": 307,
-          "mshr.allocate": 6,
-          "axi.read_address": 6,
-          "axi.stall": 6,
-          "axi.read_valid_gap": 187,
-          "apb.access_complete": 6,
-          "axi.read_beat": 48,
-          "l2.refill_start": 6,
-          "l2.line_write_beat": 48,
-          "l2.refill_end": 6,
-          "directory.metadata_commit": 6,
-          "mshr.retire": 6,
-          "directory.grant_accept": 6,
+          "directory.request_accept": 9,
+          "l2.lookup": 8,
+          "directory_context.allocate": 9,
+          "directory.same_set_conflict": 412,
+          "mshr.allocate": 8,
+          "axi.read_address": 8,
+          "axi.stall": 8,
+          "axi.read_valid_gap": 266,
+          "apb.access_complete": 8,
+          "axi.read_beat": 64,
+          "l2.refill_start": 8,
+          "l2.line_write_beat": 72,
+          "l2.refill_end": 8,
+          "directory.metadata_commit": 9,
+          "mshr.retire": 8,
+          "directory.grant_accept": 9,
           "mmio.response_complete": 6,
-          "cpu.response_complete": 12,
-          "l1.metadata_commit": 6,
-          "directory_context.retire": 6
+          "cpu.response_complete": 15,
+          "l1.metadata_commit": 10,
+          "directory_context.retire": 9,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
         },
         "stall_cycles": {
-          "AR": 6
+          "AR": 8
         },
         "mshr_occupancy_histogram": {
-          "0": 116,
-          "1": 307
+          "0": 156,
+          "1": 424
         },
         "directory_context_histogram": {
-          "0": 32,
-          "1": 391
+          "0": 44,
+          "1": 512,
+          "2": 24
         },
         "max_mshr_occupancy": 1,
-        "max_directory_contexts": 1,
+        "max_directory_contexts": 2,
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 12,
-        "cpu_response_completions": 12,
+        "cpu_request_accepts": 15,
+        "cpu_response_completions": 15,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -19728,5 +20442,14 @@
         "axi_error_count": 0
       }
     }
-  ]
+  ],
+  "git_sha": "14542f52bef5a42560cc615a5db104e3122dbd33",
+  "tool_versions": {
+    "python": "3.12.3",
+    "pytest": "9.1.1",
+    "toffee": "not-installed-as-python-package",
+    "picker-py": "not-installed-as-python-package",
+    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
+    "picker": "Running as normal executable"
+  }
 }

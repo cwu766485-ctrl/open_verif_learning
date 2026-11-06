@@ -29,6 +29,9 @@ RUN_STATUS = ROOT / "reports/closure/coherence_verify_final.status"
 EXTRA_FIELDS = [
     "disposition", "closure_status", "resolution_evidence", "remaining_action",
 ]
+VALID_CLOSURE_STATUSES = {
+    "OPEN", "COVERED", "PROVEN_UNREACHABLE", "REVIEWED_WAIVER", "BLOCKED",
+}
 
 
 def disposition(action: str) -> str:
@@ -102,9 +105,14 @@ def main() -> None:
     for source_row in raw_rows:
         row = dict(source_row)
         row["disposition"] = disposition(row["recommended_action"])
-        row["closure_status"] = "OPEN_DATASET_MISS"
+        # A zero-count raw point is an open obligation in this dataset. A hit
+        # in another elaborated top is retained as provenance, never promoted
+        # to COVERED here. Other statuses require explicit reviewed evidence.
+        row["closure_status"] = "OPEN"
         row["resolution_evidence"] = row["separate_raw_dataset_evidence"]
         row["remaining_action"] = row["recommended_action"]
+        if row["closure_status"] not in VALID_CLOSURE_STATUSES:
+            raise AssertionError(f"invalid closure status for {row['point_id']}: {row['closure_status']}")
         rows.append(row)
 
     with MATRIX.open("w", newline="", encoding="utf-8") as stream:
@@ -158,7 +166,8 @@ def main() -> None:
     for metric in ("LCOV RTL line", "Verilator branch", "FSM state", "FSM arc"):
         report.append(f"| {metric} | {primary_misses[metric]} |")
     report += [
-        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.", "",
+        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.",
+        f"All {len(rows)} zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are {', '.join(sorted(VALID_CLOSURE_STATUSES))}; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.", "",
         "## Functional coverage and checker status", "",
         f"Functional coverage closure artifact: {func}.",
         f"Cross coverage closure artifact: {cross}.",

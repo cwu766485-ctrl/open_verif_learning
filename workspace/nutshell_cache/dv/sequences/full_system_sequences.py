@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import random
 
 from dv.agents.coherent_cpu_agent import CpuRequest
+from dv.sequences.cross_agent_sequences import run_owner_transfer_refill_apb
 
 
 @dataclass(frozen=True)
@@ -61,6 +62,12 @@ class CoverageGuidedScenarioScheduler:
             "description": "Overlap distinct misses and reverse AXI R completion order.",
         },
         {
+            "scenario_id": "CR01_OWNER_TRANSFER_REFILL_APB",
+            "bins": ("FS.XAGENT.OWNER_TRANSFER_REFILL_APB",),
+            "cross_bins": ("FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET",),
+            "description": "Checked M-owner transfer overlaps a distinct AXI refill and APB sample.",
+        },
+        {
             "scenario_id": "SC01_SC02_SC03_SC04_SC05_MESI_TRANSITIONS",
             "bins": tuple(f"FS.MESI.{transition}" for transition in (
                 "I_TO_E", "I_TO_S", "I_TO_M", "E_TO_M", "E_TO_S",
@@ -73,13 +80,19 @@ class CoverageGuidedScenarioScheduler:
     def next_target(self, coverage, rng):
         pending = [target for target in self.TARGETS
                    if any(coverage.bins[bin_id] == 0
-                          for bin_id in target["bins"])]
+                          for bin_id in target["bins"]) or
+                   any(coverage.cross[bin_id] == 0
+                       for bin_id in target.get("cross_bins", ()))]
         if not pending:
             return None
         # Prefer the target with the largest number of unhit required bins;
         # seeded choice among ties makes the scheduler reproducible.
-        scores = [sum(coverage.bins[bin_id] == 0 for bin_id in item["bins"])
-                  for item in pending]
+        scores = [
+            sum(coverage.bins[bin_id] == 0 for bin_id in item["bins"]) +
+            sum(coverage.cross[bin_id] == 0
+                for bin_id in item.get("cross_bins", ()))
+            for item in pending
+        ]
         highest = max(scores)
         return rng.choice([item for item, score in zip(pending, scores)
                            if score == highest])
@@ -239,6 +252,24 @@ class FullSystemRandomSequence:
                     "accepted_ids": accepted_ids,
                     "completion_ids": completed_ids,
                 })
+                continue
+
+            if target["scenario_id"] == "CR01_OWNER_TRANSFER_REFILL_APB":
+                scenario_seed = self.rng.getrandbits(32)
+                scenario = await run_owner_transfer_refill_apb(
+                    env, seed=scenario_seed
+                )
+                missing_bins = [bin_id for bin_id in target["bins"]
+                                if env.coverage.bins[bin_id] == 0]
+                missing_cross = [bin_id for bin_id in target.get("cross_bins", ())
+                                 if env.coverage.cross[bin_id] == 0]
+                if missing_bins or missing_cross:
+                    raise AssertionError(
+                        f"checked CR01 sequence missed coverage: "
+                        f"bins={missing_bins}, cross={missing_cross}"
+                    )
+                self.history.append({"kind": "directed_target", **scenario,
+                                     "description": target["description"]})
                 continue
 
             raise AssertionError(f"no builder for scenario {target['scenario_id']}")

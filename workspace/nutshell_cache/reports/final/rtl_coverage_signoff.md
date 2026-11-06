@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-04 11:20 +08.
+Generated: 2026-11-06 00:34 +08 from the current raw Verilator coverage audit. Verification regression evidence below was refreshed on 2026-11-06.
 
 ## Scope and source manifest
 
@@ -37,6 +37,7 @@ The detailed `coverage_closure_matrix.csv` contains **1026 dataset-scoped zero-c
 | FSM arc | 41 |
 
 The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.
+All 1026 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
 
 ## Functional coverage and checker status
 
@@ -59,19 +60,7 @@ These are the latest existing closure JSON observations, not newly rerun closure
 
 ## Regression evidence and remaining status
 
-No final-candidate full-regression status file is present.
-This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
+Local full regression result: all six required gates passed on RTL/DV source SHA `14542f52bef5a42560cc615a5db104e3122dbd33` on 2026-11-06. The exact commands and results are recorded in [`docs/dv/closure_phase2_execution_2026-11-06.md`](../../docs/dv/closure_phase2_execution_2026-11-06.md). The latest remote GitHub Actions result is run [41962170929](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/41962170929) on base SHA `9b281f3bd1d6b5dbdf9bb257313dd61a21d87252`; candidate CI remains pending publication and is not represented by that run.
+The regression PASS does not close raw RTL coverage gaps. All 1,026 dataset-scoped zero-count records in the current point matrix remain OPEN; 0 waivers are approved and reviewed/eligible coverage is not computed.
 
 **Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.
-
-## DE/DV next-phase regression evidence
-
-The 2026-11-04 regression candidate passed `coherence_verify`,
-`coherence_full_system_verify`, `coherence_hit_under_miss`,
-`coherence_full_system_stress`, and `coherence_coverage_audit`. Integrated
-Python coverage is 53/53 Required and 29/29 Cross; H-u-M and paired-miss tests
-are checked in the full-system feature report. These functional results do
-not close the raw RTL points above because the Python/Toffee instrumented build
-does not emit compatible Verilator source-coverage points. See
-[`de_dv_next_phase_signoff.md`](de_dv_next_phase_signoff.md) for the exact
-scenario and stress evidence. Raw coverage sign-off remains OPEN.

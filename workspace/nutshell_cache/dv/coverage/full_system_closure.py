@@ -19,6 +19,10 @@ def close():
     bins, crosses = Counter(), Counter()
     bin_runs, cross_runs = {}, {}
     for run in raw.get("runs", []):
+        # Coverage is credited only from a testcase that completed successfully.
+        # A failed test may have sampled before discovering a checker failure.
+        if run.get("test_status") != "passed":
+            continue
         bins.update(run.get("coverage", {}).get("bins", {}))
         crosses.update(run.get("coverage", {}).get("cross_bins", {}))
         for bin_id, count in run.get("coverage", {}).get("bins", {}).items():
@@ -27,6 +31,8 @@ def close():
                     "test_id": run.get("test_id"),
                     "seed": run.get("seed"),
                     "count": count,
+                    "test_status": run.get("test_status"),
+                    "monitor": run.get("monitor", {}),
                 })
         for cross_id, count in run.get("coverage", {}).get("cross_bins", {}).items():
             if count:
@@ -34,6 +40,8 @@ def close():
                     "test_id": run.get("test_id"),
                     "seed": run.get("seed"),
                     "count": count,
+                    "test_status": run.get("test_status"),
+                    "monitor": run.get("monitor", {}),
                 })
 
     required_bins = [item for item in plan["bins"]
@@ -45,8 +53,13 @@ def close():
     missing_bins = [item["id"] for item in required_bins if bins[item["id"]] == 0]
     missing_crosses = [item["id"] for item in required_crosses
                        if crosses[item["id"]] == 0]
+    revision = raw.get("git_sha")
+    if not revision or len(revision) != 40:
+        raise SystemExit("full-system raw coverage has no complete source SHA")
     closure = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "git_sha": revision,
+        "tool_versions": raw.get("tool_versions", {}),
         "scope": "implemented Required bins in the integrated-top sign-off slice",
         "dut": plan["dut"],
         "testcase_exit_status": raw["pytest_exit_status"],
@@ -67,6 +80,7 @@ def close():
             "legal_preconditions": item.get("legal_preconditions"),
             "stimulus_strategy": item.get("stimulus_strategy"),
             "required_monitor_event": item.get("required_monitor_event"),
+            "testcases": item.get("testcases", []),
             "checker": item.get("checker"),
             "hit_count": bins[item["id"]],
             "pass": bins[item["id"]] > 0,
@@ -77,6 +91,8 @@ def close():
             "classification": item.get("classification", "unclassified"),
             "legal_preconditions": item.get("legal_preconditions"),
             "stimulus_strategy": item.get("stimulus_strategy"),
+            "required_monitor_event": item.get("required_monitor_event"),
+            "testcases": item.get("testcases", []),
             "checker": item.get("checker"),
             "hit_count": crosses[item["id"]],
             "pass": crosses[item["id"]] > 0,
@@ -90,14 +106,19 @@ def close():
         json.dumps(closure, indent=2) + "\n", encoding="utf-8"
     )
     (OUT / "functional_coverage.json").write_text(
-        json.dumps({"bins": dict(sorted(bins.items()))}, indent=2) + "\n",
+        json.dumps({"schema_version": 2, "git_sha": revision,
+                    "tool_versions": raw.get("tool_versions", {}),
+                    "bins": dict(sorted(bins.items()))}, indent=2) + "\n",
         encoding="utf-8"
     )
     (OUT / "cross_coverage.json").write_text(
-        json.dumps({"cross_bins": dict(sorted(crosses.items()))}, indent=2) + "\n",
+        json.dumps({"schema_version": 2, "git_sha": revision,
+                    "tool_versions": raw.get("tool_versions", {}),
+                    "cross_bins": dict(sorted(crosses.items()))}, indent=2) + "\n",
         encoding="utf-8"
     )
     lines = ["# Full-System Functional Coverage Closure", "",
+             f"- Tested source SHA: `{revision}`",
              f"- DUT: `{plan['dut']}`",
              f"- Scope: {closure['scope']}",
              f"- Required bins: {closure['required_bins_passed']}/"
@@ -105,7 +126,11 @@ def close():
              f"- Required cross bins: {closure['required_cross_bins_passed']}/"
              f"{closure['required_cross_bins_total']}", "",
              "This report covers only entries marked implemented in the plan. "
-             "Planned full-system features remain open and are not counted as hits.", ""]
+             "Planned full-system features remain open and are not counted as hits.", "",
+             "## Tool Versions", ""]
+    lines.extend(f"- {name}: `{version}`"
+                 for name, version in sorted(raw.get("tool_versions", {}).items()))
+    lines.append("")
     if missing_bins or missing_crosses:
         lines.extend(["## Missing Required Coverage", ""])
         lines.extend(f"- `{item}`" for item in missing_bins + missing_crosses)

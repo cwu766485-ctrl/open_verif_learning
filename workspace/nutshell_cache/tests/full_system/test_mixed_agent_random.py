@@ -9,9 +9,17 @@ from toffee import ClockCycles
 from toffee_test import case
 
 from dv.agents.coherent_cpu_agent import CpuRequest
+from dv.sequences.cross_agent_sequences import run_owner_transfer_refill_apb
 
 
 def _mixed_seeds():
+    explicit = os.environ.get("FULL_SYSTEM_MIXED_SEEDS")
+    if explicit:
+        seeds = [int(token.strip(), 0) for token in explicit.split(",")
+                 if token.strip()]
+        if not seeds:
+            raise ValueError("FULL_SYSTEM_MIXED_SEEDS must contain at least one seed")
+        return seeds
     count = int(os.environ.get("FULL_SYSTEM_MIXED_SEED_COUNT", "4"))
     base = int(os.environ.get("FULL_SYSTEM_MIXED_BASE_SEED", "0xD100"), 0)
     if not 1 <= count <= 200:
@@ -234,3 +242,8 @@ async def test_seeded_cpu_mmio_apb_axi_overlap(full_system_env, seed):
     assert env.axi.valid_gaps["R"] > 0, "randomized R source gaps were not exercised"
     assert env.cpu.response_stall_cycles[0] + env.cpu.response_stall_cycles[1] > 0
     assert int(env.dut.protocol_error.value) == 0
+
+    # The mixed independent-interface loop above does not inherently create
+    # coherence traffic. Add the existing checked CR01 owner-transfer prelude
+    # once per seed so this campaign includes a real Snoop/Refill/APB overlap.
+    await run_owner_transfer_refill_apb(env, seed=seed, trace=checked_rounds)

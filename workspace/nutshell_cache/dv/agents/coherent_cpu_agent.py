@@ -1,6 +1,7 @@
 """Single owner for both packed CPU lanes in Python subsystem tests."""
 
 from dataclasses import dataclass
+from typing import Callable
 
 from toffee import ClockCycles
 
@@ -50,7 +51,9 @@ class DualCoreCpuDriver:
                           core1: CpuRequest | None,
                           *, max_cycles: int = 1000,
                           response_stall_cycles: int = 0,
-                          request_delay_cycles: dict[int, int] | None = None):
+                          request_delay_cycles: dict[int, int] | None = None,
+                          request_release_predicates:
+                          dict[int, Callable[[], bool]] | None = None):
         if response_stall_cycles < 0:
             raise ValueError("response_stall_cycles must be non-negative")
         reqs = (core0, core1)
@@ -64,6 +67,19 @@ class DualCoreCpuDriver:
                for core, delay in delays.items()):
             raise ValueError("request delays must name present cores and be non-negative")
         delays = {core: delays.get(core, 0) for core in range(2)}
+        release_predicates = request_release_predicates or {}
+        if any(core not in (0, 1) or reqs[core] is None or
+               not callable(predicate)
+               for core, predicate in release_predicates.items()):
+            raise ValueError(
+                "request release predicates must name present cores and be callable"
+            )
+
+        def release_ready(core, cycle):
+            predicate = release_predicates.get(core)
+            return (delays[core] <= cycle and
+                    (predicate is None or bool(predicate())))
+
         d = self.dut
         d.cpu_resp_ready.value = 0
         d.cpu_req_addr.value = addr
@@ -71,7 +87,7 @@ class DualCoreCpuDriver:
         d.cpu_req_wmask.value = mask
         d.cpu_req_wdata.value = data
         offered = sum(1 << core for core, req in enumerate(reqs)
-                      if req is not None and delays[core] == 0)
+                      if req is not None and release_ready(core, 0))
         d.cpu_req_valid.value = offered
         accepted = 0
         accepted_at = {}
@@ -162,7 +178,7 @@ class DualCoreCpuDriver:
             next_cycle = _ + 1
             offered = sum(1 << core for core, req in enumerate(reqs)
                           if req is not None and not (accepted & (1 << core))
-                          and delays[core] <= next_cycle)
+                          and release_ready(core, next_cycle))
             self.last_pair_accepted_at = dict(accepted_at)
             d.cpu_req_valid.value = offered
             d.cpu_resp_ready.value = ready_mask

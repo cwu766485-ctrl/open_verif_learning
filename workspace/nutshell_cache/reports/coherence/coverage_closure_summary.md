@@ -42,7 +42,7 @@ Risk totals below describe only the primary subsystem run; rows across different
 
 **Open high-risk points:** 226 (none are waived by this report).
 
-Primary-run review accounting: 85 points fall in hand-authored source-range reviews; 230 are mapped to source/path but not individually reviewed. All remain open until their prescribed test/proof evidence is verified.
+Primary-run review accounting: 96 points fall in hand-authored source-range reviews; 219 are mapped to source/path but not individually reviewed. All remain open until their prescribed test/proof evidence is verified.
 
 Waiver inventory: zero approved or automatic waivers. The header-only `coverage_closure_waivers.csv` is retained as the explicit waiver record.
 
