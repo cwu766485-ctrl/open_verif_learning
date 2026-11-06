@@ -1028,21 +1028,31 @@
       "required": true,
       "legal_preconditions": "A modified owner transfers its line to a peer during an unrelated distinct-set AXI refill, while APB samples the Snoop counter before the refill's final beat.",
       "stimulus_strategy": "Directed legal M-owner prelude; overlap owner GetS, refill AR/R pacing, and APB CSR read.",
-      "checker": "Independent data/MESI/Directory model, eight-beat owner-data check, AXI ID/burst checker, APB count check, cycle-order assertions, and no-error checks.",
+      "checker": "Independent CoherenceReferenceModel data/MESI/Directory checker; eight-beat owner-data checker; AXI ID/burst checker; APB Snoop-count checker; event-cycle overlap checker.",
       "testcases": [
-        "test_dirty_owner_transfer_during_refill_with_apb_snoop_count",
-        "test_seeded_cpu_mmio_apb_axi_overlap"
+        "tests/full_system/test_owner_transfer_apb_cross.py::test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
       ],
       "status": "implemented",
-      "required_monitor_event": "snoop.accept; snoop.response; coherence.owner_data_beat; axi.read_address; axi.read_beat; apb.access_complete",
+      "required_monitor_event": "CPU GetS request/response, Directory request, Snoop accept/response, eight owner-data beats, refill AR/R beats, APB access, and L1/Directory metadata commits.",
       "required_monitor_events": [
+        "cpu.request_accept",
+        "cpu.response_complete",
+        "directory.request_accept",
         "snoop.accept",
         "snoop.response",
         "coherence.owner_data_beat",
         "axi.read_address",
         "axi.read_beat",
-        "apb.access_complete"
-      ]
+        "apb.access_complete",
+        "l1.metadata_commit",
+        "directory.metadata_commit"
+      ],
+      "feature": "Dirty owner transfer × independent refill × APB observation",
+      "checker_testcases": [
+        "tests/full_system/test_owner_transfer_apb_cross.py::test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
     },
     {
       "id": "FS.CROSS.RESET_AXI_AR_STALL",
@@ -1256,22 +1266,34 @@
     },
     {
       "id": "FS.CROSS.HIT_UNDER_MISS_X_SNOOP",
-      "feature": "Pending miss × remote owner snoop",
+      "feature": "Pending AXI refill × remote M-owner snoop",
       "classification": "required_legal",
       "required": true,
       "legal_preconditions": "A different-core GetS snoops a core0 M owner while core0 waits for an unrelated AXI refill.",
       "stimulus_strategy": "Deterministic directed test with explicit timing waits and response correlation.",
-      "checker": "The independent coherence scoreboard checks owner data and the monitor observes the owner snoop before the pending miss response.",
+      "checker": "Independent CoherenceReferenceModel checks the M-owner data and final state; CPU response/AXI ID correlation and observed L1/Directory commit checker; cycle-overlap checker.",
       "testcases": [
-        "test_axi_top_snoop_completes_during_other_line_pending_miss"
+        "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
       ],
       "status": "implemented",
-      "required_monitor_event": "snoop.accept; snoop.response; cpu.response_complete for both lines",
+      "required_monitor_event": "Pending CPU miss request/response, Directory request, correlated AXI AR/R, remote Snoop accept/response, owner-data transfer, and L1/Directory commits.",
       "required_monitor_events": [
+        "cpu.request_accept",
+        "cpu.response_complete",
+        "directory.request_accept",
         "snoop.accept",
         "snoop.response",
-        "cpu.response_complete for both lines"
-      ]
+        "coherence.owner_data_beat",
+        "axi.read_address",
+        "axi.read_beat",
+        "l1.metadata_commit",
+        "directory.metadata_commit"
+      ],
+      "checker_testcases": [
+        "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
     },
     {
       "id": "FS.CROSS.HIT_UNDER_MISS_X_RESET",

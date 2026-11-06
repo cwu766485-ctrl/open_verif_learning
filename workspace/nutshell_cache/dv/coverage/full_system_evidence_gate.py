@@ -101,7 +101,8 @@ def _aggregate(raw):
     return bins, crosses, run_by_id
 
 
-def _verify_overlap_evidence(point_id, contribution, trace_events, test_id):
+def _verify_overlap_evidence(point_id, contribution, trace_events, test_id,
+                             required_events):
     proofs = contribution.get("checked_cross_evidence", [])
     _require(bool(proofs), f"cross {point_id} lacks cycle-overlap checker evidence")
     for proof in proofs:
@@ -117,19 +118,69 @@ def _verify_overlap_evidence(point_id, contribution, trace_events, test_id):
         _require(start <= end and int(overlap["start_cycle"]) == start and
                  int(overlap["end_cycle"]) == end,
                  f"cross {point_id} roles do not share a checked cycle window")
-        _require(proof.get("transactions") and proof.get("state_transitions"),
+        transactions = proof.get("transactions", [])
+        transitions = proof.get("state_transitions", [])
+        _require(transactions and transitions,
                  f"cross {point_id} lacks transaction/state outcome evidence")
         refs = proof.get("event_refs", [])
         _require(bool(refs), f"cross {point_id} has no monitor event references")
+        refs_by_id = {ref.get("ref_id"): ref for ref in refs
+                      if isinstance(ref, dict) and ref.get("ref_id")}
+        _require(len(refs_by_id) == len(refs),
+                 f"cross {point_id} has missing or duplicate event reference IDs")
+        observed_event_ids = set()
         for ref in refs:
-            _require({"source", "event_type", "cycle"} <= set(ref),
+            _require({"ref_id", "role", "source", "event_type", "cycle"} <= set(ref),
                      f"cross {point_id} has an underspecified Monitor event reference")
-            reference = {key: value for key, value in ref.items() if key != "role"}
+            observed_event_ids.add(f"{ref['source']}.{ref['event_type']}")
+            reference = {key: value for key, value in ref.items()
+                         if key not in ("role", "ref_id")}
             found = any(event.get("test_id") == test_id and
                         all(event.get(key) == value for key, value in reference.items())
                         for event in trace_events)
             _require(found,
                      f"cross {point_id} references Monitor event absent from saved trace: {ref}")
+        _require(required_events <= observed_event_ids,
+                 f"cross {point_id} overlap proof omits required event references: "
+                 f"{sorted(required_events - observed_event_ids)}")
+
+        # The interval endpoints must be actual saved handshakes, not just
+        # caller-provided cycle numbers. This also makes the computed overlap
+        # independently reproducible from the trace.
+        for role_name, role in roles.items():
+            start_ref = refs_by_id.get(role.get("start_event_ref"))
+            end_ref = refs_by_id.get(role.get("end_event_ref"))
+            _require(start_ref is not None and end_ref is not None,
+                     f"cross {point_id} role {role_name} has no event-bound endpoints")
+            _require(start_ref.get("role") == role_name and
+                     end_ref.get("role") == role_name and
+                     int(role["start_cycle"]) == int(start_ref["cycle"]) and
+                     int(role["end_cycle"]) == int(end_ref["cycle"]),
+                     f"cross {point_id} role {role_name} endpoints disagree with trace refs")
+            _require(int(role["start_cycle"]) <= int(role["end_cycle"]),
+                     f"cross {point_id} role {role_name} has a reversed interval")
+
+        for transaction in transactions:
+            ref_ids = transaction.get("event_ref_ids", [])
+            _require(ref_ids and all(ref_id in refs_by_id for ref_id in ref_ids),
+                     f"cross {point_id} transaction has dangling event references")
+            if transaction.get("txn_id") is not None:
+                _require(any(refs_by_id[ref_id].get("txn_id") == transaction["txn_id"]
+                             for ref_id in ref_ids),
+                         f"cross {point_id} transaction ID is not tied to its Monitor events")
+            if transaction.get("address") is not None:
+                _require(any(refs_by_id[ref_id].get("address") == transaction["address"]
+                             for ref_id in ref_ids),
+                         f"cross {point_id} transaction address is not tied to its Monitor events")
+
+        for transition in transitions:
+            event_ref = refs_by_id.get(transition.get("event_ref_id"))
+            _require(event_ref is not None,
+                     f"cross {point_id} state transition has no Monitor event reference")
+            for field in ("old_state", "new_state", "state", "owner", "sharers"):
+                if field in transition:
+                    _require(event_ref.get(field) == transition[field],
+                             f"cross {point_id} state transition disagrees with Monitor event")
 
 
 def _verify_evidence(items, evidence_items, run_by_id, *, kind, trace_events=()):
@@ -220,7 +271,8 @@ def _verify_evidence(items, evidence_items, run_by_id, *, kind, trace_events=())
                          f"Monitor events: {sorted(required_events - contribution_events)}")
             monitor_contributions.append(contribution)
             if strict and kind == "cross" and item.get("requires_cycle_overlap"):
-                _verify_overlap_evidence(point_id, contribution, trace_events, test_id)
+                _verify_overlap_evidence(point_id, contribution, trace_events, test_id,
+                                         required_events)
             observed_tests.add(selector)
         if strict:
             _require(checker_tests <= observed_tests,

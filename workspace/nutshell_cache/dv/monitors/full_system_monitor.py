@@ -77,6 +77,49 @@ class FullSystemMonitor:
             raise ValueError(f"unsupported MMIO event {event_type!r}")
         self._event("mmio", event_type, address=address, payload=payload)
 
+    def record_cpu_request_accept(self, core, address, write, *, cycle=None):
+        """Record a CPU driver's sampled ready/valid acceptance.
+
+        Most CPU handshakes are also seen by ``sample_once``. A few directed
+        tests intentionally drive a lane directly while holding another miss
+        open; Toffee may resume that driver before the passive sampler on the
+        same edge. Preserve the handshake observed by the driver and suppress
+        a duplicate if the passive sample has already recorded it.
+        """
+        accepted_cycle = self.cycle if cycle is None else int(cycle)
+        address = int(address) & 0xFFFF_FFFF
+        write = int(bool(write))
+        if any(event.get("source") == "cpu" and
+               event.get("event_type") == "request_accept" and
+               event.get("cycle") == accepted_cycle and
+               event.get("core") == int(core) and
+               event.get("address") == address and
+               event.get("write") == write for event in self.events):
+            return
+        self._event("cpu", "request_accept", cycle=accepted_cycle,
+                    core=int(core), address=address, write=write,
+                    payload={"observed_by": "cpu_driver"})
+
+    def record_cpu_response_complete(self, core, address, write, data, txn_id,
+                                     *, cycle=None):
+        """Record a CPU driver's sampled response ready/valid handshake."""
+        completed_cycle = self.cycle if cycle is None else int(cycle)
+        fields = {
+            "core": int(core),
+            "address": int(address) & 0xFFFF_FFFF,
+            "write": int(bool(write)),
+            "data": int(data) & ((1 << 64) - 1),
+            "txn_id": int(txn_id) & 0x7,
+        }
+        if any(event.get("source") == "cpu" and
+               event.get("event_type") == "response_complete" and
+               event.get("cycle") == completed_cycle and
+               all(event.get(key) == value for key, value in fields.items())
+               for event in self.events):
+            return
+        self._event("cpu", "response_complete", cycle=completed_cycle,
+                    **fields, payload={"observed_by": "cpu_driver"})
+
     def record_axi_event(self, event_type, transaction):
         """Record AXI handshakes sampled by the protocol-checking memory agent.
 
