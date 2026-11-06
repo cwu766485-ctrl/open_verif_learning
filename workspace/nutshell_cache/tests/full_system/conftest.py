@@ -219,6 +219,7 @@ async def full_system_env(toffee_request: ToffeeRequest, pytestconfig, request):
         env = FullSystemEnv(dut, axi_options=axi_options,
                             mmio_options=mmio_options)
         env.trace_test_id = request.node.nodeid
+        env.coverage.set_testcase(request.node.nodeid)
         env.trace_seed = seed
         env.trace_scenario_id = request.node.name.split("[", 1)[0]
         env.trace_config = {
