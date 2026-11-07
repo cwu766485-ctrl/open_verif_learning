@@ -24,6 +24,10 @@ class DualCoreCpuDriver:
 
     def __init__(self, dut):
         self.dut = dut
+        # Optional callback for sampled CPU handshakes.  The graybox monitor
+        # also observes the pins, but Toffee scheduling can make it miss an
+        # edge when this driver resumes in another scheduler group.
+        self.observation_callback = None
         self.cycle = 0
         self.latencies = {0: [], 1: []}
         self.request_stall_cycles = {0: 0, 1: 0}
@@ -98,6 +102,7 @@ class DualCoreCpuDriver:
         stall_remaining = {}
         response_trace = []
         pending_resp_ready = 0
+        pending_response_info = {}
         seen_valid = 0
         for _ in range(max_cycles):
             await ClockCycles(d, 1)
@@ -112,6 +117,10 @@ class DualCoreCpuDriver:
                 if pending_resp_ready & bit:
                     completed |= bit
                     completed_at[core] = self.cycle
+                    if self.observation_callback is not None:
+                        self.observation_callback(
+                            "response_complete", pending_response_info[core]
+                        )
             pending_resp_ready = 0
 
             req_ready = int(d.cpu_req_ready.value)
@@ -120,6 +129,12 @@ class DualCoreCpuDriver:
                 bit = 1 << core
                 if newly & bit:
                     accepted_at[core] = self.cycle
+                    if self.observation_callback is not None:
+                        self.observation_callback("request_accept", {
+                            "core": core,
+                            "address": reqs[core].addr & 0xFFFF_FFFF,
+                            "write": int(reqs[core].write),
+                        })
                 elif ((desired & bit) and not (accepted & bit) and
                       (offered & bit)):
                     self.request_stall_cycles[core] += 1
@@ -137,6 +152,7 @@ class DualCoreCpuDriver:
             packed_data = int(d.cpu_resp_rdata.value)
             packed_addr = int(d.cpu_resp_addr.value)
             packed_write = int(d.cpu_resp_write.value)
+            packed_txn_id = int(d.cpu_resp_txn_id.value)
             for core in held_payload:
                 if not (valid & (1 << core)):
                     raise AssertionError(
@@ -171,6 +187,13 @@ class DualCoreCpuDriver:
                         continue
                 results[core] = got_data
                 ready_mask |= bit
+                pending_response_info[core] = {
+                    "core": core,
+                    "address": got_addr,
+                    "write": got_write,
+                    "data": got_data,
+                    "txn_id": (packed_txn_id >> (3 * core)) & 0x7,
+                }
                 held_payload.pop(core, None)
                 stall_remaining.pop(core, None)
             pending_resp_ready = ready_mask

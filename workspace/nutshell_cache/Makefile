@@ -398,12 +398,15 @@ coherence_full_system_mixed: coherence_full_system_build
 	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_mixed_agent_random.py
 
-# Directed cross-interface closure: M-owner transfer + unrelated AXI refill + APB.
+# Directed cross-interface closure: owner transfer/APB plus strict CR02/05/06
+# scenarios with checked event overlap and independent scoreboards.
 coherence_full_system_cross_closure: coherence_full_system_build
 	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/cross_closure/full_system_coverage.json \
 	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/cross_closure/full_system_trace.jsonl \
 	 PYTHONPATH=.tooling:.:./dv:./tests \
-	  python3 -m pytest -sv tests/full_system/test_owner_transfer_apb_cross.py
+	  python3 -m pytest -sv tests/full_system/test_owner_transfer_apb_cross.py \
+	    tests/full_system/test_cross_agent_directed.py \
+	    tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses
 
 # Extended state/resource/timing-aware regression. Both the CPU-directed
 # stream and the four-role CPU/MMIO/APB/AXI campaign start at 100 x 500.

@@ -9,6 +9,7 @@ then binds every referenced event and interval endpoint to the saved trace.
 _TRACE_FIELDS = (
     "source", "event_type", "cycle", "reset_epoch", "core", "address",
     "write", "data", "txn_id", "source_id", "opcode", "beat", "last",
+    "slot", "occupancy", "channel", "outstanding",
     "response", "length", "destination", "old_state", "new_state",
     "old_sharers", "old_owner", "state", "sharers", "owner", "cause",
     "is_snoop", "payload", "outcome",
