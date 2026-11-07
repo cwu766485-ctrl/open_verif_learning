@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 19896)
-Total output lines: 1486
+Warning: truncated output (original token count: 20348)
+Total output lines: 1520
 
 {
   "schema_version": 2,
@@ -398,42 +398,7 @@ Total output lines: 1486
       "legal_preconditions": "One core holds M and peer issues GetM.",
       "stimulus_strategy": "Remote CPU store by the other core.",
       "required_monitor_event": "Observed GetM and former owner metadata commit to I.",
-  …9896 tokens truncated…uired_legal",
-      "required": true,
-      "legal_preconditions": "A modified owner transfers its line to a peer during an unrelated distinct-set AXI refill, while APB samples the Snoop counter before the refill's final beat.",
-      "stimulus_strategy": "Directed legal M-owner prelude; overlap owner GetS, refill AR/R pacing, and APB CSR read.",
-      "checker": "Independent CoherenceReferenceModel data/MESI/Directory checker; eight-beat owner-data checker; AXI ID/burst checker; APB Snoop-count checker; event-cycle overlap checker.",
-      "testcases": [
-        "tests/full_system/test_owner_transfer_apb_cross.py::test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
-      ],
-      "status": "implemented",
-      "required_monitor_event": "CPU GetS request/response, Directory request, Snoop accept/response, eight owner-data beats, refill AR/R beats, APB access, and L1/Directory metadata commits.",
-      "required_monitor_events": [
-        "cpu.request_accept",
-        "cpu.response_complete",
-        "directory.request_accept",
-        "snoop.accept",
-        "snoop.response",
-        "coherence.owner_data_beat",
-        "axi.read_address",
-        "axi.read_beat",
-        "apb.access_complete",
-        "l1.metadata_commit",
-        "directory.metadata_commit"
-      ],
-      "feature": "Dirty owner transfer \u00d7 independent refill \u00d7 APB observation",
-      "checker_testcases": [
-        "tests/full_system/test_owner_transfer_apb_cross.py::test_dirty_owner_transfer_during_refill_with_apb_snoop_count"
-      ],
-      "evidence_contract": "checked_cross_v1",
-      "requires_cycle_overlap": true
-    },
-    {
-      "id": "FS.CROSS.RESET_AXI_AR_STALL",
-      "feature": "Reset during AXI AR backpressure",
-      "classification": "required_legal",
-      "required": true,
-      "legal_preconditions": "Reset asserted while ARVALID is held because ARREADY is low; reset cancels the miss and a post-reset retry returns the initialized data.",
+  …10348 tokens truncated…     "legal_preconditions": "Reset asserted while ARVALID is held because ARREADY is low; reset cancels the miss and a post-reset retry returns the initialized data.",
       "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
       "checker": "AXI request/response lifecycle monitor, reset-epoch check, no-stale-response check, and post-reset independent data check.",
       "testcases": [
@@ -790,6 +755,40 @@ Total output lines: 1486
         "system.reset_cancel or reset_epoch change",
         "post-reset CPU response"
       ]
+    },
+    {
+      "id": "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB",
+      "feature": "CR04 dirty inclusive L2 victim overlaps owner Snoop and APB observation",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A legal M owner is resident in a full L2 set; a replacement miss selects its line, back-invalidates the owner and writes its newest data to AXI.",
+      "stimulus_strategy": "Seeded owner-core, line offset, payload, memory latency and AXI write-stall cadence; fill the target set through CPU requests, then sample the APB Snoop counter after the real victim Snoop handshake.",
+      "checker": "Independent coherence reference/data checker, owner invalidation checker, exact eight-beat AXI writeback/ID/B checker, APB counter checker, and trace-bound cycle-overlap checker.",
+      "status": "implemented",
+      "testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "required_monitor_event": "L2 victim select/Snoop, owner metadata invalidation, APB Snoop-counter access, and correlated AXI writeback completion.",
+      "required_monitor_events": [
+        "l2_victim.select",
+        "l2_victim.snoop_accept",
+        "snoop.accept",
+        "snoop.response",
+        "l1.metadata_commit",
+        "coherence.owner_data_beat",
+        "axi.write_address",
+        "axi.write_beat",
+        "axi.write_response",
+        "apb.access_complete",
+        "cpu.request_accept",
+        "cpu.response_complete"
+      ],
+      "scenario_id": "CR04",
+      "checker_testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
     }
   ]
 }
