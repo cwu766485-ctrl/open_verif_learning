@@ -80,14 +80,18 @@ Before publishing the refreshed reports, remote PR #1 pointed at `a5413d46cd6081
 
 The refreshed candidate was published as remote SHA `e5251cfde033d88ebc329037b6606e53d3014aeb` (run ID `42370573954`). `coherence-regression` passed, including the integrated full-system coverage and strict evidence gate. `cache-regression` failed in the legacy `make report` target because it discovers `tests/full_system/test_replay_closure.py` without building or adding the full AXI Picker wrapper. The child pytest then skipped the worker for the missing wrapper, while the outer replay test incorrectly interpreted the absent worker artifact as a replay failure. This was a test-scope/setup defect, not a DUT or Formal failure.
 
-The replay test now uses `pytest.importorskip("coherent_axi_python")` before launching its worker. This keeps the system-level replay test out of the Legacy-only run when its wrapper is absent; `coherence_full_system_replay_closure` still builds the wrapper and executes the complete replay/minimization check. Local validation after the correction passed: the CI-equivalent `make gen_dut && make report` completed, and `make COHERENCE_JOBS=2 coherence_full_system_replay_closure` passed with the built AXI wrapper. The correction still requires a new PR Actions run before remote CI can be called green.
+The replay test now uses `pytest.importorskip("coherent_axi_python")` before launching its worker. This keeps the system-level replay test out of the Legacy-only run when its wrapper is absent; `coherence_full_system_replay_closure` still builds the wrapper and executes the complete replay/minimization check. Local validation after the correction passed: the CI-equivalent `make gen_dut && make report` completed, and `make COHERENCE_JOBS=2 coherence_full_system_replay_closure` passed with the built AXI wrapper.
+
+### Follow-up: PR candidate run #77
+
+The fix was published on PR-head SHA `7e6cf26c2d8d7ba6b8b381bbce6a0a2d41b11cf4` (tree `c8cc9169eab7fc5c45b37f8f11b4a81058cb586b`, matching local commit `e91eb8bfbdeb4c968343de3dc57e1f515e594216`). GitHub Actions run ID `42375019780` (#77) completed with **success** on this SHA. Both `coherence-regression` and `cache-regression` passed; the integrated Python full-system regression, strict checked-cross evidence gate, formal proofs, legacy regression/coverage closure, and artifact uploads all succeeded. This closes the replay-test discovery failure on the candidate. It does not close the separate raw RTL coverage or randomized scenario breadth gaps listed below.
 
 ## Remaining gaps and sign-off
 
 - **OPEN:** 1,026 dataset-scoped raw RTL zero-count points; point-level reachability/checker/proof review is incomplete.
 - **OPEN:** random variation breadth for CR01/CR06/CR07 and broader dimensions for all ten cross scenarios.
 - **OPEN:** full-system stress did not generate a DUT failure; the successful controlled injected checker failure validates replay mechanics only.
-- **OPEN:** remote CI must pass at the published PR candidate SHA.
+- **CLOSED for candidate `7e6cf26`:** GitHub Actions run #77 passed both PR jobs. Any later PR-head change requires its own CI result.
 - **Not in scope:** 2-entry L1 MSHR, new product RTL behavior, PPA, STA, physical SRAM macro validation, and chip-level implementation.
 
 **Final decision: verification candidate, not final sign-off.** The Python and full-system checked functional/cross closure evidence passes; raw RTL coverage and random cross breadth remain explicitly open. No waiver or coverage-denominator reduction was used.
