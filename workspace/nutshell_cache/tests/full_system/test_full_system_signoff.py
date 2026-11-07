@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 13412)
-Total output lines: 1161
-
 """Directed sign-off scenarios for outstanding gaps at the AXI system top."""
 
 import asyncio
@@ -439,7 +436,277 @@ async def test_live_l2_victim_back_invalidates_resident_l1(full_system_env):
     for index in range(7, 8):
         address = target + index * stride
         value = 0xA000_0000_0000_0000 | index
-        env.seed_word(…3412 tokens truncated…t_ref_ids": ["snoop_accept", "snoop_response",
+        env.seed_word(address, value)
+        assert await env.cpu_access(1, address) == value
+
+    event_start = len(env.monitor.events)
+    refills_before = len(env.axi.read_addresses)
+    ninth = target + 8 * stride
+    ninth_value = 0xA000_0000_0000_0008
+    env.seed_word(ninth, ninth_value)
+    assert await env.cpu_access(1, ninth) == ninth_value
+
+    events = env.monitor.events[event_start:]
+    victim_snoop = [event for event in events
+                    if event["source"] == "l2_victim" and
+                    event["event_type"] == "snoop_accept" and
+                    event["core"] == 0 and event["address"] == target]
+    invalidation = [event for event in events
+                    if event["source"] == "l1" and
+                    event["event_type"] == "metadata_commit" and
+                    event["core"] == 0 and event["address"] & ~0x3F == target and
+                    event["is_snoop"] and event["new_state"] == 0]
+    assert victim_snoop, (
+        "the first full-set victim should be the live Core0 target line"
+    )
+    assert invalidation, "live L2 victim did not back-invalidate Core0's L1 copy"
+
+    # A direct lane transaction avoids using a model state that predates the
+    # inclusive eviction; the actual refill and data are checked at the pins.
+    assert await env.cpu.access(0, target) == target_value
+    assert any(addr & ~0x3F == target
+               for _txn_id, addr, _cycle in env.axi.read_addresses[refills_before:]), (
+        "Core0 read hit stale L1 metadata instead of refilling the evicted line"
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    env.coverage.sample_checked_event("FS.L2.LIVE_VICTIM_SNOOP", checked=True)
+
+
+@pytest.mark.parametrize("seed", [0xC004, 0xC104])
+@case
+async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed):
+    """A dirty inclusive victim collects its live M owner before writeback."""
+    rng = random.Random(seed)
+    owner_core = (seed >> 8) & 1
+    filler_core = 1 - owner_core
+    target = 0x0210_0000 + rng.randrange(16) * 64
+    owner_value = rng.getrandbits(64)
+    memory_latency = 6 + rng.randrange(3)
+    aw_stall_period = 2 + rng.randrange(2)
+    w_stall_period = 2 + rng.randrange(2)
+    env = await full_system_env(axi_options={
+        "latency": memory_latency, "ar_stall_period": 3,
+        "aw_stall_period": aw_stall_period,
+        "w_stall_period": w_stall_period,
+    }, seed=seed)
+    env.trace_scenario_id = "CR04_DIRTY_L2_VICTIM_SNOOP_APB"
+    env.trace_config.update({
+        "seed": seed,
+        "owner_core": owner_core,
+        "filler_core": filler_core,
+        "target_line": target,
+        "l2_set_stride": L2_SET_STRIDE,
+        "memory_latency_cycles": memory_latency,
+        "aw_stall_period": aw_stall_period,
+        "w_stall_period": w_stall_period,
+    })
+    env.trace_operations.extend([
+        {"kind": "legal_prelude", "operation": "fill_l2_set_and_make_m_owner",
+         "owner_core": owner_core, "target_line": target},
+        {"kind": "stimulus", "operation": "evict_dirty_l2_line_with_live_owner",
+         "filler_core": filler_core,
+         "replacement_line": target + 8 * L2_SET_STRIDE},
+        {"kind": "overlap", "operation": "read_apb_snoop_counter_during_victim_snoop"},
+    ])
+    expected_words = [rng.getrandbits(64) for _ in range(8)]
+    for beat, value in enumerate(expected_words):
+        env.seed_word(target + beat * 8, value)
+
+    # Match the clean inclusive-victim test's way placement. The target stays
+    # resident in owner_core, but is explicitly made Modified after allocation.
+    for index in range(1, 7):
+        address = target + index * L2_SET_STRIDE
+        for beat in range(8):
+            env.seed_word(address + beat * 8,
+                          0x7200_0000_0000_0000 | (index << 8) | beat)
+        assert await env.cpu_access(filler_core, address) == env.axi.read_word(address)
+
+    await env.cpu_access(owner_core, target, write=True,
+                         data=owner_value, mask=0xFF)
+    expected_words[0] = owner_value
+
+    for index in range(7, 8):
+        address = target + index * L2_SET_STRIDE
+        for beat in range(8):
+            env.seed_word(address + beat * 8,
+                          0x7300_0000_0000_0000 | (index << 8) | beat)
+        assert await env.cpu_access(filler_core, address) == env.axi.read_word(address)
+
+    event_start = len(env.monitor.events)
+    aw_start = len(env.axi.write_addresses)
+    w_start = len(env.axi.write_beats)
+    b_start = len(env.axi.write_completions)
+    ar_start = len(env.axi.read_addresses)
+    ninth = target + 8 * L2_SET_STRIDE
+    ninth_value = rng.getrandbits(64)
+    for beat in range(8):
+        env.seed_word(ninth + beat * 8,
+                      0x7400_0000_0000_0000 | (8 << 8) | beat)
+    env.seed_word(ninth, ninth_value)
+
+    apb_snoop_count_before = await env.apb.read(env.apb.CSR_SNOOP_COUNT)
+    eviction_task = asyncio.create_task(env.cpu_access(filler_core, ninth))
+    try:
+        await _wait_until(
+            env.dut,
+            lambda: any(event["source"] == "l2_victim" and
+                        event["event_type"] == "snoop_accept" and
+                        event["address"] == target
+                        for event in env.monitor.events[event_start:]),
+            message="live M-owner L2 victim Snoop acceptance",
+        )
+        apb_snoop_count_during_snoop = await env.apb.read(
+            env.apb.CSR_SNOOP_COUNT
+        )
+        assert await eviction_task == ninth_value
+    finally:
+        if not eviction_task.done():
+            eviction_task.cancel()
+            await asyncio.gather(eviction_task, return_exceptions=True)
+    events = env.monitor.events[event_start:]
+    victim_select = [event for event in events
+                     if event["source"] == "l2_victim" and
+                     event["event_type"] == "select" and
+                     event["address"] == target]
+    victim_snoop = [event for event in events
+                    if event["source"] == "l2_victim" and
+                    event["event_type"] == "snoop_accept" and
+                    event["core"] == owner_core and event["address"] == target]
+    invalidation = [event for event in events
+                    if event["source"] == "l1" and
+                    event["event_type"] == "metadata_commit" and
+                    event["core"] == owner_core and event["address"] & ~0x3F == target and
+                    event["is_snoop"] and event["old_state"] == 3 and
+                    event["new_state"] == 0]
+    # A live Modified L1 owner is the newest copy, so the backing L2 data
+    # array may still be clean.  Check the directory's owner state instead of
+    # requiring the stale L2 data-array dirty bit to be set.
+    assert victim_select and victim_select[0]["directory_state"] == 2 and \
+        victim_select[0]["owner"] == owner_core, (
+            "the selected inclusive victim did not record the expected M owner"
+        )
+    assert victim_snoop, "dirty live victim did not back-snoop Core0"
+    assert invalidation, "dirty owner was not invalidated by inclusive eviction"
+
+    owner_beats = [event for event in events
+                   if event["source"] == "coherence" and
+                   event["event_type"] == "owner_data_beat" and
+                   event["core"] == owner_core and event["address"] & ~0x3F == target]
+    assert [event["beat"] for event in owner_beats] == list(range(8))
+    assert [event["data"] for event in owner_beats] == expected_words
+    assert [event["last"] for event in owner_beats] == [0] * 7 + [1]
+
+    victim_writes = [item for item in env.axi.write_addresses[aw_start:]
+                     if item[1] == target]
+    assert victim_writes, "dirty live victim did not reach AXI AW"
+    assert len(env.axi.write_completions[b_start:]) >= len(victim_writes)
+    for txn_id, address, _cycle in victim_writes:
+        beats = [item for item in env.axi.write_beats[w_start:]
+                 if item[0] == txn_id]
+        assert [item[1] for item in beats] == list(range(8))
+        assert [item[2] for item in beats] == expected_words
+        assert all(item[3] == 0xFF for item in beats)
+        assert any(item[0] == txn_id and item[1] == address
+                   for item in env.axi.write_completions[b_start:])
+    assert all(env.axi.read_word(target + beat * 8) == expected_words[beat]
+               for beat in range(8)), "AXI backing memory lost owner data"
+
+    # The victim must no longer hit in the owner's inclusive L1 after invalidation.
+    assert await env.cpu.access(owner_core, target) == owner_value
+    assert any(address & ~0x3F == target
+               for _txn_id, address, _cycle in env.axi.read_addresses[ar_start:]), (
+        "Core0 did not refill the evicted target line from backing memory"
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    assert apb_snoop_count_during_snoop >= apb_snoop_count_before + 1, (
+        "APB Snoop counter did not include the accepted live-victim Snoop"
+    )
+
+    events = env.monitor.events[event_start:]
+    snoop_accept = next(event for event in events
+                        if event["source"] == "snoop" and
+                        event["event_type"] == "accept" and
+                        event["core"] == owner_core and
+                        event["address"] & ~0x3F == target)
+    snoop_response = next(event for event in events
+                          if event["source"] == "snoop" and
+                          event["event_type"] == "response" and
+                          event["core"] == owner_core and
+                          event["txn_id"] == snoop_accept["txn_id"])
+    victim_write = next(item for item in env.axi.write_addresses[aw_start:]
+                        if item[1] == target)
+    victim_write_address = next(event for event in events
+                                 if event["source"] == "axi" and
+                                 event["event_type"] == "write_address" and
+                                 event["txn_id"] == victim_write[0] and
+                                 event["address"] == target)
+    victim_write_response = next(event for event in events
+                                 if event["source"] == "axi" and
+                                 event["event_type"] == "write_response" and
+                                 event["txn_id"] == victim_write[0] and
+                                 event["address"] == target)
+    apb_sample = next(event for event in events
+                      if event["source"] == "apb" and
+                      event["event_type"] == "access_complete" and
+                      event["address"] == env.apb.CSR_SNOOP_COUNT and
+                      event["cycle"] >= snoop_accept["cycle"])
+    assert snoop_accept["cycle"] <= apb_sample["cycle"] <= snoop_response["cycle"], (
+        "APB Snoop-counter sample did not overlap the live owner Snoop"
+    )
+    eviction_request = next(event for event in events
+                            if event["source"] == "cpu" and
+                            event["event_type"] == "request_accept" and
+                            event["core"] == filler_core and
+                            event["address"] == ninth)
+    eviction_response = next(event for event in events
+                             if event["source"] == "cpu" and
+                             event["event_type"] == "response_complete" and
+                             event["core"] == filler_core and
+                             event["address"] == ninth)
+
+    event_refs = [
+        event_reference("victim_select", "victim", victim_select[0]),
+        event_reference("victim_snoop", "victim", victim_snoop[0]),
+        event_reference("victim_write_address", "victim", victim_write_address),
+        event_reference("victim_write_response", "victim", victim_write_response),
+        event_reference("snoop_accept", "snoop", snoop_accept),
+        event_reference("snoop_response", "snoop", snoop_response),
+        event_reference("owner_invalidate", "state", invalidation[0]),
+        event_reference("apb_sample", "apb", apb_sample),
+        event_reference("eviction_request", "cpu", eviction_request),
+        event_reference("eviction_response", "cpu", eviction_response),
+    ]
+    event_refs.extend(
+        event_reference(f"owner_data_{event['beat']}", "owner_data", event)
+        for event in owner_beats
+    )
+    victim_write_beats = [event for event in events
+                          if event["source"] == "axi" and
+                          event["event_type"] == "write_beat" and
+                          event["txn_id"] == victim_write[0]]
+    event_refs.extend(
+        event_reference(f"victim_write_beat_{event['beat']}", "victim", event)
+        for event in victim_write_beats
+    )
+    proof = checked_overlap_proof(
+        checker=("independent coherence scoreboard + dirty-victim data/AXI "
+                 "checker + APB Snoop-counter checker"),
+        checker_pass=True,
+        role_endpoints={
+            "victim": ("victim_select", "victim_write_response"),
+            "snoop": ("snoop_accept", "snoop_response"),
+            "apb": ("apb_sample", "apb_sample"),
+        },
+        event_refs=event_refs,
+        transactions=[
+            {"role": "dirty_l2_victim_writeback", "protocol": "AXI4-W",
+             "txn_id": victim_write[0], "address": target,
+             "event_ref_ids": ["victim_write_address", *[
+                 f"victim_write_beat_{beat}" for beat in range(8)],
+                 "victim_write_response"]},
+            {"role": "owner_snoop", "protocol": "MESI-Snoop",
+             "txn_id": snoop_accept["txn_id"], "address": target,
+             "event_ref_ids": ["snoop_accept", "snoop_response",
                                "victim_snoop", "owner_invalidate"]},
             {"role": "apb_snoop_counter", "protocol": "APB3",
              "address": env.apb.CSR_SNOOP_COUNT,

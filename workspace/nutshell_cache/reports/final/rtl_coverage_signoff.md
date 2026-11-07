@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-06 00:34 +08 from the current raw Verilator coverage audit. Verification regression evidence below was refreshed on 2026-11-06.
+Generated: 2026-11-07 19:51 +08.
 
 ## Scope and source manifest
 
@@ -41,9 +41,9 @@ All 1026 zero-count dataset-scoped records currently have status **OPEN**. Allow
 
 ## Functional coverage and checker status
 
-Functional coverage closure artifact: 49/49 required bins (49 total records).
-Cross coverage closure artifact: 19/19 required bins (19 total records).
-These are the latest existing closure JSON observations, not newly rerun closure from this report generator. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
+Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c`.
+These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
 
@@ -60,7 +60,7 @@ These are the latest existing closure JSON observations, not newly rerun closure
 
 ## Regression evidence and remaining status
 
-Local full regression result: all six required gates passed on RTL/DV source SHA `14542f52bef5a42560cc615a5db104e3122dbd33` on 2026-11-06. The exact commands and results are recorded in [`docs/dv/closure_phase2_execution_2026-11-06.md`](../../docs/dv/closure_phase2_execution_2026-11-06.md). The latest remote GitHub Actions result is run [41962170929](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/41962170929) on base SHA `9b281f3bd1d6b5dbdf9bb257313dd61a21d87252`; candidate CI remains pending publication and is not represented by that run.
-The regression PASS does not close raw RTL coverage gaps. All 1,026 dataset-scoped zero-count records in the current point matrix remain OPEN; 0 waivers are approved and reviewed/eligible coverage is not computed.
+Local source scripts/env.sh && make COHERENCE_JOBS=2 coherence_verify result: PASS at source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c` (2026-11-07T19:45:28+08:00); log: `/tmp/nutshell_coherence_verify_phase3.log`.
+This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
 
 **Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.

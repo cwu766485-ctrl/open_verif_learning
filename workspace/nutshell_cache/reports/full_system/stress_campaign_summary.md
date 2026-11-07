@@ -1,7 +1,7 @@
 # Four-Agent Full-System Stress Campaign
 
 - Raw source: `reports/full_system/stress/full_system_coverage.json` (schema 1).
-- Pytest exit status: `0`; environments: **260**.
+- Pytest exit status: `0`; environments: **280**.
 - One CSV row per testcase seed records config, coverage delta, observed transactions/events, error counters, and a replay command.
 - CPU random uses 500 configured sequence operations per seed; the generated operation list includes two sequence prelude records. Mixed CPU/MMIO/APB/AXI uses 500 checked rounds per seed. Resource-aware runs check one owner store plus two paired reads. Random recovery runs select one reset phase or one AXI error beat per seed.
 - Test stimulus and checks are deterministic for the recorded seed/config at the committed source revision. No failing seed occurred, so replay count is zero and trace shrinking was not applicable.
@@ -9,11 +9,12 @@
 
 | Scenario | Seeds / status | Configured ops or rounds | CPU accepts / completions | Directory req | Snoop accepts | AXI AR / R beats | MMIO req / rsp | APB | Protocol / final-fatal / observed AXI errors | Replay |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| FULL_SYSTEM_RANDOM | 100/100 PASS | 50000 | 58475 / 58958 | 28114 | 26714 | 1400 / 11200 | 0 / 0 | 200 | 0/0/0 | 0 |
+| FULL_SYSTEM_RANDOM | 100/100 PASS | 50000 | 58958 / 58958 | 28114 | 26714 | 1400 / 11200 | 0 / 0 | 200 | 0/0/0 | 0 |
 | SEEDED_MIXED_CPU_MMIO_APB_AXI | 100/100 PASS | 50000 | 100300 / 100300 | 50430 | 100 | 50200 / 401600 | 50000 / 50000 | 50200 | 0/0/0 | 0 |
-| RESOURCE_AWARE_SNOOP_REFILL | 20/20 PASS | 60 | 20 / 60 | 60 | 20 | 40 / 320 | 0 / 0 | 0 | 0/0/0 | 0 |
+| RESOURCE_AWARE_SNOOP_REFILL | 20/20 PASS | 60 | 60 / 60 | 60 | 20 | 40 / 320 | 0 / 0 | 0 | 0/0/0 | 0 |
 | RANDOMIZED_RESET_PHASE | 20/20 PASS | 20 | 40 / 20 | 30 | 0 | 25 / 160 | 5 / 5 | 0 | 0/0/0 | 0 |
-| RANDOMIZED_AXI_READ_ERROR_RECOVERY | 20/20 PASS | 20 | 40 / 20 | 40 | 0 | 40 / 265 | 0 / 0 | 0 | 0/0/20 | 0 |
+| CR09_AXI_ERROR_FAIL_STOP_RESET | 20/20 PASS | 0 | 40 / 20 | 40 | 0 | 40 / 276 | 0 / 0 | 0 | 0/0/20 | 0 |
+| CR08_RESET_DIRECTORY_SNOOP_PENDING | 20/20 PASS | 0 | 80 / 60 | 80 | 40 | 40 / 320 | 0 / 0 | 0 | 0/0/0 | 0 |
 
 ## Per-scenario coverage deltas
 
@@ -108,15 +109,30 @@
 | `FS.STRESS.RESET_MMIO_REQUEST_STALL` | 5 |
 | `FS.STRESS.RESET_R_GAP` | 5 |
 
-### `RANDOMIZED_AXI_READ_ERROR_RECOVERY`
+### `CR09_AXI_ERROR_FAIL_STOP_RESET`
+
+| Checked bin | Hits |
+| --- | ---: |
+| `FS.CPU.READ.CORE0` | 9 |
+| `FS.CPU.READ.CORE1` | 11 |
+| `FS.CROSS.CORE0.READ` | 9 |
+| `FS.CROSS.CORE1.READ` | 11 |
+| `FS.CROSS.STRESS_AXI_ERROR_RECOVERY` | 20 |
+| `FS.MESI.I_TO_E` | 20 |
+| `FS.STRESS.AXI_R_ERROR_BEAT_INJECTION` | 20 |
+
+### `CR08_RESET_DIRECTORY_SNOOP_PENDING`
 
 | Checked bin | Hits |
 | --- | ---: |
 | `FS.CPU.READ.CORE0` | 20 |
+| `FS.CPU.READ.CORE1` | 20 |
 | `FS.CROSS.CORE0.READ` | 20 |
-| `FS.CROSS.STRESS_AXI_ERROR_RECOVERY` | 20 |
+| `FS.CROSS.CORE1.READ` | 20 |
+| `FS.CROSS.STRESS_RESET_DIRECTORY_SNOOP_PENDING` | 20 |
+| `FS.MESI.E_TO_S` | 20 |
 | `FS.MESI.I_TO_E` | 20 |
-| `FS.STRESS.AXI_R_ERROR_BEAT_INJECTION` | 20 |
+| `FS.MESI.I_TO_S` | 20 |
 
 ## Replay and failure handling
 
