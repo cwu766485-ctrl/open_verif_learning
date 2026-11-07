@@ -76,6 +76,12 @@ A separate controlled checker-fault replay was run and recorded in `reports/full
 
 Before publishing the refreshed reports, remote PR #1 pointed at `a5413d46cd6081e7559e1a6071d770d8e926dfa9`; Actions run 42368205033 (#73) completed with **failure**. The `coherence-regression` job failed during “Run integrated Python full-system coverage regression”; its strict evidence-gate step was skipped. The `cache-regression` job failed during “Run regression and coverage closure”. Setup, tool installation, and formal proof steps passed. This old-head result is not attributed to local SHA `e4eb73c`. The new PR-head Actions run must complete before remote sign-off. The PR is not merged by this execution record.
 
+### Follow-up: PR candidate run #75
+
+The refreshed candidate was published as remote SHA `e5251cfde033d88ebc329037b6606e53d3014aeb` (run ID `42370573954`). `coherence-regression` passed, including the integrated full-system coverage and strict evidence gate. `cache-regression` failed in the legacy `make report` target because it discovers `tests/full_system/test_replay_closure.py` without building or adding the full AXI Picker wrapper. The child pytest then skipped the worker for the missing wrapper, while the outer replay test incorrectly interpreted the absent worker artifact as a replay failure. This was a test-scope/setup defect, not a DUT or Formal failure.
+
+The replay test now uses `pytest.importorskip("coherent_axi_python")` before launching its worker. This keeps the system-level replay test out of the Legacy-only run when its wrapper is absent; `coherence_full_system_replay_closure` still builds the wrapper and executes the complete replay/minimization check. Local validation after the correction passed: the CI-equivalent `make gen_dut && make report` completed, and `make COHERENCE_JOBS=2 coherence_full_system_replay_closure` passed with the built AXI wrapper. The correction still requires a new PR Actions run before remote CI can be called green.
+
 ## Remaining gaps and sign-off
 
 - **OPEN:** 1,026 dataset-scoped raw RTL zero-count points; point-level reachability/checker/proof review is incomplete.

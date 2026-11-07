@@ -9,6 +9,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from dv.sequences.trace_minimizer import minimize_operations
 
 
@@ -95,6 +97,13 @@ def _run_candidate(operations, *, seed, label, work_dir, index,
 
 
 def test_controlled_failure_replay_and_legal_prelude_minimization():
+    # The legacy cache test target also discovers tests/full_system, but does
+    # not build or add the AXI-integrated Picker wrapper to PYTHONPATH. Keep
+    # this system-level replay test scoped to runs that built its DUT.
+    pytest.importorskip(
+        "coherent_axi_python",
+        reason="run make coherence_full_system_build first",
+    )
     seed = int(os.environ.get("FULL_SYSTEM_REPLAY_CLOSURE_SEED", "0xF1A1"), 0)
     _line, _address, _initial, _owner_data, operations = _scenario(seed)
     repo_root = Path(__file__).resolve().parents[2]
