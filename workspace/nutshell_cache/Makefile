@@ -398,15 +398,21 @@ coherence_full_system_mixed: coherence_full_system_build
 	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_mixed_agent_random.py
 
-# Directed cross-interface closure: owner transfer/APB plus strict CR02/05/06
+# Directed cross-interface closure: strict CR01-CR10 scenarios where implemented
 # scenarios with checked event overlap and independent scoreboards.
 coherence_full_system_cross_closure: coherence_full_system_build
 	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/cross_closure/full_system_coverage.json \
 	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/cross_closure/full_system_trace.jsonl \
+	 FULL_SYSTEM_RECOVERY_SEED_COUNT=4 \
 	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_owner_transfer_apb_cross.py \
 	    tests/full_system/test_cross_agent_directed.py \
-	    tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses
+	    tests/full_system/test_full_system_signoff.py::test_dirty_l1_victim_overlaps_axi_writeback_stall \
+	    tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner \
+	    tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss \
+	    tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses \
+	    tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending \
+	    tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery
 
 # Extended state/resource/timing-aware regression. Both the CPU-directed
 # stream and the four-role CPU/MMIO/APB/AXI campaign start at 100 x 500.
@@ -458,7 +464,7 @@ coherence_full_system_replay_trace: coherence_full_system_build
 
 coherence_full_system_checker_tests:
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
-	  python3 -m pytest -q tests/checkers
+	  python3 -m pytest -q tests/checkers tests/unit/test_full_system_evidence_gate.py
 
 coherence_full_system_coverage: coherence_full_system_build coherence_full_system_checker_tests
 	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/full_system_coverage.json \

@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 20348)
-Total output lines: 1520
+Warning: truncated output (original token count: 21748)
+Total output lines: 1620
 
 {
   "schema_version": 2,
@@ -398,110 +398,30 @@ Total output lines: 1520
       "legal_preconditions": "One core holds M and peer issues GetM.",
       "stimulus_strategy": "Remote CPU store by the other core.",
       "required_monitor_event": "Observed GetM and former owner metadata commit to I.",
-  …10348 tokens truncated…     "legal_preconditions": "Reset asserted while ARVALID is held because ARREADY is low; reset cancels the miss and a post-reset retry returns the initialized data.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "AXI request/response lifecycle monitor, reset-epoch check, no-stale-response check, and post-reset independent data check.",
-      "testcases": [
-        "test_reset_during_axi_ar_backpressure"
-      ],
-      "status": "implemented",
-      "required_monitor_event": "axi.ar_stall; system.reset_cancel or reset_epoch change; post-reset CPU response",
-      "required_monitor_events": [
-        "axi.ar_stall",
-        "system.reset_cancel or reset_epoch change",
-        "post-reset CPU response"
-      ]
-    },
-    {
-      "id": "FS.CROSS.RESET_AXI_R_VALID_GAP",
-      "feature": "Reset during an AXI RVALID gap",
+  …11748 tokens truncated…ancels a live Directory Upgrade while peer Snoop is pending",
       "classification": "required_legal",
       "required": true,
-      "legal_preconditions": "An AXI read has been accepted and the memory agent inserts an RVALID gap when reset is asserted.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "AXI cancellation record, reset-epoch check, no-stale-response check, and post-reset independent data check.",
+      "legal_preconditions": "Both L1s hold a shared copy; a CPU store is accepted as an Upgrade and the peer accepts its Snoop before reset interrupts completion.",
+      "stimulus_strategy": "Seeded requester direction, line/word offset and data; construct S/S through CPU reads, then reset at observed peer Snoop acceptance.",
+      "checker": "Directory/Snoop transaction-ID matcher, no Snoop response/Grant/CPU completion before reset, reset epoch, and independent post-reset data check.",
       "testcases": [
-        "test_reset_during_axi_r_valid_gap"
+        "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending"
       ],
       "status": "implemented",
-      "required_monitor_event": "axi.read_address; axi.r_valid_gap; system.reset_cancel or reset_epoch change",
+      "required_monitor_event": "CPU upgrade, Directory Upgrade, peer Snoop accept, reset assertion, and post-reset CPU retry/response.",
       "required_monitor_events": [
-        "axi.read_address",
-        "axi.r_valid_gap",
-        "system.reset_cancel or reset_epoch change"
-      ]
-    },
-    {
-      "id": "FS.CROSS.RESET_AXI_AW_STALL",
-      "feature": "Reset during AXI AW backpressure",
-      "classification": "required_legal",
-      "required": true,
-      "legal_preconditions": "A dirty L2 victim has reached AWVALID while AWREADY is low; reset cancels it before the address handshake.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "AW handshake observation, reset-epoch check, no write completion after cancellation, and protocol-error check.",
-      "testcases": [
-        "test_reset_during_axi_aw_backpressure"
+        "cpu.request_accept",
+        "directory.request_accept",
+        "snoop.accept",
+        "system.reset_assert",
+        "cpu.response_complete"
       ],
-      "status": "implemented",
-      "required_monitor_event": "axi.aw_stall; system.reset_cancel or reset_epoch change",
-      "required_monitor_events": [
-        "axi.aw_stall",
-        "system.reset_cancel or reset_epoch change"
-      ]
-    },
-    {
-      "id": "FS.CROSS.RESET_AXI_W_STALL",
-      "feature": "Reset during AXI W backpressure",
-      "classification": "required_legal",
-      "required": true,
-      "legal_preconditions": "A dirty victim write has started and WVALID is held while WREADY is low when reset is asserted.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "AXI write cancellation record, reset-epoch check, no stale completion, and protocol-error check.",
-      "testcases": [
-        "test_reset_during_axi_w_backpressure"
+      "scenario_id": "CR08",
+      "checker_testcases": [
+        "tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending"
       ],
-      "status": "implemented",
-      "required_monitor_event": "axi.w_stall; system.reset_cancel or reset_epoch change",
-      "required_monitor_events": [
-        "axi.w_stall",
-        "system.reset_cancel or reset_epoch change"
-      ]
-    },
-    {
-      "id": "FS.CROSS.RESET_CPU_RESPONSE_STALL",
-      "feature": "Reset during CPU response backpressure",
-      "classification": "required_legal",
-      "required": true,
-      "legal_preconditions": "A checked CPU response is held while CPU response READY is low, then reset is asserted.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "Reset-epoch check, no stale CPU response, post-reset independent data check, and protocol-error check.",
-      "testcases": [
-        "test_reset_during_cpu_response_backpressure"
-      ],
-      "status": "implemented",
-      "required_monitor_event": "cpu.response_stall; system.reset_cancel or reset_epoch change",
-      "required_monitor_events": [
-        "cpu.response_stall",
-        "system.reset_cancel or reset_epoch change"
-      ]
-    },
-    {
-      "id": "FS.CROSS.RESET_MMIO_REQUEST_STALL",
-      "feature": "Reset during MMIO request backpressure",
-      "classification": "required_legal",
-      "required": true,
-      "legal_preconditions": "An MMIO request is held while request READY is low when reset is asserted.",
-      "stimulus_strategy": "Directed system-level scenario with reset asserted only after the specified real handshake stall/gap is passively observed.",
-      "checker": "MMIO handshake observation, reset-epoch check, no stale CPU/MMIO response, exactly one post-reset completion, and protocol-error check.",
-      "testcases": [
-        "test_reset_during_mmio_request_backpressure"
-      ],
-      "status": "implemented",
-      "required_monitor_event": "mmio.request_stall; system.reset_cancel or reset_epoch change",
-      "required_monitor_events": [
-        "mmio.request_stall",
-        "system.reset_cancel or reset_epoch change"
-      ]
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
     },
     {
       "id": "FS.CROSS.PAIRED_L2_DIRTY_VICTIM",
@@ -616,6 +536,7 @@ Total output lines: 1520
     {
       "id": "FS.CROSS.HIT_UNDER_MISS_X_SNOOP",
       "feature": "Pending AXI refill \u00d7 remote M-owner snoop",
+      "scenario_id": "CR07",
       "classification": "required_legal",
       "required": true,
       "legal_preconditions": "A different-core GetS snoops a core0 M owner while core0 waits for an unrelated AXI refill.",
@@ -738,23 +659,62 @@ Total output lines: 1520
     },
     {
       "id": "FS.CROSS.STRESS_AXI_ERROR_RECOVERY",
-      "feature": "Seeded AXI RRESP error \u00d7 reset \u00d7 successful retry",
+      "feature": "CR09 AXI RRESP error \u00d7 fail-stop \u00d7 reset \u00d7 successful retry",
       "classification": "required_error",
       "required": true,
       "legal_preconditions": "A selected refill beat returns SLVERR; the DUT fail-stops and recovers only after reset.",
       "stimulus_strategy": "Seeded beat and timing selection with deterministic replay configuration.",
-      "checker": "Error address/beat/response correlation, no data success on fault, reset recovery, and independent data readback.",
+      "checker": "AXI RRESP/ID/beat correlation; no CPU completion before reset; fatal edge and reset epoch; independent post-reset reference-data check; checked overlap of refill and fail-stop lifecycles.",
       "testcases": [
-        "test_seeded_axi_read_error_beat_and_recovery"
+        "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery"
       ],
       "status": "implemented",
-      "required_monitor_event": "axi.read_beat with error response; fatal_error; system.reset_cancel or reset_epoch change; post-reset CPU response",
+      "required_monitor_event": "AXI AR/R error beat, CPU request, system fatal edge, reset assertion and post-reset CPU request/response.",
       "required_monitor_events": [
-        "axi.read_beat with error response",
-        "fatal_error",
-        "system.reset_cancel or reset_epoch change",
-        "post-reset CPU response"
-      ]
+        "axi.read_address",
+        "axi.read_beat",
+        "cpu.request_accept",
+        "system.fatal_error",
+        "system.reset_assert",
+        "cpu.response_complete"
+      ],
+      "scenario_id": "CR09",
+      "checker_testcases": [
+        "tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
+    },
+    {
+      "id": "FS.CROSS.CR03_DIRTY_L1_VICTIM_AXI_WRITEBACK_STALL",
+      "feature": "CR03 dirty L1 victim PutM \u00d7 AXI writeback address stall",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "A core holds a modified L1 line in a full same-set L1 and L2 set; a replacement miss causes PutM, live L2 victim recovery, and an AXI AW stall.",
+      "stimulus_strategy": "Seeded core direction, line data, AXI latency and W stall; construct the dirty owner and set occupancy through legal CPU stores/reads, then issue a replacement miss.",
+      "checker": "Independent CPU/backing-memory data model; L1 PutM and metadata invalidation checker; selected L2 victim association; AXI AW stall, ID, eight full-mask W beats, B response, and cycle-overlap checker.",
+      "testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l1_victim_overlaps_axi_writeback_stall"
+      ],
+      "status": "implemented",
+      "required_monitor_event": "Replacement CPU request/response, Directory PutM, L1 victim metadata invalidation, selected L2 victim, AXI AW stall, write address, eight write beats, and write response.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "cpu.response_complete",
+        "directory.request_accept",
+        "l1.metadata_commit",
+        "l2_victim.select",
+        "axi.stall",
+        "axi.write_address",
+        "axi.write_beat",
+        "axi.write_response"
+      ],
+      "scenario_id": "CR03",
+      "checker_testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l1_victim_overlaps_axi_writeback_stall"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
     },
     {
       "id": "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB",
@@ -786,6 +746,38 @@ Total output lines: 1520
       "scenario_id": "CR04",
       "checker_testcases": [
         "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
+    },
+    {
+      "id": "FS.CROSS.CR10_OWNERSHIP_PINGPONG_MMIO_APB",
+      "feature": "CR10 two ownership transfers \u00d7 peer MMIO pending \u00d7 APB Snoop counter sample",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "One core legally acquires M, the peer takes ownership, then the first core requests ownership while the peer issues a delayed MMIO read; APB samples the Snoop counter during the first transfer and the peer later takes ownership back.",
+      "stimulus_strategy": "Seeded initial owner, line/word, data and MMIO address; legal MESI CPU prelude; paired cache/MMIO request with delayed MMIO response and CPU response stall; APB read during observed Snoop; final ownership return.",
+      "checker": "Independent MESI/data and directory reference model; both Snoop/metadata transfer checks; MMIO request/response model; APB counter value; transaction identity and checked cycle-overlap proof.",
+      "testcases": [
+        "tests/full_system/test_cross_agent_directed.py::test_ownership_pingpong_overlaps_mmio_and_apb"
+      ],
+      "status": "implemented",
+      "required_monitor_event": "Two CPU ownership transactions and Directory/Snoop/metadata commits, peer MMIO request/response, and APB Snoop-count sample.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "cpu.response_complete",
+        "directory.request_accept",
+        "snoop.accept",
+        "snoop.response",
+        "l1.metadata_commit",
+        "directory.metadata_commit",
+        "mmio.request_accept",
+        "mmio.response_complete",
+        "apb.access_complete"
+      ],
+      "scenario_id": "CR10",
+      "checker_testcases": [
+        "tests/full_system/test_cross_agent_directed.py::test_ownership_pingpong_overlaps_mmio_and_apb"
       ],
       "evidence_contract": "checked_cross_v1",
       "requires_cycle_overlap": true

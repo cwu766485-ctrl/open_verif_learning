@@ -29,6 +29,7 @@ class FullSystemMonitor:
         self._axi_write_order = deque()
         self._mmio_requests = deque()
         self._reset_active = False
+        self._fatal_active = False
         # These are observation shadows, updated only by the existing commit
         # probes. They annotate transitions; they are not expected-state
         # sources for the architectural scoreboard.
@@ -188,6 +189,11 @@ class FullSystemMonitor:
                     "axi_writes": len(self._axi_writes),
                     "mmio_requests": len(self._mmio_requests),
                 }
+                # Keep reset as an explicit, traceable lifecycle event even
+                # when the failing AXI beat was the last beat and no bus
+                # transaction remains outstanding to cancel.
+                self._event("system", "reset_assert", state="asserted",
+                            payload=cancelled)
                 if any(cancelled.values()):
                     self._event("system", "reset_cancel", payload=cancelled)
                 self._axi_reads.clear()
@@ -200,10 +206,17 @@ class FullSystemMonitor:
                 self._last_directory_bitmap = 0
                 self._last_l2_fill_active = 0
                 self._last_victim_valid = 0
+                self._fatal_active = False
                 self._reset_active = True
                 self.reset_epoch += 1
             return
         self._reset_active = False
+
+        fatal_error = _bits(d.fatal_error)
+        if fatal_error and not self._fatal_active:
+            self._event("system", "fatal_error", state="asserted",
+                        payload={"protocol_error": _bits(d.protocol_error)})
+        self._fatal_active = bool(fatal_error)
 
         req_valid, req_ready = _bits(d.cpu_req_valid), _bits(d.cpu_req_ready)
         req_write, req_addr = _bits(d.cpu_req_write), _bits(d.cpu_req_addr)
