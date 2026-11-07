@@ -87,7 +87,9 @@ EVIDENCE = {
     ),
     "rtl/cluster/DualL1MesiCluster.sv": (
         "dv/blocks/dual_l1_mesi_cluster/tb/DualL1MesiCluster_tb.sv; "
-        "subsystem two-core Scoreboard; no proof of all malformed replacement states."
+        "subsystem two-core Scoreboard; tests/full_system/test_hit_under_miss_axi.py "
+        "checks pending-miss hit response address/data/ID, wrap, stall, snoop and reset. "
+        "The Python/Toffee run is separate from raw SV-top RTL coverage."
     ),
     "rtl/interconnect/CpuMmioRouter.sv": (
         "Subsystem MMIO/cache routing scenarios and top monitor; "
@@ -141,6 +143,8 @@ def feature_for(source: str, line: int, point: str = "") -> str:
     if source.endswith("MemoryRefillMshrBank.sv"):
         return "AXI read transaction ID to refill MSHR association and beat routing."
     if source.endswith("DualL1MesiCluster.sv"):
+        if 249 <= line <= 276 or 419 <= line <= 428:
+            return "Hit-under-Miss: a resident read hit bypasses the pre-refill wait window while preserving the pending miss response and unique transaction IDs."
         return "Replacement victim Put/replay and dual-core array arbitration."
     if source.endswith("CpuMmioRouter.sv"):
         return "Dual-core MMIO/cache request and response routing FSM."
@@ -155,6 +159,14 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
     This is an explicit source-range review map, not a token/keyword waiver.
     Unmapped points remain unreviewed and are not classified unreachable.
     """
+    if source.endswith("DualL1MesiCluster.sv") and (249 <= line <= 276 or 419 <= line <= 428):
+        return (
+            "Legal but deliberately constrained: only a resident read hit may bypass while the controller is sending a miss or waiting for its grant; writes, misses, active snoops, replacement, and refill cycles remain serialized.",
+            "No; this is a legal hit response path. Its transaction ID must remain distinct from the pending miss ID, including wraparound.",
+            "Not unreachable or redundant. The selected Verilator SV-top coverage runs do not execute the dedicated Python/Toffee scenario, so these source points remain OPEN in raw RTL coverage despite separate functional evidence.",
+            "Retain tests/full_system/test_hit_under_miss_axi.py as functional evidence; add an equivalent scenario to the instrumented RTL coverage top or clearly keep the raw point open. Check response address/data/ID, pending AXI refill, response stall, snoop/reset boundaries, and no stale/duplicate response.",
+            "High",
+        )
     if source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379:
         return (
             "Legal and directed: valid output can be held while corresponding ready is low.",
@@ -253,6 +265,9 @@ def has_explicit_source_range_review(source: str, line: int) -> bool:
     """
     return any((
         source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379,
+        source.endswith("DualL1MesiCluster.sv") and (
+            249 <= line <= 276 or 419 <= line <= 428
+        ),
         source.endswith("DirectoryController.sv") and 353 <= line <= 365,
         source.endswith("DirectoryController.sv") and 467 <= line <= 487,
         source.endswith("SharedLineEngine.sv") and 348 <= line <= 355,

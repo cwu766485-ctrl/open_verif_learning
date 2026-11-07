@@ -1,6 +1,7 @@
 """Single owner for both packed CPU lanes in Python subsystem tests."""
 
 from dataclasses import dataclass
+from typing import Callable
 
 from toffee import ClockCycles
 
@@ -23,6 +24,10 @@ class DualCoreCpuDriver:
 
     def __init__(self, dut):
         self.dut = dut
+        # Optional callback for sampled CPU handshakes.  The graybox monitor
+        # also observes the pins, but Toffee scheduling can make it miss an
+        # edge when this driver resumes in another scheduler group.
+        self.observation_callback = None
         self.cycle = 0
         self.latencies = {0: [], 1: []}
         self.request_stall_cycles = {0: 0, 1: 0}
@@ -50,7 +55,9 @@ class DualCoreCpuDriver:
                           core1: CpuRequest | None,
                           *, max_cycles: int = 1000,
                           response_stall_cycles: int = 0,
-                          request_delay_cycles: dict[int, int] | None = None):
+                          request_delay_cycles: dict[int, int] | None = None,
+                          request_release_predicates:
+                          dict[int, Callable[[], bool]] | None = None):
         if response_stall_cycles < 0:
             raise ValueError("response_stall_cycles must be non-negative")
         reqs = (core0, core1)
@@ -64,6 +71,19 @@ class DualCoreCpuDriver:
                for core, delay in delays.items()):
             raise ValueError("request delays must name present cores and be non-negative")
         delays = {core: delays.get(core, 0) for core in range(2)}
+        release_predicates = request_release_predicates or {}
+        if any(core not in (0, 1) or reqs[core] is None or
+               not callable(predicate)
+               for core, predicate in release_predicates.items()):
+            raise ValueError(
+                "request release predicates must name present cores and be callable"
+            )
+
+        def release_ready(core, cycle):
+            predicate = release_predicates.get(core)
+            return (delays[core] <= cycle and
+                    (predicate is None or bool(predicate())))
+
         d = self.dut
         d.cpu_resp_ready.value = 0
         d.cpu_req_addr.value = addr
@@ -71,7 +91,7 @@ class DualCoreCpuDriver:
         d.cpu_req_wmask.value = mask
         d.cpu_req_wdata.value = data
         offered = sum(1 << core for core, req in enumerate(reqs)
-                      if req is not None and delays[core] == 0)
+                      if req is not None and release_ready(core, 0))
         d.cpu_req_valid.value = offered
         accepted = 0
         accepted_at = {}
@@ -82,6 +102,7 @@ class DualCoreCpuDriver:
         stall_remaining = {}
         response_trace = []
         pending_resp_ready = 0
+        pending_response_info = {}
         seen_valid = 0
         for _ in range(max_cycles):
             await ClockCycles(d, 1)
@@ -96,6 +117,10 @@ class DualCoreCpuDriver:
                 if pending_resp_ready & bit:
                     completed |= bit
                     completed_at[core] = self.cycle
+                    if self.observation_callback is not None:
+                        self.observation_callback(
+                            "response_complete", pending_response_info[core]
+                        )
             pending_resp_ready = 0
 
             req_ready = int(d.cpu_req_ready.value)
@@ -104,6 +129,12 @@ class DualCoreCpuDriver:
                 bit = 1 << core
                 if newly & bit:
                     accepted_at[core] = self.cycle
+                    if self.observation_callback is not None:
+                        self.observation_callback("request_accept", {
+                            "core": core,
+                            "address": reqs[core].addr & 0xFFFF_FFFF,
+                            "write": int(reqs[core].write),
+                        })
                 elif ((desired & bit) and not (accepted & bit) and
                       (offered & bit)):
                     self.request_stall_cycles[core] += 1
@@ -121,6 +152,7 @@ class DualCoreCpuDriver:
             packed_data = int(d.cpu_resp_rdata.value)
             packed_addr = int(d.cpu_resp_addr.value)
             packed_write = int(d.cpu_resp_write.value)
+            packed_txn_id = int(d.cpu_resp_txn_id.value)
             for core in held_payload:
                 if not (valid & (1 << core)):
                     raise AssertionError(
@@ -155,6 +187,13 @@ class DualCoreCpuDriver:
                         continue
                 results[core] = got_data
                 ready_mask |= bit
+                pending_response_info[core] = {
+                    "core": core,
+                    "address": got_addr,
+                    "write": got_write,
+                    "data": got_data,
+                    "txn_id": (packed_txn_id >> (3 * core)) & 0x7,
+                }
                 held_payload.pop(core, None)
                 stall_remaining.pop(core, None)
             pending_resp_ready = ready_mask
@@ -162,7 +201,7 @@ class DualCoreCpuDriver:
             next_cycle = _ + 1
             offered = sum(1 << core for core, req in enumerate(reqs)
                           if req is not None and not (accepted & (1 << core))
-                          and delays[core] <= next_cycle)
+                          and release_ready(core, next_cycle))
             self.last_pair_accepted_at = dict(accepted_at)
             d.cpu_req_valid.value = offered
             d.cpu_resp_ready.value = ready_mask

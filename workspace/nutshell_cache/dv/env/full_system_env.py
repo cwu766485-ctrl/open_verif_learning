@@ -33,6 +33,7 @@ class FullSystemEnv:
         self.mmio = MmioSlaveAgent(dut, **(mmio_options or {}))
         self.apb = ApbMasterAgent(dut)
         self.monitor = FullSystemMonitor(dut)
+        self.cpu.observation_callback = self._record_cpu_agent_event
         self.axi.observation_callback = self.monitor.record_axi_event
         self.apb.observation_callback = self.monitor.record_apb_access
         self.mmio.observation_callback = self.monitor.record_mmio_event
@@ -47,6 +48,27 @@ class FullSystemEnv:
         self.trace_operations = []
         self.trace_protocol_error = None
         self.trace_fatal_error = None
+
+    def _record_cpu_agent_event(self, event_type, transaction):
+        """Preserve CPU handshakes sampled by the packed-port driver.
+
+        These callbacks complement passive pin sampling for scheduler races;
+        the monitor's record methods de-duplicate handshakes when both paths
+        observe the same edge.
+        """
+        if event_type == "request_accept":
+            self.monitor.record_cpu_request_accept(
+                transaction["core"], transaction["address"],
+                transaction["write"],
+            )
+        elif event_type == "response_complete":
+            self.monitor.record_cpu_response_complete(
+                transaction["core"], transaction["address"],
+                transaction["write"], transaction["data"],
+                transaction["txn_id"],
+            )
+        else:
+            raise ValueError(f"unsupported CPU observation {event_type!r}")
 
     def seed_word(self, addr, value):
         """Seed independent CPU-visible and backing-memory models before use."""

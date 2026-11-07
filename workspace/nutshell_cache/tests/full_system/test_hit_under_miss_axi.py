@@ -3,6 +3,11 @@
 from toffee import ClockCycles
 from toffee_test import case
 
+from dv.coverage.checked_cross_evidence import (
+    checked_overlap_proof,
+    event_reference,
+)
+
 
 CORE0 = 0x1
 CORE1 = 0x2
@@ -30,6 +35,10 @@ async def _issue_cpu0_read(env, address, *, timeout=300):
     for _ in range(timeout):
         await ClockCycles(dut, 1)
         if int(dut.cpu_req_ready.value) & CORE0:
+            # The driver sampled a real ready/valid handshake. Record it here
+            # as well because the passive pin sampler can run later on this
+            # same Toffee edge and miss a one-cycle direct drive.
+            env.monitor.record_cpu_request_accept(0, address, 0)
             dut.cpu_req_valid.value = 0
             return
     dut.cpu_req_valid.value = 0
@@ -49,7 +58,11 @@ async def _accept_cpu0_response(env, *, timeout=500):
         await ClockCycles(env.dut, 1)
         if ((int(env.dut.cpu_resp_valid.value) &
              int(env.dut.cpu_resp_ready.value)) & CORE0):
-            return _cpu0_response(env.dut)
+            response = _cpu0_response(env.dut)
+            env.monitor.record_cpu_response_complete(
+                0, response[0], response[3], response[1], response[2]
+            )
+            return response
     raise TimeoutError("core0 response did not handshake")
 
 
@@ -170,6 +183,8 @@ async def test_axi_top_snoop_completes_during_other_line_pending_miss(full_syste
     env.seed_word(miss_addr, miss_data)
     env.seed_word(owner_addr, 0x0102_0304_0506_0708)
     await env.cpu_access(0, owner_addr, write=True, data=owner_data)
+    expected_owner, owner_class = env.reference.predict(1, owner_addr)
+    assert owner_class == "remote_read_from_M"
 
     env.axi.latency = 80
     event_start = len(env.monitor.events)
@@ -183,7 +198,7 @@ async def test_axi_top_snoop_completes_during_other_line_pending_miss(full_syste
     # Core1's GetS must snoop core0's M copy even though core0's CPU miss is
     # pending on a different L2 set.
     result = await env.cpu.access(1, owner_addr)
-    assert result == owner_data
+    assert result == owner_data == expected_owner
     snoops = [event for event in env.monitor.events[event_start:]
               if event["source"] == "snoop" and
               event["event_type"] == "accept" and event.get("core") == 0 and
@@ -202,13 +217,165 @@ async def test_axi_top_snoop_completes_during_other_line_pending_miss(full_syste
                       if (item[1] & ~0x3F) == (miss_addr & ~0x3F))
     assert completion[0] == ar[0]
     assert (completion[1] & ~0x3F) == (miss_addr & ~0x3F)
+    env.reference.observe(1, owner_addr, response_data=result)
     env.reference.observe(0, miss_addr, response_data=miss_data)
+    env._check_observed_commits(owner_addr & ~0x3F, event_start)
     env._check_observed_commits(miss_addr & ~0x3F, event_start)
     assert int(env.dut.protocol_error.value) == 0
+
+    events = env.monitor.events[event_start:]
+    miss_cpu_request = next(
+        event for event in events
+        if event["source"] == "cpu" and
+        event["event_type"] == "request_accept" and
+        event["core"] == 0 and event["address"] == miss_addr
+    )
+    miss_cpu_response = next(
+        event for event in events
+        if event["source"] == "cpu" and
+        event["event_type"] == "response_complete" and
+        event["core"] == 0 and event["address"] == miss_addr
+    )
+    owner_cpu_request = next(
+        event for event in events
+        if event["source"] == "cpu" and
+        event["event_type"] == "request_accept" and
+        event["core"] == 1 and event["address"] == owner_addr
+    )
+    owner_cpu_response = next(
+        event for event in events
+        if event["source"] == "cpu" and
+        event["event_type"] == "response_complete" and
+        event["core"] == 1 and event["address"] == owner_addr
+    )
+    dir_miss_request = _directory_request(env, miss_addr)
+    ar_event = next(
+        event for event in events
+        if event["source"] == "axi" and
+        event["event_type"] == "read_address" and
+        event["txn_id"] == ar[0] and
+        event["address"] & ~0x3F == (miss_addr & ~0x3F)
+    )
+    r_beats = [
+        event for event in events
+        if event["source"] == "axi" and
+        event["event_type"] == "read_beat" and
+        event["txn_id"] == ar[0] and
+        event["address"] & ~0x3F == (miss_addr & ~0x3F)
+    ]
+    assert [event["beat"] for event in r_beats] == list(range(8))
+    assert r_beats[-1]["last"]
+    snoop_accept = next(
+        event for event in events
+        if event["source"] == "snoop" and
+        event["event_type"] == "accept" and event["core"] == 0 and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F)
+    )
+    snoop_response = next(
+        event for event in events
+        if event["source"] == "snoop" and
+        event["event_type"] == "response" and event["core"] == 0 and
+        event["txn_id"] == snoop_accept["txn_id"]
+    )
+    owner_beats = [
+        event for event in events
+        if event["source"] == "coherence" and
+        event["event_type"] == "owner_data_beat" and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F)
+    ]
+    assert [event["beat"] for event in owner_beats] == list(range(8))
+    owner_commit = next(
+        event for event in events
+        if event["source"] == "l1" and
+        event["event_type"] == "metadata_commit" and event["core"] == 0 and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F) and
+        event["old_state"] == 3 and event["new_state"] == 1
+    )
+    requester_commit = next(
+        event for event in events
+        if event["source"] == "l1" and
+        event["event_type"] == "metadata_commit" and event["core"] == 1 and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F) and
+        event["old_state"] == 0 and event["new_state"] == 1
+    )
+    owner_dir_commit = next(
+        event for event in reversed(events)
+        if event["source"] == "directory" and
+        event["event_type"] == "metadata_commit" and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F)
+    )
+    assert (miss_cpu_request["cycle"] <= snoop_accept["cycle"] <=
+            snoop_response["cycle"] <= miss_cpu_response["cycle"])
+    assert ar_event["cycle"] <= snoop_accept["cycle"]
+    assert snoop_response["cycle"] <= r_beats[-1]["cycle"]
+
+    refs = [
+        event_reference("miss_cpu_request", "pending_miss", miss_cpu_request),
+        event_reference("miss_cpu_response", "pending_miss", miss_cpu_response),
+        event_reference("miss_directory_request", "pending_miss", dir_miss_request),
+        event_reference("miss_ar", "axi_refill", ar_event),
+        event_reference("miss_rlast", "axi_refill", r_beats[-1]),
+        event_reference("owner_cpu_request", "remote_snoop", owner_cpu_request),
+        event_reference("owner_cpu_response", "remote_snoop", owner_cpu_response),
+        event_reference("snoop_accept", "remote_snoop", snoop_accept),
+        event_reference("snoop_response", "remote_snoop", snoop_response),
+        event_reference("owner_l1_commit", "remote_snoop", owner_commit),
+        event_reference("requester_l1_commit", "remote_snoop", requester_commit),
+        event_reference("owner_directory_commit", "remote_snoop", owner_dir_commit),
+    ]
+    refs.extend(
+        event_reference(f"owner_data_beat_{event['beat']}", "remote_snoop", event)
+        for event in owner_beats
+    )
+    refs.extend(
+        event_reference(f"miss_r_beat_{event['beat']}", "axi_refill", event)
+        for event in r_beats
+    )
+    owner_dir_request = next(
+        event for event in events
+        if event["source"] == "directory" and
+        event["event_type"] == "request_accept" and
+        event["address"] & ~0x3F == (owner_addr & ~0x3F)
+    )
+    refs.append(event_reference("owner_directory_request", "remote_snoop",
+                                owner_dir_request))
+    proof = checked_overlap_proof(
+        checker="Hit-under-Miss independent data/MESI/Directory checker",
+        checker_pass=True,
+        role_endpoints={
+            "pending_miss": ("miss_cpu_request", "miss_cpu_response"),
+            "axi_refill": ("miss_ar", "miss_rlast"),
+            "remote_snoop": ("snoop_accept", "snoop_response"),
+        },
+        event_refs=refs,
+        transactions=[
+            {"role": "pending_miss", "protocol": "CPU",
+             "txn_id": miss_cpu_response["txn_id"], "address": miss_addr,
+             "event_ref_ids": ["miss_cpu_request", "miss_cpu_response"]},
+            {"role": "directory_miss", "protocol": "Directory",
+             "txn_id": dir_miss_request["txn_id"],
+             "address": miss_addr & ~0x3F,
+             "event_ref_ids": ["miss_directory_request"]},
+            {"role": "axi_refill", "protocol": "AXI4-R",
+             "txn_id": ar_event["txn_id"], "address": miss_addr & ~0x3F,
+             "event_ref_ids": ["miss_ar", "miss_rlast"]},
+            {"role": "owner_gets", "protocol": "CPU",
+             "txn_id": owner_cpu_response["txn_id"], "address": owner_addr,
+             "event_ref_ids": ["owner_cpu_request", "owner_cpu_response"]},
+            {"role": "owner_snoop", "protocol": "Snoop",
+             "txn_id": snoop_accept["txn_id"], "address": owner_addr & ~0x3F,
+             "event_ref_ids": ["snoop_accept", "snoop_response"]},
+        ],
+        state_transitions=[
+            {"event_ref_id": "owner_l1_commit", "old_state": 3, "new_state": 1},
+            {"event_ref_id": "requester_l1_commit", "old_state": 0, "new_state": 1},
+            {"event_ref_id": "owner_directory_commit", "state": 1},
+        ],
+    )
     env.coverage.sample_checked_event("FS.HIT_UNDER_MISS.SNOOP_PROGRESS",
                                       checked=True)
     env.coverage.sample_checked_cross("FS.CROSS.HIT_UNDER_MISS_X_SNOOP",
-                                      checked=True)
+                                      checked=True, evidence=proof)
 
 
 @case

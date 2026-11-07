@@ -1,27 +1,13 @@
 # Verification Sign-off Status
 
-**Status: OPEN for final sign-off; local DE/DV regression candidate passes.**
+**Status: OPEN — not a release sign-off.** This file is the current coverage-closure status view; consult the per-run raw reports and CI for test results.
 
-On candidate `fd6ca87a2418ab9cae737b2b73dead6ca5dd5ef5`, the following local gates
-passed after `source scripts/env.sh`:
-
-- `make COHERENCE_JOBS=2 coherence_verify`
-- `make COHERENCE_JOBS=2 coherence_full_system_verify`
-- `make COHERENCE_JOBS=2 coherence_hit_under_miss`
-- `make COHERENCE_JOBS=2 coherence_full_system_stress`
-- `make COHERENCE_JOBS=2 coherence_coverage_audit`
-
-Integrated feature coverage is 53/53 Required and 29/29 Required Cross. The
-separate Python coherence plan remains 49/49 and 19/19. Four-agent stress
-completed 260/260 seed environments with zero final protocol/fatal errors.
-Details and testcase/checker evidence are in
-[`de_dv_next_phase_signoff.md`](de_dv_next_phase_signoff.md).
-
-Raw RTL coverage is not closed: the full subsystem dataset has 155 uncovered
-lines, 95 branches, 24 FSM states and 41 arcs; point-by-point review is
-incomplete. No waivers are approved. Therefore this is not a release or final
-RTL/DV sign-off, and no RTL v2 branch is created.
-
-The candidate's remote GitHub Actions status is not inferred from the historical
-baseline. Check status for the exact pushed candidate commit. This sign-off
-excludes PPA, STA, physical SRAM macros and chip-level implementation.
+Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c`.
+Dataset-scoped zero-count RTL points: 1026.
+Approved coverage waivers: 0.
+Reviewed/eligible RTL coverage: not computed; point-by-checker review is incomplete.
+Final full regression status: PASS.
+Local source scripts/env.sh && make COHERENCE_JOBS=2 coherence_verify result: PASS at source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c` (2026-11-07T19:45:28+08:00); log: `/tmp/nutshell_coherence_verify_phase3.log`.
+Remote CI status is recorded in the phase execution report and must be checked against the published PR head; this local report generator does not query GitHub.
+PPA, STA, real SRAM macro implementation, and chip-level physical implementation are excluded.

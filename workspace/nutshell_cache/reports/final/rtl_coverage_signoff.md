@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-04 11:20 +08.
+Generated: 2026-11-07 19:51 +08.
 
 ## Scope and source manifest
 
@@ -37,12 +37,13 @@ The detailed `coverage_closure_matrix.csv` contains **1026 dataset-scoped zero-c
 | FSM arc | 41 |
 
 The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.
+All 1026 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
 
 ## Functional coverage and checker status
 
-Functional coverage closure artifact: 49/49 required bins (49 total records).
-Cross coverage closure artifact: 19/19 required bins (19 total records).
-These are the latest existing closure JSON observations, not newly rerun closure from this report generator. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
+Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c`.
+These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
 
@@ -59,19 +60,7 @@ These are the latest existing closure JSON observations, not newly rerun closure
 
 ## Regression evidence and remaining status
 
-No final-candidate full-regression status file is present.
+Local source scripts/env.sh && make COHERENCE_JOBS=2 coherence_verify result: PASS at source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c` (2026-11-07T19:45:28+08:00); log: `/tmp/nutshell_coherence_verify_phase3.log`.
 This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
 
 **Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.
-
-## DE/DV next-phase regression evidence
-
-The 2026-11-04 regression candidate passed `coherence_verify`,
-`coherence_full_system_verify`, `coherence_hit_under_miss`,
-`coherence_full_system_stress`, and `coherence_coverage_audit`. Integrated
-Python coverage is 53/53 Required and 29/29 Cross; H-u-M and paired-miss tests
-are checked in the full-system feature report. These functional results do
-not close the raw RTL points above because the Python/Toffee instrumented build
-does not emit compatible Verilator source-coverage points. See
-[`de_dv_next_phase_signoff.md`](de_dv_next_phase_signoff.md) for the exact
-scenario and stress evidence. Raw coverage sign-off remains OPEN.

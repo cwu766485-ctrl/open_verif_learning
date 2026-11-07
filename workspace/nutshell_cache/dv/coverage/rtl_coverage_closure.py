@@ -29,6 +29,9 @@ RUN_STATUS = ROOT / "reports/closure/coherence_verify_final.status"
 EXTRA_FIELDS = [
     "disposition", "closure_status", "resolution_evidence", "remaining_action",
 ]
+VALID_CLOSURE_STATUSES = {
+    "OPEN", "COVERED", "PROVEN_UNREACHABLE", "REVIEWED_WAIVER", "BLOCKED",
+}
 
 
 def disposition(action: str) -> str:
@@ -77,6 +80,17 @@ def functional_counts() -> tuple[str, str]:
     return count("functional_coverage"), count("cross_coverage")
 
 
+def full_system_counts() -> tuple[str, str, str]:
+    """Read the checked full-system artifact without mixing it with Python bins."""
+    path = ROOT / "reports/full_system/full_system_coverage_closure.json"
+    if not path.is_file():
+        return "not available", "not available", "source SHA unavailable"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    functional = f"{data.get('required_bins_passed', 0)}/{data.get('required_bins_total', 0)}"
+    cross = f"{data.get('required_cross_bins_passed', 0)}/{data.get('required_cross_bins_total', 0)}"
+    return functional, cross, data.get("git_sha", "source SHA unavailable")
+
+
 def full_regression_status() -> tuple[str, str]:
     """Read an explicit exit-status record written by the make invocation."""
     if not RUN_STATUS.is_file():
@@ -102,9 +116,14 @@ def main() -> None:
     for source_row in raw_rows:
         row = dict(source_row)
         row["disposition"] = disposition(row["recommended_action"])
-        row["closure_status"] = "OPEN_DATASET_MISS"
+        # A zero-count raw point is an open obligation in this dataset. A hit
+        # in another elaborated top is retained as provenance, never promoted
+        # to COVERED here. Other statuses require explicit reviewed evidence.
+        row["closure_status"] = "OPEN"
         row["resolution_evidence"] = row["separate_raw_dataset_evidence"]
         row["remaining_action"] = row["recommended_action"]
+        if row["closure_status"] not in VALID_CLOSURE_STATUSES:
+            raise AssertionError(f"invalid closure status for {row['point_id']}: {row['closure_status']}")
         rows.append(row)
 
     with MATRIX.open("w", newline="", encoding="utf-8") as stream:
@@ -120,6 +139,7 @@ def main() -> None:
 
     metrics = current_raw_metrics()
     func, cross = functional_counts()
+    full_func, full_cross, full_system_sha = full_system_counts()
     per_dataset = Counter(row["raw_dataset"] for row in rows)
     primary = "Full coherent subsystem regression"
     primary_misses = Counter(
@@ -158,11 +178,12 @@ def main() -> None:
     for metric in ("LCOV RTL line", "Verilator branch", "FSM state", "FSM arc"):
         report.append(f"| {metric} | {primary_misses[metric]} |")
     report += [
-        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.", "",
+        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.",
+        f"All {len(rows)} zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are {', '.join(sorted(VALID_CLOSURE_STATUSES))}; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.", "",
         "## Functional coverage and checker status", "",
-        f"Functional coverage closure artifact: {func}.",
-        f"Cross coverage closure artifact: {cross}.",
-        "These are the latest existing closure JSON observations, not newly rerun closure from this report generator. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.", "",
+        f"Python/Toffee coherence closure: functional {func}; cross {cross}.",
+        f"Full-system checked closure artifact: functional {full_func}; cross {full_cross}; source SHA `{full_system_sha}`.",
+        "These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.", "",
         "## Reviewed / eligible coverage", "",
         "**Reviewed/eligible percentages are not yet computable.** The raw points still need point-level review against the independent checker and the intended coverage obligation. The CSV preserves all zero-count points without marking them waived, unreachable, or redundant. Eligible Coverage must only be computed after that review; therefore there is no supported 100% closure claim yet.", "",
         "## Tool and scope limits", "",
@@ -182,14 +203,14 @@ def main() -> None:
     verification = [
         "# Verification Sign-off Status", "",
         "**Status: OPEN — not a release sign-off.** This file is the current coverage-closure status view; consult the per-run raw reports and CI for test results.", "",
-        f"Functional closure (existing artifact): {func}.",
-        f"Cross closure (existing artifact): {cross}.",
+        f"Python/Toffee coherence closure: functional {func}; cross {cross}.",
+        f"Full-system checked closure artifact: functional {full_func}; cross {full_cross}; source SHA `{full_system_sha}`.",
         f"Dataset-scoped zero-count RTL points: {len(rows)}.",
         "Approved coverage waivers: 0.",
         "Reviewed/eligible RTL coverage: not computed; point-by-checker review is incomplete.",
         f"Final full regression status: {run_result}.",
         run_summary,
-        "Remote CI on the current local candidate: not verified; local branch contains commits not present on origin and shell push authentication was unavailable at the last attempt.",
+        "Remote CI status is recorded in the phase execution report and must be checked against the published PR head; this local report generator does not query GitHub.",
         "PPA, STA, real SRAM macro implementation, and chip-level physical implementation are excluded.", "",
     ]
     VERIFY_REPORT.write_text("\n".join(verification), encoding="utf-8")

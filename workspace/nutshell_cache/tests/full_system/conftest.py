@@ -1,6 +1,10 @@
 """Picker fixture for the full AXI-integrated MESI cache top."""
 
 import json
+import importlib.metadata
+import os
+import platform
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -30,6 +34,27 @@ def _json_safe(value):
     return repr(value)
 
 
+def _tool_versions():
+    """Capture versions that affect a saved full-system result."""
+    versions = {"python": platform.python_version()}
+    for distribution in ("pytest", "toffee", "picker-py", "verilator"):
+        try:
+            versions[distribution] = importlib.metadata.version(distribution)
+        except importlib.metadata.PackageNotFoundError:
+            versions[distribution] = "not-installed-as-python-package"
+    for executable, args in (("verilator", ["--version"]),
+                             ("picker", ["--version"])):
+        path = shutil.which(executable)
+        if not path:
+            versions[executable] = "not-found-in-PATH"
+            continue
+        result = subprocess.run([path, *args], check=False, capture_output=True,
+                                text=True, timeout=5)
+        output = (result.stdout or result.stderr).strip().splitlines()
+        versions[executable] = output[0] if output else f"exit-{result.returncode}"
+    return versions
+
+
 def pytest_configure(config):
     config._full_system_envs = []
 
@@ -38,7 +63,10 @@ def pytest_sessionfinish(session, exitstatus):
     envs = getattr(session.config, "_full_system_envs", [])
     if not envs:
         return
-    output = Path("reports/full_system/full_system_coverage.json")
+    output = Path(os.environ.get(
+        "FULL_SYSTEM_COVERAGE_OUTPUT",
+        "reports/full_system/full_system_coverage.json",
+    ))
     output.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": 1,
@@ -95,18 +123,25 @@ def pytest_sessionfinish(session, exitstatus):
             },
         } for env in envs],
     }
-    output.write_text(json.dumps(_json_safe(payload), indent=2) + "\n",
-                      encoding="utf-8")
     repo = Path(__file__).resolve().parents[3]
     revision = subprocess.run(
         ["git", "-C", str(repo), "rev-parse", "HEAD"],
         check=False, capture_output=True, text=True,
     ).stdout.strip() or "unknown"
-    trace = Path("reports/full_system/full_system_trace.jsonl")
+    versions = _tool_versions()
+    payload["git_sha"] = revision
+    payload["tool_versions"] = versions
+    output.write_text(json.dumps(_json_safe(payload), indent=2) + "\n",
+                      encoding="utf-8")
+    trace = Path(os.environ.get(
+        "FULL_SYSTEM_TRACE_OUTPUT",
+        "reports/full_system/full_system_trace.jsonl",
+    ))
     with trace.open("w", encoding="utf-8") as stream:
         for env in envs:
             metadata = {
                 "record_type": "run", "git_sha": revision,
+                "tool_versions": versions,
                 "test_id": env.trace_test_id,
                 "scenario_id": env.trace_scenario_id,
                 "seed": env.trace_seed,
@@ -123,6 +158,7 @@ def pytest_sessionfinish(session, exitstatus):
                 ),
                 "test_status": env.trace_test_status,
                 "failure_context": env.trace_failure_context,
+                "generated_operations": env.trace_operations,
                 "initial_backing_memory": {
                     f"0x{address:08x}": f"0x{value:016x}"
                     for address, value in sorted(env.axi.seeded_words.items())
@@ -183,6 +219,7 @@ async def full_system_env(toffee_request: ToffeeRequest, pytestconfig, request):
         env = FullSystemEnv(dut, axi_options=axi_options,
                             mmio_options=mmio_options)
         env.trace_test_id = request.node.nodeid
+        env.coverage.set_testcase(request.node.nodeid)
         env.trace_seed = seed
         env.trace_scenario_id = request.node.name.split("[", 1)[0]
         env.trace_config = {

@@ -126,6 +126,8 @@ jobs:
         run: make -C workspace/nutshell_cache COHERENCE_JOBS=1 coherence_verify
       - name: Run integrated Python full-system coverage regression
         run: make -C workspace/nutshell_cache coherence_full_system_coverage
+      - name: Enforce strict checked-cross evidence contract
+        run: make -C workspace/nutshell_cache coherence_full_system_evidence_gate
       - name: Upload coherence verification logs
         if: always()
         uses: actions/upload-artifact@v7

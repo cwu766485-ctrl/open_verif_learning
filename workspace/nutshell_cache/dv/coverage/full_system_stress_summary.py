@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW = ROOT / "reports/full_system/full_system_coverage.json"
+RAW = ROOT / "reports/full_system/stress/full_system_coverage.json"
 CSV_OUT = ROOT / "reports/full_system/stress_seed_summary.csv"
 MD_OUT = ROOT / "reports/full_system/stress_campaign_summary.md"
 
@@ -189,8 +189,8 @@ def render() -> tuple[list[dict[str, object]], str]:
         "",
         "- The CSV stores the exact test ID, seed, configuration, and a one-seed command for each run.",
         "- AXI error campaign counts are deliberate injected SLVERR events; each seed passes only after the DUT suppresses successful data, resets, and returns the independently expected data on retry. The final-fatal column is sampled after recovery.",
-        "- For future failures, `conftest.py` captures the generated operation prefix and failure context in `full_system_coverage.json` and cycle/event data in `full_system_trace.jsonl`; the replay target accepts a saved trace/test ID. No trace minimizer is implemented yet.",
-        "- The raw JSON is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.",
+        "- `conftest.py` captures generated operations, failure context, and cycle/event data; the replay target accepts a saved trace/test ID. `dv.sequences.trace_minimizer` provides an order-preserving delta-debugging primitive that requires a caller-supplied replay predicate and retains marked legal preludes. It is not yet wired to automatic simulator replay; no failing seed occurred in this campaign, so no real DUT failure trace was minimized.",
+        "- The stress raw JSON is separate from the sign-off coverage dataset. It is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.",
         "",
     ]
     return rows, "\n".join(lines)
