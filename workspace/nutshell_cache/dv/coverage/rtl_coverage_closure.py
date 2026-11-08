@@ -25,6 +25,7 @@ WAIVERS = OUT / "coverage_waivers.json"
 RTL_REPORT = OUT / "rtl_coverage_signoff.md"
 VERIFY_REPORT = OUT / "verification_signoff.md"
 RUN_STATUS = ROOT / "reports/closure/coherence_verify_final.status"
+RUN_MANIFEST = OUT / "verification_run_manifest.json"
 
 EXTRA_FIELDS = [
     "disposition", "closure_status", "resolution_evidence", "remaining_action",
@@ -108,6 +109,16 @@ def full_regression_status() -> tuple[str, str]:
     return result, summary
 
 
+def regression_gate_rows() -> list[dict[str, str]]:
+    if not RUN_MANIFEST.is_file():
+        return []
+    try:
+        data = json.loads(RUN_MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return data.get("required_gates", [])
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     raw_rows = gaps.build_rows()
@@ -170,6 +181,7 @@ def main() -> None:
         report.append(f"| {name} | {fmt('line')} | {fmt('branch')} | {fmt('toggle')} | {fmt('fsm_state')} | {fmt('fsm_arc')} |")
 
     run_result, run_summary = full_regression_status()
+    gate_rows = regression_gate_rows()
     report += [
         "", "## Gap inventory", "",
         f"The detailed `coverage_closure_matrix.csv` contains **{len(rows)} dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.", "",
@@ -196,6 +208,7 @@ def main() -> None:
         "## Regression evidence and remaining status", "",
         run_summary,
         "This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.", "",
+        "Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.", "",
         "**Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.", "",
     ]
     RTL_REPORT.write_text("\n".join(report), encoding="utf-8")
@@ -210,7 +223,8 @@ def main() -> None:
         "Reviewed/eligible RTL coverage: not computed; point-by-checker review is incomplete.",
         f"Final full regression status: {run_result}.",
         run_summary,
-        "Remote CI status is recorded in the phase execution report and must be checked against the published PR head; this local report generator does not query GitHub.",
+        "Required gate summary: " + (", ".join(f"`{row.get('target', 'unknown')}` {row.get('status', 'UNKNOWN')}" for row in gate_rows) if gate_rows else "not recorded in the machine-readable run manifest."),
+        "Candidate remote CI must be checked against the published PR head; see the final verification report for the SHA-scoped GitHub Actions link. This local report generator does not query GitHub.",
         "PPA, STA, real SRAM macro implementation, and chip-level physical implementation are excluded.", "",
     ]
     VERIFY_REPORT.write_text("\n".join(verification), encoding="utf-8")

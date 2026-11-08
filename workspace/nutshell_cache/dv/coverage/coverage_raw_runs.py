@@ -16,7 +16,7 @@ DATASETS = {
     "Full coherent subsystem regression": (
         ROOT / "reports/coherence/coverage.dat",
         ROOT / "reports/coherence/coverage.info",
-        "Main subsystem smoke, multisnoop, five seeded regressions and Directory MSHR regression; one common elaboration and coverage definition.",
+        "Main subsystem smoke, multisnoop and five seeded regressions, all from one common subsystem elaboration and coverage definition. The standalone Directory MSHR regression is a separate dataset and is not included here.",
     ),
     "AXI cache subsystem E2E (five fixed seeds)": (
         ROOT / "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",

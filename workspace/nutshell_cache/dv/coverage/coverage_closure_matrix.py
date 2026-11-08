@@ -163,8 +163,8 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
         return (
             "Legal but deliberately constrained: only a resident read hit may bypass while the controller is sending a miss or waiting for its grant; writes, misses, active snoops, replacement, and refill cycles remain serialized.",
             "No; this is a legal hit response path. Its transaction ID must remain distinct from the pending miss ID, including wraparound.",
-            "Not unreachable or redundant. The selected Verilator SV-top coverage runs do not execute the dedicated Python/Toffee scenario, so these source points remain OPEN in raw RTL coverage despite separate functional evidence.",
-            "Retain tests/full_system/test_hit_under_miss_axi.py as functional evidence; add an equivalent scenario to the instrumented RTL coverage top or clearly keep the raw point open. Check response address/data/ID, pending AXI refill, response stall, snoop/reset boundaries, and no stale/duplicate response.",
+            "Not unreachable or redundant. The instrumented CoherentCacheSubsystem_tb now executes a legal resident-hit-under-pending-miss sequence. This point remains OPEN only when its count is zero in this particular raw dataset; a hit in another elaborated top is recorded separately.",
+            "Same-top raw stimulus is in dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh and checks a pending cold miss, resident hit data/response, distinct transaction IDs, three-cycle response backpressure, and later miss completion. Full AXI Python tests separately cover ID wrap, remote snoop and reset. Keep each zero-count point OPEN until its exact LCOV/branch/FSM row is hit or independently dispositioned.",
             "High",
         )
     if source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379:

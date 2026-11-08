@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-07 19:51 +08.
+Generated: 2026-11-08 14:48 +08.
 
 ## Scope and source manifest
 
@@ -16,7 +16,7 @@ Each row is one top/build and its documented run set. These denominators are not
 
 | Dataset | Line hit/total | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Full coherent subsystem regression | 843/998 | 461/556 | 19980/27474 | 30/54 | 7/48 |
+| Full coherent subsystem regression | 850/998 | 468/556 | 19996/27474 | 30/54 | 7/48 |
 | AXI cache subsystem E2E (five fixed seeds) | 901/1074 | 509/632 | 15623/32332 | 30/54 | 4/48 |
 | DirectoryController block | 117/188 | 30/42 | 236/612 | 9/10 | 2/9 |
 | DirectoryMshrBank block | 167/292 | 100/128 | 1063/2904 | 31/40 | 11/36 |
@@ -27,22 +27,22 @@ Each row is one top/build and its documented run set. These denominators are not
 
 ## Gap inventory
 
-The detailed `coverage_closure_matrix.csv` contains **1026 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
+The detailed `coverage_closure_matrix.csv` contains **1012 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
 
 | Primary subsystem gap type | Unhit points |
 | --- | ---: |
-| LCOV RTL line | 155 |
-| Verilator branch | 95 |
+| LCOV RTL line | 148 |
+| Verilator branch | 88 |
 | FSM state | 24 |
 | FSM arc | 41 |
 
 The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.
-All 1026 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
+All 1012 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
 
 ## Functional coverage and checker status
 
 Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
-Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c`.
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `92d6373cf1bb25e3efe8a82bba9c6dde162de5e9`.
 These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
@@ -60,7 +60,9 @@ These are separate coverage plans and are not added together. Full-system counts
 
 ## Regression evidence and remaining status
 
-Local source scripts/env.sh && make COHERENCE_JOBS=2 coherence_verify result: PASS at source SHA `e4eb73cb8040559f6880e7299c511213f43a7d4c` (2026-11-07T19:45:28+08:00); log: `/tmp/nutshell_coherence_verify_phase3.log`.
+Local source scripts/env.sh && make COHERENCE_JOBS=2 coherence_verify result: PASS at source SHA `92d6373cf1bb25e3efe8a82bba9c6dde162de5e9` (2026-11-08T14:05:48+08:00); log: `/tmp/nutshell_full_system_verify.log`.
 This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
+
+Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.
 
 **Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.

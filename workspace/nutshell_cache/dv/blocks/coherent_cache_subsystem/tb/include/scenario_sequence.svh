@@ -72,6 +72,7 @@
     benchmark_model_accept_miss_count = 0;
     benchmark_rtl_hit_count = 0;
     benchmark_rtl_miss_count = 0;
+    benchmark_measure_enable = 1'b1;
     for (integer core = 0; core < 2; core = core + 1) begin
       benchmark_accept_pending[core] = 1'b0;
       benchmark_accept_write[core] = 1'b0;
@@ -144,6 +145,8 @@
 `include "include/l2_multisnoop_victim.svh"
 
 `include "include/backpressure_cases.svh"
+
+`include "include/hit_under_miss_coverage.svh"
 
 `include "include/mesi_and_concurrency_cases.svh"
 

@@ -84,3 +84,7 @@ reports/final/*
 !reports/final/*.md
 !reports/final/*.py
 !reports/final/*.pdf
+!reports/final/verification_run_manifest.json
+!reports/full_system/
+!reports/full_system/replay_closure/
+!reports/full_system/replay_closure/controlled_checker_failure.json

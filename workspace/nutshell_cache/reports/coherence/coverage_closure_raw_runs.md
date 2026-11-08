@@ -6,23 +6,23 @@ Coverage ratios are raw observations, not signoff closure by themselves. Functio
 
 ## Full coherent subsystem regression
 
-Main subsystem smoke, multisnoop, five seeded regressions and Directory MSHR regression; one common elaboration and coverage definition.
+Main subsystem smoke, multisnoop and five seeded regressions, all from one common subsystem elaboration and coverage definition. The standalone Directory MSHR regression is a separate dataset and is not included here.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 843/998 | 155 |
-| branch | 461/556 | 95 |
-| toggle | 19980/27474 | 7494 |
+| line | 850/998 | 148 |
+| branch | 468/556 | 88 |
+| toggle | 19996/27474 | 7478 |
 | fsm_state | 30/54 | 24 |
 | fsm_arc | 7/48 | 41 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 65/82 | 5130/6796 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 72/82 | 5162/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 468/648 | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 114/188 | 29/42 | 497/612 | 18/40 | 4/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 863/2292 | N/A | N/A |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 847/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 276/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 183/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1517/1872 | N/A | N/A |

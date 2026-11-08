@@ -1,37 +1,86 @@
-# Unresolved Full-System Verification Gaps
+# Unresolved Full-System and RTL Verification Gaps
 
-Status snapshot: 2026-11-07 (Asia/Singapore)
-Tested source SHA: `e4eb73cb8040559f6880e7299c511213f43a7d4c`
-Decision: **OPEN — candidate evidence is not final sign-off**
+Status snapshot: 2026-11-08 (Asia/Singapore). Functional regression and raw
+coverage were generated from source SHA
+`92d6373cf1bb25e3efe8a82bba9c6dde162de5e9`. Decision: **OPEN**; this evidence
+does not constitute complete RTL sign-off.
 
-See [`docs/dv/closure_phase2_1_phase3_execution_2026-11-07.md`](../../docs/dv/closure_phase2_1_phase3_execution_2026-11-07.md) for commands, source provenance, checked evidence, and the detailed CR01–CR10 matrix.
+## Cross-agent coverage
 
-## Cross-agent scenarios
+CR01–CR10 each have at least one evidence-backed checked instance in the
+full-system checked coverage artifact. The scenario table and remaining
+variation are in
+[`docs/dv/verification_traceability_matrix.md`](../../docs/dv/verification_traceability_matrix.md).
+Those checked instances do not exhaust core direction, address/set, stall,
+response order, error beat and reset-phase combinations. The untested breadth
+remains open; no scenario family is removed from the plan.
 
-The generated full-system artifact contains passing checked instances for CR01–CR10. Each closure row requires its planned monitor events, transaction references, overlap window, and independent checker PASS. This means the particular recorded scenario instances are verified; it does not close every randomized Core/address/data/stall combination.
+The full-system closure artifact records 53/53 Required Functional bins and
+35/35 Required Cross bins, with testcase, monitor, overlap and checker evidence.
+These are Python/Toffee checks and do not replace RTL source coverage.
 
-| Scenario | Evidence | Remaining scope |
-| --- | --- | --- |
-| CR01 Owner transfer × refill × APB | Strict overlap at cycle 163, four correlated transactions, checker PASS. | Directed instance has no recorded seed; randomized address and stall breadth OPEN. |
-| CR02 Shared upgrade × MMIO pending | Seed 49154, cycle 90–92 overlap, checker PASS. | Broader variation OPEN. |
-| CR03 Dirty L1 victim × AXI writeback stall | Seeds 49155, 49411; overlap, PutM/victim and AXI AW/W/B checked. | Broader variation OPEN. |
-| CR04 Dirty L2 victim × snoop × APB | Seeds 49156, 49412; three-way event relationship checked. | Broader variation OPEN. |
-| CR05 Same-set Directory conflict × AXI stall | Seeds 49413, 49415; conflict/AR stall/refill correlated. | Broader variation OPEN. |
-| CR06 Dual cold miss × OoO AXI R × APB | Seed 49158; paired MSHR/refill lifecycle and reversed first-two R order checked. | One seeded directed instance; repeated ordering/stall variation OPEN. |
-| CR07 Hit-under-miss × remote snoop | Strict overlap cycles 67–78, five transactions and checker PASS. | Directed instance has no recorded seed; randomized address/stall breadth OPEN. |
-| CR08 Reset × Directory/snoop pending | Seeds 59248–59251; pending-upgrade/snoop overlap and recovery checked. | Other reset phases OPEN. |
-| CR09 AXI error × fail-stop × reset | Seeds 59248–59251; error/recovery overlap and post-reset behavior checked. | Additional error/channel combinations OPEN. |
-| CR10 Ownership ping-pong × MMIO/APB | Seeds 49168, 49424; ownership/MMIO/APB checker PASS. | Broader variation OPEN. |
+## Raw RTL coverage gaps
 
-## Raw RTL coverage
+The primary `CoherentCacheSubsystem_tb` Verilator dataset is:
 
-The primary subsystem raw Verilator dataset remains 843/998 line, 461/556 branch, 19980/27474 toggle, 30/54 FSM state, and 7/48 FSM arc hits. The closure matrix has 1,026 dataset-scoped zero-count records, all OPEN; zero waivers are approved. Independent AXI and block-top denominators remain separate. Python functional coverage does not substitute for source-instrumented RTL coverage.
+| Metric | Hit / total | Unhit |
+| --- | ---: | ---: |
+| Executable line | 850 / 998 | 148 |
+| Branch | 468 / 556 | 88 |
+| Toggle | 19,996 / 27,474 | 7,478 |
+| Extracted FSM state | 30 / 54 | 24 |
+| Extracted FSM arc | 7 / 48 | 41 |
 
-The Python Hit-under-Miss/AXI-top tests pass, but their elaborated coverage dataset is separate from the primary subsystem LCOV session. Their functional result does not close the subsystem raw line/branch points.
+The detailed matrix contains 1,012 dataset-scoped zero-count records across
+the primary subsystem, AXI subsystem and independent Block elaborations. All
+remain **OPEN**, and no waiver is approved. A hit in another elaborated top is
+kept as separate evidence and does not close the zero count in this dataset.
 
-## Replay and remaining risk
+The subsystem SV testbench now includes a Hit-under-Miss scenario. Its raw run
+hits the corresponding `DualL1MesiCluster.sv` source lines 419–422 and 425–427.
+The AXI wrapper tests separately check transaction-ID wrap, remote Snoop and
+reset. Individual zero-count branch, line, state or arc points remain open;
+the previous statement that the coverage top had no Hit-under-Miss stimulus is
+obsolete and has been corrected in the generated matrix.
 
-- The requested 280-case full-system stress campaign passes without a DUT failure seed. A controlled injected checker mismatch independently proves failure capture, same-seed replay, and operation-level reduction from five operations to a legal owner-store prelude plus remote-owner-read trigger.
-- The minimizer preserves operation order and legal prelude; it is not a general cycle-by-cycle interleaving minimizer.
-- Local full regressions pass on source SHA `e4eb73c`. GitHub Actions was still running on the pre-refresh PR head at the time of the report; remote CI must pass on the published candidate.
-- No unbounded whole-system formal proof is claimed. 2-entry L1 MSHR and PPA/STA/physical SRAM sign-off are outside this phase.
+Coverage denominators are specific to each top and metric. The 18-source RTL
+manifest is reported separately from files with no executable points in a
+particular elaboration. Python/Toffee coverage is not merged with Verilator
+LCOV or native branch/FSM data. See
+[`coverage_provenance.md`](../coherence/coverage_provenance.md) and
+[`coverage_closure_matrix.csv`](../final/coverage_closure_matrix.csv).
+
+## Regression and replay scope
+
+- `coherence_verify`, full-system verification, Hit-under-Miss, cross closure,
+  280-environment stress, seven-top coverage audit, evidence gate and replay
+  closure passed locally at source SHA `92d6373...`; exact commands and counts
+  are in [`docs/dv/final_verification_report.md`](../../docs/dv/final_verification_report.md)
+  and [`verification_run_manifest.json`](../final/verification_run_manifest.json).
+- Full-system pytest: 70 passed, one skipped. The skip is a saved-trace replay
+  test with no saved DUT failure trace; a separate controlled checker-failure
+  replay test passed.
+- Seed 61857 injected a checker expected-data mismatch, reproduced the same
+  failure signature, and reduced the operation list from five to two while
+  preserving the legal M-owner prelude. This is operation-level replay and
+  minimization, not cycle-by-cycle interleaving minimization.
+- Formal proofs are component-level/bounded as listed in the final report; no
+  unbounded whole-system proof is claimed. Mutation and checker fault
+  sensitivity results are preserved as their own evidence.
+
+## Remaining sign-off limitations
+
+1. The 1,012 raw zero-count records need point-by-point evidence review and
+   disposition. Legal recovery paths, error/defensive paths, and FSM arcs must
+   not be waived from source text alone.
+2. CR01–CR10 have checked representative instances, but not exhaustive
+   constrained variation over all listed dimensions.
+3. The CPU wrapper does not specify arbitrary multi-request response ordering;
+   only the tested resident-hit bypass relative to a different pending miss is
+   claimed.
+4. 2-entry L1 MSHR, PPA, STA, physical SRAM macros and chip-level physical
+   implementation are outside this v1.1 closure scope.
+5. The latest available GitHub Actions result was for the earlier PR head
+   `69d30aee6999c5a85c906ae6547b6f3872a0f474`. The report-only candidate must
+   be pushed and its own CI checked before it can be called a release
+   candidate. No merge or release tag is claimed here.

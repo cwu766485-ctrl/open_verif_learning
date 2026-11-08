@@ -82,13 +82,22 @@ check actual observed handshakes before crediting bins.
 
 ## Coverage scope and limits
 
-The latest local sign-off run counts 38/38 implemented Required bins and 10/10
-implemented Required crosses. This is Python
-functional/cross coverage; it is separate from Verilator RTL
-line/branch/toggle/FSM coverage and must not be added to it. Optional/planned
-entries such as four concurrent CPU misses and integrated AXI B response
-reordering are not counted. Four-context MSHR activity is checked at the
-DirectoryMshrBank block; multi-ID B reordering is checked at the AXI adapter.
+The current verification snapshot reports 53/53 Required Functional and 35/35
+Required Cross bins in the full-system checked plan. The separate Python
+coherence block plan reports 49/49 functional and 19/19 cross bins. These
+plans are distinct from each other and from Verilator RTL
+line/branch/toggle/FSM coverage; their counts must not be added. The detailed
+source SHA, gate results, raw RTL datasets and remaining gaps are maintained
+in [`final_verification_report.md`](final_verification_report.md) and the
+[`machine-readable run manifest`](../../reports/final/verification_run_manifest.json).
+
+The stress tier currently runs 280 environments across CPU-random,
+CPU/MMIO/APB/AXI mixed traffic, resource-aware snoop/refill, reset, injected
+AXI error and reset-with-directory/snoop-pending campaigns. Optional/planned
+entries such as four concurrent CPU misses remain outside the top-level
+blocking CPU contract. Four-context MSHR activity is checked at the
+DirectoryMshrBank block; multi-ID B response behavior is checked at the AXI
+adapter.
 
 Still open are broad combinations of channel-specific backpressure, APB
 counter overflow/saturation, exhaustive L2 victim state/core combinations,

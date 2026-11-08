@@ -1,64 +1,73 @@
 # Full-System Verification Traceability
 
-This matrix distinguishes integrated-top evidence from block-only evidence.
-A feature/cross bin is credited only after the listed independent checker has
-passed; Verilator RTL source coverage is reported separately and is never
-added to Python functional coverage.
+This matrix records evidence from the integrated Python/Toffee environment and
+keeps it separate from raw Verilator RTL coverage. A checked functional or
+cross bin requires observed monitor events and an independent checker pass.
+
+Evidence baseline: source SHA `92d6373cf1bb25e3efe8a82bba9c6dde162de5e9`,
+local regression snapshot 2026-11-08. The report-only candidate commit and its
+GitHub Actions status are recorded separately in
+[`final_verification_report.md`](final_verification_report.md).
+
+## CR01–CR10 checked scenario instances
+
+| ID | Scenario | Checked evidence | Status and remaining scope |
+| --- | --- | --- | --- |
+| CR01 | Dirty owner transfer × independent refill × APB | Directed overlap at cycle 163, four correlated transactions, independent MESI/data/Directory/MSHR and APB count checks; also exercised by mixed-agent seeds. | **Verified instance**; randomized address/stall breadth remains open. |
+| CR02 | Shared upgrade × MMIO pending | Seed 49154, checked overlap at cycles 90–92 and MMIO/cache response checks. | **Verified instance**; broader timing and address variation open. |
+| CR03 | Dirty L1 victim × AXI writeback stall | Seeds 49155 and 49411; victim/PutM and AXI AW/W/B events checked under writeback stall. | **Verified instances**; longer stall and alternate core variants open. |
+| CR04 | Dirty L2 victim × Snoop × APB | Seeds 49156 and 49412; dirty-owner data, victim reclaim, Snoop and APB events correlated. | **Verified instances**; additional victim ways and stall combinations open. |
+| CR05 | Same-set Directory conflict × AXI stall | Seeds 49413 and 49415; same-set conflict, AR stall and refill lifecycle checked. | **Verified instances**; wider resource-pressure sweep open. |
+| CR06 | Dual cold miss × out-of-order AXI R × APB | Seed 49158; two refill contexts overlap and first two AXI R responses complete in reverse order with ID/data routing checks. | **Verified instance**; repeated response permutations open. |
+| CR07 | Hit-under-miss × remote Snoop | Directed overlap cycles 67–78, five correlated transactions; checker verifies independent pending miss and remote-owner Snoop/data transfer. | **Verified instance**; randomized addresses/stalls open. |
+| CR08 | Reset × Directory/Snoop pending | Seeds 59248–59251 and stress seeds 59248–59267 exercise pending Directory/Snoop reset epoch and recovery. | **Verified instances**; all reset phases and interface combinations are not exhaustive. |
+| CR09 | AXI error × fail-stop × reset | Seeds 59248–59251 and stress seeds 59248–59267 inject read error beats, check no false success, reset and retry. | **Verified instances**; write-channel and all error-beat positions are not exhaustive. |
+| CR10 | Ownership ping-pong × MMIO/APB | Seeds 49168 and 49424; ownership transitions and MMIO/APB activity checked by the independent model. | **Verified instances**; broader ping-pong depth and timing open. |
+
+These statuses close the named checked instances, not the Cartesian product of
+all Core, address, response-order, stall, error and reset combinations.
+
+## Feature and interface traceability
 
 | Requirement | Testpoint / sequence | Observation | Independent checker | Coverage / status |
 | --- | --- | --- | --- | --- |
-| Cold cacheable read and AXI refill | `FS-D01`, `test_dual_core_coherence_uses_axi_backing_memory` | CPU handshake, AXI AR/R ID and beats, L1/Directory metadata commits | Backing memory contents, AXI protocol checker, MESI/data scoreboard | `FS.AXI.READ_BURST`, `FS.MESI.I_TO_E`; Closed |
-| MESI legal state transitions | `SC01–SC05`, state-aware preludes | Directory GetM, L1 metadata commits and CPU lifecycle | Independent MESI/data scoreboard | Required MESI bins; Closed for planned legal transitions |
-| Remote owner read/write transfer | `FS-D02/D03` | Snoop, owner data, Directory/L1 commits | Scoreboard checks latest word data and owner/sharer state | MESI transition bins; Closed for tested paths |
-| Same-address paired store serialization | `SC06`, `test_same_address_dual_core_store_serialization` | Directory acceptance order | Both responses and final value match acceptance-ordered model | `FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE`; Closed |
-| Paired same-set cold misses preserve request order | `test_paired_cold_miss_same_set_uses_directory_accept_order` | CPU accept, Directory accept, AXI ID/refill, response | Request-order reference plus ID/address/data matching | `FS.CROSS.PAIRED_MISS_ORDERING`; Closed |
-| Repeated paired replacement in one L2 set | `test_repeated_paired_misses_replace_one_l2_set` | Four victim selections across two paired rounds | Predicted victim, invalidation, data and final readback | `FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS`; Closed |
-| Full refill MSHR lifecycle and response association | Same paired miss testpoints and `SC08` | MSHR allocate/retire, AXI ID/beats, CPU response | Independent per-line data and transaction lifecycle check | `FS.CROSS.MSHR_LIFECYCLE_END_TO_END`; Closed for one/two active system requests |
-| Two distinct cold misses overlap and return out of order | `SC08`, `test_dual_cold_misses_overlap_and_route_axi_responses` | Two AXI IDs, peak two refill MSHRs, reverse R completion | Per-ID data routing and CPU response data | `FS.MSHR.OCCUPANCY_2`, `FS.AXI.READ_OUT_OF_ORDER`; Closed; CPU lanes remain blocking |
-| Four Directory contexts | Directory MSHR block regression | Four independent Directory contexts and arbitration | Block lifecycle/formal harness | Block scope only; does not claim four simultaneous CPU misses |
-| L2 live victim invalidation / dirty owner preservation | `SC07/SC10` | Victim, Snoop, metadata invalidation, owner beats, AXI writeback | Independent directory/data model and memory readback | `FS.L2.LIVE_VICTIM_SNOOP`, serialized writeback bins; Closed for directed variants |
-| Hit-under-miss on the full AXI top | `tests/full_system/test_hit_under_miss_axi.py` | Pending miss AXI ID/address plus resident hit response address/data/ID | Independent CPU data model, AXI ID correlation, response stability | `FS.HIT_UNDER_MISS.*`, `FS.CROSS.HIT_UNDER_MISS_*`; Closed for resident-hit bypass cases |
-| Hit-under-miss with remote Snoop progress | `test_axi_top_snoop_completes_during_other_line_pending_miss` | Pending unrelated refill and owner Snoop accepted/completed | Owner's latest data, MESI commits, CPU response checks | H-u-M Snoop cross; Closed for tested cross-line case |
-| Dirty-owner transfer + AXI refill + APB counter | `test_dirty_owner_transfer_during_refill_with_apb_snoop_count`; seeded CR01 prelude in `test_seeded_cpu_mmio_apb_axi_overlap` | Snoop request is released only after the unrelated refill AR handshake; Snoop response and APB Snoop-count read are checked before the refill's final R beat | Independent MESI/data/Directory model, MSHR lifecycle checker, AXI burst/ID checker, APB count equals one accepted Snoop, explicit cycle-order assertions | `FS.XAGENT.OWNER_TRANSFER_REFILL_APB`; `FS.CROSS.OWNER_TRANSFER_REFILL_APB_DISTINCT_SET`; directed and seeded CR01 closed for this distinct-set overlap after integrated regression |
-| Hit-under-miss reset cancellation | `test_axi_top_reset_cancels_pending_hit_under_miss_request` | Reset epoch, canceled AXI context, no stale response, retry | AXI agent cancellation and reference data | H-u-M reset bin; Closed |
-| Reset during AR stall, R gap, CPU response stall, MMIO request stall | `test_seeded_reset_during_randomized_stall` | Each seeded phase is explicitly observed before reset; reset epoch and retry | AXI/MMIO handshakes, stale response exclusion, independent returned data | `FS.STRESS.RESET_*`; targeted and stress evidence recorded in campaign output |
-| AXI R error beat injection and recovery | `test_seeded_axi_read_error_beat_and_recovery` | Chosen beat address/RESP, fail-stop, reset and retry | Error correlated to selected beat; no success response; retry matches memory model | `FS.STRESS.AXI_R_ERROR_BEAT_INJECTION`; targeted and stress evidence recorded |
-| Four-agent sustained traffic | `test_seeded_full_system_coherence`, `test_seeded_cpu_mmio_apb_axi_overlap` | CPU, Directory, Snoop, refill, MMIO, APB and AXI events | Independent MESI/data/MMIO/APB models plus AXI protocol checker | Random and four-agent bins; counts in stress CSV/summary |
-| AXI write errors and channel ordering | Integrated signoff and standalone AXI adapter tests | AW/W/B IDs, response and stalls | AXI burst/ID checker, fail-stop and memory readback | Integrated supported paths plus adapter's four-ID reordering; integrated writes are serialized |
-| CPU response ordering contract | Full-system CPU wrapper | No request tag input; response returns internally allocated transaction ID, address and operation | Driver lifecycle checker plus H-u-M address/data/ID correlation | No general arbitrary OoO contract is specified. A resident hit may complete before an earlier unrelated miss in the tested H-u-M bypass case; other completion orders remain unspecified |
-| APB CSR counter/reset semantics | `SC17` | APB access, event deltas and reset | Expected counter deltas for checked transactions | CSR directed bins; wrap/saturation remains Open unless run evidence says otherwise |
-| Raw RTL line/branch/toggle/FSM | `make coherence_coverage_audit` separate subsystem and block tops | Each elaborated top's own Verilator dataset | Source manifest and point-level coverage matrix | Raw results remain separate; reviewed/eligible closure has open items |
+| Cold cacheable read and AXI refill | `FS-D01`, `test_dual_core_coherence_uses_axi_backing_memory` | CPU handshake, AXI AR/R ID and beats, L1/Directory commits | Backing memory, AXI protocol and MESI/data scoreboards | Required MESI/AXI bins; verified |
+| MESI transitions and remote-owner data | `SC01–SC05`, seeded state-aware sequences | GetM, Snoop, owner data and metadata commits | Independent MESI/data model and Directory consistency checker | Required planned transitions; verified for exercised paths |
+| Same-address dual-store ordering | `SC06`, `test_same_address_dual_core_store_serialization` | Directory acceptance order and both responses | Acceptance-ordered memory model and final readback | `FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE`; verified |
+| Paired same-set cold misses | `test_paired_cold_miss_same_set_uses_directory_accept_order` | CPU/Directory accept, AXI IDs/refills and response order | Request-order/data checker | `FS.CROSS.PAIRED_MISS_ORDERING`; verified |
+| Repeated paired replacement | `test_repeated_paired_misses_replace_one_l2_set` | Four victim choices over two rounds | Victim-way, invalidation, data and readback checker | `FS.CROSS.PAIRED_SAME_SET_REPLACEMENTS`; verified |
+| Refill MSHR lifecycle / out-of-order AXI R | `SC08`, paired-miss tests | Allocation/retirement, AXI ID/beat correlation; peak two active system refills | Per-ID data and lifecycle checker | `FS.MSHR.OCCUPANCY_2`, `FS.AXI.READ_OUT_OF_ORDER`; verified; CPU lanes remain blocking |
+| Four Directory contexts | `DirectoryMshrBank` block tests and formal harness | Four contexts, transfer-start backpressure, reset cancellation | Block lifecycle assertions/checker and bounded formal | Block scope only; not four concurrent CPU misses |
+| L2 live victim / dirty owner writeback | `SC07/SC10`, dense-set tests | Victim snoop, directory clear, owner beats and memory writeback | Independent directory/data model and memory readback | L2 victim/writeback bins; verified for directed cases |
+| Hit-under-miss on instrumented subsystem top | `hit_under_miss_coverage.svh` in `CoherentCacheSubsystem_tb` | Pending cold miss, resident hit response, distinct transaction IDs, 3-cycle response stall, then miss completion | Data/response checker checks both values and response stability | Main subsystem raw LCOV: related source lines 419–422 and 425–427 hit; remaining zero-count branch/points stay open |
+| Hit-under-miss in AXI wrapper | `tests/full_system/test_hit_under_miss_axi.py` | ID wrap/stall, remote Snoop while another line is pending, reset cancellation | CPU/AXI ID and data correlation, reset epoch and response checker | H-u-M AXI functional tests; verified; separate raw dataset |
+| Four-agent traffic and recovery | Seeded CPU/MMIO/APB/AXI, reset and AXI error tests | Accepted protocol events, overlap intervals, reset epochs and response IDs | Independent reference data/MESI/MMIO/APB models plus AXI checker | Full-system checked functional/cross plan; 53/53 and 35/35 |
+| APB CSR counter semantics | `test_apb_counters_writeback_and_reset_semantics` | APB read/write, event deltas and reset | Expected event-counter deltas | Tested semantics verified; complete wrap/saturation space remains open |
+| Raw RTL line/branch/toggle/FSM | `make coherence_coverage_audit` | Instrumented source points per elaborated top | Manifest and point-level matrix | Separate datasets; no cross-top sum or Python substitution |
 
-## Coverage scope and limitations
+## Contract and limitations
 
-The full-system Python functional closure is generated from
-`dv/coverage/full_system_coverage_plan.json`. Do not combine it with the
-separate 49-bin Python coherence closure, block test results, bounded formal
-proofs, or raw Verilator line/branch/toggle/FSM percentages. Each uses a
-different testbench, point definition, or elaborated design scope.
-
-The present CPU wrapper has two packed blocking lanes and no request tag input.
-It can exercise simultaneous paired requests and a resident L1 hit while a
-different miss is pending, but it does not define arbitrary multi-request CPU
-completion reordering. Four Directory contexts and four refill MSHRs are not
-evidence that four CPU misses can be issued concurrently.
-
-The stress campaign records one row per seed in
-`reports/full_system/stress_seed_summary.csv`, including configured workload,
-observed handshakes, checked-bin deltas, and replay command. The trace
-minimizer currently provides an order-preserving algorithm tested on synthetic
-records, but it is not connected to a simulator replay callback. A passing
-campaign has no DUT failure trace to minimize.
-
-The directed and seeded owner-transfer/refill/APB scenario is run by
-`make coherence_full_system_cross_closure` and the mixed-agent random testcase.
-The seeded prelude randomizes owner core, word offsets, data/mask, request delay,
-response stall, and AXI pacing while preserving the legal M-owner setup. This
-closes CR01 only; CR02–CR10 still require their own legal preconditions, overlap
-checks, and independent checkers. The larger random loops do not imply closure
-of scenario families they do not construct.
+- The CPU wrapper has two packed request lanes and no externally supplied
+  request tag. A resident hit can respond before a different pending miss, as
+  tested by Hit-under-Miss; arbitrary completion reordering is not specified.
+- Full-system coverage uses `dv/coverage/full_system_coverage_plan.json`.
+  Coherence block Python bins, full-system bins, block SV results, formal
+  properties, and raw Verilator points have different denominators and are not
+  added together.
+- The stress campaign contains 280 passing environments. Its generated CSV
+  records per-seed configuration, observed events and checked-bin deltas.
+- A controlled checker expected-data mismatch on seed 61857 was captured and
+  replayed on RTL. The operation reducer preserved the legal owner-store
+  prelude and reduced the trigger trace from five operations to two. It is
+  operation-level reduction, not general cycle-by-cycle interleaving
+  minimization.
+- Raw RTL coverage remains OPEN: the primary subsystem dataset has 148 missed
+  executable lines, 88 missed branches, 24 missed extracted FSM states and 41
+  missed extracted FSM arcs. See the raw-run inventory and closure matrix.
 
 ## Reproduction
+
+Run from `workspace/nutshell_cache` with the repository tool environment:
 
 ```bash
 source scripts/env.sh
@@ -68,6 +77,6 @@ make COHERENCE_JOBS=2 coherence_hit_under_miss
 make COHERENCE_JOBS=2 coherence_full_system_cross_closure
 make COHERENCE_JOBS=2 coherence_full_system_stress
 make COHERENCE_JOBS=2 coherence_coverage_audit
+make COHERENCE_JOBS=2 coherence_full_system_evidence_gate
+make COHERENCE_JOBS=2 coherence_full_system_replay_closure
 ```
-
-Current execution evidence: [`closure_phase2_execution_2026-11-06.md`](closure_phase2_execution_2026-11-06.md). Tested source SHA `14542f52bef5a42560cc615a5db104e3122dbd33`; integrated functional/cross coverage is 53/53 and 29/29. The CR01 and CR07 joint scenarios are verified; CR02–CR06 and CR08–CR10 remain open. Raw RTL coverage is independently reported per elaborated top in `reports/final/rtl_coverage_signoff.md`; the 1,026 dataset-scoped zero points remain open, with no approved waivers. The full-system sign-off decision is OPEN.

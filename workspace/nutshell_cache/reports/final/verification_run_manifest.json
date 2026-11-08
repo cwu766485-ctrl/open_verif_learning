@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "repository": "cwu766485-ctrl/open_verif_learning",
+  "project_root": "workspace/nutshell_cache",
+  "branch_at_test_time": "codex/v1.1-final-closure",
+  "tested_source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+  "tested_at": "2026-11-08",
+  "local_only_logs": true,
+  "tool_versions": {
+    "verilator": "5.053 devel rev v5.052-521-g6388139f7 (mod)",
+    "python": "3.12.3",
+    "pytest": "9.1.1",
+    "toffee_test": "0.2.0",
+    "picker": "0.9.0-HEAD-c100874-2026-08-06",
+    "symbiyosys": "0.70"
+  },
+  "rtl_manifest": {
+    "path": "rtl/Coherence.files.f",
+    "sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
+    "product_sources": 18
+  },
+  "required_gates": [
+    {
+      "target": "coherence_verify",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "execution": "Executed as a nested make target by coherence_full_system_verify.",
+      "log": "/tmp/nutshell_full_system_verify.log"
+    },
+    {
+      "target": "coherence_full_system_verify",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "Integrated pytest 70 passed, 1 skipped; full-system evidence gate passed.",
+      "log": "/tmp/nutshell_full_system_verify.log"
+    },
+    {
+      "target": "coherence_hit_under_miss",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "Python directed 2 passed; AXI-top directed 3 passed.",
+      "log": "/tmp/nutshell_hit_under_miss.log"
+    },
+    {
+      "target": "coherence_full_system_cross_closure",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "21 passed.",
+      "log": "/tmp/nutshell_cross_closure.log"
+    },
+    {
+      "target": "coherence_full_system_stress",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "280 passed in 1534.29 seconds across six deterministic campaigns.",
+      "log": "/tmp/nutshell_stress_replay.log"
+    },
+    {
+      "target": "coherence_coverage_audit",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "Seven independent Verilator top/build datasets collected; datasets were not summed.",
+      "log": "/tmp/nutshell_coverage_audit.log"
+    },
+    {
+      "target": "coherence_full_system_evidence_gate",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "69 checked runs; 53/53 required functional bins and 35/35 required cross bins.",
+      "log": "/tmp/nutshell_full_system_verify.log"
+    },
+    {
+      "target": "coherence_full_system_replay_closure",
+      "status": "PASS",
+      "source_sha": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+      "result": "Controlled checker failure captured/replayed; legal-prelude operation trace reduced 5 to 2.",
+      "log": "/tmp/nutshell_stress_replay.log"
+    }
+  ],
+  "additional_results": {
+    "python_coherence_closure": "49/49 functional bins and 19/19 cross bins",
+    "strict_evidence_negative_tests": "40 passed",
+    "rtl_mutation": "4/4 mutations detected",
+    "checker_fault_injection": "9/9 injected checker faults detected",
+    "full_system_checked_coverage": "53/53 functional and 35/35 cross bins; separate plan from Python coherence closure",
+    "stress_campaign": "100x500 CPU random; 100x500 mixed CPU/MMIO/APB/AXI; 20 each resource-aware, reset phase, AXI error, and reset-with-directory/snoop pending"
+  },
+  "raw_rtl_coverage": {
+    "primary_dataset": "CoherentCacheSubsystem_tb",
+    "line": "850/998",
+    "branch": "468/556",
+    "toggle": "19996/27474",
+    "fsm_state": "30/54",
+    "fsm_arc": "7/48",
+    "dataset_scoped_zero_count_records": 1012,
+    "status": "OPEN; no waivers approved; reviewed/eligible percentage not computed",
+    "artifact_policy": "Raw .dat/.info files are generated locally and ignored by Git due to size; this manifest records SHA-256 values and the committed summaries/matrix preserve the reviewed counts. Regenerate with make COHERENCE_JOBS=2 coherence_coverage_audit.",
+    "datasets": {
+      "main_subsystem": [
+        {
+          "path": "reports/coherence/coverage.dat",
+          "sha256": "2235f32664190e7edf11a9266fe06ae28547dd581ed12e0b150bc36ea7d668fe",
+          "bytes": 6238864
+        },
+        {
+          "path": "reports/coherence/coverage.info",
+          "sha256": "6a0e7982e2127d6b8bba6618ad99dc09473b683a21d46018979af25710be6455",
+          "bytes": 21716
+        }
+      ],
+      "axi_subsystem": [
+        {
+          "path": "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",
+          "sha256": "7ae45ac580165a26643087d18179e731c740818943e3564a6eb7e2c3ca53787f",
+          "bytes": 6640633
+        },
+        {
+          "path": "reports/coherence/block_coverage/coherent_cache_axi_subsystem_line.info",
+          "sha256": "5b356307ef78c45f4a3151da358bc5c01c5c04f94fd79217c0b911a2bb4ad354",
+          "bytes": 18920
+        }
+      ],
+      "directory_controller": [
+        {
+          "path": "reports/coherence/block_coverage/directory_controller.dat",
+          "sha256": "de9ae8e6c0b481da3ad403d7b819a6d5e7ead7e185a2805c148a544576bfcbc2",
+          "bytes": 199248
+        },
+        {
+          "path": "reports/coherence/block_coverage/directory_controller_line.info",
+          "sha256": "a44442cc159d2065ee88ef7b1cc822e883720b300725032463a736f9ac17e72a",
+          "bytes": 3903
+        }
+      ],
+      "directory_mshr_bank": [
+        {
+          "path": "reports/coherence/block_coverage/directory_mshr_bank.dat",
+          "sha256": "7c37e8f84883c2a4a8f5f63e36d3efc4dfe805311baed2611c0cc88aada4718f",
+          "bytes": 656133
+        },
+        {
+          "path": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
+          "sha256": "d017b27d8d912c9b5f189954bd9b23641302ed999269a552be3e207f55864fe6",
+          "bytes": 6572
+        }
+      ],
+      "shared_line_engine": [
+        {
+          "path": "reports/coherence/block_coverage/shared_line_engine.dat",
+          "sha256": "1ead490a52bf119f060e383b6d6dcbcf40090a246393a7932298546ddaeff402",
+          "bytes": 230868
+        },
+        {
+          "path": "reports/coherence/block_coverage/shared_line_engine_line.info",
+          "sha256": "e47bf66939ae06158ed46a3e609ae25f24362d58cc959f67f3e2fa92e1fc0871",
+          "bytes": 7433
+        }
+      ],
+      "mesi_l1_controller": [
+        {
+          "path": "reports/coherence/block_coverage/mesi_l1_controller.dat",
+          "sha256": "33eef63987ab7e1737087b1b9b542f3f04bdd82fa4100703bf8c9962e4c862ff",
+          "bytes": 489703
+        },
+        {
+          "path": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
+          "sha256": "08c2d07bac8306a693b6defef0cac399e3bb0eef9a2407dddb265724f2a93be9",
+          "bytes": 3074
+        }
+      ],
+      "shared_l2_directory_array": [
+        {
+          "path": "reports/coherence/block_coverage/shared_l2_directory_array.dat",
+          "sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c",
+          "bytes": 474095
+        },
+        {
+          "path": "reports/coherence/block_coverage/shared_l2_directory_array_line.info",
+          "sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79",
+          "bytes": 2223
+        }
+      ],
+      "bus_blocks": [
+        {
+          "path": "reports/coherence/block_coverage/bus_blocks.dat",
+          "sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf",
+          "bytes": 569602
+        },
+        {
+          "path": "reports/coherence/block_coverage/bus_blocks_line.info",
+          "sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a",
+          "bytes": 3570
+        }
+      ]
+    }
+  },
+  "benchmark_ab": {
+    "name": "P1 L1 hit-under-miss",
+    "memory_delay_cycles": 80,
+    "workload": "one cold miss plus 24 resident reads",
+    "baseline_window_cycles": 185,
+    "optimized_window_cycles": 113,
+    "window_reduction_percent": 38.9189,
+    "baseline_operations_per_cycle": 0.135135,
+    "optimized_operations_per_cycle": 0.221239,
+    "throughput_increase_percent": 63.7168,
+    "miss_latency_cycles_baseline_and_optimized": 113,
+    "measurement_limit": "Verilator cycle simulation with synthetic memory latency; not physical bandwidth, frequency, PPA or application CPU IPC."
+  },
+  "prior_remote_ci": {
+    "pr": 1,
+    "tested_sha": "69d30aee6999c5a85c906ae6547b6f3872a0f474",
+    "run": 79,
+    "status": "success",
+    "url": "https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42376987907",
+    "note": "This is not CI evidence for tested source SHA 92d6373cf1bb25e3efe8a82bba9c6dde162de5e9. The pushed report candidate requires its own CI run."
+  },
+  "decision": "OPEN",
+  "open_reasons": [
+    "All 1012 dataset-scoped raw zero-count RTL coverage records remain OPEN; point-by-point closure review is incomplete.",
+    "CR01-CR10 have checked representative instances but not exhaustive cross-dimension variation.",
+    "Formal evidence is component-level/bounded; there is no unbounded whole-subsystem proof.",
+    "No PPA, STA, real SRAM macro or chip-level physical implementation sign-off is included."
+  ]
+}
