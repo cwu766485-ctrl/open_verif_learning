@@ -11,7 +11,7 @@
 - Tool versions and every local gate result are recorded in [`verification_run_manifest.json`](../../reports/final/verification_run_manifest.json).
 - The raw Verilator dataset provenance is in [`coverage_provenance.md`](../../reports/coherence/coverage_provenance.md). Per-run logs and raw `.dat`/`.info` coverage files are machine-local and ignored by Git because of their size. The manifest records each raw file's SHA-256 and byte count; the committed coverage matrices and summaries preserve the audited counts. The stress seed CSV and controlled replay trace are checked in.
 
-The latest previously observed GitHub Actions run was successful at commit `69d30aee6999c5a85c906ae6547b6f3872a0f474` (run [#79](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42376987907)). That result predates the tested source snapshot above and does not validate it. The candidate branch must pass CI at its published SHA. PR #1 remains open; this work does not merge it or create a release tag. The exact published SHA and its CI result are reported after the push.
+The published report candidate was commit `9bbef4c17c899758408fe1fdc90dfa62181009ec`. GitHub Actions [run #81](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42456792418) completed successfully on that exact PR head: both `cache-regression` and `coherence-regression` passed, including Formal, integrated full-system regression, and the strict checked-cross Evidence Gate. The run checked out the same product/DV source tree tested locally at `92d6373cf1bb25e3efe8a82bba9c6dde162de5e9`; the report-candidate commit added evidence and reports. This report is being updated in a documentation-only follow-up, which triggers a fresh CI run. PR #1 remains open and unmerged; no release tag has been created.
 
 ## RTL architecture and claimed scope
 
@@ -95,9 +95,9 @@ There are 1,012 dataset-scoped zero-count point records; all remain OPEN, no cov
 3. Full-system coverage does not independently predict every MSHR lifecycle or every L2-directory transition. Four Directory contexts do not mean four concurrent CPU misses.
 4. No unbounded full-subsystem formal proof is claimed. A saved-DUT-failure replay was skipped in the general suite; controlled checker-failure replay passed separately.
 5. PPA, STA, physical SRAM macro mapping, real CPU/application benchmarking, and chip-level physical implementation are out of scope.
-6. GitHub CI for the tested SHA `92d6373...` must be checked after publishing the report candidate. The prior green run at SHA `69d30ae...` is historical only.
+6. GitHub Actions run #81 passed both required jobs at report-candidate SHA `9bbef4c17c899758408fe1fdc90dfa62181009ec`. A documentation-only follow-up to record this result is undergoing its own CI; the PR description tracks the latest head and run.
 
-**Final decision: OPEN.** The functional regression and recorded checked scenarios pass, but raw RTL point review and candidate-SHA remote CI are not closed. Do not describe this as ASIC/tapeout sign-off.
+**Final decision: OPEN.** Functional regressions and candidate-SHA CI pass, but raw RTL point review and broad cross-dimension closure remain incomplete. Do not describe this as ASIC/tapeout sign-off.
 
 ## Reproduction
 

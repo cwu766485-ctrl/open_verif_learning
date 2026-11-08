@@ -213,7 +213,7 @@
     "run": 79,
     "status": "success",
     "url": "https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42376987907",
-    "note": "This is not CI evidence for tested source SHA 92d6373cf1bb25e3efe8a82bba9c6dde162de5e9. The pushed report candidate requires its own CI run."
+    "note": "Historical green run at SHA 69d30ae; superseded for the report candidate by final_pr_candidate_ci run #81."
   },
   "decision": "OPEN",
   "open_reasons": [
@@ -221,5 +221,21 @@
     "CR01-CR10 have checked representative instances but not exhaustive cross-dimension variation.",
     "Formal evidence is component-level/bounded; there is no unbounded whole-subsystem proof.",
     "No PPA, STA, real SRAM macro or chip-level physical implementation sign-off is included."
-  ]
+  ],
+  "final_pr_candidate_ci": {
+    "pr": 1,
+    "tested_pr_head_sha": "9bbef4c17c899758408fe1fdc90dfa62181009ec",
+    "workflow": "NutShell cache open-source DV",
+    "run_number": 81,
+    "run_id": 42456792418,
+    "status": "success",
+    "url": "https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42456792418",
+    "jobs": {
+      "cache-regression": "success",
+      "coherence-regression": "success"
+    },
+    "scope": "Exact published PR head; includes Formal, legacy regression, integrated coherence/full-system regression, strict checked-cross evidence gate and uploaded logs.",
+    "tested_product_dv_tree": "92d6373cf1bb25e3efe8a82bba9c6dde162de5e9",
+    "note": "The report-only follow-up commit records this completed CI result and triggers a separate CI run. The source/test behavior remains unchanged."
+  }
 }
