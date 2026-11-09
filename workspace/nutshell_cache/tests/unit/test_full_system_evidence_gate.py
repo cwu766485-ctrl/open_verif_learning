@@ -1,6 +1,11 @@
 import pytest
+import subprocess
+from pathlib import Path
 
-from dv.coverage.full_system_evidence_gate import _verify_evidence
+from dv.coverage.full_system_evidence_gate import (
+    _verify_evidence,
+    _verify_source_snapshot,
+)
 from dv.coverage.testcase_selector import testcase_selector
 from dv.coverage.checked_cross_evidence import (
     checked_overlap_proof,
@@ -335,3 +340,37 @@ def test_checked_cross_negative_evidence_is_rejected(mutation, message):
 
     with pytest.raises(ValueError, match=message):
         _verify_evidence([point], [record], runs, kind="cross", trace_events=trace)
+
+
+def test_source_snapshot_ignores_review_ledger_but_rejects_rtl_changes(tmp_path):
+    repo = tmp_path / "repo"
+    ledger = repo / "workspace/nutshell_cache/dv/coverage/rtl_release_decisions.json"
+    rtl = repo / "workspace/nutshell_cache/rtl/Block.sv"
+    ledger.parent.mkdir(parents=True)
+    rtl.parent.mkdir(parents=True)
+    ledger.write_text("{}\n", encoding="utf-8")
+    rtl.write_text("module Block; endmodule\n", encoding="utf-8")
+
+    def git(*args):
+        return subprocess.run(["git", "-C", str(repo), *args], check=True,
+                              capture_output=True, text=True)
+
+    git("init", "-q")
+    git("config", "user.email", "coverage-gate-test@example.invalid")
+    git("config", "user.name", "Coverage Gate Test")
+    git("add", ".")
+    git("commit", "-qm", "source snapshot")
+    source_sha = git("rev-parse", "HEAD").stdout.strip()
+
+    ledger.write_text('{"reviewed": true}\n', encoding="utf-8")
+    _verify_source_snapshot(
+        repo, source_sha,
+        source_paths=("workspace/nutshell_cache/dv", "workspace/nutshell_cache/rtl"),
+    )
+
+    rtl.write_text("module Block; wire changed; endmodule\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="tested source differs"):
+        _verify_source_snapshot(
+            repo, source_sha,
+            source_paths=("workspace/nutshell_cache/dv", "workspace/nutshell_cache/rtl"),
+        )

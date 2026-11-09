@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_replay_closure coherence_full_system_coverage coherence_full_system_checker_tests coherence_full_system_verify coherence_full_system_cross_closure coherence_full_system_evidence_gate coherence_python_coverage_close coherence_coverage_audit coherence_shared_line_engine clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_replay_closure coherence_full_system_coverage coherence_full_system_checker_tests coherence_full_system_verify coherence_full_system_cross_closure coherence_full_system_evidence_gate coherence_python_coverage_close coherence_coverage_audit coherence_release_regression coherence_release_gate coherence_shared_line_engine clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -495,8 +495,24 @@ coherence_python_coverage_close:
 # Collect isolated native coverage for the AXI subsystem and key blocks. Each
 # dataset stays separate because these tops elaborate different hierarchy and
 # run different testcases; never sum their percentages into the subsystem run.
-coherence_coverage_audit:
+coherence_coverage_audit: coherence_regression
 	@bash scripts/run_coherence_coverage_audit.sh $(COHERENCE_JOBS)
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_gap_review
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.coverage_raw_runs
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_coverage_closure
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_coverage_dataset_manifest
+
+# Exact required release regression set. A source fingerprint and per-command
+# log/status are recorded so results cannot silently be reused after edits.
+coherence_release_regression:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 scripts/run_rtl_release_regressions.py 2
+
+# The gate intentionally does not waive open raw points. It returns nonzero
+# until each zero-count point has current dataset-bound evidence and all runs
+# in reports/closure/rtl_release_regression_status.json pass.
+coherence_release_gate:
+	@PYTHONPATH=.:./dv python3 -m pytest -q tests/unit/test_rtl_release_gate.py tests/unit/test_coverage_manifest_and_gate.py
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_release_gate --check
 
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only

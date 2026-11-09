@@ -108,7 +108,7 @@ def source_text(path: str) -> list[str]:
 def feature_for(source: str, line: int, point: str = "") -> str:
     if source.endswith("DirectoryController.sv"):
         if 353 <= line <= 365:
-            return "Stale Upgrade recovery: recover Upgrade at DIR_I using L2 refill/GetM semantics (cache.md MESI request/recovery rules)."
+            return "Protocol-inconsistent Upgrade presented with DIR_I metadata; the current RTL raises protocol_error but also starts a refill (cache.md stale Upgrade / fail-stop contract)."
         if 467 <= line <= 487:
             return "Owner disappears before Snoop response: retry from authoritative L2 and commit one grant (cache.md snoop/ownership rules)."
         if 374 <= line <= 435:
@@ -177,10 +177,10 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
         )
     if source.endswith("DirectoryController.sv") and 353 <= line <= 365:
         return (
-            "Legal recovery for stale client metadata; requires a request accepted with DIR_I lookup.",
-            "Mixed: protocol_error marks stale Upgrade, while the controller recovers by issuing a data-bearing refill.",
-            "Not unreachable. Keep the recovery behavior and verify data/Directory/grant completion independently.",
-            "Run directed owner-self/stale Upgrade tests; assert refill source, final DIR_U owner, GetM data grant and one completion.",
+            "Not a legal MESI request under the current spec: Upgrade requires a valid S copy; DIR_I means the requester has no sharer copy. The stale-but-still-valid DIR_U case is a separate supported recovery path.",
+            "Yes. RTL sets protocol_error/code 4, but then proceeds to L2 refill and a data-bearing M grant instead of failing closed as docs/cache.md currently states.",
+            "Reachable only through an inconsistent requester/Directory interface condition. This source range exposes a spec/RTL behavior mismatch; it is neither approved legal recovery nor proven unreachable.",
+            "Keep OPEN. Resolve the frozen protocol contract and add a block fault-injection test that checks error, no successful grant/metadata commit, and reset recovery. Do not count this as normal functional coverage.",
             "High",
         )
     if source.endswith("DirectoryController.sv") and 467 <= line <= 487:

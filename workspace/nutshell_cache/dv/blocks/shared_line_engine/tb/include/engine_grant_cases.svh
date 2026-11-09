@@ -1,4 +1,5 @@
   task automatic test_grant_read_backpressure;
+    integer beat;
     begin
       @(negedge clock);
       dir_grant_valid = 1'b1;
@@ -32,12 +33,21 @@
       l2_line_rd_valid = 1'b0;
       l2_line_data_valid = 1'b1;
       l2_line_data_ready = 1'b1;
-      l2_line_data_last = 1'b1;
-      @(posedge clock);
-      #1;
-      if (engine_state_q !== ENGINE_IDLE || memory_adapter_protocol_error)
-        $fatal(1, "final grant beat did not retire cleanly");
-      $display("PASS: grant read backpressure holds state and completes on L2 hit");
+      for (beat = 0; beat < 8; beat = beat + 1) begin
+        @(negedge clock);
+        l2_line_data_last = (beat == 7);
+        @(posedge clock);
+        #1;
+        if (memory_adapter_protocol_error)
+          $fatal(1, "grant stream raised protocol error at beat %0d", beat);
+        if ((beat < 7 && engine_state_q !== ENGINE_GRANT_STREAM) ||
+            (beat == 7 && engine_state_q !== ENGINE_IDLE))
+          $fatal(1, "grant stream retired at wrong beat %0d (state=%0d)", beat, engine_state_q);
+      end
+      @(negedge clock);
+      l2_line_data_valid = 1'b0;
+      l2_line_data_last = 1'b0;
+      $display("PASS: grant read backpressure holds state and retires after eight accepted beats");
     end
   endtask
 

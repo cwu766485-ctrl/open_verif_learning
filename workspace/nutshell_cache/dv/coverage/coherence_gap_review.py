@@ -216,6 +216,35 @@ def missed_category(source_line: str, context: str) -> str:
     return "合法路径未命中"
 
 
+def reviewed_missed_category(source: str, line: int, source_line: str, context: str) -> str:
+    """Apply explicit, source-reviewed classifications for known audit points.
+
+    These labels describe the inspected condition and its current evidence. They
+    do not waive points or let a hit in another elaboration close this dataset.
+    """
+    if source.endswith("DirectoryController.sv"):
+        if 353 <= line <= 361:
+            return "DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径"
+        if 362 <= line <= 365:
+            return "Directory 状态编码 default：防御性 fail-stop，未证明不可达"
+    if source.endswith("MesiL1Controller.sv"):
+        if line in {317, 318}:
+            return "Refill beat/last 异常：CPU fail-stop 错误路径"
+        if line in {439, 440}:
+            return "Snoop beat/last 异常：Snoop fail-stop 错误路径"
+    if source.endswith("CpuMmioRouter.sv") and 162 <= line <= 165:
+        return "MMIO FSM 非法编码 default：防御性复位，未证明不可达"
+    if source.endswith("SharedLineEngine.sv"):
+        if 348 <= line <= 351:
+            return "合法 Grant Read / L2 Hit 等待路径（独立 Block 有命中）"
+        if 352 <= line <= 355:
+            return "Grant Read 后 L2 Miss：错误保护路径"
+    if source.endswith("DirectoryMshrBank.sv"):
+        if line in {339, 340, 341, 362, 363, 364, 365, 372, 373, 374}:
+            return "合法 ready/valid Offer Lock（独立 Block 有命中）"
+    return missed_category(source_line, context)
+
+
 def validate_functional_closure() -> tuple[str, list[dict], list[dict]]:
     spec = json.loads(PYTHON_MAP.read_text(encoding="utf-8"))
     closure = json.loads(PYTHON_CLOSURE.read_text(encoding="utf-8"))
@@ -311,7 +340,7 @@ def render() -> tuple[str, str]:
             # a multi-line guard can be associated with its own branch.
             lo, hi = max(0, line - 10), min(len(source_lines), line + 10)
             context = " ".join(source_lines[lo:hi])
-            category = missed_category(code, context)
+            category = reviewed_missed_category(source, line, code, context)
             uncovered.append((source, line, category, code))
     review_counts: dict[str, int] = defaultdict(int)
     for _, _, category, _ in uncovered:

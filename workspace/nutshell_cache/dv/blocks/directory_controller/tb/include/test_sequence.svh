@@ -132,6 +132,30 @@
     finish_commit(DIR_U, 2'b00, 1'b1);
     finish_grant(4'h9, GRANT_DATA_E, 1, 1);
     if (protocol_error) $fatal(1, "GetS owner-miss recovery raised protocol error");
+
+    // Fault-inject an Upgrade without a directory-tracked shared copy. This
+    // is not the legal stale-U recovery above: DIR_I + Upgrade must fail-stop
+    // and must never issue a refill, metadata write, snoop, or successful Grant.
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_UPGRADE, 32'h3000_0060, 4'hE, DIR_I, 2'b00, 1'b0);
+    #1;
+    if (!protocol_error || protocol_error_code != 4'd4 ||
+        line_xfer_start_valid || dir_write_valid || snoop_req_valid ||
+        grant_valid)
+      $fatal(1, "DIR_I Upgrade did not fail-stop without side effects");
+    repeat (3) begin
+      tick(); #1;
+      if (!protocol_error || protocol_error_code != 4'd4 ||
+          line_xfer_start_valid || dir_write_valid || snoop_req_valid ||
+          grant_valid)
+        $fatal(1, "DIR_I Upgrade escaped fail-stop while error was held");
+    end
+    @(negedge clock); reset = 1; tick();
+    @(negedge clock); reset = 0; #1;
+    if (protocol_error || protocol_error_code != 4'd0 || !req_ready)
+      $fatal(1, "reset did not recover Directory after invalid Upgrade");
+    $display("PASS: DIR_I Upgrade reports protocol error and fail-stops without Grant/refill");
     $display("PASS DirectoryController_tb");
     $finish;
   end

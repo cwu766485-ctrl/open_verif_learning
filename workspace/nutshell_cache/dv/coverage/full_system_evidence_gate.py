@@ -24,6 +24,12 @@ SOURCE_PATHS = (
     "workspace/nutshell_cache/dv/coverage/full_system_coverage_plan.json",
     ".github/workflows",
 )
+# This file contains human-reviewed release decisions, not inputs to the RTL/DV
+# run. The raw RTL coverage source fingerprint intentionally excludes it so
+# that adding review records does not make the evidence self-referential.
+REVIEW_EVIDENCE_PATHS = {
+    "workspace/nutshell_cache/dv/coverage/rtl_release_decisions.json",
+}
 
 
 def _read(path):
@@ -309,6 +315,7 @@ def _verify_source_snapshot(repo, source_sha, *, source_paths=SOURCE_PATHS):
         ["git", "-C", repo, "diff", "--name-only", source_sha, "--",
          *source_paths], check=True, capture_output=True, text=True,
     ).stdout.splitlines()
+    changed = [path for path in changed if path not in REVIEW_EVIDENCE_PATHS]
     _require(not changed,
              "tested source differs from current checkout: " + ", ".join(changed[:12]))
     untracked = subprocess.run(

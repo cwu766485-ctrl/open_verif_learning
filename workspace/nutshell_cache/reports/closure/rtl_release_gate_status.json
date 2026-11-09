@@ -1,0 +1,29 @@
+{
+  "approved_waivers": 0,
+  "current_valid_dispositions": 0,
+  "decision": "OPEN",
+  "gate_command": "make COHERENCE_JOBS=2 coherence_release_gate",
+  "gate_generated_utc": "2026-11-09T08:27:04.262078+00:00",
+  "gate_unit_tests": {
+    "failed": 0,
+    "passed": 15,
+    "result": "PASS"
+  },
+  "historical_ledger_rows_stale": 19,
+  "json": "reports/final/rtl_release_gate.json.gz",
+  "log": "reports/closure/rtl_release_gate.log.gz",
+  "make_returncode": 2,
+  "manifest_errors": [],
+  "note": "The non-zero gate result is the intended fail-closed decision: required per-point review is incomplete. The 19 ledger records are bound to older source/dataset fingerprints and receive no current closure credit.",
+  "point_inventory": "reports/final/rtl_release_point_matrix.csv.gz",
+  "python_gate_returncode": 1,
+  "raw_dataset_count": 8,
+  "raw_hit_points_without_current_review": 43074,
+  "raw_points": 74831,
+  "raw_zero_count_points_without_current_review": 31757,
+  "reviewed_eligible_coverage": "NOT COMPUTABLE: current source/dataset-bound point dispositions and evidence reviews are incomplete",
+  "rtl_manifest_sources": 18,
+  "schema_version": 1,
+  "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
+  "source_sha_tested": "8e268bda19f14ff6d587ca38d2813f69b868da97"
+}

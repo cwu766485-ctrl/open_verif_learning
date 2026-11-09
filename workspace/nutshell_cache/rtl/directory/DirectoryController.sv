@@ -351,17 +351,13 @@ module DirectoryController #(
                       end
                     end
                     DIR_I: begin
-                      // Recover an invalid Upgrade as a GetM so stale caller
-                      // metadata cannot result in a write without a line.
+                      // Upgrade requires a resident shared copy. DIR_I means
+                      // the requester has no directory-tracked copy, so this
+                      // is an inconsistent block request. Fail-stop instead
+                      // of refilling and granting M after reporting an error.
                       protocol_error <= 1'b1;
                       protocol_error_code <= 4'd4;
-                      grant_opcode_q <= GRANT_DATA_M;
-                      grant_has_data_q <= 1'b1;
-                      next_dir_state_q <= DIR_U;
-                      next_sharers_q <= 2'b00;
-                      next_owner_q <= req_src_id;
-                      line_xfer_kind_q <= XFER_L2_REFILL;
-                      state_q <= DIR_START_XFER;
+                      state_q <= DIR_ERROR;
                     end
                     default: begin
                       protocol_error <= 1'b1;
