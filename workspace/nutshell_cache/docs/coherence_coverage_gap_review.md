@@ -1,6 +1,6 @@
 # Coherence RTL Coverage Gap Review
 
-Generated from the Phase 1 source audit on 2026-11-09 16:23 +08.
+Generated from the Phase 1 source audit on 2026-11-09 22:29 +08.
 
 - Product RTL: **850/992** hit; **142** missed.
 - Testbench: **757/769** hit; **12** missed.

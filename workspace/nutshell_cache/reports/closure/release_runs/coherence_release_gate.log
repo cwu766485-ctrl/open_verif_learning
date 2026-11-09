@@ -1,0 +1,24 @@
+.................                                                        [100%]
+17 passed in 0.06s
+RTL release gate: OPEN; raw zero points=31757; findings=31757
+OPEN: RCP-BRANCH-20FC8EE28A803ABB11C7: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-C5E2C5A3763B1F9B8551: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-C141735F66BF64864BA5: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-980D1DD2C04B7D3A881E: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-115080DC69D3A984A437: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-875E6B79ADC91DAC424F: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-810EFB8A4AC8F6774C5B: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-E8DEE62BC8DAE9AED3CC: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-C0541A1BCD7E45A36D78: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-2455E0F12185B5CEB521: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-75381D7FF897570A6B38: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-D55622C7BDEC5081B737: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-9E7A249F7CE2D865654E: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-698BD874B60079C1A106: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-9FA4F866068B643D680E: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-95CFEABD472098FD6CF5: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-24439201F6CBE7218640: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-BEE4766CBA694EE28685: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-E1FBF288BD48DA642D74: zero-count point has no review record; OPEN
+OPEN: RCP-BRANCH-31B4E87E8F404D631F8F: zero-count point has no review record; OPEN
+make: *** [Makefile:515: coherence_release_gate] Error 1

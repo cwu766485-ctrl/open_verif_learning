@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
+import shlex
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -38,9 +40,13 @@ def main() -> int:
         print(f"=== {command} ===", flush=True)
         with log.open("w", encoding="utf-8") as stream:
             proc = subprocess.run(
-                ["bash", "-lc", f"source scripts/env.sh && {command}"],
+                # Do not rely on login-shell startup files for the repository
+                # directory. Pin it explicitly so a user's shell profile can
+                # never redirect release evidence to another checkout.
+                ["bash", "-c", f"cd {shlex.quote(str(ROOT))} && source scripts/env.sh && {command}"],
                 cwd=ROOT, env=env, stdout=stream, stderr=subprocess.STDOUT, check=False,
             )
+        log_sha256 = hashlib.sha256(log.read_bytes()).hexdigest()
         after = source_fingerprint()[0]
         results["runs"][gate] = {
             "command": command,
@@ -49,6 +55,7 @@ def main() -> int:
             "source_fingerprint_before": before,
             "source_fingerprint_after": after,
             "log": log.relative_to(ROOT).as_posix(),
+            "log_sha256": log_sha256,
             "completed_utc": datetime.now(timezone.utc).isoformat(),
         }
         results["updated_utc"] = datetime.now(timezone.utc).isoformat()

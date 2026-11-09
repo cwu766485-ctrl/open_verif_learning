@@ -1,40 +1,48 @@
 # Verification Sign-off Status
 
-**Decision: OPEN — functional regressions pass, RTL code-coverage closure remains incomplete.**
+**Decision: OPEN — not a release sign-off.** The current full regression is green, but Raw RTL zero-count closure remains incomplete.
 
-## Tested source and tools
+## Tested snapshot
 
-- Source SHA: `8e268bda19f14ff6d587ca38d2813f69b868da97`; verification fingerprint: `552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006`.
-- Product RTL manifest: 18 files; raw coverage is split into eight independent elaborated-top datasets.
-- Verilator: `Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)`; Python: `3.12.3`.
+- Tested source SHA: `0f18c4363a5e7ab7612417645d3bb20b655a3df5`
+- Verification source fingerprint: `51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd`
+- RTL manifest: 18 Product RTL sources
+- Raw coverage: 8 independently elaborated Top datasets; no cross-Top aggregation
 
-## Regression results
+## Functional and Cross Coverage
 
-| Target | Result | Evidence |
-| --- | --- | --- |
-| `coherence_verify` | PASS (exit 0) | [`coherence_verify.log.gz`](../closure/release_runs/coherence_verify.log.gz) |
-| `coherence_full_system_verify` | PASS (exit 0) | [`coherence_full_system_verify.log.gz`](../closure/release_runs/coherence_full_system_verify.log.gz) |
-| `coherence_hit_under_miss` | PASS (exit 0) | [`coherence_hit_under_miss.log.gz`](../closure/release_runs/coherence_hit_under_miss.log.gz) |
-| `coherence_full_system_cross_closure` | PASS (exit 0) | [`coherence_full_system_cross_closure.log.gz`](../closure/release_runs/coherence_full_system_cross_closure.log.gz) |
-| `coherence_full_system_stress` | PASS (exit 0) | [`coherence_full_system_stress.log.gz`](../closure/release_runs/coherence_full_system_stress.log.gz) |
-| `coherence_coverage_audit` | PASS (exit 0) | [`coherence_coverage_audit.log.gz`](../closure/release_runs/coherence_coverage_audit.log.gz) |
-| `coherence_full_system_evidence_gate` | PASS (exit 0) | [`coherence_full_system_evidence_gate.log.gz`](../closure/release_runs/coherence_full_system_evidence_gate.log.gz) |
-| `coherence_full_system_replay_closure` | PASS (exit 0) | [`coherence_full_system_replay_closure.log.gz`](../closure/release_runs/coherence_full_system_replay_closure.log.gz) |
+- Full-system checked Functional: **53/53**.
+- Full-system checked Cross: **35/35**.
+- These are checked DV bins and do not substitute for Raw RTL Code Coverage.
 
+## Raw RTL Coverage / Release Gate
 
-- `coherence_full_system_verify`: 70 passed, 1 skipped; checked Functional 53/53, Cross 35/35.
-- `coherence_full_system_stress`: 280 seeded environments passed.
-- Python coherence checked coverage: 49/49 Functional, 19/19 Cross.
-- `coherence_release_gate`: 15/15 gate unit tests passed; the release gate itself correctly returns OPEN/non-zero because raw point-by-point review is incomplete.
+- Raw points: **74,831**.
+- Raw-hit points: **43,074**, machine-attested **43,074/43,074**.
+- Zero-count points: **31,757**; current per-point decisions accepted: **0**; OPEN/unreviewed: **31,757**.
+- Current approved waivers: **0**; stale ledger rows: **19**.
+- Reviewed Eligible Coverage: **not computable**.
+- RTL release gate: **OPEN**. Its 17 unit tests pass, but the final gate correctly exits nonzero while required zero-count points remain unreviewed.
 
-## Raw RTL coverage
+Main Subsystem Raw Coverage: Line **850/992**, Branch **468/556**, Toggle **19,996/27,474**, FSM State **30/54**, FSM Arc **7/48**. Per-Top results and the source-mapped review are in `reports/final/rtl_coverage_closure_round.md` and `reports/final/rtl_coverage_signoff.md`.
 
-Main Subsystem (`CoherentCacheSubsystem_tb`): Line 850/992, Branch 468/556, Toggle 19,996/27,474, FSM State 30/54, FSM Arc 7/48. These are raw counts, not Reviewed Eligible Coverage. Across all datasets there are 74,831 stable points; 43,074 raw-hit and 31,757 zero-count points lack accepted current-source/current-dataset review. The 19 historic decision-ledger entries are stale; no waiver or unreachable disposition is accepted. Reviewed Eligible Coverage is not computable.
+## Regression
 
-The older raw line denominator was 998. The current 992 denominator follows the separately committed invalid `DIR_I + Upgrade` fail-stop RTL correction, which removed six erroneous recovery statements. Raw Main Subsystem hit-line count stayed at 850; the difference is explicitly not presented as closure.
+All eight required regression targets completed PASS (rc=0) on the tested source fingerprint; exact commands, log paths, completion times and SHA-256 digests are recorded in `reports/closure/rtl_release_regression_status.json`:
 
-## CI and release scope
+- `coherence_coverage_audit`: **PASS** (rc=0)
+- `coherence_full_system_cross_closure`: **PASS** (rc=0)
+- `coherence_full_system_evidence_gate`: **PASS** (rc=0)
+- `coherence_full_system_replay_closure`: **PASS** (rc=0)
+- `coherence_full_system_stress`: **PASS** (rc=0)
+- `coherence_full_system_verify`: **PASS** (rc=0)
+- `coherence_hit_under_miss`: **PASS** (rc=0)
+- `coherence_verify`: **PASS** (rc=0)
 
-The tested local SHA `8e268bda19f14ff6d587ca38d2813f69b868da97` differs from the historical PR head SHA `d194d3f4552aa6d8f6e6c251f1995fc0f5bbff42`. Remote CI for the new evidence commit must be checked after push; this report makes no claim that the historical CI applies to this candidate.
+Full-system: 70 passed, 1 skipped; Hit-under-Miss: 3/3; cross closure: 21 tests; stress: 280 seeded environments passed. The stress rerun has a concise exit/pass record but not full stdout preserved; see the run manifest for this limitation.
 
-PPA, STA, physical SRAM macro implementation and chip-level physical sign-off are excluded. **Overall sign-off remains OPEN.**
+## Remote CI
+
+The known PR head at the start of this round was `15ae24c5ba655e7b46f047f283118f86cdc6b0a4`; its PR-triggered GitHub Actions run #85 completed successfully. That result is not CI for tested local source SHA `0f18c4363a5e7ab7612417645d3bb20b655a3df5`. Remote status must be refreshed after publishing this candidate.
+
+PPA, STA, physical SRAM macro implementation, and chip-level physical implementation are excluded. This document is not ASIC/tapeout sign-off.

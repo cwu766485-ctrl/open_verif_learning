@@ -1,6 +1,4 @@
 {
-  "branch_at_test_time": "codex/final-rtl-coverage-closure",
-  "completed_utc": "2026-11-09T08:26:32.388858+00:00",
   "required_gates": [
     "coherence_verify",
     "coherence_full_system_verify",
@@ -14,80 +12,95 @@
   "runs": {
     "coherence_coverage_audit": {
       "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-09T08:24:17.453590+00:00",
-      "log": "reports/closure/release_runs/coherence_coverage_audit.log.gz",
+      "completed_utc": "2026-11-09T14:30:44.107270+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_coverage_audit.log",
+      "log_sha256": "efc18f5007355aead618ea00f9e296d6e2f99bb44a7bde1b06bb880be455c503",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_full_system_cross_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-09T07:49:03.133197+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log.gz",
+      "completed_utc": "2026-11-09T13:05:58.674785+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
+      "log_sha256": "0f13572b63028f4f31214a02bc78f376acb10d8a156d54a51f36c488c3b00d7f",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_full_system_evidence_gate": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-09T08:24:20.490043+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log.gz",
+      "completed_utc": "2026-11-09T14:30:56.034023+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
+      "log_sha256": "2519bdb450221640ef69bd6b8445df0ef4154ad871a9b7a388834072c20ea7f5",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_full_system_replay_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-09T08:26:32.386941+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log.gz",
+      "completed_utc": "2026-11-09T14:33:24.931747+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
+      "log_sha256": "1c6957264c9356b50d51f222a46f96d75b949ea7a9eb4c28cc6aac88027c0ddf",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_full_system_stress": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-09T08:19:36.452653+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_stress.log.gz",
+      "completed_utc": "2026-11-09T14:37:36.517767+00:00",
+      "completion_recorded_from": "captured completed interactive Make result; concise log notes full stream limitation",
+      "log": "reports/closure/release_runs/coherence_full_system_stress.manual.log",
+      "log_sha256": "c3e0d18640cda40e8600f2f76f84eee240390c4114bcfd73c92c0a72f6989ce2",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_full_system_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-09T07:42:53.625400+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_verify.log.gz",
+      "completed_utc": "2026-11-09T12:58:42.491969+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_full_system_verify.log",
+      "log_sha256": "62ea3b27bda34cc60176565496a66b498c8617122c907bf7301c12ff1ca88b1d",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_hit_under_miss": {
       "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-09T07:46:47.268948+00:00",
-      "log": "reports/closure/release_runs/coherence_hit_under_miss.log.gz",
+      "completed_utc": "2026-11-09T13:03:20.464053+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
+      "log_sha256": "28a5e5f9eed59d2f9de328530d2526841b1fc676ad625ecf130c9de8984d371a",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     },
     "coherence_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-09T07:27:00.228525+00:00",
-      "log": "reports/closure/release_runs/coherence_verify.log.gz",
+      "completed_utc": "2026-11-09T12:40:23.638227+00:00",
+      "completion_recorded_from": "captured required Make target log",
+      "log": "reports/closure/release_runs/coherence_verify.log",
+      "log_sha256": "f4d6188eab31a0ebc60a8911f7b308c5ae4aef6622c873fba5b3d3066c8ed5e8",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
     }
   },
   "schema_version": 1,
-  "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-  "started_utc": "2026-11-09T07:13:53.289919+00:00",
-  "tested_source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-  "updated_utc": "2026-11-09T08:26:32.386961+00:00"
+  "source_fingerprint": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
+  "started_utc": "2026-11-09T12:25:46.226457+00:00",
+  "updated_utc": "2026-11-09T14:37:36.611808+00:00"
 }

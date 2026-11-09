@@ -507,9 +507,9 @@ coherence_coverage_audit: coherence_regression
 coherence_release_regression:
 	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 scripts/run_rtl_release_regressions.py 2
 
-# The gate intentionally does not waive open raw points. It returns nonzero
-# until each zero-count point has current dataset-bound evidence and all runs
-# in reports/closure/rtl_release_regression_status.json pass.
+# Raw hits are machine-attested against their exact source/dataset/test/checker
+# contract. Zero-count points still need an individual current review decision;
+# this target stays nonzero while any required zero point remains OPEN/BLOCKED.
 coherence_release_gate:
 	@PYTHONPATH=.:./dv python3 -m pytest -q tests/unit/test_rtl_release_gate.py tests/unit/test_coverage_manifest_and_gate.py
 	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_release_gate --check

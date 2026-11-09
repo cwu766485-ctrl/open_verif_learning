@@ -1,0 +1,765 @@
+make[1]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python'
+mkdir -p build
+cp pli.tab build/pli.tab
+[TIME LOG] verilator generate START: 1794229558.760
+/usr/bin/time cmake . -Bbuild -DSIMULATOR=verilator -DTRACE=OFF -DPROJECT=CoherentCacheAxiPythonWrapper -DCMAKE_BUILD_PARALLEL=18 -DRW_TYPE=DPI
+Re-run cmake no build system arguments
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning (dev) at cmake/verilator.cmake:12 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  Environment variable VERILATOR_ROOT is set to:
+
+    /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+Call Stack (most recent call first):
+  CMakeLists.txt:39 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found Perl: /usr/bin/perl (found version "5.38.2") 
+-- Performing Test _faligned_new
+-- Performing Test _faligned_new - Success
+-- Performing Test _fbracket_depth_4096
+-- Performing Test _fbracket_depth_4096 - Failed
+-- Performing Test _fcf_protection_none
+-- Performing Test _fcf_protection_none - Success
+-- Performing Test _Xclang
+-- Performing Test _Xclang - Failed
+-- Performing Test _fno_pch_timestamp
+-- Performing Test _fno_pch_timestamp - Failed
+-- Performing Test _mno_cet
+-- Performing Test _mno_cet - Failed
+-- Performing Test _Qunused_arguments
+-- Performing Test _Qunused_arguments - Failed
+-- Performing Test _Wno_bool_operation
+-- Performing Test _Wno_bool_operation - Success
+-- Performing Test _Wno_c__11_narrowing
+-- Performing Test _Wno_c__11_narrowing - Failed
+-- Performing Test _Wno_constant_logical_operand
+-- Performing Test _Wno_constant_logical_operand - Failed
+-- Performing Test _Wno_int_in_bool_context
+-- Performing Test _Wno_int_in_bool_context - Success
+-- Performing Test _Wno_non_pod_varargs
+-- Performing Test _Wno_non_pod_varargs - Failed
+-- Performing Test _Wno_parentheses_equality
+-- Performing Test _Wno_parentheses_equality - Failed
+-- Performing Test _Wno_shadow
+-- Performing Test _Wno_shadow - Success
+-- Performing Test _Wno_sign_compare
+-- Performing Test _Wno_sign_compare - Success
+-- Performing Test _Wno_subobject_linkage
+-- Performing Test _Wno_subobject_linkage - Success
+-- Performing Test _Wno_tautological_bitwise_compare
+-- Performing Test _Wno_tautological_bitwise_compare - Failed
+-- Performing Test _Wno_tautological_compare
+-- Performing Test _Wno_tautological_compare - Success
+-- Performing Test _Wno_uninitialized
+-- Performing Test _Wno_uninitialized - Success
+-- Performing Test _Wno_unnecessary_virtual_specifier
+-- Performing Test _Wno_unnecessary_virtual_specifier - Failed
+-- Performing Test _Wno_unused_but_set_parameter
+-- Performing Test _Wno_unused_but_set_parameter - Success
+-- Performing Test _Wno_unused_but_set_variable
+-- Performing Test _Wno_unused_but_set_variable - Success
+-- Performing Test _Wno_unused_parameter
+-- Performing Test _Wno_unused_parameter - Success
+-- Performing Test _Wno_unused_variable
+-- Performing Test _Wno_unused_variable - Success
+-- Performing Test _Wno_vla_cxx_extension
+-- Performing Test _Wno_vla_cxx_extension - Failed
+-- Performing Test _mt
+-- Performing Test _mt - Failed
+-- Performing Test _pthread
+-- Performing Test _pthread - Success
+-- Performing Test _lpthread
+-- Performing Test _lpthread - Success
+-- Performing Test _latomic
+-- Performing Test _latomic - Success
+-- Verilator flags: --MMD;--MP;--MAKEFLAGS;-DVL_INLINE_OPT=inline;-O3;--instr-count-dpi;0
+-- Executing Verilator...
+-- Verilator generated files in /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper
+-- Configuring done (10.7s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    RW_TYPE
+
+
+-- Build files have been written to: /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build
+3.13user 1.72system 0:10.68elapsed 45%CPU (0avgtext+0avgdata 72856maxresident)k
+0inputs+35936outputs (0major+321523minor)pagefaults 0swaps
+[TIME LOG] verilator generate END: 1794229569.444
+/usr/bin/time cmake --build build --config release --parallel 18
+Change Dir: '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile -j18
+gmake[2]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/cmake -S/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python -B/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/CMakeFiles /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build//CMakeFiles/progress.marks
+/usr/bin/gmake  -f CMakeFiles/Makefile2 all
+gmake[3]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/gmake  -f CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/depend
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+cd /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DependInfo.cmake "--color="
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/gmake  -f CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/build
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+[  4%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp.o
+[  8%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp.o
+[ 12%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp
+[ 16%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp.o
+[ 20%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp
+[ 24%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp.o
+[ 28%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp
+[ 32%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp.o
+[ 36%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp.o
+[ 40%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp.o
+[ 44%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp.o
+[ 48%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp.o
+[ 52%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp.o
+[ 56%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp.o -c /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp
+[ 60%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp.o
+[ 64%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp.o -c /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp.o -c /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp
+[ 68%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp.o -c /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp
+[ 72%] Building CXX object CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -DVM_COVERAGE=1 -DVM_PREFIX_INCLUDE="<VCoherentCacheAxiPythonWrapper.h>" -DVM_PREFIX_INCLUDE_DPI="<VCoherentCacheAxiPythonWrapper__Dpi.h>" -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_SAIF=0 -DVM_TRACE_VCD=0 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20  -fPIC -ftls-model=global-dynamic -O3 -march=native -MD -MT CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp.o -MF CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp.o.d -o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp.o -c /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp
+[ 76%] Linking CXX static library libDPICoherentCacheAxiPythonWrapper.a
+/usr/bin/cmake -P CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/cmake_clean_target.cmake
+/usr/bin/cmake -E cmake_link_script CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/link.txt --verbose=1
+/usr/bin/ar qc libDPICoherentCacheAxiPythonWrapper.a CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi_Export__0.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__2.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__3.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__Slow.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__0__Slow.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper___024root__1__Slow.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__Slow.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper_coherence_protocol_pkg__0__Slow.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Dpi.cpp.o CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/DPICoherentCacheAxiPythonWrapper/VCoherentCacheAxiPythonWrapper__Syms__Slow.cpp.o "CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated.cpp.o" "CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_dpi.cpp.o" "CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_cov.cpp.o" "CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp.o" "CMakeFiles/DPICoherentCacheAxiPythonWrapper.dir/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/verilated_threads.cpp.o"
+/usr/bin/ranlib libDPICoherentCacheAxiPythonWrapper.a
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+[ 84%] Built target DPICoherentCacheAxiPythonWrapper
+/usr/bin/gmake  -f CMakeFiles/dut_base.dir/build.make CMakeFiles/dut_base.dir/depend
+/usr/bin/gmake  -f CMakeFiles/CoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/CoherentCacheAxiPythonWrapper.dir/depend
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+cd /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/CMakeFiles/dut_base.dir/DependInfo.cmake "--color="
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+cd /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/CMakeFiles/CoherentCacheAxiPythonWrapper.dir/DependInfo.cmake "--color="
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/gmake  -f CMakeFiles/dut_base.dir/build.make CMakeFiles/dut_base.dir/build
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/gmake  -f CMakeFiles/CoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/CoherentCacheAxiPythonWrapper.dir/build
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+[ 88%] Building CXX object CMakeFiles/dut_base.dir/dut_base.cpp.o
+[ 92%] Building CXX object CMakeFiles/CoherentCacheAxiPythonWrapper.dir/dut_base.cpp.o
+/usr/bin/c++ -DUSE_VERILATOR -DVL_COVERAGE -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20 -MD -MT CMakeFiles/dut_base.dir/dut_base.cpp.o -MF CMakeFiles/dut_base.dir/dut_base.cpp.o.d -o CMakeFiles/dut_base.dir/dut_base.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp
+/usr/bin/c++ -DCoherentCacheAxiPythonWrapper_EXPORTS -DUSE_VERILATOR -DVL_COVERAGE -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/DPICoherentCacheAxiPythonWrapper -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -std=gnu++20 -fPIC -MD -MT CMakeFiles/CoherentCacheAxiPythonWrapper.dir/dut_base.cpp.o -MF CMakeFiles/CoherentCacheAxiPythonWrapper.dir/dut_base.cpp.o.d -o CMakeFiles/CoherentCacheAxiPythonWrapper.dir/dut_base.cpp.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp
+In file included from /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1:
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp: In member function ‘std::vector<std::__cxx11::basic_string<char> > DutUnifiedBase::VPIInternalSignalList(std::string, int)’:
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.hpp:355:29: warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘vpi_handle_t’ {aka ‘long unsigned int’} [-Wformat=]
+  355 |             fprintf(stdout, "DEBUG: " fmt, ##__VA_ARGS__);                                                             \
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:5: note: in expansion of macro ‘XDebug’
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |     ^~~~~~
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:35: note: format string is defined here
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |                                ~~~^
+      |                                   |
+      |                                   long long unsigned int
+      |                                %lx
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.hpp:355:29: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘vpi_handle_t’ {aka ‘long unsigned int’} [-Wformat=]
+  355 |             fprintf(stdout, "DEBUG: " fmt, ##__VA_ARGS__);                                                             \
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:5: note: in expansion of macro ‘XDebug’
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |     ^~~~~~
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:46: note: format string is defined here
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |                                           ~~~^
+      |                                              |
+      |                                              long long int
+      |                                           %ld
+In file included from /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1:
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp: In member function ‘std::vector<std::__cxx11::basic_string<char> > DutUnifiedBase::VPIInternalSignalList(std::string, int)’:
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.hpp:355:29: warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘vpi_handle_t’ {aka ‘long unsigned int’} [-Wformat=]
+  355 |             fprintf(stdout, "DEBUG: " fmt, ##__VA_ARGS__);                                                             \
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:5: note: in expansion of macro ‘XDebug’
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |     ^~~~~~
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:35: note: format string is defined here
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |                                ~~~^
+      |                                   |
+      |                                   long long unsigned int
+      |                                %lx
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.hpp:355:29: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘vpi_handle_t’ {aka ‘long unsigned int’} [-Wformat=]
+  355 |             fprintf(stdout, "DEBUG: " fmt, ##__VA_ARGS__);                                                             \
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:5: note: in expansion of macro ‘XDebug’
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |     ^~~~~~
+/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/dut_base.cpp:1052:46: note: format string is defined here
+ 1052 |     XDebug("Found VPI handle 0x%llx, type %lld", vpi_handle, _vpi_get(vpiType, vpi_handle));
+      |                                           ~~~^
+      |                                              |
+      |                                              long long int
+      |                                           %ld
+[ 96%] Linking CXX shared library libUTCoherentCacheAxiPythonWrapper.so
+bash -c date\ '+start\ +%s'
+start +1794229694
+/usr/bin/cmake -E cmake_link_script CMakeFiles/CoherentCacheAxiPythonWrapper.dir/link.txt --verbose=1
+/usr/bin/c++ -fPIC  -fcoroutines  -ftls-model=global-dynamic -O3 -march=native -shared -Wl,-soname,libUTCoherentCacheAxiPythonWrapper.so -o libUTCoherentCacheAxiPythonWrapper.so CMakeFiles/CoherentCacheAxiPythonWrapper.dir/dut_base.cpp.o  -Wl,-rpath,"\$ORIGIN" -Wl,--whole-archive libDPICoherentCacheAxiPythonWrapper.a -Wl,--no-whole-archive -ldl -pthread -lpthread -latomic 
+[100%] Linking CXX static library libdut_base.a
+/usr/bin/cmake -P CMakeFiles/dut_base.dir/cmake_clean_target.cmake
+/usr/bin/cmake -E cmake_link_script CMakeFiles/dut_base.dir/link.txt --verbose=1
+/usr/bin/ar qc libdut_base.a CMakeFiles/dut_base.dir/dut_base.cpp.o
+/usr/bin/ranlib libdut_base.a
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+[100%] Built target dut_base
+bash -c date\ '+end\ +%s'
+end +1794229695
+Copying CoherentCacheAxiPythonWrapper to /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/UT_CoherentCacheAxiPythonWrapper
+/usr/bin/cmake -E copy /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/libUTCoherentCacheAxiPythonWrapper.so /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/UT_CoherentCacheAxiPythonWrapper
+/usr/bin/cmake -E copy /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/libDPICoherentCacheAxiPythonWrapper.a /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/UT_CoherentCacheAxiPythonWrapper
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+[100%] Built target CoherentCacheAxiPythonWrapper
+gmake[3]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+/usr/bin/cmake -E cmake_progress_start /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build/CMakeFiles 0
+gmake[2]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/build'
+
+219.32user 11.02system 2:05.66elapsed 183%CPU (0avgtext+0avgdata 861308maxresident)k
+0inputs+86856outputs (3major+1701418minor)pagefaults 0swaps
+[TIME LOG] verilator build END: 1794229695.118
+# Bring .vdb alongside the .so so the runtime -cm_dir (anchored to the .so
+# directory by dut_base.cpp) finds the database and appends new testdata.
+make[2]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python'
+make[3]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper'
+Try copy python module: xspcomm
+start build wrapper at
+Mon Nov  9 21:08:15 +08 2026
+cmake . -Bbuild
+Re-run cmake no build system arguments
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Looking for execinfo.h
+-- Looking for execinfo.h - found
+-- Performing Test COMPILER_SUPPORTS_CXX20
+-- Performing Test COMPILER_SUPPORTS_CXX20 - Success
+Find CMP0078, set it be NEW
+Find CMP0086, set it be NEW
+Find CMP0148, set it be NEW
+-- Found SWIG: /usr/bin/swig4.0 (found suitable version "4.2.0", minimum required is "4.2.0")  
+-- Found Python3: /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/include/python3.11 (found version "3.11.6") found components: Development.Module 
+CMake Warning (dev) at dut.cmake:37 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  Environment variable VERILATOR_ROOT is set to:
+
+    /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+Call Stack (most recent call first):
+  CMakeLists.txt:83 (XSPyTarget)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found Perl: /usr/bin/perl (found version "5.38.2") 
+-- Performing Test _faligned_new
+-- Performing Test _faligned_new - Success
+-- Performing Test _fbracket_depth_4096
+-- Performing Test _fbracket_depth_4096 - Failed
+-- Performing Test _fcf_protection_none
+-- Performing Test _fcf_protection_none - Success
+-- Performing Test _Xclang
+-- Performing Test _Xclang - Failed
+-- Performing Test _fno_pch_timestamp
+-- Performing Test _fno_pch_timestamp - Failed
+-- Performing Test _mno_cet
+-- Performing Test _mno_cet - Failed
+-- Performing Test _Qunused_arguments
+-- Performing Test _Qunused_arguments - Failed
+-- Performing Test _Wno_bool_operation
+-- Performing Test _Wno_bool_operation - Success
+-- Performing Test _Wno_c__11_narrowing
+-- Performing Test _Wno_c__11_narrowing - Failed
+-- Performing Test _Wno_constant_logical_operand
+-- Performing Test _Wno_constant_logical_operand - Failed
+-- Performing Test _Wno_int_in_bool_context
+-- Performing Test _Wno_int_in_bool_context - Success
+-- Performing Test _Wno_non_pod_varargs
+-- Performing Test _Wno_non_pod_varargs - Failed
+-- Performing Test _Wno_parentheses_equality
+-- Performing Test _Wno_parentheses_equality - Failed
+-- Performing Test _Wno_shadow
+-- Performing Test _Wno_shadow - Success
+-- Performing Test _Wno_sign_compare
+-- Performing Test _Wno_sign_compare - Success
+-- Performing Test _Wno_subobject_linkage
+-- Performing Test _Wno_subobject_linkage - Success
+-- Performing Test _Wno_tautological_bitwise_compare
+-- Performing Test _Wno_tautological_bitwise_compare - Failed
+-- Performing Test _Wno_tautological_compare
+-- Performing Test _Wno_tautological_compare - Success
+-- Performing Test _Wno_uninitialized
+-- Performing Test _Wno_uninitialized - Success
+-- Performing Test _Wno_unnecessary_virtual_specifier
+-- Performing Test _Wno_unnecessary_virtual_specifier - Failed
+-- Performing Test _Wno_unused_but_set_parameter
+-- Performing Test _Wno_unused_but_set_parameter - Success
+-- Performing Test _Wno_unused_but_set_variable
+-- Performing Test _Wno_unused_but_set_variable - Success
+-- Performing Test _Wno_unused_parameter
+-- Performing Test _Wno_unused_parameter - Success
+-- Performing Test _Wno_unused_variable
+-- Performing Test _Wno_unused_variable - Success
+-- Performing Test _Wno_vla_cxx_extension
+-- Performing Test _Wno_vla_cxx_extension - Failed
+-- Performing Test _mt
+-- Performing Test _mt - Failed
+-- Performing Test _pthread
+-- Performing Test _pthread - Success
+-- Performing Test _lpthread
+-- Performing Test _lpthread - Success
+-- Performing Test _latomic
+-- Performing Test _latomic - Success
+-- Configuring done (8.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build
+cmake --build build --config Debug --parallel 18
+Change Dir: '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile -j18
+gmake[4]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+/usr/bin/cmake -S/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper -B/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build//CMakeFiles/progress.marks
+/usr/bin/gmake  -f CMakeFiles/Makefile2 all
+gmake[5]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+/usr/bin/gmake  -f CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/build.make CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/depend
+gmake[6]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+cd /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/DependInfo.cmake "--color="
+Dependee "/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/DependInfo.cmake" is newer than depender "/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/depend.internal".
+Dependee "/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/depend.internal".
+Scanning dependencies of target UT_CoherentCacheAxiPythonWrapper_swig_compilation
+gmake[6]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+/usr/bin/gmake  -f CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/build.make CMakeFiles/UT_CoherentCacheAxiPythonWrapper_swig_compilation.dir/build
+gmake[6]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+[ 33%] Swig compile dut.i for python
+/usr/bin/cmake -E make_directory /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/_pyswig
+/usr/bin/cmake -E touch /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/dutPYTHON.stamp
+/usr/bin/cmake -E env SWIG_LIB=/usr/share/swig4.0 /usr/bin/swig4.0 -python -c++ -outdir /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build -c++ -interface _UT_CoherentCacheAxiPythonWrapper -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/. -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/include/python3.11 -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper -o /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/_pyswig/dutPYTHON_wrap.cxx /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/dut.i
+gmake[6]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+[ 33%] Built target UT_CoherentCacheAxiPythonWrapper_swig_compilation
+/usr/bin/gmake  -f CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/depend
+gmake[6]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+cd /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/DependInfo.cmake "--color="
+gmake[6]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+/usr/bin/gmake  -f CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/build.make CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/build
+gmake[6]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+[ 66%] Building CXX object CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/_pyswig/dutPYTHON_wrap.cxx.o
+/usr/bin/c++ -DENABLE_XCOROUTINE=true -DHAVE_EXECINFO_H -DUSE_VERILATOR -DUT_CoherentCacheAxiPythonWrapper_EXPORTS -DXSPCOMM_VERSION=\"0.0.1\" -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/. -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include -I/home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/share/verilator/include/vltstd -I/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper -isystem /home/preston/workspace/nutshell_cache/.tooling/oss-cad-suite/include/python3.11 -std=c++20 -fcoroutines -ftls-model=global-dynamic -std=gnu++20 -fPIC -MD -MT CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/_pyswig/dutPYTHON_wrap.cxx.o -MF CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/_pyswig/dutPYTHON_wrap.cxx.o.d -o CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/_pyswig/dutPYTHON_wrap.cxx.o -c /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/_pyswig/dutPYTHON_wrap.cxx
+[100%] Linking CXX shared module _UT_CoherentCacheAxiPythonWrapper.so
+/usr/bin/cmake -E cmake_link_script CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/link.txt --verbose=1
+/usr/bin/c++ -fPIC  -std=c++20 -fcoroutines -ftls-model=global-dynamic -shared  -o _UT_CoherentCacheAxiPythonWrapper.so CMakeFiles/UT_CoherentCacheAxiPythonWrapper.dir/_pyswig/dutPYTHON_wrap.cxx.o   -L/home/preston/workspace/nutshell_cache/.tooling/picker-install/share/picker/lib  -Wl,-rpath,"\$ORIGIN:/home/preston/workspace/nutshell_cache/.tooling/picker-install/share/picker/lib:/home/preston/.local/lib:/usr/local/lib:/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper" /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/libUTCoherentCacheAxiPythonWrapper.so -lxspcomm -ldl 
+gmake[6]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+[100%] Built target UT_CoherentCacheAxiPythonWrapper
+gmake[5]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+/usr/bin/cmake -E cmake_progress_start /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build/CMakeFiles 0
+gmake[4]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper/build'
+
+end build wrapper at
+Mon Nov  9 21:08:25 +08 2026
+--------------Compile Success Test Step DUT--------------------
+--------------------------------------------------------------
+All complete
+make[3]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper'
+make[2]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python'
+make[2]: Entering directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper'
+purge complete
+make[2]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python/UT_CoherentCacheAxiPythonWrapper'
+make[1]: Leaving directory '/home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache/.tooling/coherent_axi_python'
+Running as normal executable
+Frequency: 100MHz
+Render file: filelist.f to ../.tooling/coherent_axi_python/filelist.f
+Write file: ../.tooling/coherent_axi_python/filelist.f
+Render file: dut_base.hpp to ../.tooling/coherent_axi_python/dut_base.hpp
+Write file: ../.tooling/coherent_axi_python/dut_base.hpp
+Render file: signals.json to ../.tooling/coherent_axi_python/signals.json
+Write file: ../.tooling/coherent_axi_python/signals.json
+Render file: top.sv to ../.tooling/coherent_axi_python/top.sv
+Write file: ../.tooling/coherent_axi_python/top.sv
+Render file: cpp.mk to ../.tooling/coherent_axi_python/mk/cpp.mk
+Write file: ../.tooling/coherent_axi_python/mk/cpp.mk
+Render file: java.mk to ../.tooling/coherent_axi_python/mk/java.mk
+Write file: ../.tooling/coherent_axi_python/mk/java.mk
+Render file: golang.mk to ../.tooling/coherent_axi_python/mk/golang.mk
+Write file: ../.tooling/coherent_axi_python/mk/golang.mk
+Render file: lua.mk to ../.tooling/coherent_axi_python/mk/lua.mk
+Write file: ../.tooling/coherent_axi_python/mk/lua.mk
+Render file: python.mk to ../.tooling/coherent_axi_python/mk/python.mk
+Write file: ../.tooling/coherent_axi_python/mk/python.mk
+Render file: scala.mk to ../.tooling/coherent_axi_python/mk/scala.mk
+Write file: ../.tooling/coherent_axi_python/mk/scala.mk
+Render file: uvs.cmake to ../.tooling/coherent_axi_python/cmake/uvs.cmake
+Write file: ../.tooling/coherent_axi_python/cmake/uvs.cmake
+Render file: gsim.cmake to ../.tooling/coherent_axi_python/cmake/gsim.cmake
+Write file: ../.tooling/coherent_axi_python/cmake/gsim.cmake
+Render file: verilator.cmake to ../.tooling/coherent_axi_python/cmake/verilator.cmake
+Write file: ../.tooling/coherent_axi_python/cmake/verilator.cmake
+Render file: vcs.cmake to ../.tooling/coherent_axi_python/cmake/vcs.cmake
+Write file: ../.tooling/coherent_axi_python/cmake/vcs.cmake
+Render file: dut_base.cpp to ../.tooling/coherent_axi_python/dut_base.cpp
+Write file: ../.tooling/coherent_axi_python/dut_base.cpp
+Render file: dut_type.hpp to ../.tooling/coherent_axi_python/dut_type.hpp
+Write file: ../.tooling/coherent_axi_python/dut_type.hpp
+Render file: Makefile to ../.tooling/coherent_axi_python/Makefile
+Write file: ../.tooling/coherent_axi_python/Makefile
+Render file: top.v to ../.tooling/coherent_axi_python/top.v
+Write file: ../.tooling/coherent_axi_python/top.v
+Render file: CMakeLists.txt to ../.tooling/coherent_axi_python/CMakeLists.txt
+Write file: ../.tooling/coherent_axi_python/CMakeLists.txt
+Render file: pli.tab to ../.tooling/coherent_axi_python/pli.tab
+Write file: ../.tooling/coherent_axi_python/pli.tab
+Write file: ../.tooling/coherent_axi_python/CoherentCacheAxiPythonWrapper.v
+Generate DPI files successfully!
+Render file: uvs.cmake to ../.tooling/coherent_axi_python/python/cmake/uvs.cmake
+Write file: ../.tooling/coherent_axi_python/python/cmake/uvs.cmake
+Render file: gsim.cmake to ../.tooling/coherent_axi_python/python/cmake/gsim.cmake
+Write file: ../.tooling/coherent_axi_python/python/cmake/gsim.cmake
+Render file: verilator.cmake to ../.tooling/coherent_axi_python/python/cmake/verilator.cmake
+Write file: ../.tooling/coherent_axi_python/python/cmake/verilator.cmake
+Render file: vcs.cmake to ../.tooling/coherent_axi_python/python/cmake/vcs.cmake
+Write file: ../.tooling/coherent_axi_python/python/cmake/vcs.cmake
+Render file: dut.py to ../.tooling/coherent_axi_python/python/dut.py
+Write file: ../.tooling/coherent_axi_python/python/dut.py
+Render file: dut.i to ../.tooling/coherent_axi_python/python/dut.i
+Write file: ../.tooling/coherent_axi_python/python/dut.i
+Render file: Makefile to ../.tooling/coherent_axi_python/python/Makefile
+Write file: ../.tooling/coherent_axi_python/python/Makefile
+Render file: example.py to ../.tooling/coherent_axi_python/python/example.py
+Write file: ../.tooling/coherent_axi_python/python/example.py
+Render file: CMakeLists.txt to ../.tooling/coherent_axi_python/python/CMakeLists.txt
+Write file: ../.tooling/coherent_axi_python/python/CMakeLists.txt
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.7.0 -- /home/preston/workspace/nutshell_cache/.tooling/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/preston/workspace/open_verif_learning-final-close/workspace/nutshell_cache
+configfile: pytest.ini
+plugins: asyncio-1.4.0, reporter-html1-0.9.5, toffee-test-0.2.0, reporter-0.5.3, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 280 items
+
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[360021] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[2654795790] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[5309231559] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[7963667328] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[10618103097] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[13272538866] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[15926974635] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[18581410404] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[21235846173] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[23890281942] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[26544717711] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[29199153480] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[31853589249] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[34508025018] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[37162460787] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[39816896556] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[42471332325] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[45125768094] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[47780203863] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[50434639632] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[53089075401] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[55743511170] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[58397946939] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[61052382708] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[63706818477] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[66361254246] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[69015690015] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[71670125784] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[74324561553] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[76978997322] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[79633433091] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[82287868860] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[84942304629] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[87596740398] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[90251176167] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[92905611936] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[95560047705] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[98214483474] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[100868919243] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[103523355012] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[106177790781] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[108832226550] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[111486662319] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[114141098088] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[116795533857] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[119449969626] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[122104405395] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[124758841164] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[127413276933] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[130067712702] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[132722148471] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[135376584240] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[138031020009] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[140685455778] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[143339891547] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[145994327316] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[148648763085] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[151303198854] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[153957634623] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[156612070392] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[159266506161] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[161920941930] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[164575377699] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[167229813468] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[169884249237] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[172538685006] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[175193120775] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[177847556544] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[180501992313] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[183156428082] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[185810863851] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[188465299620] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[191119735389] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[193774171158] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[196428606927] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[199083042696] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[201737478465] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[204391914234] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[207046350003] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[209700785772] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[212355221541] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[215009657310] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[217664093079] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[220318528848] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[222972964617] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[225627400386] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[228281836155] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[230936271924] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[233590707693] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[236245143462] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[238899579231] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[241554015000] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[244208450769] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[246862886538] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[249517322307] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[252171758076] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[254826193845] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[257480629614] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[260135065383] PASSED
+tests/full_system/test_full_system_random.py::test_seeded_full_system_coherence[262789501152] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53504] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53505] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53506] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53507] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53508] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53509] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53510] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53511] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53512] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53513] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53514] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53515] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53516] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53517] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53518] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53519] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53520] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53521] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53522] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53523] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53524] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53525] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53526] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53527] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53528] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53529] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53530] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53531] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53532] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53533] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53534] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53535] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53536] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53537] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53538] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53539] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53540] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53541] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53542] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53543] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53544] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53545] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53546] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53547] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53548] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53549] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53550] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53551] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53552] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53553] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53554] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53555] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53556] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53557] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53558] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53559] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53560] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53561] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53562] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53563] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53564] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53565] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53566] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53567] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53568] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53569] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53570] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53571] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53572] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53573] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53574] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53575] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53576] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53577] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53578] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53579] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53580] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53581] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53582] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53583] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53584] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53585] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53586] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53587] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53588] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53589] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53590] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53591] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53592] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53593] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53594] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53595] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53596] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53597] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53598] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53599] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53600] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53601] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53602] PASSED
+tests/full_system/test_mixed_agent_random.py::test_seeded_cpu_mmio_apb_axi_overlap[53603] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49152] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49153] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49154] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49155] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49156] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49157] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49158] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49159] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49160] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49161] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49162] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49163] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49164] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49165] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49166] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49167] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49168] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49169] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49170] PASSED
+tests/full_system/test_resource_aware_random.py::test_seeded_same_and_distinct_l2_set_snoop_refill[49171] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59248] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59249] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59250] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59251] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59252] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59253] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59254] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59255] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59256] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59257] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59258] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59259] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59260] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59261] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59262] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59263] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59264] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59265] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59266] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_randomized_stall[59267] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59248] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59249] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59250] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59251] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59252] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59253] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59254] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59255] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59256] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59257] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59258] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59259] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59260] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59261] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59262] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59263] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59264] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59265] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59266] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery[59267] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59248] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59249] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59250] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59251] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59252] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59253] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59254] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59255] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59256] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59257] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59258] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59259] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59260] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59261] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59262] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59263] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59264] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59265] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59266] PASSED
+tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending[59267] PASSED

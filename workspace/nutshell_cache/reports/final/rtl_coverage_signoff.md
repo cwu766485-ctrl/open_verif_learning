@@ -1,145 +1,89 @@
-# RTL Code Coverage Sign-off Status
+# RTL Code Coverage Release Gate
 
-**Decision: OPEN. This is not a completed RTL code-coverage closure or release sign-off.**
+**Decision: OPEN**
 
-## Evidence identity
+- Repository HEAD: `0f18c4363a5e7ab7612417645d3bb20b655a3df5`
+- Verification source fingerprint: `51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd`
+- Raw points inventoried: 74831; zero-count points requiring review: 31757
+- Raw-hit execution attestations: 43074/43074; unattested hits: 0
+- Zero-point decisions recorded: 0 (COVERED=0, PROVEN_UNREACHABLE=0, REVIEWED_WAIVER=0, OPEN=0, BLOCKED=0); zero OPEN/BLOCKED: 31757
+- Archived stale historical decisions: 19; unreviewed zero-count rows: 31757
+- Reviewed waivers accepted: 0
 
-- RTL/DV source SHA tested: `8e268bda19f14ff6d587ca38d2813f69b868da97` (the source snapshot before this report-only evidence commit).
-- Source fingerprint: `552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006`.
-- Product RTL manifest: `18` files; 8 independent Verilator datasets.
-- Verilator: `Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)`; coverage tool: `Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)`.
-- Raw data: [`rtl_coverage_raw/README.md`](rtl_coverage_raw/README.md), dataset manifest [`rtl_coverage_dataset_manifest.json`](rtl_coverage_dataset_manifest.json), full point inventory [`rtl_release_point_matrix.csv.gz`](rtl_release_point_matrix.csv.gz).
+Coverage remains separated by elaborated top and metric; these tables are not summed across datasets.
+RAW_COVERED means only that a nonzero point was observed in the exact hashed dataset under the recorded Top/source/tool/test/checker contract and required regression. It does not establish functional correctness; key protocol behavior requires the independent Functional-System Evidence Gate. Candidate counts exclude only independently reviewed unreachable/waiver points.
 
-## Main Subsystem raw coverage
+| Dataset | Metric | Raw hit/total | Candidate hit/total after approved exclusions | Candidate misses |
+| --- | --- | ---: | ---: | ---: |
+| axi_subsystem | branch | 509/632 | 509/632 | 123 |
+| axi_subsystem | fsm_arc | 4/48 | 4/48 | 44 |
+| axi_subsystem | fsm_state | 30/54 | 30/54 | 24 |
+| axi_subsystem | line | 901/1068 | 901/1068 | 167 |
+| axi_subsystem | toggle | 15623/32332 | 15623/32332 | 16709 |
+| bus_blocks | branch | 70/76 | 70/76 | 6 |
+| bus_blocks | line | 67/68 | 67/68 | 1 |
+| bus_blocks | toggle | 1100/2450 | 1100/2450 | 1350 |
+| directory_controller | branch | 30/42 | 30/42 | 12 |
+| directory_controller | fsm_arc | 3/9 | 3/9 | 6 |
+| directory_controller | fsm_state | 10/10 | 10/10 | 0 |
+| directory_controller | line | 122/182 | 122/182 | 60 |
+| directory_controller | toggle | 250/612 | 250/612 | 362 |
+| directory_mshr_bank | branch | 100/128 | 100/128 | 28 |
+| directory_mshr_bank | fsm_arc | 11/36 | 11/36 | 25 |
+| directory_mshr_bank | fsm_state | 31/40 | 31/40 | 9 |
+| directory_mshr_bank | line | 167/286 | 167/286 | 119 |
+| directory_mshr_bank | toggle | 1063/2904 | 1063/2904 | 1841 |
+| main_subsystem | branch | 468/556 | 468/556 | 88 |
+| main_subsystem | fsm_arc | 7/48 | 7/48 | 41 |
+| main_subsystem | fsm_state | 30/54 | 30/54 | 24 |
+| main_subsystem | line | 850/992 | 850/992 | 142 |
+| main_subsystem | toggle | 19996/27474 | 19996/27474 | 7478 |
+| mesi_l1_controller | branch | 41/46 | 41/46 | 5 |
+| mesi_l1_controller | fsm_arc | 3/6 | 3/6 | 3 |
+| mesi_l1_controller | fsm_state | 7/7 | 7/7 | 0 |
+| mesi_l1_controller | line | 107/132 | 107/132 | 25 |
+| mesi_l1_controller | toggle | 688/1804 | 688/1804 | 1116 |
+| shared_l2_directory_array | branch | 65/74 | 65/74 | 9 |
+| shared_l2_directory_array | line | 75/79 | 75/79 | 4 |
+| shared_l2_directory_array | toggle | 197/1778 | 197/1778 | 1581 |
+| shared_line_engine | branch | 44/52 | 44/52 | 8 |
+| shared_line_engine | line | 101/104 | 101/104 | 3 |
+| shared_line_engine | toggle | 304/648 | 304/648 | 344 |
 
-These are observations from `CoherentCacheSubsystem_tb`, not reviewed eligible coverage.
+## Open gate findings by dataset and metric
 
-| Metric | Raw hit/total | Miss | Raw rate |
-| --- | ---: | ---: | ---: |
-| line | 850/992 | 142 | 85.69% |
-| branch | 468/556 | 88 | 84.17% |
-| toggle | 19996/27474 | 7478 | 72.78% |
-| fsm_state | 30/54 | 24 | 55.56% |
-| fsm_arc | 7/48 | 41 | 14.58% |
+- axi_subsystem / branch: 123 unresolved finding(s)
+- axi_subsystem / fsm_arc: 44 unresolved finding(s)
+- axi_subsystem / fsm_state: 24 unresolved finding(s)
+- axi_subsystem / line: 167 unresolved finding(s)
+- axi_subsystem / toggle: 16709 unresolved finding(s)
+- bus_blocks / branch: 6 unresolved finding(s)
+- bus_blocks / line: 1 unresolved finding(s)
+- bus_blocks / toggle: 1350 unresolved finding(s)
+- directory_controller / branch: 12 unresolved finding(s)
+- directory_controller / fsm_arc: 6 unresolved finding(s)
+- directory_controller / line: 60 unresolved finding(s)
+- directory_controller / toggle: 362 unresolved finding(s)
+- directory_mshr_bank / branch: 28 unresolved finding(s)
+- directory_mshr_bank / fsm_arc: 25 unresolved finding(s)
+- directory_mshr_bank / fsm_state: 9 unresolved finding(s)
+- directory_mshr_bank / line: 119 unresolved finding(s)
+- directory_mshr_bank / toggle: 1841 unresolved finding(s)
+- main_subsystem / branch: 88 unresolved finding(s)
+- main_subsystem / fsm_arc: 41 unresolved finding(s)
+- main_subsystem / fsm_state: 24 unresolved finding(s)
+- main_subsystem / line: 142 unresolved finding(s)
+- main_subsystem / toggle: 7478 unresolved finding(s)
+- mesi_l1_controller / branch: 5 unresolved finding(s)
+- mesi_l1_controller / fsm_arc: 3 unresolved finding(s)
+- mesi_l1_controller / line: 25 unresolved finding(s)
+- mesi_l1_controller / toggle: 1116 unresolved finding(s)
+- shared_l2_directory_array / branch: 9 unresolved finding(s)
+- shared_l2_directory_array / line: 4 unresolved finding(s)
+- shared_l2_directory_array / toggle: 1581 unresolved finding(s)
+- shared_line_engine / branch: 8 unresolved finding(s)
+- shared_line_engine / line: 3 unresolved finding(s)
+- shared_line_engine / toggle: 344 unresolved finding(s)
+- 31757 total point-level/infrastructure finding(s); see the machine-readable gate JSON and point matrix for stable IDs and details.
 
-## Baseline comparison
-
-The earlier audit reported Main Subsystem line coverage as `850/998`; the current source snapshot reports `850/992`. The six-point denominator difference is localized to `DirectoryController.sv`: commit `422ab9d` removed six executable statements that incorrectly refilled/granted Modified after reporting an invalid `DIR_I + Upgrade` protocol error. The replacement fail-stop behavior has a dedicated block checker and passed the current regression. The number of hit lines remains 850; this is a source behavior correction, not test-driven coverage closure. Branch, toggle and FSM counts are unchanged from the earlier Main Subsystem raw report.
-
-| RTL source | Earlier line hit/total | Current line hit/total |
-| --- | ---: | ---: |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 37/37 |
-| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 51/54 |
-| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 73/104 |
-| `rtl/directory/DirectoryController.sv` | 114/188 | 114/182 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 94/104 |
-| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 5/5 |
-| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 22/22 |
-| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 31/34 |
-| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 50/50 |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 67/67 |
-| `rtl/l1/MesiL1Controller.sv` | 103/126 | 103/126 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 6/6 |
-| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 75/79 |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 122/122 |
-
-## Independent raw datasets
-
-Each elaborated top retains its own denominator. Do not add these rows together.
-
-### `axi_subsystem` — CoherentCacheAxiSubsystem_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 901/1068 | 167 |
-| branch | 509/632 | 123 |
-| toggle | 15623/32332 | 16709 |
-| fsm_state | 30/54 | 24 |
-| fsm_arc | 4/48 | 44 |
-### `bus_blocks` — CacheBusBlocks_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 67/68 | 1 |
-| branch | 70/76 | 6 |
-| toggle | 1100/2450 | 1350 |
-### `directory_controller` — DirectoryController_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 122/182 | 60 |
-| branch | 30/42 | 12 |
-| toggle | 250/612 | 362 |
-| fsm_state | 10/10 | 0 |
-| fsm_arc | 3/9 | 6 |
-### `directory_mshr_bank` — DirectoryMshrBank_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 167/286 | 119 |
-| branch | 100/128 | 28 |
-| toggle | 1063/2904 | 1841 |
-| fsm_state | 31/40 | 9 |
-| fsm_arc | 11/36 | 25 |
-### `main_subsystem` — CoherentCacheSubsystem_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 850/992 | 142 |
-| branch | 468/556 | 88 |
-| toggle | 19996/27474 | 7478 |
-| fsm_state | 30/54 | 24 |
-| fsm_arc | 7/48 | 41 |
-### `mesi_l1_controller` — MesiL1Controller_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 107/132 | 25 |
-| branch | 41/46 | 5 |
-| toggle | 688/1804 | 1116 |
-| fsm_state | 7/7 | 0 |
-| fsm_arc | 3/6 | 3 |
-### `shared_l2_directory_array` — SharedL2DirectoryArray_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 75/79 | 4 |
-| branch | 65/74 | 9 |
-| toggle | 197/1778 | 1581 |
-### `shared_line_engine` — SharedLineEngine_tb
-
-| Metric | Raw hit/total | Miss |
-| --- | ---: | ---: |
-| line | 101/104 | 3 |
-| branch | 44/52 | 8 |
-| toggle | 304/648 | 344 |
-
-The full source manifest reconciles 18/18 product RTL files. Absence of executable coverage points in a given top is reported per dataset; it is not evidence that another top exercised the same point.
-
-## Point review and closure status
-
-- Stable point inventory: **74,831** points across the eight datasets.
-- Raw-hit points without an accepted current-source/current-dataset disposition: **43,074**.
-- Zero-count points without a reviewed disposition: **31,757**.
-- Historical ledger records: 19; all are bound to older source/dataset fingerprints and are stale for this raw run.
-- Current valid point dispositions: **0**. Approved waivers: **0**.
-- Reviewed Eligible Coverage: **not computable** until current evidence is reviewed point by point.
-- Detailed zero-count source/line review matrix: [`coverage_closure_matrix.csv`](coverage_closure_matrix.csv). The machine gate matrix contains every raw line/branch/toggle/FSM point.
-
-Selected audit conclusions are recorded in [`../../docs/coherence_coverage_gap_review.md`](../../docs/coherence_coverage_gap_review.md): invalid `DIR_I + Upgrade` is a protocol error and fail-stops; malformed beat/last cases are negative-protocol paths; `CpuMmioRouter` illegal FSM default remains defensive and unproven unreachable; `SharedLineEngine` Grant Read requires a precise valid L2-hit precondition. These classifications are not blanket waivers and do not close the remaining points.
-
-## Release Gate
-
-`make COHERENCE_JOBS=2 coherence_release_gate` ran its **15 gate unit tests successfully**, then returned the expected non-zero result because point review is incomplete. Final decision: **OPEN**. The gate output is in [`rtl_release_gate.json.gz`](rtl_release_gate.json.gz), [`rtl_release_point_matrix.csv.gz`](rtl_release_point_matrix.csv.gz), and [`../closure/rtl_release_gate.log.gz`](../closure/rtl_release_gate.log.gz). No coverage denominator was excluded by an approved waiver.
-
-## Regression evidence
-
-All eight required local regression gates passed at source SHA `8e268bda19f14ff6d587ca38d2813f69b868da97` and fingerprint `552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006`. The full-system run reported 70 passed and 1 skipped; checked Full-System Functional/Cross closure is 53/53 and 35/35. Python coherence closure is 49/49 Functional and 19/19 Cross. The stress target passed 280 seeded environments. See [`verification_run_manifest.json`](verification_run_manifest.json) and the compressed logs under [`../closure/release_runs/`](../closure/release_runs/).
-
-The local tested source SHA differs from the historical PR CI SHA `d194d3f4552aa6d8f6e6c251f1995fc0f5bbff42`. No new remote CI result is claimed until the evidence commit is pushed and its Actions run is checked.
-
-## Scope and remaining risk
-
-The raw counts still include unreviewed legal paths, recovery paths, defensive/error branches and tool/instrumentation-sensitive points. No point is marked unreachable or waived without accepted evidence. Required Line/Branch/FSM closure is therefore unresolved. Toggle results are raw only and have not been bulk-waived. Formal/fault-injection evidence from existing regressions is recorded, but is not automatically credited to another elaborated-top raw point.
-
-PPA, STA, physical SRAM macro mapping and chip-level implementation are excluded. **Final decision: OPEN; do not describe this as full code-coverage closure.**
+A PASS requires current source and dataset fingerprints, hashed regression logs for all required gates, valid Test/Checker source contracts, and an individual accepted disposition for every zero-count point. A zero-count point cannot be marked COVERED; it must first be observed in this exact dataset. PROVEN_UNREACHABLE and REVIEWED_WAIVER require evidence and independent approval. Raw hits are never transferred across elaborated Tops, and no disposition changes Raw Coverage.
