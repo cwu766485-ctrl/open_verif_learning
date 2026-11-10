@@ -47,7 +47,14 @@
     grant_valid = 1; grant_txn_id = dir_req_txn_id; grant_opcode = GRANT_DATA_S;
     tick(); @(negedge clock); grant_valid = 0;
     refill_ready = 1; grant_data_valid = 1;
-    grant_data_txn_id = grant_txn_id; grant_data_beat_idx = 7;
+    grant_data_txn_id = grant_txn_id;
+    for (integer beat = 0; beat < 7; beat++) begin
+      grant_data_beat_idx = 3'(beat); grant_data_last = 0;
+      #1; if (!grant_data_ready) $fatal(1, "legal refill prefix rejected");
+      tick(); @(negedge clock);
+      if (protocol_error) $fatal(1, "legal refill prefix raised error");
+    end
+    grant_data_beat_idx = 7;
     grant_data = 64'h7; grant_data_last = 0;
     #1; if (!grant_data_ready) $fatal(1, "beat-7 missing-Last refill was not accepted");
     tick(); @(negedge clock); grant_data_valid = 0; refill_ready = 0;
@@ -66,6 +73,12 @@
     snoop_line_rd_ready = 1; snoop_line_rd_hit = 1;
     tick(); @(negedge clock); snoop_line_rd_ready = 0;
     snoop_data_ready = 1; snoop_array_data_valid = 1;
+    for (integer beat = 0; beat < 7; beat++) begin
+      snoop_array_beat_idx = 3'(beat); snoop_array_last = 0;
+      #1; if (!snoop_array_data_ready) $fatal(1, "legal snoop prefix rejected");
+      tick(); @(negedge clock);
+      if (protocol_error) $fatal(1, "legal snoop prefix raised error");
+    end
     snoop_array_beat_idx = 7; snoop_array_data = 64'h9; snoop_array_last = 0;
     #1; if (!snoop_array_data_ready || !snoop_data_valid)
       $fatal(1, "beat-7 missing-Last snoop beat was not accepted");

@@ -26,7 +26,7 @@ DATASET_META = {
         "id": "main_subsystem",
         "top": "CoherentCacheSubsystem_tb",
         "filelist": "rtl/Coherence.files.f",
-        "tests": ["smoke", "l2_multisnoop_only", "seeds:00000001,00001234,5EEDC0DE,DEADBEEF,2468ACE0"],
+        "tests": ["smoke including risk_closure_patterns", "l2_multisnoop_only", "seeds:00000001,00001234,5EEDC0DE,DEADBEEF,2468ACE0"],
         "regression_gate": "coherence_coverage_audit",
         "verification_contract": {
             "test_sources": [

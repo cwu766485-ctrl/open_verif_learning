@@ -73,6 +73,10 @@ def current_point_inventory(manifest: dict) -> list[dict]:
                     "source": source, "identity": identity, "source_line": int(line),
                     "count": int(count), "source_sha256": manifest["rtl_manifest"]["source_sha256"][source],
                     "dataset_fingerprint": dataset["dataset_fingerprint"],
+                    "elaborated_top": dataset["top"],
+                    "raw_coverage_sha256": dataset["raw_sha256"],
+                    "line_info_sha256": dataset["line_info_sha256"],
+                    "verification_contract_sha256": dataset["verification_contract_sha256"],
                 })
         for (source, metric, identity), count in points.items():
             if source not in product or metric == "line" or metric not in raw.POINT_TYPES:
@@ -91,6 +95,10 @@ def current_point_inventory(manifest: dict) -> list[dict]:
                 "identity": identity, "source_line": source_line, "count": int(count),
                 "source_sha256": manifest["rtl_manifest"]["source_sha256"][source],
                 "dataset_fingerprint": dataset["dataset_fingerprint"],
+                "elaborated_top": dataset["top"],
+                "raw_coverage_sha256": dataset["raw_sha256"],
+                "line_info_sha256": dataset["line_info_sha256"],
+                "verification_contract_sha256": dataset["verification_contract_sha256"],
             })
     return sorted(inventory, key=lambda row: (row["dataset_id"], row["metric"], row["source"], str(row["identity"])))
 
@@ -315,14 +323,17 @@ def evaluate(
     decisions = {item.get("point_id"): item for item in records if item.get("point_id")}
     known_ids = {point["point_id"] for point in inventory}
     errors: list[str] = []
+    if len(decisions) != len(records):
+        errors.append("decision ledger has duplicate or missing Point IDs")
     source_fp = manifest["source_fingerprint"]
     regression_errors = _regression_errors(source_fp, run_data, root)
     contract_errors = _contract_errors(manifest, root)
     errors.extend(regression_errors)
     errors.extend(contract_errors)
     errors.extend(manifest_errors or [])
+    identity_errors = {point["point_id"]: _validate_point_identity(point, manifest) for point in inventory}
     for point in inventory:
-        errors.extend(_validate_point_identity(point, manifest))
+        errors.extend(identity_errors[point["point_id"]])
         decision = decisions.get(point["point_id"])
         # Human ledger decisions exist only for zero-count points. A hit is
         # represented by the exact raw dataset attestation below.
@@ -358,7 +369,7 @@ def evaluate(
         raw_hits_by_dataset[dataset_id] += 1
         gate = manifest["datasets"][dataset_id].get("regression_gate")
         run = passed_runs.get(gate, {}) if isinstance(passed_runs, dict) else {}
-        if common_attestation_valid and run.get("result") == "PASS" and run.get("returncode") == 0 and run.get("source_fingerprint_before") == source_fp and run.get("source_fingerprint_after") == source_fp:
+        if common_attestation_valid and not identity_errors[point["point_id"]] and run.get("result") == "PASS" and run.get("returncode") == 0 and run.get("source_fingerprint_before") == source_fp and run.get("source_fingerprint_after") == source_fp:
             attested_by_dataset[dataset_id] += 1
             attested_by_dataset_metric[(dataset_id, point["metric"])] += 1
             point["raw_attestation"] = "RAW_COVERED"
@@ -438,7 +449,7 @@ def init_ledger(manifest: dict, path: Path = DECISION_LEDGER) -> None:
 
 
 def write_point_matrix(result: dict) -> None:
-    fields = ["point_id", "dataset_id", "metric", "raw_count", "raw_status", "source", "source_line", "identity", "source_sha256", "dataset_fingerprint", "decision_status", "rationale", "risk", "evidence_path", "reviewed_by", "approved_by"]
+    fields = ["point_id", "dataset_id", "elaborated_top", "metric", "raw_count", "raw_status", "raw_coverage_sha256", "line_info_sha256", "verification_contract_sha256", "source", "source_line", "identity", "source_sha256", "dataset_fingerprint", "decision_status", "rationale", "risk", "evidence_path", "reviewed_by", "approved_by"]
     ledger = _read_json(DECISION_LEDGER) if DECISION_LEDGER.is_file() else {"points": []}
     decisions = {row.get("point_id"): row for row in ledger.get("points", [])}
     POINT_MATRIX.parent.mkdir(parents=True, exist_ok=True)
@@ -449,8 +460,12 @@ def write_point_matrix(result: dict) -> None:
             decision = decisions.get(point["point_id"], {})
             writer.writerow({
                 "point_id": point["point_id"], "dataset_id": point["dataset_id"],
+                "elaborated_top": point["elaborated_top"],
                 "metric": point["metric"], "raw_count": point["count"],
                 "raw_status": point.get("raw_attestation", "ZERO_COUNT_REVIEW_REQUIRED"),
+                "raw_coverage_sha256": point["raw_coverage_sha256"],
+                "line_info_sha256": point["line_info_sha256"],
+                "verification_contract_sha256": point["verification_contract_sha256"],
                 "source": point["source"], "source_line": point["source_line"],
                 "identity": point["identity"], "source_sha256": point["source_sha256"],
                 "dataset_fingerprint": point["dataset_fingerprint"],

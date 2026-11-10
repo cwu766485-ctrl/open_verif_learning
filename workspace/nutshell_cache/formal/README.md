@@ -100,3 +100,19 @@ These are harness/tooling setup failures from exploratory attempts, not
 counterexamples to the gated properties and not passing proofs. Do not include
 them in formal pass statistics. Other non-gating experiments are archived in
 the same directory without being treated as sign-off evidence.
+
+## Directory encoding reachability (risk closure)
+
+`coherence_directory_unconstrained.sby` proves only that the real controller's
+`state_q` and `snoop_resume_q` encodings remain in 0..9 after initial reset.
+Unlike the existing protocol harness, this harness has no `assume` statements:
+opcodes, metadata, IDs, readiness, response timing and later reset are arbitrary.
+It does not force internal state and does not prove subsystem liveness or rule
+out legal protocol error states. Run:
+
+```sh
+sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_directory_unconstrained.sby
+```
+
+The property is supporting proof evidence only. It grants no exclusion until
+individual coverage point mapping and independent review are complete.

@@ -156,6 +156,45 @@
     if (protocol_error || protocol_error_code != 4'd0 || !req_ready)
       $fatal(1, "reset did not recover Directory after invalid Upgrade");
     $display("PASS: DIR_I Upgrade reports protocol error and fail-stops without Grant/refill");
+    // Block-port negative tests: no internal state forcing. Each request
+    // must latch an error, emit no successful transaction, then reset cleanly.
+    for (integer fault_case = 0; fault_case < 9; fault_case++) begin
+      @(negedge clock); reset = 1; repeat (2) tick();
+      @(negedge clock); reset = 0;
+      case (fault_case)
+        0: issue_req(0, REQ_GETS, 32'h3000_0000, 4'h1, DIR_I, 2'b01, 0);
+        1: issue_req(0, REQ_GETS, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        2: issue_req(0, REQ_GETM, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        3: issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        4: issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h1, DIR_S, 2'b10, 0);
+        5: issue_req(0, REQ_PUTS, 32'h3000_0000, 4'h1, DIR_U, 0, 0);
+        6: issue_req(0, REQ_PUTE, 32'h3000_0000, 4'h1, DIR_U, 0, 1);
+        7: issue_req(0, REQ_PUTM, 32'h3000_0000, 4'h1, DIR_S, 2'b01, 0);
+        8: issue_req(0, request_opcode_t'(7), 32'h3000_0000, 4'h1, DIR_I, 0, 0);
+      endcase
+      repeat (4) begin
+        tick();
+        if (!protocol_error || req_ready || grant_valid || dir_write_valid ||
+            line_xfer_start_valid || snoop_req_valid)
+          $fatal(1, "fault case %0d did not fail-stop without side effects", fault_case);
+        case (fault_case)
+          0: if (protocol_error_code != 1) $fatal(1, "metadata error code mismatch");
+          1,2,3,8: if (protocol_error_code != 2) $fatal(1, "encoding error code mismatch");
+          4: if (protocol_error_code != 3) $fatal(1, "upgrade error code mismatch");
+          5: if (protocol_error_code != 5) $fatal(1, "PutS error code mismatch");
+          6: if (protocol_error_code != 6) $fatal(1, "PutE error code mismatch");
+          7: if (protocol_error_code != 7) $fatal(1, "PutM error code mismatch");
+        endcase
+      end
+    end
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_GETS, 32'h3000_0000, 4'hF, DIR_I, 0, 0);
+    finish_xfer(4'hF, 32'h3000_0000, XFER_L2_REFILL);
+    finish_commit(DIR_U, 0, 0);
+    finish_grant(4'hF, GRANT_DATA_E, 1, 0);
+    if (protocol_error) $fatal(1, "post-fault legal transaction failed");
+    $display("PASS: nine interface faults fail-stop and reset recovers checked legal refill");
     $display("PASS DirectoryController_tb");
     $finish;
   end

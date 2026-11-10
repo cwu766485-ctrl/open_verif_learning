@@ -91,6 +91,24 @@ def test_raw_hit_is_machine_attested_without_human_ledger(monkeypatch, tmp_path)
     assert point["raw_attestation"] == "RAW_COVERED"
 
 
+def test_raw_hit_matrix_carries_dataset_and_top_identity(monkeypatch, tmp_path):
+    manifest = make_manifest(tmp_path)
+    point = make_point(count=1)
+    point["source_sha256"] = manifest["rtl_manifest"]["source_sha256"][point["source"]]
+    point.update({
+        "elaborated_top": "ExampleTb",
+        "raw_coverage_sha256": "raw-sha",
+        "line_info_sha256": "line-sha",
+        "verification_contract_sha256": "contract-sha",
+        "raw_attestation": "RAW_COVERED",
+    })
+    monkeypatch.setattr(gate, "current_point_inventory", lambda _: [point])
+    result = gate.evaluate(manifest, {"points": []}, make_runs(tmp_path), tmp_path)
+    assert result["status"] == "PASS"
+    assert point["elaborated_top"] == manifest["datasets"]["main"]["top"]
+    assert point["raw_coverage_sha256"] == "raw-sha"
+
+
 def test_raw_hit_is_not_attested_without_checker_contract(monkeypatch, tmp_path):
     manifest = make_manifest(tmp_path)
     manifest["datasets"]["main"]["verification_contract"]["checker_sources"] = []
@@ -255,3 +273,15 @@ def test_manifest_source_change_still_rejects_old_dataset():
     }
     assert any("stale for the current verification source fingerprint" in error
                for error in gate._manifest_errors(saved, current))
+
+
+def test_invalid_identity_never_gets_raw_attestation(monkeypatch, tmp_path):
+    manifest = make_manifest(tmp_path)
+    point = make_point(count=1)
+    point['source_sha256'] = manifest['rtl_manifest']['source_sha256'][point['source']]
+    point['identity'] = 'forged'
+    monkeypatch.setattr(gate, 'current_point_inventory', lambda _: [point])
+    result = gate.evaluate(manifest, {'points': []}, make_runs(tmp_path), tmp_path)
+    assert result['status'] == 'OPEN'
+    assert result['raw_hit_attested_points'] == 0
+    assert point['raw_attestation'] == 'RAW_HIT_UNATTESTED'
