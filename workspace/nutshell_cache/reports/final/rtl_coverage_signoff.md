@@ -1,89 +1,68 @@
-# RTL Code Coverage Release Gate
+# RTL Coverage Closure — Audit and Sign-off Status
 
-**Decision: OPEN**
+**Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-- Repository HEAD: `3526950e59ff042973ccb822414d6a7361c682da`
-- Verification source fingerprint: `5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846`
-- Raw points inventoried: 74831; zero-count points requiring review: 29699
-- Raw-hit execution attestations: 45132/45132; unattested hits: 0
-- Zero-point decisions recorded: 0 (COVERED=0, PROVEN_UNREACHABLE=0, REVIEWED_WAIVER=0, OPEN=0, BLOCKED=0); zero OPEN/BLOCKED: 29699
-- Archived stale historical decisions: 19; unreviewed zero-count rows: 29699
-- Reviewed waivers accepted: 0
+Generated: 2026-11-10 16:14 +08.
 
-Coverage remains separated by elaborated top and metric; these tables are not summed across datasets.
-RAW_COVERED means only that a nonzero point was observed in the exact hashed dataset under the recorded Top/source/tool/test/checker contract and required regression. It does not establish functional correctness; key protocol behavior requires the independent Functional-System Evidence Gate. Candidate counts exclude only independently reviewed unreachable/waiver points.
+## Scope and source manifest
 
-| Dataset | Metric | Raw hit/total | Candidate hit/total after approved exclusions | Candidate misses |
-| --- | --- | ---: | ---: | ---: |
-| axi_subsystem | branch | 509/632 | 509/632 | 123 |
-| axi_subsystem | fsm_arc | 4/48 | 4/48 | 44 |
-| axi_subsystem | fsm_state | 30/54 | 30/54 | 24 |
-| axi_subsystem | line | 901/1068 | 901/1068 | 167 |
-| axi_subsystem | toggle | 15623/32332 | 15623/32332 | 16709 |
-| bus_blocks | branch | 70/76 | 70/76 | 6 |
-| bus_blocks | line | 67/68 | 67/68 | 1 |
-| bus_blocks | toggle | 1100/2450 | 1100/2450 | 1350 |
-| directory_controller | branch | 33/42 | 33/42 | 9 |
-| directory_controller | fsm_arc | 3/9 | 3/9 | 6 |
-| directory_controller | fsm_state | 10/10 | 10/10 | 0 |
-| directory_controller | line | 149/182 | 149/182 | 33 |
-| directory_controller | toggle | 255/612 | 255/612 | 357 |
-| directory_mshr_bank | branch | 100/128 | 100/128 | 28 |
-| directory_mshr_bank | fsm_arc | 11/36 | 11/36 | 25 |
-| directory_mshr_bank | fsm_state | 31/40 | 31/40 | 9 |
-| directory_mshr_bank | line | 167/286 | 167/286 | 119 |
-| directory_mshr_bank | toggle | 1189/2904 | 1189/2904 | 1715 |
-| main_subsystem | branch | 468/556 | 468/556 | 88 |
-| main_subsystem | fsm_arc | 13/48 | 13/48 | 35 |
-| main_subsystem | fsm_state | 30/54 | 30/54 | 24 |
-| main_subsystem | line | 850/992 | 850/992 | 142 |
-| main_subsystem | toggle | 21887/27474 | 21887/27474 | 5587 |
-| mesi_l1_controller | branch | 41/46 | 41/46 | 5 |
-| mesi_l1_controller | fsm_arc | 3/6 | 3/6 | 3 |
-| mesi_l1_controller | fsm_state | 7/7 | 7/7 | 0 |
-| mesi_l1_controller | line | 107/132 | 107/132 | 25 |
-| mesi_l1_controller | toggle | 688/1804 | 688/1804 | 1116 |
-| shared_l2_directory_array | branch | 65/74 | 65/74 | 9 |
-| shared_l2_directory_array | line | 75/79 | 75/79 | 4 |
-| shared_l2_directory_array | toggle | 197/1778 | 197/1778 | 1581 |
-| shared_line_engine | branch | 44/52 | 44/52 | 8 |
-| shared_line_engine | line | 101/104 | 101/104 | 3 |
-| shared_line_engine | toggle | 304/648 | 304/648 | 344 |
+Product RTL scope: `18` sources from `rtl/Coherence.files.f`. The primary subsystem Verilator source manifest contains `18` RTL sources; exact manifest match: **PASS**.
 
-## Open gate findings by dataset and metric
+Manifest files without executable runtime points in a particular build are listed as N/A in `docs/coverage_audit_phase1.md`; they are not treated as zero coverage. The AXI top and independent Block tops are separate raw scopes.
 
-- axi_subsystem / branch: 123 unresolved finding(s)
-- axi_subsystem / fsm_arc: 44 unresolved finding(s)
-- axi_subsystem / fsm_state: 24 unresolved finding(s)
-- axi_subsystem / line: 167 unresolved finding(s)
-- axi_subsystem / toggle: 16709 unresolved finding(s)
-- bus_blocks / branch: 6 unresolved finding(s)
-- bus_blocks / line: 1 unresolved finding(s)
-- bus_blocks / toggle: 1350 unresolved finding(s)
-- directory_controller / branch: 9 unresolved finding(s)
-- directory_controller / fsm_arc: 6 unresolved finding(s)
-- directory_controller / line: 33 unresolved finding(s)
-- directory_controller / toggle: 357 unresolved finding(s)
-- directory_mshr_bank / branch: 28 unresolved finding(s)
-- directory_mshr_bank / fsm_arc: 25 unresolved finding(s)
-- directory_mshr_bank / fsm_state: 9 unresolved finding(s)
-- directory_mshr_bank / line: 119 unresolved finding(s)
-- directory_mshr_bank / toggle: 1715 unresolved finding(s)
-- main_subsystem / branch: 88 unresolved finding(s)
-- main_subsystem / fsm_arc: 35 unresolved finding(s)
-- main_subsystem / fsm_state: 24 unresolved finding(s)
-- main_subsystem / line: 142 unresolved finding(s)
-- main_subsystem / toggle: 5587 unresolved finding(s)
-- mesi_l1_controller / branch: 5 unresolved finding(s)
-- mesi_l1_controller / fsm_arc: 3 unresolved finding(s)
-- mesi_l1_controller / line: 25 unresolved finding(s)
-- mesi_l1_controller / toggle: 1116 unresolved finding(s)
-- shared_l2_directory_array / branch: 9 unresolved finding(s)
-- shared_l2_directory_array / line: 4 unresolved finding(s)
-- shared_l2_directory_array / toggle: 1581 unresolved finding(s)
-- shared_line_engine / branch: 8 unresolved finding(s)
-- shared_line_engine / line: 3 unresolved finding(s)
-- shared_line_engine / toggle: 344 unresolved finding(s)
-- 29699 total point-level/infrastructure finding(s); see the machine-readable gate JSON and point matrix for stable IDs and details.
+## Raw coverage by independent dataset
 
-A PASS requires current source and dataset fingerprints, hashed regression logs for all required gates, valid Test/Checker source contracts, and an individual accepted disposition for every zero-count point. A zero-count point cannot be marked COVERED; it must first be observed in this exact dataset. PROVEN_UNREACHABLE and REVIEWED_WAIVER require evidence and independent approval. Raw hits are never transferred across elaborated Tops, and no disposition changes Raw Coverage.
+Each row is one top/build and its documented run set. These denominators are not summed across rows. Line/branch/toggle/FSM are separate metrics.
+
+| Dataset | Line hit/total | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Full coherent subsystem regression | 864/992 | 473/556 | 21923/27474 | 30/54 | 13/48 |
+| AXI cache subsystem E2E (five fixed seeds) | 901/1068 | 509/632 | 15623/32332 | 30/54 | 4/48 |
+| DirectoryController block | 160/182 | 36/42 | 258/612 | 10/10 | 3/9 |
+| DirectoryMshrBank block | 167/286 | 100/128 | 1249/2904 | 31/40 | 11/36 |
+| SharedLineEngine block | 101/104 | 44/52 | 304/648 | N/A | N/A |
+| MesiL1Controller block | 107/132 | 41/46 | 688/1804 | 7/7 | 3/6 |
+| SharedL2DirectoryArray block | 75/79 | 65/74 | 197/1778 | N/A | N/A |
+| Bus blocks | 67/68 | 70/76 | 1100/2450 | N/A | N/A |
+
+## Gap inventory
+
+The detailed `coverage_closure_matrix.csv` contains **907 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
+
+| Primary subsystem gap type | Unhit points |
+| --- | ---: |
+| LCOV RTL line | 128 |
+| Verilator branch | 83 |
+| FSM state | 24 |
+| FSM arc | 35 |
+
+The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.
+All 907 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
+
+## Functional coverage and checker status
+
+Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `69f9fb4615717b9d9b096d9e11262438522cd960`.
+These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
+
+## Reviewed / eligible coverage
+
+**Reviewed/eligible percentages are not yet computable.** The raw points still need point-level review against the independent checker and the intended coverage obligation. The CSV preserves all zero-count points without marking them waived, unreachable, or redundant. Eligible Coverage must only be computed after that review; therefore there is no supported 100% closure claim yet.
+
+## Tool and scope limits
+
+- Verilator LCOV line records and native branch/toggle/FSM points have distinct instrumentation and denominators.
+- Independent subsystem, AXI, and Block runs are not arithmetically merged. Repeated workload seeds are merged only where the raw inventory identifies the same elaboration and test definition.
+- Python/Toffee functional coverage is not merged into Verilator RTL coverage: it uses a different simulator/wrapper and does not emit compatible source points.
+- A zero FSM denominator means that the selected Verilator build did not extract an FSM point; it is not evidence that the design has no FSM.
+- Toggle coverage is reported raw and reviewed separately; no 100% toggle requirement is asserted.
+- Formal evidence is component/bounded where indicated by the existing tests. It is not treated as an unbounded whole-system proof.
+
+## Regression evidence and remaining status
+
+Current source fingerprint: 8/8 required regression targets have PASS exit status and verified log hashes. Regression status: PASS. Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage and Full Code Coverage Sign-off; code coverage remains OPEN.
+This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
+
+Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.
+
+**Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.

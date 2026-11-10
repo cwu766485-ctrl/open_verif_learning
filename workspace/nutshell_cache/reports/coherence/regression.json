@@ -1,9 +1,9 @@
 {
   "code_coverage": {
     "lcov": "reports/coherence/coverage.info",
-    "line_hit": 1638,
-    "line_total": 1792,
-    "percent": 91.40625
+    "line_hit": 1681,
+    "line_total": 1821,
+    "percent": 92.31191652937946
   },
   "coverage_event_errors": [],
   "functional_coverage": {
@@ -747,17 +747,17 @@
   "missing_stall_bins": [],
   "performance_proxy": {
     "cpu_req_ready_stall_cycles": 0,
-    "l1_cold_miss_avg_cycles": 28,
-    "l1_cold_miss_count": 1526,
+    "l1_cold_miss_avg_cycles": 29,
+    "l1_cold_miss_count": 1596,
     "l1_hit_avg_cycles": 2,
     "l1_hit_count": 57,
     "l1_miss_avg_cycles": 19,
-    "l1_miss_count": 2880,
+    "l1_miss_count": 2950,
     "l1_miss_penalty_cycles": 17,
     "read_hit_avg_cycles": 2,
     "read_hit_count": 40,
     "snoop_avg_cycles": 14,
-    "snoop_count": 2746,
+    "snoop_count": 2756,
     "storage_capacity_bytes": 327680,
     "storage_capacity_kib": 320,
     "upgrade_avg_cycles": 9,
@@ -778,17 +778,17 @@
     "reports/coherence/seed_2468ACE0.log"
   ],
   "stall_counts": {
-    "cpu_resp": 33,
-    "dir_req": 45,
+    "cpu_resp": 43,
+    "dir_req": 291,
     "l2_fill": 2,
-    "mem_rd_req": 25,
-    "mem_wr_data": 1065,
-    "mem_wr_req": 13,
+    "mem_rd_req": 36,
+    "mem_wr_data": 1061,
+    "mem_wr_req": 12,
     "mmio_req": 4,
     "mmio_resp": 5
   },
   "status": "PASS",
-  "test_pass_markers": 217,
+  "test_pass_markers": 219,
   "waivers": {
     "count": 0,
     "file": "dv/coverage/coherence_waivers.json"

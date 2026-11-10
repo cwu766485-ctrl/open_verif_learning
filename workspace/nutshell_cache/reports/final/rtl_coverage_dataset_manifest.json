@@ -11,7 +11,7 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "9989ac29be4a505064217ed636aea19b12158baca205229de8cb6fa7f1ada703",
+      "compiled_manifest_sha256": "a0889203b6bc42f9e984ed7aec835dc1351c1a146bf9c300459cc59b741f1161",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -32,7 +32,7 @@
         "rtl/top/CoherentCacheAxiSubsystem.sv",
         "rtl/top/CoherentCacheSubsystem.sv"
       ],
-      "dataset_fingerprint": "8d0fd564c90740f2004d9501840c71a33b10aceb026e7596be91ffc0e84bc04f",
+      "dataset_fingerprint": "3d4a137a88f54ff1b0f6dc9e5984293f219383b24e61b0aca3a4bb56ffcaf457",
       "filelist": "dv/blocks/coherent_cache_axi_subsystem/filelist.f",
       "filelist_sha256": "7a5363895d9b056bcdf919142830d802063cf0f106df303c3c573b94e8a0dc5d",
       "label": "AXI cache subsystem E2E (five fixed seeds)",
@@ -106,7 +106,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "e8dc21995baccc98928db6b1671518f9e54e2336e812691925fa18457fc40ba2"
+      "verification_contract_sha256": "d73a0bee75f3d2795d787552f2d91ed705006b6885b906e1180dc4bcc831012e"
     },
     "bus_blocks": {
       "compile_options": [
@@ -118,13 +118,13 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "fc6b1ad0575cceab7089c7c3106c10147368f5007ff7c12a3cbace9ae0978afb",
+      "compiled_manifest_sha256": "6aa4fa2a1ee1afd121c214fa38835716e7b1b141e09c30e0e3316e0ff738b25e",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
         "rtl/common/CoherenceProtocol.sv"
       ],
-      "dataset_fingerprint": "1002c5c5c1b1743eb13232babd0e21bf4c4143cf4f771787ac723c52bfc81336",
+      "dataset_fingerprint": "bbd650cbf097f5ff325287060da1dd9ce3bbdd313de1737d00046ea7636e6e71",
       "filelist": "dv/blocks/bus_blocks/filelist.f",
       "filelist_sha256": "030261883e8baa055756743fa39a4c82b385d5fe16466d69c6c5aa1bb6c6f6dd",
       "label": "Bus blocks",
@@ -215,7 +215,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "0631e71b15776873a4a13970048e63355ad8b3974f9ecc212b8fe67b6ff8b2ad"
+      "verification_contract_sha256": "7ad8db28131674c3129b380d8d2d45dcf124be408fec21a60af3db2566f21bc1"
     },
     "directory_controller": {
       "compile_options": [
@@ -227,17 +227,17 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "ab2f2f13a67ccac19a9573c6624a672f617a5811ca16fbbe13eb3a0fa83f551c",
+      "compiled_manifest_sha256": "e6d83d4999cbed75124dda61c95a5805d0ce60b7c87b8bc2b7b2940b94761219",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/directory/DirectoryController.sv"
       ],
-      "dataset_fingerprint": "2f31af7559965c7dc1e85908ef6aec60d80a23612f30476aac4763cbfa6bc694",
+      "dataset_fingerprint": "bf0007c7c847deeef47cb1778a51a986d44911033dd398d65aa9f2bc2fdaae74",
       "filelist": "dv/blocks/directory_controller/filelist.f",
       "filelist_sha256": "ba1faeb90ec1a2b99cce410c6cfb4d284a521bb1679e3e5120d866164ae2d022",
       "label": "DirectoryController block",
       "line_info_file": "reports/coherence/block_coverage/directory_controller_line.info",
-      "line_info_sha256": "a4e9ef0def2ff921c21414ee54734f7a525dda85bda7bda2b231cc4c90424342",
+      "line_info_sha256": "ed001dfb0018be7d9bbae884c58f6be626b406681821c346b933f595c9e40e42",
       "manifest_product_sources_missing_from_top": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -258,8 +258,8 @@
       ],
       "metrics": {
         "branch": {
-          "hit": 33,
-          "miss": 9,
+          "hit": 36,
+          "miss": 6,
           "total": 42
         },
         "fsm_arc": {
@@ -273,18 +273,18 @@
           "total": 10
         },
         "line": {
-          "hit": 149,
-          "miss": 33,
+          "hit": 160,
+          "miss": 22,
           "total": 182
         },
         "toggle": {
-          "hit": 255,
-          "miss": 357,
+          "hit": 258,
+          "miss": 354,
           "total": 612
         }
       },
       "raw_file": "reports/coherence/block_coverage/directory_controller.dat",
-      "raw_sha256": "5ed6047354fe3c6355a4c3041817e2af242f53a5208942e57a4b03c60f32a5dd",
+      "raw_sha256": "4964e4dd708fc4dc146d9904dba2d65ec7d3d4928c0e4373798b71fced9b925b",
       "regression_gate": "coherence_coverage_audit",
       "scope": "Standalone DirectoryController directed TB.",
       "tests": [
@@ -312,7 +312,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "f5f8101ab04c14201cbcb3fcb6521ffe084c8f78d50334fe704da6d6b532ba25"
+      "verification_contract_sha256": "2ecee733c6e1e0b332470f64114ac60df1d582998fcea87394b5acd98b466a27"
     },
     "directory_mshr_bank": {
       "compile_options": [
@@ -324,18 +324,18 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "ca7158e14c6f091c8405ed5d4daf45d24e19c96a9877830890f4d95cbb9227b5",
+      "compiled_manifest_sha256": "48f859d866477fdf44b25076a7e2c05c1f14615bd33680829abeddbb295bc0a4",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/directory/DirectoryController.sv",
         "rtl/directory/DirectoryMshrBank.sv"
       ],
-      "dataset_fingerprint": "cab4d8ffd1d12854b0bcc2310f7e1805475816a54f295d084a087580d0013f2c",
+      "dataset_fingerprint": "d637c553963ee804c2d289ce5aa990a1f80978817ef329c7ced64ff11031d112",
       "filelist": "dv/blocks/directory_mshr_bank/filelist.f",
       "filelist_sha256": "06f73bd8b5c19471e738679a54b58fa9e916c0364fb8b7902fe9d52c5f5942a4",
       "label": "DirectoryMshrBank block",
       "line_info_file": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
-      "line_info_sha256": "e27f51b9eeb1355bf1b1035bd33c748bff997669c438d8c7c8ad445fae8aaf1c",
+      "line_info_sha256": "1b1ed72e039d997eb69b50e637ee6fac04e345dac94c29da0029a9b747b586c7",
       "manifest_product_sources_missing_from_top": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -375,13 +375,13 @@
           "total": 286
         },
         "toggle": {
-          "hit": 1189,
-          "miss": 1715,
+          "hit": 1249,
+          "miss": 1655,
           "total": 2904
         }
       },
       "raw_file": "reports/coherence/block_coverage/directory_mshr_bank.dat",
-      "raw_sha256": "5a8ba28775f7c71626832864128b19befafb504cffeea71483a23cb55941b796",
+      "raw_sha256": "1badff2d1a4c11f6aa6302b4d405248ff8318e19c2a0461424f87c428d7ec39b",
       "regression_gate": "coherence_coverage_audit",
       "scope": "Standalone four-context MSHR directed/stress TB, including transfer-start backpressure.",
       "tests": [
@@ -421,7 +421,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "9df253c5327de884824124249e335cb7fe6662ae56b76770dede6187b5b9eda1"
+      "verification_contract_sha256": "7320ca055394846e32d54972e2439ee0ad5eb96cbf8260249d2f171c21843c20"
     },
     "main_subsystem": {
       "compile_options": [
@@ -433,7 +433,7 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "98426b22daf91f8f3de0c62c7b4059cd1bfe8b61bfff5dd861851e193cdb83d0",
+      "compiled_manifest_sha256": "f0c741ac31c92e6834c047e7c387473fa786d1e78bc08253f35533c44a372e3b",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -454,17 +454,17 @@
         "rtl/top/CoherentCacheAxiSubsystem.sv",
         "rtl/top/CoherentCacheSubsystem.sv"
       ],
-      "dataset_fingerprint": "ffd6ff7b46e6498a9f77c869fc12520abd60621e145cc7d88134d0a4dc570e8e",
+      "dataset_fingerprint": "e6d2c0bda10481c1986316f35a64163adc4cea5ff1e038fd8d24b5d4c1ff5ff3",
       "filelist": "rtl/Coherence.files.f",
       "filelist_sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
       "label": "Full coherent subsystem regression",
       "line_info_file": "reports/coherence/coverage.info",
-      "line_info_sha256": "d5b26c7617fefb4db4e3118bc23a75fc43461252332c815228dc1ba82baef3b7",
+      "line_info_sha256": "dba3c0c9b9e0e50c95e98157aa6210b1203a03e29f6dfe0e24d8b09a3a54990e",
       "manifest_product_sources_missing_from_top": [],
       "metrics": {
         "branch": {
-          "hit": 468,
-          "miss": 88,
+          "hit": 473,
+          "miss": 83,
           "total": 556
         },
         "fsm_arc": {
@@ -478,22 +478,22 @@
           "total": 54
         },
         "line": {
-          "hit": 850,
-          "miss": 142,
+          "hit": 864,
+          "miss": 128,
           "total": 992
         },
         "toggle": {
-          "hit": 21887,
-          "miss": 5587,
+          "hit": 21923,
+          "miss": 5551,
           "total": 27474
         }
       },
       "raw_file": "reports/coherence/coverage.dat",
-      "raw_sha256": "157f71df4a7b2d8f96c00bd2b88d2f6109b1c4161ee7451643b8fd2b4f2e9fd0",
+      "raw_sha256": "09aed47f7fe156b6b44b4f5cf4dd3e9218a5cb8538e5a7018dedbbf421d826e6",
       "regression_gate": "coherence_coverage_audit",
       "scope": "Main subsystem smoke, multisnoop and five seeded regressions, all from one common subsystem elaboration and coverage definition. The standalone Directory MSHR regression is a separate dataset and is not included here.",
       "tests": [
-        "smoke including risk_closure_patterns",
+        "smoke including risk_closure_patterns and phase4_replacement_race",
         "l2_multisnoop_only",
         "seeds:00000001,00001234,5EEDC0DE,DEADBEEF,2468ACE0"
       ],
@@ -542,7 +542,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "8c7fce38f727dfab1094f4b93c62f47246e02f94f56b5e58f374430f92ed62c5"
+      "verification_contract_sha256": "61fd896dea024e95c42621828bd00537f00af051fd4624430c22d3db2ecfc400"
     },
     "mesi_l1_controller": {
       "compile_options": [
@@ -554,13 +554,13 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "5ee3c95a7ad446444a3903123b81ab703b989ee4d3129d95fe40e9f32904c4b5",
+      "compiled_manifest_sha256": "49d6c824134059d67785c084d909fa2b01e86afc162f9cb92048322b1025a6cf",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/l1/MesiL1Controller.sv",
         "rtl/l1/MesiL1SnoopArbiter.sv"
       ],
-      "dataset_fingerprint": "e260ef19b63ff9a2d4d2a9b73a4b4a973f37a1d2fb233de9486d0a69f50f6194",
+      "dataset_fingerprint": "690f870a5f019df367303dbd26341ad0f00dece7db9e99ce60143656e85c4bc6",
       "filelist": "dv/blocks/mesi_l1_controller/filelist.f",
       "filelist_sha256": "8fe3750be7883e34091f358978bec943c69208fd40bd72cd55dcfe102403303e",
       "label": "MesiL1Controller block",
@@ -651,7 +651,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "9b061b542dc6b3309c17a65c6be6838fa427ebbe8bff90499d1ebd73aacb7a95"
+      "verification_contract_sha256": "ea16c50ab68c69a481ec3db220d324e1f757167c849231d15d21195697c6d895"
     },
     "shared_l2_directory_array": {
       "compile_options": [
@@ -663,12 +663,12 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "42001c95ed7ad4382db40c4668d330be7f529bbcb88c705e574ab1e51bc6ac8f",
+      "compiled_manifest_sha256": "4509cbbbd77ebf36f5058a390f04a0468f09dcb2610d28e63228cbf703ce9817",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/l2/SharedL2DirectoryArray.sv"
       ],
-      "dataset_fingerprint": "3d52583ac492e4e4e60260f9227b441fef061f2111df58eb74ade82310392214",
+      "dataset_fingerprint": "bdb7f520a075c3faabfac69eee56fd2d57578dc1eee65bee579328b13fead2df",
       "filelist": "dv/blocks/shared_l2_directory_array/filelist.f",
       "filelist_sha256": "1f2df34e40d7a71f7a42d9a027a09672ac7b760a7d58b716154215a2973b3c55",
       "label": "SharedL2DirectoryArray block",
@@ -746,7 +746,7 @@
           }
         ]
       },
-      "verification_contract_sha256": "f4d996fd1086bb95c54270db8aec7f1187c24cdded9edac80c4719c75e198823"
+      "verification_contract_sha256": "fba5bfad06f5333396114f3ebff7edc917d815e34f211ff22726d028f8f5dc86"
     },
     "shared_line_engine": {
       "compile_options": [
@@ -758,12 +758,12 @@
         "-CFLAGS -O0",
         "-Wall -Wno-fatal -Wno-BLKSEQ"
       ],
-      "compiled_manifest_sha256": "684fde7efcc21fa4bcdf3695ed7d242293146f337b1a67e8b55b4e6a98d74ad9",
+      "compiled_manifest_sha256": "ab35761e6c3e34f4db382186ed2b6ed56b3f16dee90d4a6cbc59524294e63244",
       "compiled_product_sources": [
         "rtl/coherence/SharedLineEngine.sv",
         "rtl/common/CoherenceProtocol.sv"
       ],
-      "dataset_fingerprint": "35cbfa85c315fdd2b3eafdcdc6906025215d4994ef70487208c7c93e09d0bfb5",
+      "dataset_fingerprint": "6c79949ad3f1d1e56949856d7054979313f5bb3f7325c945b034bc97c064cee1",
       "filelist": "dv/blocks/shared_line_engine/filelist.f",
       "filelist_sha256": "e7dbd0b9ac5341cb3f0bcfc411bbadcf0a8fe17857de0301ab4703e76cc8044e",
       "label": "SharedLineEngine block",
@@ -855,11 +855,11 @@
           }
         ]
       },
-      "verification_contract_sha256": "90a329e4827fbb553473b7351e986382c3a5f32e141f37bff70820c0eab3282e"
+      "verification_contract_sha256": "4eae4603271b564d2dd2a71ef1843797977d4835f01781023645fcacd5c926c9"
     }
   },
   "product_rtl_fingerprint": "15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a",
-  "repository_head": "3526950e59ff042973ccb822414d6a7361c682da",
+  "repository_head": "69f9fb4615717b9d9b096d9e11262438522cd960",
   "rtl_manifest": {
     "path": "rtl/Coherence.files.f",
     "sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
@@ -907,7 +907,7 @@
   },
   "schema_version": 1,
   "source_file_sha256": {
-    "Makefile": "857ad6f33c410ffe2ba42ebd6845fbf6c2d72f553afc852caba76ccd87c94deb",
+    "Makefile": "cc50be56caed499b54e12899d6a12b37bd04964b81c03f5a1ab59bbe25e0713e",
     "docs/cache.md": "4e45597da2d798d3fe3d5f825ae69f20e1638a57758f6b2681f0e0701454e9e7",
     "dv/__init__.py": "f8b69c67ddb9019fe0dab4482d77d9950d4fdabbc90224b91de21db3a431227a",
     "dv/agents/__init__.py": "90d8565af74a74b0d9638d3b2325ab2744b378674400a3566e03c3882ceaf6e9",
@@ -965,14 +965,15 @@
     "dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh": "a04663cc80cbfa61f8e82f9cda33133c7a15874ca634df158dc19d08215a71a7",
     "dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh": "f5cb9c3b7fd4d318e901b6d77f5238967b28eaf00f432faed0652dd9ee3cc086",
     "dv/blocks/coherent_cache_subsystem/tb/include/performance_monitors.svh": "845950c568da8315a9954528044ea1ee9a49325021831fbcb62b0459edde7fb3",
+    "dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh": "f725ab3bc69174bffd3d41c5c1bdc19e7e153046b6895fa5ef688c85b7b5c8c2",
     "dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh": "74b635fe57fcaee67743fcf0e505c21e894f70d5f085836cfe22baeca0a55f4b",
     "dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh": "0a9651ee28d0558919aed5f88c4343f831acd9f8a74e7b0c49f32da64dc76282",
-    "dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh": "42972618e2391af2a4a1c0e97a8053c3f727cd908123efb846f0531c7866ed5e",
+    "dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh": "886dadb88bb0f0c431dacb2f118151ebe766999b72a58a28932b0b64cb1a1174",
     "dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh": "0329a38781d830b010bb737eeaefb8acfedaf7a12f09db6e4e469c0160f3e8fd",
     "dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh": "967e0e6ea59d48f7136c72cba529f51943aecdba07373687c23f000f8028e342",
     "dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh": "04adffbe849ac56d000b0dfc204ee3833561f27eca794458e525e7f5876c294f",
     "dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh": "cab13945ccef3af90aeff8aebbfbe678aef9a281661c6163fa0f858ab21e697e",
-    "dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh": "f8f8654323aa06ea0d797006a9d18b27fd3999b3fc05d0c237d428d9d3ca3092",
+    "dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh": "4a329f95ec2e3bff22870df8a77316c10e66b94597166f0dc9fe9f57f28d7972",
     "dv/blocks/coherent_cache_subsystem/tb/include/signals.svh": "0ed87b42c53c1337aa02e8b5e3fc735131520b09b56ea7c9fa36bf42653daa34",
     "dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh": "bb24841233aa12a3bb796a210131efb7e1c7f13e43453164d1ed10b2869b8cf9",
     "dv/blocks/coherent_cache_subsystem/testplan.md": "8437c0f54630d30980b7a29c688b5d750bdbea32697613d946c14c4116e61daa",
@@ -981,14 +982,14 @@
     "dv/blocks/directory_controller/tb/DirectoryController_tb.sv": "81c3926089fb33dc00fd8feba1906aa90dc05c6d3756ffbf2181dd3f1efe348c",
     "dv/blocks/directory_controller/tb/include/directory_agents.svh": "8ca7090bb39687a001174100567d791daed0a61345e24fb6bc2b0336f3fdab2b",
     "dv/blocks/directory_controller/tb/include/signals.svh": "b2c6a57ffa76173e08b68d35437bcb88661452f2f91468f09824f5a86fbd5e5d",
-    "dv/blocks/directory_controller/tb/include/test_sequence.svh": "e8f2ce5bb409e708360cb0946061fb3dd97c77e96062e31ac2066b9b4144bee7",
+    "dv/blocks/directory_controller/tb/include/test_sequence.svh": "2eaa20289166c085c80712e1beaa3c8220b107ba548392d9e5d94d0941a7b903",
     "dv/blocks/directory_controller/testplan.md": "87d2c9b2fd92d725f592ac7f5f04224aa74b51a251a0895c497f6a89f196a8fb",
     "dv/blocks/directory_mshr_bank/README.md": "cb23c0aee1d6b32ebdc889ffc7df9048cc740420d37301f6d0c2ab3f6d054361",
     "dv/blocks/directory_mshr_bank/filelist.f": "06f73bd8b5c19471e738679a54b58fa9e916c0364fb8b7902fe9d52c5f5942a4",
     "dv/blocks/directory_mshr_bank/tb/DirectoryMshrBank_tb.sv": "789cacb26ae0783e3037a536719898a9b6c8e039bde94a745a7355456fec8d13",
     "dv/blocks/directory_mshr_bank/tb/include/context_allocation_and_routing.svh": "6221f22db6f4cdbfe1f54b8cab680885a159ee164de81253abf7942ca0ad7a8b",
     "dv/blocks/directory_mshr_bank/tb/include/mshr_agents.svh": "6f2fa362198545793c43abee74d30f95bef4932ec631f97c419663b2a61f8432",
-    "dv/blocks/directory_mshr_bank/tb/include/offer_competition.svh": "9ab138e3a87673fe130a502233c5b485f5973b656101853c857525283499ba3e",
+    "dv/blocks/directory_mshr_bank/tb/include/offer_competition.svh": "fdef7f71d6675ac49f54831e30d78ebbe3102186c8c1ea4d4438469acce759ff",
     "dv/blocks/directory_mshr_bank/tb/include/reset_cancellation.svh": "a213dcdc4e0e39dd0016572b8781d24d0bdeb1fae207ca8a91386dec0d713054",
     "dv/blocks/directory_mshr_bank/tb/include/same_line_put_serialization.svh": "70aa2f862f64278b4cba11ac8d38bbd93185ddec0958d3b1d62c760b327c918b",
     "dv/blocks/directory_mshr_bank/tb/include/scenario_sequence.svh": "605980047fa996c6ee20198df8585ec86927fa29a87640532028e7bbd1333cca",
@@ -1068,12 +1069,13 @@
     "dv/coverage/full_system_evidence_gate.py": "ed94e2cb0eb496060eb43e198699b488e504f9316acfca059c49e642485ccb20",
     "dv/coverage/full_system_stress_summary.py": "0d9896882933697366e50451049af58ed67695036f691de9497130ba998acc83",
     "dv/coverage/functional_closure.py": "0d2237efa74eafe30142379fc9ea8bd5e619922679098debbe6e6becdb4bcc94",
+    "dv/coverage/phase4_point_diff.py": "2e5014e8b12f9569ed32d605a5691f49a6bb88da396b79b92545def9c0440450",
     "dv/coverage/python_closure.py": "de7265e37e8721411b1badf34af5835aa3f86eb029bdf3f9c3df5c0807582a9b",
     "dv/coverage/python_coherence_map.json": "b84a9197ca4fe6f2701ab921500bb37e430e6a24ced896f047f88bba591d8460",
     "dv/coverage/report.py": "b9fbe5cd701544328955b5fb8c5962ccc102ce489dd4c25a7db390ce2384f834",
     "dv/coverage/risk_closure_review.py": "b565fa64970cf7b59229d7a51319bdbdb56cce78d7b95004125e63e59a5e2746",
-    "dv/coverage/rtl_coverage_closure.py": "599f764e5faa03230cd266434e88f9d1361bf5a0eaca18c4be6f2f346f914b17",
-    "dv/coverage/rtl_coverage_dataset_manifest.py": "f388d004db0c74a16a0f7a0769e0a8f0eb49b39af114f8594db88d828334ff4c",
+    "dv/coverage/rtl_coverage_closure.py": "3611e90b31ba056c80f6239d83c7b33aa83d1f6e8fc0f5d02fcfa36e0219d195",
+    "dv/coverage/rtl_coverage_dataset_manifest.py": "62534682d4908f08ec6af039385cd1705a5f30bf8a37dbafdcdfca7c57a491d9",
     "dv/coverage/rtl_release_gate.py": "95bf5ba0e7fbdc343e20281d9b80c99c9166169e4cc0e3b66a29c49b644718bc",
     "dv/coverage/testcase_selector.py": "19fe8274a4026910a26ebc114db40fc243f51f33fe87ce136179d48b60bc3cd1",
     "dv/coverage/waivers.json": "86ad405faad2454c6a95c9deb0c7c9bd39a0eac001ecbe2312d77b71e57184d2",
@@ -1139,17 +1141,20 @@
     "formal/coherence_directory_harness.sv": "5720daeb3c49683b1ecbc30a11c810edbcc3bc25efa80b6ae5340e223d68b454",
     "formal/coherence_directory_mshr_bank.sby": "cfd6a948ad892ec9ac4e628655980df567bdb0a836a6d086fb6d53a8304487f2",
     "formal/coherence_directory_mshr_bank_cover.sby": "3fda2ae259b384e7e82a94f7315a0347f2184e4e6c59392b216b4238593ba998",
-    "formal/coherence_directory_mshr_bank_harness.sv": "bbeaaf79671a0823f404e8fc7c34f73dbfef34c470182c078a545a46a5e8e6ab",
+    "formal/coherence_directory_mshr_bank_harness.sv": "c279e6df3643690a5f8f6ace603ee4e71d337a2bd048b8dabd2692699102433e",
     "formal/coherence_directory_progress.sby": "69b5899479093c788c074e89df2dd15b458175ece0925d9eec02d4842e92530e",
     "formal/coherence_directory_progress_harness.sv": "87540744eabc973d7b6380a31a2391f5ac48b50520eab5eff71cc0d0aa002ea0",
-    "formal/coherence_directory_unconstrained.sby": "1b29fa3f635076210c36d5cde7e15b4461e700ee34c285bcb5afe0f7e2f079fb",
-    "formal/coherence_directory_unconstrained_harness.sv": "dfdfcc266b6ea90d8484f6dd1fdfad4b443a9c14ce22dc916a65f7568bd1c7c0",
+    "formal/coherence_directory_transactions.sby": "b2910fbaaf98229ad6ae838562b965798b4d965d39c04d654456a14242bef6f8",
+    "formal/coherence_directory_transactions_induction.sby": "c78be3646db40ee73361fa044d18484c9f90b0e89c473cdb3c3100c377d0f87f",
+    "formal/coherence_directory_unconstrained.sby": "a0e353475fe667fe2e9f3308b769eb70656378dc3e66c406be113a34d5ad0b8d",
+    "formal/coherence_directory_unconstrained_harness.sv": "4f615ba0cfd8e7c0e44e3ef6719b91f745904a5ff6024735d1ab19a7a53dadd6",
     "formal/coherence_l1_controller.sby": "9766a5a8706db2cfcf1d3b73a9106de1567bc518961fe5c25476df485cf5b9b3",
     "formal/coherence_l1_controller_harness.sv": "a3f4f630b0f3867df2f57689928ec2648e55eac2273901fc35e9b4ffea750811",
     "formal/coherence_request_arbiter.sby": "8d56f9ee58e41b40c3eff2cb1d2cea2d891349eb146bcb90e37e9a9001599a98",
     "formal/coherence_request_arbiter_harness.v": "ba6a92b88e050be7af772cb536bc509d1d87767889f544c3f2a1b9142cf8d269",
     "formal/coherence_snoop_arbiter.sby": "649500b1b1b79cdb23c97efe6d030a4c9601dc9e3f6bf5f5b9cdaf21ee22e86e",
     "formal/coherence_snoop_arbiter_harness.sv": "3947cd2713b1e9e2acd99f537e90fa0a1fd29c25d31ff3c650c90a58c2a08437",
+    "formal/directory_transaction_properties.sv": "e24cc6540253caa7930bef507532aaa3d8da257d8b2ea5fffd5e0ccaac240746",
     "formal/mutations/run.py": "1253c6ad4891b586809c01382adb3170c3e27954e369222520b2eff0640435ae",
     "formal/replacement_selector.sby": "cc2a0e8f276481e60a1dd31eecc144ca27e4b38acab43d65b8562e63811d8c99",
     "requirements-dv.txt": "491026a17fcaafa3385e496864bc23f85690f2483ce777cf9727faca4cb186e6",
@@ -1251,10 +1256,11 @@
     "tests/unit/test_full_system_evidence_gate.py": "d6c77fe085b2b0826dad8901de11c2e551108f1aee3a30ac064c99321371391c",
     "tests/unit/test_protocol_contract.py": "a16841eb5f09a332b43da2f24cd6f74008574f93642844f70c7c090b1c4e3351",
     "tests/unit/test_reference_model.py": "d8f332e51b76ccfe24b915cc2cd29386e65ae5816f99bc077cdf622d77f5bfef",
+    "tests/unit/test_regression_report_consistency.py": "d4c87e15ef74874b1dfe989d679c0c0b4c4495bef58c794c7d55c9eb3438aabc",
     "tests/unit/test_risk_closure_review.py": "5a19c457e39e879ce9879dded4e559d8f0c96fbb838fdfbfcb3d3482a9e28b3f",
     "tests/unit/test_rtl_release_gate.py": "0cb2713939c50e0eb20d3b37e72c7d011b22d0dee6628b6dc3fc532800668bdf"
   },
-  "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+  "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
   "tool_versions": {
     "python": "3.12.3",
     "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",

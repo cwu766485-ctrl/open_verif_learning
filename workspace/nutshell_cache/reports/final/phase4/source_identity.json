@@ -1,0 +1,8 @@
+{
+  "baseline_pr_sha": "461cc1e053d4ddfadc2a6b8a5e71e72a889c2e20",
+  "tested_source_sha": "69f9fb4615717b9d9b096d9e11262438522cd960",
+  "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+  "report_commit": "Resolve Git commit containing reports/final/phase4_closure_report.md; separate from tested source",
+  "approved_exclusions": 0,
+  "independent_approver": null
+}

@@ -566,7 +566,7 @@
 %Warning-MISINDENT: ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:131:7: Misleading indentation
   131 |       coverage_mark("reset.cpu_rsp", "E", "0", "GetS+Reset", "none", "I", "L1", 0);
       |       ^~~~~~~~~~~~~
-                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:160:1: ... note: In file included from 'scenario_sequence.svh'
+                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:126:5: ... Expected indentation matching this earlier statement's line:
   126 |     if ((l1_controller_protocol_error != 2'b00) ||
@@ -574,7 +574,7 @@
 %Warning-MISINDENT: ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:221:7: Misleading indentation
   221 |       coverage_mark("reset.l2_writeback", "M", "1", "L2_Writeback+Reset", "1", "I", "backing_memory", 8);
       |       ^~~~~~~~~~~~~
-                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:160:1: ... note: In file included from 'scenario_sequence.svh'
+                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:218:5: ... Expected indentation matching this earlier statement's line:
   218 |     if ((cover_reset_snoop_data == 0) || (cover_reset_mem_wr_data == 0))
@@ -582,7 +582,7 @@
 %Warning-MISINDENT: ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:73:7: Misleading indentation
    73 |       coverage_mark("error.mem_write", "M", "0", "L2_Writeback+MemError", "none", "M", "backing_memory", 8);
       |       ^~~~~~~~~~~~~
-                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
+                    ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:164:1: ... note: In file included from 'scenario_sequence.svh'
                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:65:5: ... Expected indentation matching this earlier statement's line:
    65 |     if (!fatal_error || !memory_adapter_error || memory_adapter_protocol_error ||
@@ -622,19 +622,19 @@
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    11 |       random_addr = 32'h0010_0000 + (32'(random_state[7:4]) << 15) +
       |                                                                    ^
-                      ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:160:1: ... note: In file included from 'scenario_sequence.svh'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:13:19: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 1 bits.
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    13 |       random_core = random_state[0];
       |                   ^
-                      ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:160:1: ... note: In file included from 'scenario_sequence.svh'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHTRUNC: ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:19:48: Logical operator LOGOR expects 1 bit on the RHS, but RHS's VARREF 'memory_active_q' generates 4 bits.
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    19 |         cpu_resp_valid[0] || cpu_resp_valid[1] || memory_active_q)
       |                                                ^~
-                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
+                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:164:1: ... note: In file included from 'scenario_sequence.svh'
                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.053
                      ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
@@ -917,11 +917,17 @@
                                                            : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
   371 |   logic [NUM_MSHRS-1:0] mem_mshr_full_q;
       |                         ^~~~~~~~~~~~~~~
+%Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh:3:30: Signal is not used: 'observed0'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+    3 |       logic [63:0] expected, observed0, observed1;
+      |                              ^~~~~~~~~
+                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:156:1: ... note: In file included from 'scenario_sequence.svh'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh:7:20: Signal is not used: 'ignored_pattern'
                                                                                                       : ... note: In instance 'CoherentCacheSubsystem_tb'
     7 |       logic [63:0] ignored_pattern;
       |                    ^~~~~~~~~~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:156:1: ... note: In file included from 'scenario_sequence.svh'
+                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:158:1: ... note: In file included from 'scenario_sequence.svh'
                        ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: top/CoherentCacheSubsystem.sv:301:39: Signal is not used: 'victim_dirty_q'
                                                            : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
@@ -996,8 +1002,8 @@ g++    verilated.o verilated_cov.o verilated_covergroup.o verilated_timing.o ver
 rm VCoherentCacheSubsystem_tb__ALL.verilator_deplist.tmp
 make[1]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/obj_dir'
 - V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)
-- Verilator: Built from 2.481 MB sources in 21 modules, into 241.092 MB in 186 C++ files needing 0.006 MB
-- Verilator: Walltime 161.500 s (elab=0.125, cvt=40.797, bld=115.724); cpu 49.672 s on 2 threads; allocated 1633.965 MB
+- Verilator: Built from 2.484 MB sources in 21 modules, into 253.427 MB in 187 C++ files needing 0.006 MB
+- Verilator: Walltime 175.201 s (elab=0.104, cvt=46.307, bld=123.865); cpu 54.932 s on 2 threads; allocated 1715.211 MB
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1043,11 +1049,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=1aceb00c
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=23 l2_fill=2 mem_wr_req=11 mem_wr_data=879 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=34 l2_fill=2 mem_wr_req=10 mem_wr_data=875 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1063,17 +1070,17 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=57 l1_hit_avg_cycles=2 l1_miss_count=2880 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1526 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2746 snoop_avg_cycles=14
+BENCH: l1_hit_count=57 l1_hit_avg_cycles=2 l1_miss_count=2950 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1596 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2756 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 617us; walltime 10.974 s; speed 56.263 us/s
-- Verilator: cpu 10.961 s on 1 threads; allocated 75 MB
+- Verilator: $finish at 645us; walltime 11.305 s; speed 57.037 us/s
+- Verilator: cpu 11.399 s on 1 threads; allocated 78 MB
 PASS: isolated DIR_S victim invalidates both L1 sharers and writes back dirty data
 - ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh:52: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 4us; walltime 0.371 s; speed 11.848 us/s
-- Verilator: cpu 0.373 s on 1 threads; allocated 39 MB
+- Verilator: $finish at 4us; walltime 0.375 s; speed 11.700 us/s
+- Verilator: cpu 0.379 s on 1 threads; allocated 40 MB
 === coherence regression seed=00000001 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
@@ -1120,11 +1127,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=00000001
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=25 l2_fill=2 mem_wr_req=8 mem_wr_data=942 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=36 l2_fill=2 mem_wr_req=7 mem_wr_data=938 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1140,12 +1148,12 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=64 l1_hit_avg_cycles=2 l1_miss_count=2873 l1_miss_avg_cycles=19 read_hit_count=44 read_hit_avg_cycles=2 write_hit_count=20 write_hit_avg_cycles=3 upgrade_count=1353 upgrade_avg_cycles=9 l1_cold_miss_count=1520 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2741 snoop_avg_cycles=14
+BENCH: l1_hit_count=64 l1_hit_avg_cycles=2 l1_miss_count=2943 l1_miss_avg_cycles=19 read_hit_count=44 read_hit_avg_cycles=2 write_hit_count=20 write_hit_avg_cycles=3 upgrade_count=1353 upgrade_avg_cycles=9 l1_cold_miss_count=1590 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2751 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 618us; walltime 11.659 s; speed 52.969 us/s
-- Verilator: cpu 11.783 s on 1 threads; allocated 76 MB
+- Verilator: $finish at 645us; walltime 12.112 s; speed 53.249 us/s
+- Verilator: cpu 12.246 s on 1 threads; allocated 79 MB
 === coherence regression seed=00001234 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
@@ -1192,11 +1200,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=00001234
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=23 l2_fill=2 mem_wr_req=9 mem_wr_data=885 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=34 l2_fill=2 mem_wr_req=8 mem_wr_data=881 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1212,12 +1221,12 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=56 l1_hit_avg_cycles=2 l1_miss_count=2881 l1_miss_avg_cycles=19 read_hit_count=42 read_hit_avg_cycles=2 write_hit_count=14 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1527 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2743 snoop_avg_cycles=14
+BENCH: l1_hit_count=56 l1_hit_avg_cycles=2 l1_miss_count=2951 l1_miss_avg_cycles=19 read_hit_count=42 read_hit_avg_cycles=2 write_hit_count=14 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1597 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 619us; walltime 11.976 s; speed 51.652 us/s
-- Verilator: cpu 12.133 s on 1 threads; allocated 76 MB
+- Verilator: $finish at 646us; walltime 12.532 s; speed 51.540 us/s
+- Verilator: cpu 12.673 s on 1 threads; allocated 79 MB
 === coherence regression seed=5EEDC0DE ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
@@ -1264,11 +1273,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=5eedc0de
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=24 l2_fill=2 mem_wr_req=12 mem_wr_data=858 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=35 l2_fill=2 mem_wr_req=11 mem_wr_data=854 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1284,12 +1294,12 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=59 l1_hit_avg_cycles=2 l1_miss_count=2878 l1_miss_avg_cycles=19 read_hit_count=43 read_hit_avg_cycles=2 write_hit_count=16 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1524 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2745 snoop_avg_cycles=14
+BENCH: l1_hit_count=59 l1_hit_avg_cycles=2 l1_miss_count=2948 l1_miss_avg_cycles=19 read_hit_count=43 read_hit_avg_cycles=2 write_hit_count=16 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1594 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2755 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 616us; walltime 11.799 s; speed 52.227 us/s
-- Verilator: cpu 11.957 s on 1 threads; allocated 76 MB
+- Verilator: $finish at 644us; walltime 12.425 s; speed 51.798 us/s
+- Verilator: cpu 12.566 s on 1 threads; allocated 79 MB
 === coherence regression seed=DEADBEEF ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
@@ -1336,11 +1346,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=deadbeef
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=24 l2_fill=2 mem_wr_req=10 mem_wr_data=969 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=35 l2_fill=2 mem_wr_req=9 mem_wr_data=965 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1356,12 +1367,12 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=53 l1_hit_avg_cycles=2 l1_miss_count=2884 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=13 write_hit_avg_cycles=4 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1530 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2743 snoop_avg_cycles=14
+BENCH: l1_hit_count=53 l1_hit_avg_cycles=2 l1_miss_count=2954 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=13 write_hit_avg_cycles=4 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1600 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 621us; walltime 11.524 s; speed 53.891 us/s
-- Verilator: cpu 11.678 s on 1 threads; allocated 76 MB
+- Verilator: $finish at 648us; walltime 12.493 s; speed 51.902 us/s
+- Verilator: cpu 12.639 s on 1 threads; allocated 78 MB
 === coherence regression seed=2468ACE0 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
@@ -1408,11 +1419,12 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
+PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
 PASS: six observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=2468ace0
-COVER: stalled cpu_resp=33 mmio_req=4 mmio_resp=5 mem_rd_req=25 l2_fill=2 mem_wr_req=13 mem_wr_data=1065 dir_req=45
+COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=36 l2_fill=2 mem_wr_req=12 mem_wr_data=1061 dir_req=291
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1428,19 +1440,19 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=54 l1_hit_avg_cycles=2 l1_miss_count=2883 l1_miss_avg_cycles=19 read_hit_count=37 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1352 upgrade_avg_cycles=9 l1_cold_miss_count=1531 l1_cold_miss_avg_cycles=28 cpu_req_ready_stall_cycles=0 snoop_count=2736 snoop_avg_cycles=14
+BENCH: l1_hit_count=54 l1_hit_avg_cycles=2 l1_miss_count=2953 l1_miss_avg_cycles=20 read_hit_count=37 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1352 upgrade_avg_cycles=9 l1_cold_miss_count=1601 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2746 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 624us; walltime 11.785 s; speed 52.957 us/s
-- Verilator: cpu 11.942 s on 1 threads; allocated 76 MB
+- Verilator: $finish at 651us; walltime 12.165 s; speed 53.552 us/s
+- Verilator: cpu 12.310 s on 1 threads; allocated 79 MB
 make[1]: Entering directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache'
 make[2]: Entering directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/directory_mshr_bank_obj'
 make[2]: Nothing to be done for 'default'.
 make[2]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/directory_mshr_bank_obj'
 - V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)
 - Verilator: Built from 0.000 MB sources in 0 modules, into 0.000 MB in 0 C++ files needing 0.000 MB
-- Verilator: Walltime 0.006 s (elab=0.000, cvt=0.000, bld=0.006); cpu 0.001 s on 2 threads; allocated 9.281 MB
+- Verilator: Walltime 0.007 s (elab=0.000, cvt=0.000, bld=0.006); cpu 0.001 s on 2 threads; allocated 9.281 MB
 COV_EVENT: id=mshr_bank.duplicate_suppression checker=PASS old_state=I requester=multiple opcode=GetS_duplicate snoop_target=none new_state=I data_source=none beats=0 contexts=4
 COV_EVENT: id=mshr_bank.four_contexts checker=PASS old_state=I requester=multiple opcode=GetS snoop_target=none new_state=DIR_U data_source=L2_refill beats=8 contexts=4
 PASS: Directory MSHR bank routes four distinct contexts and out-of-order fills
@@ -1448,7 +1460,9 @@ COV_EVENT: id=mshr_bank.same_line_put_serialization checker=PASS old_state=DIR_I
 COV_EVENT: id=mshr_bank.same_set_put_bypass checker=PASS old_state=DIR_S requester=Core1 opcode=PutS snoop_target=none new_state=DIR_I data_source=none beats=0 contexts=1
 COV_EVENT: id=mshr_bank.same_set_serialization checker=PASS old_state=I requester=multiple opcode=GetS_same_set snoop_target=none new_state=DIR_U data_source=L2_refill beats=8 contexts=1
 PASS: refill-start address/ID/context/source remain stable through five stalled cycles and complete once
-PASS: write/grant offers remain stable under later higher-priority context competition
+PASS: context1 write/grant offer survives context0 competition and all contexts retire
+PASS: context2 write/grant offer survives context0 competition and all contexts retire
+PASS: context3 write/grant offer survives context0 competition and all contexts retire
 COV_EVENT: id=mshr_bank.stalled_snoop_target_put checker=PASS old_state=DIR_U requester=Core0 opcode=GetS_plus_PutS snoop_target=Core1 new_state=DIR_S data_source=putbypass beats=0 contexts=2
 COV_EVENT: id=mshr_bank.snoop_independence checker=PASS old_state=DIR_U requester=0 opcode=GetS_plus_GetS snoop_target=owner1 new_state=mixed data_source=owner_plus_memory beats=8 contexts=4
 PASS: snoop-blocked Directory context does not block three independent MSHRs
@@ -1457,80 +1471,82 @@ PASS: reset cancels four simultaneously active Directory contexts
 PASS: Directory MSHR bank directed stress completed
 - ../dv/blocks/directory_mshr_bank/tb/include/reset_cancellation.svh:25: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 2us; walltime 0.000 s; speed 9.150 ms/s
-- Verilator: cpu 0.000 s on 1 threads; allocated 4 MB
+- Verilator: $finish at 3us; walltime 0.001 s; speed 5.365 ms/s
+- Verilator: cpu 0.001 s on 1 threads; allocated 4 MB
 make[1]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache'
-Found 33 entries.
+Found 34 entries.
 Found common filename prefix "/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/rtl"
 Generating output.
-Processing file interconnect/CoherenceRequestArbiterCore.sv
-  lines=22 hit=22
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh
-  lines=57 hit=57
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh
-  lines=13 hit=13
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh
-  lines=25 hit=25
-Processing file l1/MesiL1SnoopArbiter.sv
-  lines=6 hit=6
 Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/performance_monitors.svh
   lines=34 hit=34
-Processing file l1/MesiL1Controller.sv
-  lines=126 hit=103
-Processing file interconnect/CpuMmioRouter.sv
-  lines=34 hit=31
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh
-  lines=17 hit=17
-Processing file interconnect/CoherenceRequestArbiter.sv
-  lines=5 hit=5
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh
-  lines=59 hit=56
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh
-  lines=92 hit=92
-Processing file l2/SharedL2DirectoryArray.sv
-  lines=79 hit=75
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh
-  lines=43 hit=43
-Processing file bus/axi/MemoryRefillMshrBank.sv
-  lines=37 hit=37
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh
-  lines=72 hit=72
-Processing file top/CoherentCacheSubsystem.sv
-  lines=122 hit=122
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/cpu_drivers.svh
+  lines=113 hit=108
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh
+  lines=15 hit=15
 Processing file interconnect/L2LineWriteArbiter.sv
   lines=50 hit=50
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh
-  lines=19 hit=17
-Processing file cluster/DualL1MesiCluster.sv
-  lines=54 hit=51
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh
+  lines=131 hit=131
+Processing file l2/SharedL2DirectoryArray.sv
+  lines=79 hit=75
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/coherence_invariants.svh
+  lines=21 hit=21
+Processing file l1/MesiL1Array.sv
+  lines=67 hit=67
 Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh
   lines=15 hit=15
 Processing file directory/DirectoryController.sv
-  lines=182 hit=114
-Processing file directory/DirectoryMshrBank.sv
-  lines=104 hit=94
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh
-  lines=131 hit=131
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/cpu_drivers.svh
-  lines=113 hit=108
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/coherence_invariants.svh
-  lines=21 hit=21
-Processing file coherence/SharedLineEngine.sv
-  lines=104 hit=73
-Processing file l1/MesiL1Array.sv
-  lines=67 hit=67
+  lines=182 hit=125
 Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/backpressure_cases.svh
   lines=19 hit=17
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh
-  lines=18 hit=18
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh
-  lines=34 hit=34
 Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/signals.svh
   lines=3 hit=3
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh
-  lines=15 hit=15
+Processing file l1/MesiL1SnoopArbiter.sv
+  lines=6 hit=6
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh
+  lines=59 hit=56
+Processing file cluster/DualL1MesiCluster.sv
+  lines=54 hit=51
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh
+  lines=13 hit=13
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh
+  lines=17 hit=17
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh
+  lines=34 hit=34
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh
+  lines=18 hit=18
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh
+  lines=29 hit=29
+Processing file directory/DirectoryMshrBank.sv
+  lines=104 hit=94
+Processing file interconnect/CoherenceRequestArbiterCore.sv
+  lines=22 hit=22
+Processing file interconnect/CoherenceRequestArbiter.sv
+  lines=5 hit=5
+Processing file coherence/SharedLineEngine.sv
+  lines=104 hit=73
+Processing file top/CoherentCacheSubsystem.sv
+  lines=122 hit=122
+Processing file l1/MesiL1Controller.sv
+  lines=126 hit=106
+Processing file interconnect/CpuMmioRouter.sv
+  lines=34 hit=31
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh
+  lines=72 hit=72
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh
+  lines=43 hit=43
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh
+  lines=19 hit=17
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh
+  lines=25 hit=25
+Processing file bus/axi/MemoryRefillMshrBank.sv
+  lines=37 hit=37
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh
+  lines=57 hit=57
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh
+  lines=92 hit=92
 Overall coverage rate:
-  lines......: 91.4% (1638 of 1792 lines)
+  lines......: 92.3% (1681 of 1821 lines)
   functions......: no data found
 coherence functional coverage: 38/38 bins hit; report: reports/coherence/regression.md
 === Coverage audit: coherent_cache_axi_subsystem (CoherentCacheAxiSubsystem_tb) ===
@@ -1548,17 +1564,17 @@ PASS: shared_l2_directory_array; raw=reports/coherence/block_coverage/shared_l2_
 === Coverage audit: bus_blocks (CacheBusBlocks_tb) ===
 PASS: bus_blocks; raw=reports/coherence/block_coverage/bus_blocks.dat; summary=reports/coherence/block_coverage/bus_blocks_summary.txt
 Independent coverage datasets are intentionally not merged: each top has a different elaboration and testcase set.
-Generated from the Phase 1 source audit on 2026-11-10 10:27 +08.
+Generated from the Phase 1 source audit on 2026-11-10 16:10 +08.
 
-- Product RTL: **850/992** hit; **142** missed.
-- Testbench: **788/800** hit; **12** missed.
+- Product RTL: **864/992** hit; **128** missed.
+- Testbench: **817/829** hit; **12** missed.
 - Generated/Other: **0/0** hit; **0** missed.
-- All LCOV records: **1638/1792** hit; **154** missed; reconciliation: **PASS**.
+- All LCOV records: **1681/1821** hit; **140** missed; reconciliation: **PASS**.
 - RTL manifest / compiler source reconciliation: **18/18 files; PASS**.
 Wrote docs/coverage_audit_phase1.md and docs/coherence_coverage_gap_review.md
 wrote reports/coherence/coverage_closure_raw_runs.md
-Wrote reports/final/coverage_closure_matrix.csv: 940 unhit dataset-scoped points
-Primary subsystem open points: {'LCOV RTL line': 142, 'Verilator branch': 88, 'FSM arc': 35, 'FSM state': 24}
+Wrote reports/final/coverage_closure_matrix.csv: 907 unhit dataset-scoped points
+Primary subsystem open points: {'LCOV RTL line': 128, 'Verilator branch': 83, 'FSM arc': 35, 'FSM state': 24}
 Waivers: 0; sign-off: OPEN
 Wrote reports/coherence/rtl_coverage_dataset_manifest.json (8 independent datasets)
 NOTE directory_controller: 16 RTL manifest sources are outside this elaborated top

@@ -1,0 +1,32 @@
+[
+  {
+    "scope": "phase4_directory_transactions",
+    "result": "INDUCTION_UNKNOWN",
+    "path": "reports/final/phase4/formal/phase4_directory_transactions_logfile.txt.gz",
+    "original_sha256": "db586c7506db70922ec5417c0a2f6413086eea89ba7def2aca2e3bbd8dd01bcc"
+  },
+  {
+    "scope": "phase4_directory_transactions",
+    "result": "INDUCTION_UNKNOWN",
+    "path": "reports/final/phase4/formal/phase4_directory_transactions_trace_induct.vcd.gz",
+    "original_sha256": "a74996b7e60bf18ba1d2dd11477d0d0c57eb60355bb8cb1c7f8fe8060cde6a42"
+  },
+  {
+    "scope": "phase4_directory_transactions_bmc",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH24",
+    "path": "reports/final/phase4/formal/phase4_directory_transactions_bmc_logfile.txt.gz",
+    "original_sha256": "4e7e5eab6ca8b9001b776d80d3e99e086284c02da15894a86b05b73ca3d28806"
+  },
+  {
+    "scope": "phase4_mshr_accounting",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH12",
+    "path": "reports/final/phase4/formal/phase4_mshr_accounting_logfile.txt.gz",
+    "original_sha256": "e9c55b1ed1d3e2d3cb2d707f4791cc1164b7b1199c08f79396bad19ab2cf0572"
+  },
+  {
+    "scope": "phase4_encoding",
+    "result": "INDUCTIVE_ENCODING_PASS",
+    "path": "reports/final/phase4/formal/phase4_encoding_logfile.txt.gz",
+    "original_sha256": "365127a2103f66bc3adb751348cc7b56a493c0f0ee2e404836413067bbb6a072"
+  }
+]

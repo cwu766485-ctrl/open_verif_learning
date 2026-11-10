@@ -1,5 +1,5 @@
 {
-  "completed_utc": "2026-11-10T02:30:28.872804+00:00",
+  "completed_utc": "2026-11-10T08:13:01.847694+00:00",
   "required_gates": [
     "coherence_verify",
     "coherence_full_system_verify",
@@ -13,87 +13,87 @@
   "runs": {
     "coherence_coverage_audit": {
       "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-10T02:28:16.354192+00:00",
+      "completed_utc": "2026-11-10T08:10:44.569419+00:00",
       "log": "reports/closure/release_runs/coherence_coverage_audit.log",
-      "log_sha256": "ba38819cc5d8f84cb8309a806492b526078d63190a83ecfe7bc54d8ba932473d",
+      "log_sha256": "c7d60423176f7467f69d273fa21523401d48bc794443b45a72341f7bf92fbcf0",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_full_system_cross_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-10T01:50:51.496903+00:00",
+      "completed_utc": "2026-11-10T07:33:51.796678+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
-      "log_sha256": "8a87761661e4e988d1d896682aabd138f87d474d326b3b4a597e2ca74993c491",
+      "log_sha256": "99a6061d9402cdc69a445c4e676e7e33a4c77cce95deffc8fa798d2baeb391aa",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_full_system_evidence_gate": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-10T02:28:18.960652+00:00",
+      "completed_utc": "2026-11-10T08:10:47.247521+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
-      "log_sha256": "e292abd9fddc67736b5113ce72bdb7c77152969d81b8481a09026cec7e04fe1a",
+      "log_sha256": "79b7149655e01988930ef9dd001968a909fe937b7f4396cd69d0b753187c94b1",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_full_system_replay_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-10T02:30:28.872395+00:00",
+      "completed_utc": "2026-11-10T08:13:01.846219+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
-      "log_sha256": "4c2e8d939a881e09d506671cfada8a36a589e92059f07d0eddfb08b560aad53d",
+      "log_sha256": "6086b11d8b0a6d787f85c5f5e5497a9d85da931c4dc03f12e83c48a49bac81f6",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_full_system_stress": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-10T02:22:18.773998+00:00",
+      "completed_utc": "2026-11-10T08:04:32.583955+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_stress.log",
-      "log_sha256": "13f9d8bf7c73c31614631f83253c9d1908384bf1aba70471729bc78721871bc7",
+      "log_sha256": "6facc29415d9b36960e23fc5e3fcc9eafb4363c3bd29cc6f7c28280b79fa44ba",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_full_system_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-10T01:43:40.607934+00:00",
+      "completed_utc": "2026-11-10T07:25:58.769366+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_verify.log",
-      "log_sha256": "130d02d9a02f5a7a6cc6ecd73f8f69d7da7df0dc8740a510938e96f89a7ab285",
+      "log_sha256": "0cf61bfc380bf531d52c7212e06bacce190f776a6707e760fa7ede43d623b755",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_hit_under_miss": {
       "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-10T01:48:13.019078+00:00",
+      "completed_utc": "2026-11-10T07:31:00.249212+00:00",
       "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
-      "log_sha256": "17ebdfdcde94ef743a70aca837f99d142dbdbc89a5c6bee8caaaa3db32bf15b3",
+      "log_sha256": "089f8f677d9b62488c83f560e91365079522c9cc4ba0249e0dc466e1205876ac",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     },
     "coherence_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-10T01:23:56.356121+00:00",
+      "completed_utc": "2026-11-10T07:05:11.295075+00:00",
       "log": "reports/closure/release_runs/coherence_verify.log",
-      "log_sha256": "94f62fa32b1dbba5141e8598121712203fec107adb0d5cc7ae09d4c797496bcd",
+      "log_sha256": "7a527d774a0dd599917c0b60054b06664d692d6262342b182817c29165978cc7",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+      "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
     }
   },
   "schema_version": 1,
-  "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
-  "started_utc": "2026-11-10T01:08:08.454344+00:00",
-  "updated_utc": "2026-11-10T02:30:28.872411+00:00"
+  "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+  "started_utc": "2026-11-10T06:49:17.135867+00:00",
+  "updated_utc": "2026-11-10T08:13:01.846235+00:00"
 }

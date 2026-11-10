@@ -1,13 +1,13 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-10 10:27 +08.
+Generated from the full regression artifacts on 2026-11-10 16:10 +08.
 
 ## Scope and source accounting
 
 No RTL behavior, interface, testcase sequence, Functional Coverage Bin ID, or waiver was changed. Product RTL classification uses exact normalized path membership in rtl/Coherence.files.f.
 
 - RTL Source Manifest: **18 files**; Verilator __verFiles.dat RTL source set: **18 files**; exact match: **PASS**.
-- LCOV source records: **33**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
+- LCOV source records: **34**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
 - A manifest source with no executable LCOV line points is reported as N/A, not as 0% coverage. Such files can still be parsed/compiled but may be packages, unelaborated top wrappers, or blocks outside this simulation top.
 
 ### LCOV line reconciliation
@@ -16,10 +16,10 @@ Each normalized (source, line) record is counted once. Hit + missed must equal t
 
 | Category | Hit | Total | Missed | Reconciliation |
 | --- | ---: | ---: | ---: | --- |
-| Product RTL | 850 | 992 | 142 | 850 + 142 = 992 |
-| Testbench | 788 | 800 | 12 | 788 + 12 = 800 |
+| Product RTL | 864 | 992 | 128 | 864 + 128 = 992 |
+| Testbench | 817 | 829 | 12 | 817 + 12 = 829 |
 | Generated/Other | 0 | 0 | 0 | 0 + 0 = 0 |
-| **All source records** | **1638** | **1792** | **154** | **1638 + 154 = 1792** |
+| **All source records** | **1681** | **1821** | **140** | **1681 + 140 = 1821** |
 
 ## Native Verilator coverage by source category
 
@@ -27,8 +27,8 @@ Native point totals are parsed from merged coverage.dat by point type; point hit
 
 | Category | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: |
-| Product RTL | 468/556 | 21887/27474 | 30/54 | 13/48 |
-| Testbench | 245/282 | 4536/6630 | N/A (0 points) | N/A (0 points) |
+| Product RTL | 473/556 | 21923/27474 | 30/54 | 13/48 |
+| Testbench | 248/286 | 4530/6630 | N/A (0 points) | N/A (0 points) |
 | Generated/Other | N/A (0 points) | N/A (0 points) | N/A (0 points) | N/A (0 points) |
 
 ## Product RTL module raw coverage
@@ -40,23 +40,23 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | `rtl/bus/apb/CachePerformanceCsr.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 445/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 3 | 72/82 | 5846/6796 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 3 | 73/82 | 5846/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 509/648 | N/A | N/A |
 | `rtl/common/CoherenceProtocol.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 114/182 | 68 | 29/42 | 521/612 | 18/40 | 9/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 71/86 | 887/2292 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 125/182 | 57 | 30/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 73/86 | 923/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 0 | N/A | 350/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 0 | 4/4 | 222/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 3 | 18/20 | 1608/1872 | N/A | N/A |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 0 | 4/4 | 1274/1374 | N/A | N/A |
 | `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1447/2054 | N/A | N/A |
-| `rtl/l1/MesiL1Controller.sv` | 103/126 | 23 | 31/46 | 1400/1532 | 12/14 | 4/12 |
+| `rtl/l1/MesiL1Controller.sv` | 106/126 | 20 | 32/46 | 1400/1532 | 12/14 | 4/12 |
 | `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 0 | N/A | 230/272 | N/A | N/A |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 4 | 67/74 | 1096/1324 | N/A | N/A |
 | `rtl/top/CoherentCacheAxiSubsystem.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 6052/7286 | N/A | N/A |
 
-## Every uncovered Product RTL line (142 lines)
+## Every uncovered Product RTL line (128 lines)
 
 Each missed executable source line is linked to its original RTL path and line. Categories are source-context review labels: the default/FSM label is only an unreachability candidate, never a proof; error labels identify checks/actions, and legal/recovery labels identify paths for which directed stimulus is appropriate. No category automatically waives a line.
 
@@ -70,8 +70,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | Snoop beat/last 异常：Snoop fail-stop 错误路径 | 2 |
 | 合法 Grant Read / L2 Hit 等待路径（独立 Block 有命中） | 1 |
 | 合法 ready/valid Offer Lock（独立 Block 有命中） | 10 |
-| 合法恢复 / 重试路径未命中 | 6 |
-| 合法路径未命中 | 14 |
+| 合法路径未命中 | 6 |
 | 非法协议检测 / 错误处理 | 88 |
 
 | Source line | Review category | Source text |
@@ -148,17 +147,6 @@ Each missed executable source line is linked to its original RTL path and line. 
 | [`rtl/directory/DirectoryController.sv:435`](../rtl/directory/DirectoryController.sv#L435) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
 | [`rtl/directory/DirectoryController.sv:436`](../rtl/directory/DirectoryController.sv#L436) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd2;` |
 | [`rtl/directory/DirectoryController.sv:437`](../rtl/directory/DirectoryController.sv#L437) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:463`](../rtl/directory/DirectoryController.sv#L463) | 合法恢复 / 重试路径未命中 | `if (((snoop_rsp_opcode == SNOOP_RSP_INV_ACK) \|\|` |
-| [`rtl/directory/DirectoryController.sv:466`](../rtl/directory/DirectoryController.sv#L466) | 合法恢复 / 重试路径未命中 | `snoop_response_must_be_data_q)) begin` |
-| [`rtl/directory/DirectoryController.sv:471`](../rtl/directory/DirectoryController.sv#L471) | 合法恢复 / 重试路径未命中 | `next_dir_state_q <= DIR_U;` |
-| [`rtl/directory/DirectoryController.sv:472`](../rtl/directory/DirectoryController.sv#L472) | 合法恢复 / 重试路径未命中 | `next_sharers_q <= 2'b00;` |
-| [`rtl/directory/DirectoryController.sv:473`](../rtl/directory/DirectoryController.sv#L473) | 合法恢复 / 重试路径未命中 | `next_owner_q <= src_id_q;` |
-| [`rtl/directory/DirectoryController.sv:474`](../rtl/directory/DirectoryController.sv#L474) | 合法恢复 / 重试路径未命中 | `grant_has_data_q <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:479`](../rtl/directory/DirectoryController.sv#L479) | 合法路径未命中 | `line_xfer_kind_q <= XFER_L2_REFILL;` |
-| [`rtl/directory/DirectoryController.sv:480`](../rtl/directory/DirectoryController.sv#L480) | 合法路径未命中 | `snoop_response_must_be_data_q <= 1'b0;` |
-| [`rtl/directory/DirectoryController.sv:481`](../rtl/directory/DirectoryController.sv#L481) | 合法路径未命中 | `snoop_resume_q <= DIR_COMMIT;` |
-| [`rtl/directory/DirectoryController.sv:482`](../rtl/directory/DirectoryController.sv#L482) | 合法路径未命中 | `pending_targets_q <= 2'b00;` |
-| [`rtl/directory/DirectoryController.sv:483`](../rtl/directory/DirectoryController.sv#L483) | 合法路径未命中 | `state_q <= DIR_START_XFER;` |
 | [`rtl/directory/DirectoryController.sv:484`](../rtl/directory/DirectoryController.sv#L484) | 非法协议检测 / 错误处理 | `end else if ((snoop_opcode_q == SNOOP_READ) &&` |
 | [`rtl/directory/DirectoryController.sv:485`](../rtl/directory/DirectoryController.sv#L485) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_DATA)) begin` |
 | [`rtl/directory/DirectoryController.sv:486`](../rtl/directory/DirectoryController.sv#L486) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
@@ -203,9 +191,6 @@ Each missed executable source line is linked to its original RTL path and line. 
 | [`rtl/l1/MesiL1Controller.sv:347`](../rtl/l1/MesiL1Controller.sv#L347) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
 | [`rtl/l1/MesiL1Controller.sv:348`](../rtl/l1/MesiL1Controller.sv#L348) | 合法路径未命中 | `cpu_state_q <= CPU_IDLE;` |
 | [`rtl/l1/MesiL1Controller.sv:349`](../rtl/l1/MesiL1Controller.sv#L349) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/l1/MesiL1Controller.sv:365`](../rtl/l1/MesiL1Controller.sv#L365) | 合法路径未命中 | `if (!snoop_tag_hit \|\| (snoop_line_state == MESI_I)) begin` |
-| [`rtl/l1/MesiL1Controller.sv:366`](../rtl/l1/MesiL1Controller.sv#L366) | 合法路径未命中 | `snoop_rsp_opcode_q <= (snoop_opcode == SNOOP_INVALIDATE) ?` |
-| [`rtl/l1/MesiL1Controller.sv:368`](../rtl/l1/MesiL1Controller.sv#L368) | 合法路径未命中 | `snoop_state_q <= SNP_SEND_RSP;` |
 | [`rtl/l1/MesiL1Controller.sv:394`](../rtl/l1/MesiL1Controller.sv#L394) | 非法协议检测 / 错误处理 | `end else begin` |
 | [`rtl/l1/MesiL1Controller.sv:395`](../rtl/l1/MesiL1Controller.sv#L395) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
 | [`rtl/l1/MesiL1Controller.sv:439`](../rtl/l1/MesiL1Controller.sv#L439) | Snoop beat/last 异常：Snoop fail-stop 错误路径 | `(snoop_array_beat_idx == 3'd7)) begin` |
@@ -225,10 +210,10 @@ Each missed executable source line is linked to its original RTL path and line. 
 | --- | ---: | --- |
 | `rtl/cluster/DualL1MesiCluster.sv` | 3 (472–474) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/coherence/SharedLineEngine.sv` | 31 (133–135, 141–143, 182–184, 191–193, 232–235, 246–248, 276, 278–280, 331–334, 348, 366–368) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
-| `rtl/directory/DirectoryController.sv` | 68 (238–241, 299–302, 353, 358–360, 362–365, 384–385, 388–397, 409–414, 434–437, 463, 466, 471–474, 479–489, 491–494, 497–500, 525, 527–530) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/directory/DirectoryController.sv` | 57 (238–241, 299–302, 353, 358–360, 362–365, 384–385, 388–397, 409–414, 434–437, 484–489, 491–494, 497–500, 525, 527–530) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/directory/DirectoryMshrBank.sv` | 10 (339–341, 362–365, 372–374) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/interconnect/CpuMmioRouter.sv` | 3 (162–164) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
-| `rtl/l1/MesiL1Controller.sv` | 23 (254–256, 287–289, 317–318, 345, 347–349, 365–366, 368, 394–395, 439–440, 454, 456–458) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/l1/MesiL1Controller.sv` | 20 (254–256, 287–289, 317–318, 345, 347–349, 394–395, 439–440, 454, 456–458) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 4 (313–314, 326–327) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 
 ## Functional Coverage map and checker closure
