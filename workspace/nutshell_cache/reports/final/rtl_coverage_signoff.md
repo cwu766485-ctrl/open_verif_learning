@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-10 17:54 +08.
+Generated: 2026-11-10 22:25 +08.
 
 ## Scope and source manifest
 
@@ -42,7 +42,7 @@ All 869 zero-count dataset-scoped records currently have status **OPEN**. Allowe
 ## Functional coverage and checker status
 
 Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
-Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `69f9fb4615717b9d9b096d9e11262438522cd960`.
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `69fdfe44f76d332e1e1664ee228d91f5b33886b0`.
 These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
@@ -60,7 +60,7 @@ These are separate coverage plans and are not added together. Full-system counts
 
 ## Regression evidence and remaining status
 
-Current source fingerprint: 0/8 required regression targets have PASS exit status and verified log hashes. Regression status: OPEN. Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage and Full Code Coverage Sign-off; code coverage remains OPEN.
+Current source fingerprint: 8/8 required regression targets have PASS exit status and verified log hashes. Regression status: PASS. Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage and Full Code Coverage Sign-off; code coverage remains OPEN.
 This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
 
 Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.

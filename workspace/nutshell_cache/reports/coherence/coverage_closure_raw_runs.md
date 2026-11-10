@@ -82,15 +82,15 @@ Standalone DirectoryController directed TB.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 160/182 | 22 |
-| branch | 36/42 | 6 |
-| toggle | 258/612 | 354 |
+| line | 178/182 | 4 |
+| branch | 37/42 | 5 |
+| toggle | 260/612 | 352 |
 | fsm_state | 10/10 | 0 |
 | fsm_arc | 3/9 | 6 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/directory/DirectoryController.sv` | 160/182 | 36/42 | 258/612 | 10/10 | 3/9 |
+| `rtl/directory/DirectoryController.sv` | 178/182 | 37/42 | 260/612 | 10/10 | 3/9 |
 
 No Product RTL points emitted in this run:
 
@@ -190,16 +190,16 @@ Standalone controller refill, snoop, reset and malformed-beat tests.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 107/132 | 25 |
-| branch | 41/46 | 5 |
-| toggle | 688/1804 | 1116 |
+| line | 124/132 | 8 |
+| branch | 43/46 | 3 |
+| toggle | 741/1804 | 1063 |
 | fsm_state | 7/7 | 0 |
 | fsm_arc | 3/6 | 3 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/l1/MesiL1Controller.sv` | 101/126 | 41/46 | 590/1532 | 7/7 | 3/6 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 98/272 | N/A | N/A |
+| `rtl/l1/MesiL1Controller.sv` | 118/126 | 43/46 | 628/1532 | 7/7 | 3/6 |
+| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 113/272 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 

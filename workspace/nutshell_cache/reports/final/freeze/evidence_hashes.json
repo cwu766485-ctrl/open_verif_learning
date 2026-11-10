@@ -1,0 +1,178 @@
+[
+  {
+    "path": "reports/final/freeze/comparison.json",
+    "sha256": "a27aa652a8e9ec67120cea0616eb27a32630b9088226e259be7578d255a51a39"
+  },
+  {
+    "path": "reports/final/freeze/dataset_manifest.json",
+    "sha256": "bf8a804dc5511a9729818b88116f99551b1aa09d139dd0d4a30911daf1040eb4"
+  },
+  {
+    "path": "reports/final/freeze/formal/coherence_directory_mshr_bank.log.gz",
+    "sha256": "1b28b995d36bf7ac25d58075429bc3ba8c1b0dfa0d90545adf319849d007de8b"
+  },
+  {
+    "path": "reports/final/freeze/formal/coherence_directory_transactions.log.gz",
+    "sha256": "898d868b8f7168408143851c4cbc930a4a844fcf82d13cf5bb6e844aee1116c7"
+  },
+  {
+    "path": "reports/final/freeze/formal/coherence_directory_unconstrained.log.gz",
+    "sha256": "1813571f41e59e63d74b95d605f3b199c804bbd989b936459ee1eb7c03d6480a"
+  },
+  {
+    "path": "reports/final/freeze/formal_evidence.json",
+    "sha256": "7f28494ce9c72a077fdaedae85b3accf50b5777bc1c6aedd465212dcfdc33529"
+  },
+  {
+    "path": "reports/final/freeze/formal_point_mapping.csv.gz",
+    "sha256": "0a90f469364a1c14ff822ecb7f3053245cb1566bee1164eceda4f8efa31bb15e"
+  },
+  {
+    "path": "reports/final/freeze/phase4_baseline_point_diff.csv.gz",
+    "sha256": "49defb2f92750ae38ec9d3d5b21eec340aa6c0f36461d9aeb3c60e2595c2f8e6"
+  },
+  {
+    "path": "reports/final/freeze/raw/axi_subsystem.compiled_verFiles.dat.gz",
+    "sha256": "1c3c2f22e1c6049958049eca4f0ea764782820f7d954895bce9041948eaa867c"
+  },
+  {
+    "path": "reports/final/freeze/raw/axi_subsystem.dat.gz",
+    "sha256": "f729d54f80a0fcf7b321ab6daec8f47766a5f29b742cdfea8281b3df0ae536b2"
+  },
+  {
+    "path": "reports/final/freeze/raw/axi_subsystem.info.gz",
+    "sha256": "6a1185ab3753675d3b49e3a731fe3572f6448bc7c0911736381ab874d5b82431"
+  },
+  {
+    "path": "reports/final/freeze/raw/bus_blocks.compiled_verFiles.dat.gz",
+    "sha256": "b6e676e13d98adeab7d0f629483c3102cf9a2c968f2ca2dd4d37a1370fa718b5"
+  },
+  {
+    "path": "reports/final/freeze/raw/bus_blocks.dat.gz",
+    "sha256": "7d69117b06e4c491dfcd6cad76175a34f7ad5551908080acd32d80dc13a56ea7"
+  },
+  {
+    "path": "reports/final/freeze/raw/bus_blocks.info.gz",
+    "sha256": "0789b1943c196be154a5926c95e1b87641ab33f7056cac3d5952056f75a9f46e"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_controller.compiled_verFiles.dat.gz",
+    "sha256": "d1adb7297e9a7d7171f1d2d9532634ddea9d39c0b052e9f2b274d19ae0569673"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_controller.dat.gz",
+    "sha256": "2dad8c61c8a6b88c34ffcf5201a1ae109983942c8f32790b0898938b6ca171d4"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_controller.info.gz",
+    "sha256": "b254fbf0015503ec4e688d6e40baa551bef16cc72e43e64aa934bf3b89713250"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_mshr_bank.compiled_verFiles.dat.gz",
+    "sha256": "869fc54c69dc0e220551cbc9214c0b602afeecebc8d8b0f87208d17f173b6bf3"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_mshr_bank.dat.gz",
+    "sha256": "086e20d0dcf7a904e9874c404751ef1be66a59b0c1d6c6610e3ffcb1ec4cfe9f"
+  },
+  {
+    "path": "reports/final/freeze/raw/directory_mshr_bank.info.gz",
+    "sha256": "13e5d4614ea2dce18af349ce3bf894f9fac1c986773d82138fcf75a20b2525dc"
+  },
+  {
+    "path": "reports/final/freeze/raw/main_subsystem.compiled_verFiles.dat.gz",
+    "sha256": "7cb633466e3bba19b9516bf89209765222478f4d0b363477ed7f37e421251cd7"
+  },
+  {
+    "path": "reports/final/freeze/raw/main_subsystem.dat.gz",
+    "sha256": "026c1289d5d9ac5dc573c665bf213022b52b8baa68cebad87b7f37ca91d8d78c"
+  },
+  {
+    "path": "reports/final/freeze/raw/main_subsystem.info.gz",
+    "sha256": "61abfdca12850fa62934c2702934f9c22cb3de2d1a73b5261239651a792ac085"
+  },
+  {
+    "path": "reports/final/freeze/raw/mesi_l1_controller.compiled_verFiles.dat.gz",
+    "sha256": "19e8445553e56e4dc6796d4e923076d091845b6a7d962de2181dcf3eb1ba9fa8"
+  },
+  {
+    "path": "reports/final/freeze/raw/mesi_l1_controller.dat.gz",
+    "sha256": "bdff19b2285012c099a7fc695419494cc0d9fa65c03177ee19e0dc4c8555a97c"
+  },
+  {
+    "path": "reports/final/freeze/raw/mesi_l1_controller.info.gz",
+    "sha256": "89d8e0361240504f632d20a456586e39cd4987fc6790b238c22dc264c2613cc1"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_l2_directory_array.compiled_verFiles.dat.gz",
+    "sha256": "c1d3e616d9f7fcb923ffbbfa2f03947fa743f37f523919b591a952e20666c1b4"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_l2_directory_array.dat.gz",
+    "sha256": "0243f2e1f1aedac545c35d6caa0a70c1375f62b8b5826f766ce07a3383348791"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_l2_directory_array.info.gz",
+    "sha256": "44cd080f385d7d3025ca9632a4334da007e87b95a3e32ff980e451a696557688"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_line_engine.compiled_verFiles.dat.gz",
+    "sha256": "4b70ef5e70f343adf64f934374608d4a6f509977197b3b833831fe198466a5ed"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_line_engine.dat.gz",
+    "sha256": "9d73eff3659dfa8365a996f94498b8ce047e058a3ee4f3af522ff9c6d0f3c34e"
+  },
+  {
+    "path": "reports/final/freeze/raw/shared_line_engine.info.gz",
+    "sha256": "c149157926dc0f991014a658008b1d5f0e2b588ce9cc9afe912c515d338428b1"
+  },
+  {
+    "path": "reports/final/freeze/raw_archive.json",
+    "sha256": "ebd4388b6c0ebbadb2219e102c1245309e66c97adcf834f23a4c7e3cc9119633"
+  },
+  {
+    "path": "reports/final/freeze/reachability_study.md",
+    "sha256": "b0bb25a509acaffb1050d138a1186d665952ef003d1e9a820e55c97fbe19a603"
+  },
+  {
+    "path": "reports/final/freeze/regression_status.json",
+    "sha256": "adf6a3be384aafe41b9cef6e62cdcb5db706e49db356ff116007be8235c7442e"
+  },
+  {
+    "path": "reports/final/freeze/source_identity.json",
+    "sha256": "3a80322bbcee51d35982d08f4a704fe7c30d77945efab4c5fc4473d55a1ba838"
+  },
+  {
+    "path": "reports/final/freeze/stress_campaign_summary.md",
+    "sha256": "6ac737838c39c8b28f1c4b5df5f9e0b7a8ec5b03ae1dbf458b4ec42bd76756b1"
+  },
+  {
+    "path": "reports/final/freeze/stress_seed_summary.csv",
+    "sha256": "1bd47e44f0efc172b374d7d79700fc0ba127c9cd76c63609d8b0489315e201ed"
+  },
+  {
+    "path": "reports/final/freeze/triage_baseline_point_diff.csv.gz",
+    "sha256": "985e6e05ed3ae98f947d5276c840b3ef3ac2db2ae4da78d8df2021401095b55a"
+  },
+  {
+    "path": "reports/final/freeze/triage_baseline_zero_triage.csv.gz",
+    "sha256": "ac75b58b6f4bc7c64b4b264f1ea689f03986c4e01fb782b798d24b8eea3738f6"
+  },
+  {
+    "path": "reports/final/freeze/triage_summary.json",
+    "sha256": "bf0ddd56070d2342d8894ef8584592b6d0fc1b72d4bdc0f2bf192633159ed65f"
+  },
+  {
+    "path": "reports/final/freeze/triage_waiver_candidates.json",
+    "sha256": "e9cfb61fb04472b91b0907dff1f0cb61a7f9f8dc23c80c817cb2bbe1bc6b2947"
+  },
+  {
+    "path": "reports/final/freeze/zero_point_review.csv.gz",
+    "sha256": "b4f2df58d25b0ebb34c465bcec3c97ba3e98e81bed6080a384ce8e0d2dda2121"
+  },
+  {
+    "path": "reports/final/freeze/zero_summary.json",
+    "sha256": "a22f8be84cd1849d407ad837efa81be79a141bb91e17a4e01caa55e6c5ec2dbd"
+  }
+]
