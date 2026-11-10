@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "69fdfe44f76d332e1e1664ee228d91f5b33886b0",
+  "git_sha": "b383383abea773decff022c149b7e767fb2df827",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
@@ -27,7 +27,7 @@
     "FS.CONCURRENCY.SAME_LINE_DUAL_STORE": 1,
     "FS.CONCURRENCY.SNOOP_WITH_REFILL": 1,
     "FS.CPU.READ.CORE0": 465,
-    "FS.CPU.READ.CORE1": 467,
+    "FS.CPU.READ.CORE1": 468,
     "FS.CPU.WRITE.CORE0": 335,
     "FS.CPU.WRITE.CORE1": 297,
     "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
@@ -40,7 +40,7 @@
     "FS.MESI.E_TO_I": 29,
     "FS.MESI.E_TO_M": 25,
     "FS.MESI.E_TO_S": 47,
-    "FS.MESI.I_TO_E": 212,
+    "FS.MESI.I_TO_E": 213,
     "FS.MESI.I_TO_M": 294,
     "FS.MESI.I_TO_S": 265,
     "FS.MESI.M_TO_I": 135,

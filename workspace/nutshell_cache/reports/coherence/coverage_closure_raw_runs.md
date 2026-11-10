@@ -12,7 +12,7 @@ Main subsystem smoke, multisnoop and five seeded regressions, all from one commo
 | --- | ---: | ---: |
 | line | 864/992 | 128 |
 | branch | 473/556 | 83 |
-| toggle | 21923/27474 | 5551 |
+| toggle | 21931/27474 | 5543 |
 | fsm_state | 30/54 | 24 |
 | fsm_arc | 13/48 | 35 |
 
@@ -22,12 +22,12 @@ Main subsystem smoke, multisnoop and five seeded regressions, all from one commo
 | `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 73/82 | 5846/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 509/648 | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 125/182 | 30/42 | 521/612 | 18/40 | 9/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 73/86 | 923/2292 | N/A | N/A |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 73/86 | 929/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 350/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 222/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1608/1872 | N/A | N/A |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1274/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1447/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1449/2054 | N/A | N/A |
 | `rtl/l1/MesiL1Controller.sv` | 106/126 | 32/46 | 1400/1532 | 12/14 | 4/12 |
 | `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 230/272 | N/A | N/A |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 1096/1324 | N/A | N/A |

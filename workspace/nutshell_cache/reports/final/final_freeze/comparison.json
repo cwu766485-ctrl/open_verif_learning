@@ -1,0 +1,470 @@
+{
+  "freeze_baseline": {
+    "baseline_sha": "69fdfe44f76d332e1e1664ee228d91f5b33886b0",
+    "metrics": {
+      "main_subsystem": {
+        "line": {
+          "before": [
+            864,
+            992
+          ],
+          "after": [
+            864,
+            992
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            473,
+            556
+          ],
+          "after": [
+            473,
+            556
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            21923,
+            27474
+          ],
+          "after": [
+            21931,
+            27474
+          ],
+          "delta": 8
+        },
+        "fsm_state": {
+          "before": [
+            30,
+            54
+          ],
+          "after": [
+            30,
+            54
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            13,
+            48
+          ],
+          "after": [
+            13,
+            48
+          ],
+          "delta": 0
+        }
+      },
+      "axi_subsystem": {
+        "line": {
+          "before": [
+            901,
+            1068
+          ],
+          "after": [
+            901,
+            1068
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            509,
+            632
+          ],
+          "after": [
+            509,
+            632
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            15623,
+            32332
+          ],
+          "after": [
+            15623,
+            32332
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            30,
+            54
+          ],
+          "after": [
+            30,
+            54
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            4,
+            48
+          ],
+          "after": [
+            4,
+            48
+          ],
+          "delta": 0
+        }
+      },
+      "directory_controller": {
+        "line": {
+          "before": [
+            178,
+            182
+          ],
+          "after": [
+            178,
+            182
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            37,
+            42
+          ],
+          "after": [
+            37,
+            42
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            260,
+            612
+          ],
+          "after": [
+            260,
+            612
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            10,
+            10
+          ],
+          "after": [
+            10,
+            10
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            3,
+            9
+          ],
+          "after": [
+            3,
+            9
+          ],
+          "delta": 0
+        }
+      },
+      "directory_mshr_bank": {
+        "line": {
+          "before": [
+            167,
+            286
+          ],
+          "after": [
+            167,
+            286
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            100,
+            128
+          ],
+          "after": [
+            100,
+            128
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            1249,
+            2904
+          ],
+          "after": [
+            1249,
+            2904
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            31,
+            40
+          ],
+          "after": [
+            31,
+            40
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            11,
+            36
+          ],
+          "after": [
+            11,
+            36
+          ],
+          "delta": 0
+        }
+      },
+      "shared_line_engine": {
+        "line": {
+          "before": [
+            101,
+            104
+          ],
+          "after": [
+            101,
+            104
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            44,
+            52
+          ],
+          "after": [
+            44,
+            52
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            304,
+            648
+          ],
+          "after": [
+            304,
+            648
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        }
+      },
+      "mesi_l1_controller": {
+        "line": {
+          "before": [
+            124,
+            132
+          ],
+          "after": [
+            124,
+            132
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            43,
+            46
+          ],
+          "after": [
+            43,
+            46
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            741,
+            1804
+          ],
+          "after": [
+            741,
+            1804
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            7,
+            7
+          ],
+          "after": [
+            7,
+            7
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            3,
+            6
+          ],
+          "after": [
+            3,
+            6
+          ],
+          "delta": 0
+        }
+      },
+      "shared_l2_directory_array": {
+        "line": {
+          "before": [
+            75,
+            79
+          ],
+          "after": [
+            75,
+            79
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            65,
+            74
+          ],
+          "after": [
+            65,
+            74
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            197,
+            1778
+          ],
+          "after": [
+            197,
+            1778
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        }
+      },
+      "bus_blocks": {
+        "line": {
+          "before": [
+            67,
+            68
+          ],
+          "after": [
+            67,
+            68
+          ],
+          "delta": 0
+        },
+        "branch": {
+          "before": [
+            70,
+            76
+          ],
+          "after": [
+            70,
+            76
+          ],
+          "delta": 0
+        },
+        "toggle": {
+          "before": [
+            1100,
+            2450
+          ],
+          "after": [
+            1100,
+            2450
+          ],
+          "delta": 0
+        },
+        "fsm_state": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        },
+        "fsm_arc": {
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            0
+          ],
+          "delta": 0
+        }
+      }
+    },
+    "transitions": {
+      "UNCHANGED_STATUS": 74823,
+      "NEW_RAW_HIT": 8
+    },
+    "new_hit_metrics": {
+      "toggle": 8
+    }
+  }
+}

@@ -1,9 +1,9 @@
 {
   "code_coverage": {
     "lcov": "reports/coherence/coverage.info",
-    "line_hit": 1681,
-    "line_total": 1821,
-    "percent": 92.31191652937946
+    "line_hit": 1697,
+    "line_total": 1837,
+    "percent": 92.37887860642351
   },
   "coverage_event_errors": [],
   "functional_coverage": {
@@ -748,14 +748,14 @@
   "performance_proxy": {
     "cpu_req_ready_stall_cycles": 0,
     "l1_cold_miss_avg_cycles": 29,
-    "l1_cold_miss_count": 1596,
+    "l1_cold_miss_count": 1658,
     "l1_hit_avg_cycles": 2,
-    "l1_hit_count": 57,
-    "l1_miss_avg_cycles": 19,
-    "l1_miss_count": 2950,
-    "l1_miss_penalty_cycles": 17,
+    "l1_hit_count": 67,
+    "l1_miss_avg_cycles": 20,
+    "l1_miss_count": 3012,
+    "l1_miss_penalty_cycles": 18,
     "read_hit_avg_cycles": 2,
-    "read_hit_count": 40,
+    "read_hit_count": 50,
     "snoop_avg_cycles": 14,
     "snoop_count": 2756,
     "storage_capacity_bytes": 327680,
@@ -778,12 +778,12 @@
     "reports/coherence/seed_2468ACE0.log"
   ],
   "stall_counts": {
-    "cpu_resp": 43,
-    "dir_req": 291,
+    "cpu_resp": 443,
+    "dir_req": 537,
     "l2_fill": 2,
-    "mem_rd_req": 36,
+    "mem_rd_req": 45,
     "mem_wr_data": 1061,
-    "mem_wr_req": 12,
+    "mem_wr_req": 13,
     "mmio_req": 4,
     "mmio_resp": 5
   },

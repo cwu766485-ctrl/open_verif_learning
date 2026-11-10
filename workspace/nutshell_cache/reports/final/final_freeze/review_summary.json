@@ -1,0 +1,17 @@
+{
+  "classifications": {
+    "UNRESOLVED": 29246,
+    "STRUCTURALLY_UNREACHABLE_CANDIDATE": 97,
+    "ILLEGAL_PROTOCOL": 123
+  },
+  "main_control_classifications": {
+    "UNRESOLVED": 210,
+    "STRUCTURALLY_UNREACHABLE_CANDIDATE": 13,
+    "ILLEGAL_PROTOCOL": 47
+  },
+  "point_transitions": {
+    "UNCHANGED": 74823,
+    "NEW_RAW_HIT": 8
+  },
+  "policy": "Candidates are not exclusions. All zero points OPEN; no legal unhit point presumed harmless."
+}

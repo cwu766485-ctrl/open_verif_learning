@@ -1,125 +1,125 @@
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:251:6: Instance pin connected by name with empty reference: 'directory_protocol_error_code'
   251 |     .directory_protocol_error_code(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                           ... For warning description see https://verilator.org/warn/PINCONNECTEMPTY?v=5.053
                           ... Use "/* verilator lint_off PINCONNECTEMPTY */" and lint_on around source to disable this message.
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:266:6: Instance pin connected by name with empty reference: 'monitor_victim_snoop_accept_valid'
   266 |     .monitor_victim_snoop_accept_valid(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:267:6: Instance pin connected by name with empty reference: 'monitor_victim_snoop_accept_core'
   267 |     .monitor_victim_snoop_accept_core(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:268:6: Instance pin connected by name with empty reference: 'monitor_victim_snoop_accept_addr'
   268 |     .monitor_victim_snoop_accept_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:272:6: Instance pin connected by name with empty reference: 'monitor_dir_commit_valid'
   272 |     .monitor_dir_commit_valid(), .monitor_dir_commit_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:272:35: Instance pin connected by name with empty reference: 'monitor_dir_commit_addr'
   272 |     .monitor_dir_commit_valid(), .monitor_dir_commit_addr(),
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:273:6: Instance pin connected by name with empty reference: 'monitor_dir_commit_state'
   273 |     .monitor_dir_commit_state(), .monitor_dir_commit_sharers(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:273:35: Instance pin connected by name with empty reference: 'monitor_dir_commit_sharers'
   273 |     .monitor_dir_commit_state(), .monitor_dir_commit_sharers(),
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:274:6: Instance pin connected by name with empty reference: 'monitor_dir_commit_owner'
   274 |     .monitor_dir_commit_owner(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:275:6: Instance pin connected by name with empty reference: 'monitor_owner_data_valid'
   275 |     .monitor_owner_data_valid(), .monitor_owner_data_core(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:275:35: Instance pin connected by name with empty reference: 'monitor_owner_data_core'
   275 |     .monitor_owner_data_valid(), .monitor_owner_data_core(),
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:276:6: Instance pin connected by name with empty reference: 'monitor_owner_data_addr'
   276 |     .monitor_owner_data_addr(), .monitor_owner_data_beat_idx(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:276:34: Instance pin connected by name with empty reference: 'monitor_owner_data_beat_idx'
   276 |     .monitor_owner_data_addr(), .monitor_owner_data_beat_idx(),
       |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:277:6: Instance pin connected by name with empty reference: 'monitor_owner_data'
   277 |     .monitor_owner_data(), .monitor_owner_data_last(),
       |      ^~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:277:29: Instance pin connected by name with empty reference: 'monitor_owner_data_last'
   277 |     .monitor_owner_data(), .monitor_owner_data_last(),
       |                             ^~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:278:6: Instance pin connected by name with empty reference: 'monitor_dir_lookup_conflict_valid'
   278 |     .monitor_dir_lookup_conflict_valid(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:279:6: Instance pin connected by name with empty reference: 'monitor_dir_lookup_conflict_incoming_addr'
   279 |     .monitor_dir_lookup_conflict_incoming_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:280:6: Instance pin connected by name with empty reference: 'monitor_dir_lookup_conflict_active_addr'
   280 |     .monitor_dir_lookup_conflict_active_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:281:6: Instance pin connected by name with empty reference: 'monitor_dir_lookup_conflict_is_transfer'
   281 |     .monitor_dir_lookup_conflict_is_transfer(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:282:6: Instance pin connected by name with empty reference: 'monitor_dir_transfer_grant_conflict_valid'
   282 |     .monitor_dir_transfer_grant_conflict_valid(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:283:6: Instance pin connected by name with empty reference: 'monitor_dir_transfer_grant_conflict_lookup_addr'
   283 |     .monitor_dir_transfer_grant_conflict_lookup_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:284:6: Instance pin connected by name with empty reference: 'monitor_dir_transfer_grant_conflict_grant_addr'
   284 |     .monitor_dir_transfer_grant_conflict_grant_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:285:6: Instance pin connected by name with empty reference: 'monitor_dir_req_accept_valid'
   285 |     .monitor_dir_req_accept_valid(), .monitor_dir_req_accept_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:285:39: Instance pin connected by name with empty reference: 'monitor_dir_req_accept_addr'
   285 |     .monitor_dir_req_accept_valid(), .monitor_dir_req_accept_addr(),
       |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:286:6: Instance pin connected by name with empty reference: 'monitor_l2_lookup_valid'
   286 |     .monitor_l2_lookup_valid(), .monitor_l2_lookup_addr(),
       |      ^~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:286:34: Instance pin connected by name with empty reference: 'monitor_l2_lookup_addr'
   286 |     .monitor_l2_lookup_valid(), .monitor_l2_lookup_addr(),
       |                                  ^~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:287:6: Instance pin connected by name with empty reference: 'monitor_l2_lookup_hit'
   287 |     .monitor_l2_lookup_hit(), .monitor_dir_grant_accept_valid(),
       |      ^~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:287:32: Instance pin connected by name with empty reference: 'monitor_dir_grant_accept_valid'
   287 |     .monitor_l2_lookup_hit(), .monitor_dir_grant_accept_valid(),
       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINCONNECTEMPTY: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:288:6: Instance pin connected by name with empty reference: 'monitor_dir_grant_accept_addr'
   288 |     .monitor_dir_grant_accept_addr()
       |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                          ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'perf_l2_refill_hit_event'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:100:16: ... Location of port declaration
   100 |   output logic perf_l2_refill_hit_event,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,294 +128,294 @@
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'perf_l2_refill_miss_event'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:101:16: ... Location of port declaration
   101 |   output logic perf_l2_refill_miss_event,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_rsp_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:118:22: ... Location of port declaration
   118 |   output logic [1:0] monitor_snoop_rsp_valid,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_rsp_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:119:22: ... Location of port declaration
   119 |   output logic [1:0] monitor_snoop_rsp_ready,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_rsp_txn_id'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:120:35: ... Location of port declaration
   120 |   output logic [TXN_ID_WIDTH-1:0] monitor_snoop_rsp_txn_id [0:1],
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_rsp_opcode'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:121:51: ... Location of port declaration
   121 |   output coherence_protocol_pkg::snoop_response_t monitor_snoop_rsp_opcode [0:1],
       |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_target'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:122:16: ... Location of port declaration
   122 |   output logic monitor_dir_snoop_target,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_txn_id'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:123:35: ... Location of port declaration
   123 |   output logic [TXN_ID_WIDTH-1:0] monitor_dir_snoop_txn_id,
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_rsp_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:124:16: ... Location of port declaration
   124 |   output logic monitor_dir_snoop_rsp_valid,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_rsp_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:125:16: ... Location of port declaration
   125 |   output logic monitor_dir_snoop_rsp_ready,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_rsp_opcode'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:126:51: ... Location of port declaration
   126 |   output coherence_protocol_pkg::snoop_response_t monitor_dir_snoop_rsp_opcode,
       |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_accept_src_id'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:156:16: ... Location of port declaration
   156 |   output logic monitor_dir_req_accept_src_id,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_accept_opcode'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:157:51: ... Location of port declaration
   157 |   output coherence_protocol_pkg::request_opcode_t monitor_dir_req_accept_opcode,
       |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_accept_txn_id'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:158:35: ... Location of port declaration
   158 |   output logic [TXN_ID_WIDTH-1:0] monitor_dir_req_accept_txn_id,
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_grant_accept_dst'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:164:16: ... Location of port declaration
   164 |   output logic monitor_dir_grant_accept_dst,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_grant_accept_opcode'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:165:49: ... Location of port declaration
   165 |   output coherence_protocol_pkg::grant_opcode_t monitor_dir_grant_accept_opcode,
       |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_grant_accept_txn_id'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:166:35: ... Location of port declaration
   166 |   output logic [TXN_ID_WIDTH-1:0] monitor_dir_grant_accept_txn_id,
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l2_fill_active'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:169:16: ... Location of port declaration
   169 |   output logic monitor_l2_fill_active,
       |                ^~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l2_line_wr_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:170:16: ... Location of port declaration
   170 |   output logic monitor_l2_line_wr_valid,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l2_line_wr_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:171:16: ... Location of port declaration
   171 |   output logic monitor_l2_line_wr_ready,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l2_line_wr_addr'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:172:23: ... Location of port declaration
   172 |   output logic [31:0] monitor_l2_line_wr_addr,
       |                       ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l2_line_wr_beat'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:173:22: ... Location of port declaration
   173 |   output logic [2:0] monitor_l2_line_wr_beat,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_data_to_l2'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:174:16: ... Location of port declaration
   174 |   output logic monitor_dir_snoop_data_to_l2,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_snoop_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:175:16: ... Location of port declaration
   175 |   output logic monitor_dir_snoop_valid,
       |                ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_set_conflict'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:176:16: ... Location of port declaration
   176 |   output logic monitor_snoop_set_conflict,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_engine_state'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:178:22: ... Location of port declaration
   178 |   output logic [4:0] monitor_engine_state,
       |                      ^~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_engine_addr'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:179:23: ... Location of port declaration
   179 |   output logic [31:0] monitor_engine_addr,
       |                       ^~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_victim_addr'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:180:23: ... Location of port declaration
   180 |   output logic [31:0] monitor_victim_addr,
       |                       ^~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_victim_pending_targets'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:181:22: ... Location of port declaration
   181 |   output logic [1:0] monitor_victim_pending_targets,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_victim_target'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:182:16: ... Location of port declaration
   182 |   output logic monitor_victim_target,
       |                ^~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_offer_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:183:22: ... Location of port declaration
   183 |   output logic [1:0] monitor_snoop_offer_valid,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_snoop_offer_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:184:22: ... Location of port declaration
   184 |   output logic [1:0] monitor_snoop_offer_ready,
       |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_mem_mshr_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:185:32: ... Location of port declaration
   185 |   output logic [NUM_MSHRS-1:0] monitor_mem_mshr_valid,
       |                                ^~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_directory_active_contexts'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:186:32: ... Location of port declaration
   186 |   output logic [NUM_MSHRS-1:0] monitor_directory_active_contexts,
       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_live_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:187:16: ... Location of port declaration
   187 |   output logic monitor_dir_req_live_valid,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_live_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:188:16: ... Location of port declaration
   188 |   output logic monitor_dir_req_live_ready,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_req_live_addr'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:189:23: ... Location of port declaration
   189 |   output logic [31:0] monitor_dir_req_live_addr,
       |                       ^~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_xfer_live_valid'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:190:16: ... Location of port declaration
   190 |   output logic monitor_dir_xfer_live_valid,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_dir_xfer_live_ready'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:191:16: ... Location of port declaration
   191 |   output logic monitor_dir_xfer_live_ready,
       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_cpu_state'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:192:22: ... Location of port declaration
   192 |   output logic [5:0] monitor_cpu_state,
       |                      ^~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l1_snoop_state'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:193:22: ... Location of port declaration
   193 |   output logic [5:0] monitor_l1_snoop_state,
       |                      ^~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_cpu_active_addr'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:194:23: ... Location of port declaration
   194 |   output logic [63:0] monitor_cpu_active_addr,
       |                       ^~~~~~~~~~~~~~~~~~~~~~~
 %Warning-PINMISSING: ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:211:26: Instance has missing pin: 'monitor_l1_replace_state'
   211 |   CoherentCacheSubsystem dut (
       |                          ^~~
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      top/CoherentCacheSubsystem.sv:195:22: ... Location of port declaration
   195 |   output logic [7:0] monitor_l1_replace_state
       |                      ^~~~~~~~~~~~~~~~~~~~~~~~
@@ -533,7 +533,7 @@
    71 |       coverage_mark("mmio.bypass", "na", "both", "MMIO", "none", "na", "MMIO", 0);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:146:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh:61:5: ... Expected indentation matching this earlier statement's line:
    61 |     if ((mmio_data !== mmio_masked) ||
       |     ^~
@@ -543,7 +543,7 @@
   112 |       coverage_mark("cpu_pair.different_lines", "I", "both", "GetS", "none", "E", "memory", 8);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:152:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh:109:5: ... Expected indentation matching this earlier statement's line:
   109 |     if (concurrent_data0 !== memory_word(32'h0000_D000, 3'd0) ||
       |     ^~
@@ -551,7 +551,7 @@
    43 |       coverage_mark("l2.live_u_victim", "M", "1", "L2_Evict", "1", "I", "L1_owner", 8);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:154:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh:34:5: ... Expected indentation matching this earlier statement's line:
    34 |     if ((dut.l1_cluster.cores[1].l1_array.valid_array[0][0] &&
       |     ^~
@@ -559,7 +559,7 @@
   104 |       coverage_mark("l2.shared_multisnoop", "S", "both", "L2_Evict", "both", "I", "L2_dirty", 8);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:154:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh:102:5: ... Expected indentation matching this earlier statement's line:
   102 |     if (!found_written_victim)
       |     ^~
@@ -567,7 +567,7 @@
   131 |       coverage_mark("reset.cpu_rsp", "E", "0", "GetS+Reset", "none", "I", "L1", 0);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:126:5: ... Expected indentation matching this earlier statement's line:
   126 |     if ((l1_controller_protocol_error != 2'b00) ||
       |     ^~
@@ -575,7 +575,7 @@
   221 |       coverage_mark("reset.l2_writeback", "M", "1", "L2_Writeback+Reset", "1", "I", "backing_memory", 8);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:218:5: ... Expected indentation matching this earlier statement's line:
   218 |     if ((cover_reset_snoop_data == 0) || (cover_reset_mem_wr_data == 0))
       |     ^~
@@ -583,14 +583,14 @@
    73 |       coverage_mark("error.mem_write", "M", "0", "L2_Writeback+MemError", "none", "M", "backing_memory", 8);
       |       ^~~~~~~~~~~~~
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:164:1: ... note: In file included from 'scenario_sequence.svh'
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:65:5: ... Expected indentation matching this earlier statement's line:
    65 |     if (!fatal_error || !memory_adapter_error || memory_adapter_protocol_error ||
       |     ^~
 %Warning-VARHIDDEN: ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:76:18: Declaration of signal hides declaration in upper scope: 'core'
    76 |     for (integer core = 0; core < 2; core = core + 1) begin
       |                  ^~~~
-                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                    ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                     ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:46:13: ... Location of original declaration
    46 |     integer core;
       |             ^~~~
@@ -600,42 +600,42 @@
                                                                                                       : ... note: In instance 'CoherentCacheSubsystem_tb'
   232 |         put_core = dut.cluster_dir_req_src_id;
       |                  ^
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                       ... For warning description see https://verilator.org/warn/WIDTHEXPAND?v=5.053
                       ... Use "/* verilator lint_off WIDTHEXPAND */" and lint_on around source to disable this message.
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:52:15: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 7 bits.
                                                                                                          : ... note: In instance 'CoherentCacheSubsystem_tb'
    52 |       set_idx = addr[12:6];
       |               ^
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:141:17: Operator TASKREF 'state_model_l1_word' expects 32 bits on the Function Argument, but Function Argument's SEL generates 7 bits.
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
   141 |                 state_model_l1_word(core, line_addr[12:6], found_way, beat, observed_word);
       |                 ^~~~~~~~~~~~~~~~~~~
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:164:19: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 9 bits.
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
   164 |           set_idx = line_addr[14:6];
       |                   ^
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:11:68: Operator ADD expects 32 bits on the RHS, but RHS's REPLICATE generates 6 bits.
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    11 |       random_addr = 32'h0010_0000 + (32'(random_state[7:4]) << 15) +
       |                                                                    ^
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHEXPAND: ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh:13:19: Operator ASSIGN expects 32 bits on the Assign RHS, but Assign RHS's SEL generates 1 bits.
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    13 |       random_core = random_state[0];
       |                   ^
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:162:1: ... note: In file included from 'scenario_sequence.svh'
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-WIDTHTRUNC: ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:19:48: Logical operator LOGOR expects 1 bit on the RHS, but RHS's VARREF 'memory_active_q' generates 4 bits.
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
    19 |         cpu_resp_valid[0] || cpu_resp_valid[1] || memory_active_q)
       |                                                ^~
                      ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:164:1: ... note: In file included from 'scenario_sequence.svh'
-                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                     ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                      ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.053
                      ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
 %Warning-MULTIDRIVEN: ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:61:5: Variable also written to in always_ff (IEEE 1800-2023 9.2.2.4): 'cycle_count'
@@ -643,7 +643,7 @@
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:61:5: 
    61 |     cycle_count = 0;
       |     ^~~~~~~~~~~
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                       ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:101:7: ... Location of always_ff write
   101 |       cycle_count <= cycle_count + 1;
       |       ^~~~~~~~~~~
@@ -654,7 +654,7 @@
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:95:5: 
    95 |     mmio_saved_addr_q = '0;
       |     ^~~~~~~~~~~~~~~~~
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                       ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:202:9: ... Location of always_ff write
   202 |         mmio_saved_addr_q <= mmio_req_addr;
       |         ^~~~~~~~~~~~~~~~~
@@ -663,7 +663,7 @@
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:96:5: 
    96 |     mmio_saved_data_q = '0;
       |     ^~~~~~~~~~~~~~~~~
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                       ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:203:9: ... Location of always_ff write
   203 |         mmio_saved_data_q <= mmio_req_write ? next_word : current_word;
       |         ^~~~~~~~~~~~~~~~~
@@ -672,7 +672,7 @@
                       ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:97:5: 
    97 |     mmio_saved_valid_q = 1'b0;
       |     ^~~~~~~~~~~~~~~~~~
-                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                       ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh:204:9: ... Location of always_ff write
   204 |         mmio_saved_valid_q <= 1'b1;
       |         ^~~~~~~~~~~~~~~~~~
@@ -853,66 +853,126 @@
                                                                                                        : ... Perhaps should initialize instead using a reset in this process
   190 |         cover_dir_req_stall <= cover_dir_req_stall + 1;
       |         ^~~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:3:34: Procedural assignment to declaration with initial value: 'freeze_peak_contexts'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    3 |   integer freeze_peak_contexts = 0;
+      |                                  ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:12:9: ... Location of variable process write
+                                                                                                        : ... Perhaps should initialize instead using a reset in this process
+   12 |         freeze_peak_contexts = active_count;
+      |         ^~~~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:4:36: Procedural assignment to declaration with initial value: 'freeze_context2_cycles'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    4 |   integer freeze_context2_cycles = 0, freeze_context3_cycles = 0;
+      |                                    ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:15:53: ... Location of variable process write
+                                                                                                         : ... Perhaps should initialize instead using a reset in this process
+   15 |       if (dut.monitor_directory_active_contexts[2]) freeze_context2_cycles++;
+      |                                                     ^~~~~~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:4:64: Procedural assignment to declaration with initial value: 'freeze_context3_cycles'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    4 |   integer freeze_context2_cycles = 0, freeze_context3_cycles = 0;
+      |                                                                ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:16:53: ... Location of variable process write
+                                                                                                         : ... Perhaps should initialize instead using a reset in this process
+   16 |       if (dut.monitor_directory_active_contexts[3]) freeze_context3_cycles++;
+      |                                                     ^~~~~~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:5:32: Procedural assignment to declaration with initial value: 'freeze_read_checks'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    5 |   integer freeze_read_checks = 0, freeze_write_checks = 0;
+      |                                ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:18:9: ... Location of variable process write
+                                                                                                        : ... Perhaps should initialize instead using a reset in this process
+   18 |         freeze_read_checks++;
+      |         ^~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:5:57: Procedural assignment to declaration with initial value: 'freeze_write_checks'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    5 |   integer freeze_read_checks = 0, freeze_write_checks = 0;
+      |                                                         ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:23:9: ... Location of variable process write
+                                                                                                        : ... Perhaps should initialize instead using a reset in this process
+   23 |         freeze_write_checks++;
+      |         ^~~~~~~~~~~~~~~~~~~
+%Warning-PROCASSINIT: ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:6:29: Procedural assignment to declaration with initial value: 'freeze_past_reset'
+                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
+                                                                                                        : ... Location of variable initialization
+    6 |   logic freeze_past_reset = 1;
+      |                             ^
+                      ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:13:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                      ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh:33:5: ... Location of variable process write
+                                                                                                        : ... Perhaps should initialize instead using a reset in this process
+   33 |     freeze_past_reset <= reset;
+      |     ^~~~~~~~~~~~~~~~~
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh:53:24: Bits of function variable are not used: 'addr'[2:0]
                                                                                                       : ... note: In instance 'CoherentCacheSubsystem_tb'
    53 |     input logic [31:0] addr,
       |                        ^~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh:107:19: Bits of function variable are not used: 'core'[31:1]
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
   107 |     input integer core,
       |                   ^~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh:173:19: Bits of function variable are not used: 'core'[31:1]
                                                                                                        : ... note: In instance 'CoherentCacheSubsystem_tb'
   173 |     input integer core,
       |                   ^~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:15:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:46:24: Bits of function variable are not used: 'addr'[5:0]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    46 |     input logic [31:0] addr,
       |                        ^~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:50:13: Bits of function variable are not used: 'set_idx'[31:7]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    50 |     integer set_idx;
       |             ^~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:75:19: Bits of function variable are not used: 'set_idx'[31:7]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    75 |     input integer set_idx,
       |                   ^~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:76:19: Bits of function variable are not used: 'way'[31:2]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    76 |     input integer way,
       |                   ^~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:77:19: Bits of function variable are not used: 'beat'[31:3]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    77 |     input integer beat,
       |                   ^~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:90:19: Bits of function variable are not used: 'set_idx'[31:7]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    90 |     input integer set_idx,
       |                   ^~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh:91:19: Bits of function variable are not used: 'way'[31:2]
                                                                                                           : ... note: In instance 'CoherentCacheSubsystem_tb'
    91 |     input integer way,
       |                   ^~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:2:18: Signal is not used: 'ignored'
                                                                                                   : ... note: In instance 'CoherentCacheSubsystem_tb'
     2 |     logic [63:0] ignored;
       |                  ^~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:39:18: Signal is not used: 'stalled_data'
                                                                                                    : ... note: In instance 'CoherentCacheSubsystem_tb'
    39 |     logic [63:0] stalled_data;
       |                  ^~~~~~~~~~~~
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: top/CoherentCacheSubsystem.sv:371:25: Bits of signal are not used: 'mem_mshr_full_q'[3:1]
                                                            : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
   371 |   logic [NUM_MSHRS-1:0] mem_mshr_full_q;
@@ -922,21 +982,17 @@
     3 |       logic [63:0] expected, observed0, observed1;
       |                              ^~~~~~~~~
                        ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:156:1: ... note: In file included from 'scenario_sequence.svh'
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh:7:20: Signal is not used: 'ignored_pattern'
                                                                                                       : ... note: In instance 'CoherentCacheSubsystem_tb'
     7 |       logic [63:0] ignored_pattern;
       |                    ^~~~~~~~~~~~~~~
                        ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh:158:1: ... note: In file included from 'scenario_sequence.svh'
-                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:23:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                       ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:25:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
 %Warning-UNUSEDSIGNAL: top/CoherentCacheSubsystem.sv:301:39: Signal is not used: 'victim_dirty_q'
                                                            : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
   301 |   logic victim_snoop_data_complete_q, victim_dirty_q;
       |                                       ^~~~~~~~~~~~~~
-%Warning-UNUSEDSIGNAL: top/CoherentCacheSubsystem.sv:363:15: Signal is not used: 'victim_expected_beat_q'
-                                                           : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
-  363 |   logic [2:0] victim_expected_beat_q;
-      |               ^~~~~~~~~~~~~~~~~~~~~~
 %Warning-UNUSEDSIGNAL: top/CoherentCacheSubsystem.sv:372:25: Signal is not used: 'mem_mshr_written_q'
                                                            : ... note: In instance 'CoherentCacheSubsystem_tb.dut'
   372 |   logic [NUM_MSHRS-1:0] mem_mshr_written_q;
@@ -977,7 +1033,7 @@
                                                                                                       : ... note: In instance 'CoherentCacheSubsystem_tb'
    18 |       benchmark_accept_pending[1] = 1'b0;
       |                                   ^
-                   ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:17:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
+                   ../dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv:19:1: ... note: In file included from 'CoherentCacheSubsystem_tb.sv'
                    ... For warning description see https://verilator.org/warn/COVERIGN?v=5.053
                    ... Use "/* verilator lint_off COVERIGN */" and lint_on around source to disable this message.
 make[1]: Entering directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/obj_dir'
@@ -1002,10 +1058,11 @@ g++    verilated.o verilated_cov.o verilated_covergroup.o verilated_timing.o ver
 rm VCoherentCacheSubsystem_tb__ALL.verilator_deplist.tmp
 make[1]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/obj_dir'
 - V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)
-- Verilator: Built from 2.484 MB sources in 21 modules, into 253.427 MB in 187 C++ files needing 0.006 MB
-- Verilator: Walltime 209.220 s (elab=0.147, cvt=50.316, bld=153.143); cpu 59.808 s on 2 threads; allocated 1715.660 MB
+- Verilator: Built from 2.486 MB sources in 21 modules, into 254.164 MB in 187 C++ files needing 0.006 MB
+- Verilator: Walltime 194.924 s (elab=0.163, cvt=49.992, bld=139.403); cpu 59.846 s on 2 threads; allocated 1715.477 MB
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1031,6 +1088,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1049,12 +1107,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=1aceb00c
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=34 l2_fill=2 mem_wr_req=10 mem_wr_data=875 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=43 l2_fill=2 mem_wr_req=11 mem_wr_data=875 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1070,20 +1129,24 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=57 l1_hit_avg_cycles=2 l1_miss_count=2950 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1596 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2756 snoop_avg_cycles=14
+BENCH: l1_hit_count=67 l1_hit_avg_cycles=2 l1_miss_count=3012 l1_miss_avg_cycles=20 read_hit_count=50 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1658 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2756 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1662 write_producer_checks=328
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 645us; walltime 14.396 s; speed 44.790 us/s
-- Verilator: cpu 14.390 s on 1 threads; allocated 78 MB
+- Verilator: $finish at 670us; walltime 12.340 s; speed 54.304 us/s
+- Verilator: cpu 12.317 s on 1 threads; allocated 79 MB
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 PASS: isolated DIR_S victim invalidates both L1 sharers and writes back dirty data
 - ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh:52: Verilog $finish
+FREEZE_OBSERVATIONS: peak=1 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=11 write_producer_checks=8
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 4us; walltime 0.498 s; speed 8.809 us/s
-- Verilator: cpu 0.498 s on 1 threads; allocated 40 MB
+- Verilator: $finish at 4us; walltime 0.419 s; speed 10.476 us/s
+- Verilator: cpu 0.422 s on 1 threads; allocated 40 MB
 === coherence regression seed=00000001 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1109,6 +1172,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1127,12 +1191,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=00000001
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=36 l2_fill=2 mem_wr_req=7 mem_wr_data=938 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=45 l2_fill=2 mem_wr_req=8 mem_wr_data=938 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1148,15 +1213,17 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=64 l1_hit_avg_cycles=2 l1_miss_count=2943 l1_miss_avg_cycles=19 read_hit_count=44 read_hit_avg_cycles=2 write_hit_count=20 write_hit_avg_cycles=3 upgrade_count=1353 upgrade_avg_cycles=9 l1_cold_miss_count=1590 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2751 snoop_avg_cycles=14
+BENCH: l1_hit_count=74 l1_hit_avg_cycles=2 l1_miss_count=3005 l1_miss_avg_cycles=20 read_hit_count=54 read_hit_avg_cycles=2 write_hit_count=20 write_hit_avg_cycles=3 upgrade_count=1353 upgrade_avg_cycles=9 l1_cold_miss_count=1652 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2751 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1656 write_producer_checks=352
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 645us; walltime 13.850 s; speed 46.566 us/s
-- Verilator: cpu 13.849 s on 1 threads; allocated 79 MB
+- Verilator: $finish at 670us; walltime 12.459 s; speed 53.795 us/s
+- Verilator: cpu 12.588 s on 1 threads; allocated 79 MB
 === coherence regression seed=00001234 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1182,6 +1249,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1200,12 +1268,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=00001234
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=34 l2_fill=2 mem_wr_req=8 mem_wr_data=881 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=43 l2_fill=2 mem_wr_req=9 mem_wr_data=881 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1221,15 +1290,17 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=56 l1_hit_avg_cycles=2 l1_miss_count=2951 l1_miss_avg_cycles=19 read_hit_count=42 read_hit_avg_cycles=2 write_hit_count=14 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1597 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
+BENCH: l1_hit_count=66 l1_hit_avg_cycles=2 l1_miss_count=3013 l1_miss_avg_cycles=20 read_hit_count=52 read_hit_avg_cycles=2 write_hit_count=14 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1659 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1663 write_producer_checks=336
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 646us; walltime 13.880 s; speed 46.535 us/s
-- Verilator: cpu 13.880 s on 1 threads; allocated 78 MB
+- Verilator: $finish at 671us; walltime 13.017 s; speed 51.564 us/s
+- Verilator: cpu 12.890 s on 1 threads; allocated 79 MB
 === coherence regression seed=5EEDC0DE ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1255,6 +1326,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1273,12 +1345,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=5eedc0de
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=35 l2_fill=2 mem_wr_req=11 mem_wr_data=854 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=44 l2_fill=2 mem_wr_req=12 mem_wr_data=854 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1294,15 +1367,17 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=59 l1_hit_avg_cycles=2 l1_miss_count=2948 l1_miss_avg_cycles=19 read_hit_count=43 read_hit_avg_cycles=2 write_hit_count=16 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1594 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2755 snoop_avg_cycles=14
+BENCH: l1_hit_count=69 l1_hit_avg_cycles=2 l1_miss_count=3010 l1_miss_avg_cycles=20 read_hit_count=53 read_hit_avg_cycles=2 write_hit_count=16 write_hit_avg_cycles=3 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1656 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2755 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1660 write_producer_checks=320
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 644us; walltime 13.273 s; speed 48.489 us/s
-- Verilator: cpu 13.272 s on 1 threads; allocated 79 MB
+- Verilator: $finish at 669us; walltime 13.017 s; speed 51.383 us/s
+- Verilator: cpu 13.110 s on 1 threads; allocated 78 MB
 === coherence regression seed=DEADBEEF ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1328,6 +1403,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1346,12 +1422,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=deadbeef
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=35 l2_fill=2 mem_wr_req=9 mem_wr_data=965 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=44 l2_fill=2 mem_wr_req=10 mem_wr_data=965 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1367,15 +1444,17 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=53 l1_hit_avg_cycles=2 l1_miss_count=2954 l1_miss_avg_cycles=19 read_hit_count=40 read_hit_avg_cycles=2 write_hit_count=13 write_hit_avg_cycles=4 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1600 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
+BENCH: l1_hit_count=63 l1_hit_avg_cycles=2 l1_miss_count=3016 l1_miss_avg_cycles=20 read_hit_count=50 read_hit_avg_cycles=2 write_hit_count=13 write_hit_avg_cycles=4 upgrade_count=1354 upgrade_avg_cycles=9 l1_cold_miss_count=1662 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2753 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1666 write_producer_checks=360
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 648us; walltime 13.963 s; speed 46.436 us/s
-- Verilator: cpu 13.963 s on 1 threads; allocated 78 MB
+- Verilator: $finish at 674us; walltime 12.871 s; speed 52.342 us/s
+- Verilator: cpu 12.799 s on 1 threads; allocated 79 MB
 === coherence regression seed=2468ACE0 ===
 COV_EVENT: id=mmio.bypass checker=PASS old_state=na requester=both opcode=MMIO snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: MMIO read/write bypasses L1, L2, and backing memory
+FREEZE_CONTEXT_PEAK: active=0001 count=1
 COV_EVENT: id=mmio.address_boundaries checker=PASS old_state=na requester=both opcode=MMIO_boundary snoop_target=none new_state=na data_source=MMIO beats=0
 PASS: cacheable/MMIO address-domain boundary cases
 COV_EVENT: id=backpressure.mem_refill checker=PASS old_state=I requester=0 opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
@@ -1401,6 +1480,7 @@ COV_EVENT: id=mesi.masked_owner_write checker=PASS old_state=M requester=1 opcod
 PASS: byte-masked write is visible after remote owner intervention
 COV_EVENT: id=cpu_pair.same_line checker=PASS old_state=mixed requester=both opcode=GetS+GetM snoop_target=both new_state=M data_source=mixed beats=8
 PASS: same-line simultaneous GetS/GetM and byte-mask corner cases
+FREEZE_CONTEXT_PEAK: active=0011 count=2
 COV_EVENT: id=cpu_pair.different_lines checker=PASS old_state=I requester=both opcode=GetS snoop_target=none new_state=E data_source=memory beats=8
 PASS: different-address concurrent misses route to the correct cores
 COV_EVENT: id=mesi.getm_remote_clean_e checker=PASS old_state=E requester=0 opcode=GetM snoop_target=1 new_state=M data_source=clean_L1_peer beats=8
@@ -1419,12 +1499,13 @@ COV_EVENT: id=l2.dirty_owner_writeback checker=PASS old_state=M requester=1 opco
 PASS: dirty owner data survives L2 eviction through backing memory
 COV_EVENT: id=l2.shared_multisnoop checker=PASS old_state=S requester=both opcode=L2_Evict snoop_target=both new_state=I data_source=L2_dirty beats=8
 PASS: DIR_S L2 victim invalidates both sharers and writes back dirty L2 data
-PHASE4: checked replacement/snoop timing sweep; observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=0 observed retry responses=2
+PHASE4: checked replacement/snoop timing sweep; owner=1 observed retry responses=2
 PASS: same-top high address tags, eight word offsets, each byte lane, ones/zeros and remote owner data checked
-PASS: six observed Directory transient reset cancellations and checked recovery reads
+PASS: seven observed Directory transient reset cancellations and checked recovery reads
 COV_EVENT: id=random.seeded_data checker=PASS old_state=mixed requester=both opcode=random snoop_target=mixed new_state=mixed data_source=mixed beats=8
 PASS: seeded 80-operation coherence/data scoreboard regression seed=2468ace0
-COVER: stalled cpu_resp=43 mmio_req=4 mmio_resp=5 mem_rd_req=36 l2_fill=2 mem_wr_req=12 mem_wr_data=1061 dir_req=291
+COVER: stalled cpu_resp=443 mmio_req=4 mmio_resp=5 mem_rd_req=45 l2_fill=2 mem_wr_req=13 mem_wr_data=1061 dir_req=537
 COV_EVENT: id=reset.refill checker=PASS old_state=I requester=0 opcode=GetS+Reset snoop_target=none new_state=I data_source=memory beats=0
 PASS: reset cancels an active refill without a stale response
 COV_EVENT: id=reset.mmio checker=PASS old_state=na requester=0 opcode=MMIO+Reset snoop_target=none new_state=na data_source=MMIO beats=0
@@ -1440,19 +1521,20 @@ PASS: terminal memory read error suppresses success and blocks new requests
 COV_EVENT: id=error.mem_write checker=PASS old_state=M requester=0 opcode=L2_Writeback+MemError snoop_target=none new_state=M data_source=backing_memory beats=8
 PASS: failed write response preserves the valid dirty L2 victim
 PASS: hit/miss/snoop/writeback and completed-access performance events observed
-BENCH: l1_hit_count=54 l1_hit_avg_cycles=2 l1_miss_count=2953 l1_miss_avg_cycles=20 read_hit_count=37 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1352 upgrade_avg_cycles=9 l1_cold_miss_count=1601 l1_cold_miss_avg_cycles=29 cpu_req_ready_stall_cycles=0 snoop_count=2746 snoop_avg_cycles=14
+BENCH: l1_hit_count=64 l1_hit_avg_cycles=2 l1_miss_count=3015 l1_miss_avg_cycles=20 read_hit_count=47 read_hit_avg_cycles=2 write_hit_count=17 write_hit_avg_cycles=3 upgrade_count=1352 upgrade_avg_cycles=9 l1_cold_miss_count=1663 l1_cold_miss_avg_cycles=30 cpu_req_ready_stall_cycles=0 snoop_count=2746 snoop_avg_cycles=14
 PASS: dual-L1 MESI directed, backpressure, reset, concurrency, and random regression
 - ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh:111: Verilog $finish
+FREEZE_OBSERVATIONS: peak=2 ctx2_cycles=0 ctx3_cycles=0 grant_read_checks=1667 write_producer_checks=392
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 651us; walltime 17.986 s; speed 36.219 us/s
-- Verilator: cpu 17.986 s on 1 threads; allocated 79 MB
+- Verilator: $finish at 677us; walltime 12.994 s; speed 52.078 us/s
+- Verilator: cpu 13.000 s on 1 threads; allocated 78 MB
 make[1]: Entering directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache'
 make[2]: Entering directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/directory_mshr_bank_obj'
 make[2]: Nothing to be done for 'default'.
 make[2]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/coherence/directory_mshr_bank_obj'
 - V e r i l a t i o n   R e p o r t: Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)
 - Verilator: Built from 0.000 MB sources in 0 modules, into 0.000 MB in 0 C++ files needing 0.000 MB
-- Verilator: Walltime 0.014 s (elab=0.000, cvt=0.000, bld=0.012); cpu 0.002 s on 2 threads; allocated 9.281 MB
+- Verilator: Walltime 0.011 s (elab=0.000, cvt=0.000, bld=0.008); cpu 0.003 s on 2 threads; allocated 9.281 MB
 COV_EVENT: id=mshr_bank.duplicate_suppression checker=PASS old_state=I requester=multiple opcode=GetS_duplicate snoop_target=none new_state=I data_source=none beats=0 contexts=4
 COV_EVENT: id=mshr_bank.four_contexts checker=PASS old_state=I requester=multiple opcode=GetS snoop_target=none new_state=DIR_U data_source=L2_refill beats=8 contexts=4
 PASS: Directory MSHR bank routes four distinct contexts and out-of-order fills
@@ -1471,82 +1553,84 @@ PASS: reset cancels four simultaneously active Directory contexts
 PASS: Directory MSHR bank directed stress completed
 - ../dv/blocks/directory_mshr_bank/tb/include/reset_cancellation.svh:25: Verilog $finish
 - S i m u l a t i o n   R e p o r t: Verilator 5.053 devel
-- Verilator: $finish at 3us; walltime 0.001 s; speed 3.376 ms/s
-- Verilator: cpu 0.001 s on 1 threads; allocated 4 MB
+- Verilator: $finish at 3us; walltime 0.010 s; speed 334.475 us/s
+- Verilator: cpu 0.010 s on 1 threads; allocated 4 MB
 make[1]: Leaving directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache'
-Found 34 entries.
+Found 35 entries.
 Found common filename prefix "/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/rtl"
 Generating output.
-Processing file l1/MesiL1SnoopArbiter.sv
-  lines=6 hit=6
-Processing file l2/SharedL2DirectoryArray.sv
-  lines=79 hit=75
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/performance_monitors.svh
-  lines=34 hit=34
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh
-  lines=25 hit=25
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh
-  lines=59 hit=56
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/coherence_invariants.svh
-  lines=21 hit=21
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/cpu_drivers.svh
-  lines=113 hit=108
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh
-  lines=19 hit=17
-Processing file interconnect/CoherenceRequestArbiter.sv
-  lines=5 hit=5
-Processing file coherence/SharedLineEngine.sv
-  lines=104 hit=73
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh
-  lines=34 hit=34
-Processing file interconnect/L2LineWriteArbiter.sv
-  lines=50 hit=50
-Processing file l1/MesiL1Array.sv
-  lines=67 hit=67
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh
-  lines=17 hit=17
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh
-  lines=92 hit=92
-Processing file interconnect/CpuMmioRouter.sv
-  lines=34 hit=31
-Processing file bus/axi/MemoryRefillMshrBank.sv
-  lines=37 hit=37
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh
-  lines=43 hit=43
-Processing file directory/DirectoryMshrBank.sv
-  lines=104 hit=94
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh
-  lines=57 hit=57
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh
-  lines=15 hit=15
-Processing file l1/MesiL1Controller.sv
-  lines=126 hit=106
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh
-  lines=18 hit=18
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh
-  lines=13 hit=13
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh
-  lines=131 hit=131
-Processing file cluster/DualL1MesiCluster.sv
-  lines=54 hit=51
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh
-  lines=72 hit=72
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh
-  lines=29 hit=29
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/signals.svh
-  lines=3 hit=3
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/backpressure_cases.svh
-  lines=19 hit=17
-Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh
-  lines=15 hit=15
-Processing file top/CoherentCacheSubsystem.sv
-  lines=122 hit=122
 Processing file directory/DirectoryController.sv
   lines=182 hit=125
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh
+  lines=18 hit=18
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/cpu_drivers.svh
+  lines=113 hit=108
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh
+  lines=15 hit=15
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh
+  lines=25 hit=25
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh
+  lines=33 hit=33
+Processing file l1/MesiL1Controller.sv
+  lines=126 hit=106
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh
+  lines=57 hit=57
+Processing file directory/DirectoryMshrBank.sv
+  lines=104 hit=94
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/coherence_invariants.svh
+  lines=21 hit=21
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh
+  lines=72 hit=72
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/signals.svh
+  lines=3 hit=3
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh
+  lines=59 hit=56
+Processing file l1/MesiL1SnoopArbiter.sv
+  lines=6 hit=6
+Processing file interconnect/CoherenceRequestArbiter.sv
+  lines=5 hit=5
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/performance_monitors.svh
+  lines=34 hit=34
 Processing file interconnect/CoherenceRequestArbiterCore.sv
   lines=22 hit=22
+Processing file interconnect/L2LineWriteArbiter.sv
+  lines=50 hit=50
+Processing file interconnect/CpuMmioRouter.sv
+  lines=34 hit=31
+Processing file l1/MesiL1Array.sv
+  lines=67 hit=67
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh
+  lines=131 hit=131
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/freeze_protocol_observer.svh
+  lines=12 hit=12
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh
+  lines=13 hit=13
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh
+  lines=34 hit=34
+Processing file l2/SharedL2DirectoryArray.sv
+  lines=79 hit=75
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh
+  lines=17 hit=17
+Processing file bus/axi/MemoryRefillMshrBank.sv
+  lines=37 hit=37
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh
+  lines=92 hit=92
+Processing file coherence/SharedLineEngine.sv
+  lines=104 hit=73
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh
+  lines=19 hit=17
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/backpressure_cases.svh
+  lines=19 hit=17
+Processing file cluster/DualL1MesiCluster.sv
+  lines=54 hit=51
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh
+  lines=43 hit=43
+Processing file top/CoherentCacheSubsystem.sv
+  lines=122 hit=122
+Processing file ../dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh
+  lines=15 hit=15
 Overall coverage rate:
-  lines......: 92.3% (1681 of 1821 lines)
+  lines......: 92.4% (1697 of 1837 lines)
   functions......: no data found
 coherence functional coverage: 38/38 bins hit; report: reports/coherence/regression.md
 === Coverage audit: coherent_cache_axi_subsystem (CoherentCacheAxiSubsystem_tb) ===
@@ -1564,12 +1648,12 @@ PASS: shared_l2_directory_array; raw=reports/coherence/block_coverage/shared_l2_
 === Coverage audit: bus_blocks (CacheBusBlocks_tb) ===
 PASS: bus_blocks; raw=reports/coherence/block_coverage/bus_blocks.dat; summary=reports/coherence/block_coverage/bus_blocks_summary.txt
 Independent coverage datasets are intentionally not merged: each top has a different elaboration and testcase set.
-Generated from the Phase 1 source audit on 2026-11-10 22:20 +08.
+Generated from the Phase 1 source audit on 2026-11-11 01:14 +08.
 
 - Product RTL: **864/992** hit; **128** missed.
-- Testbench: **817/829** hit; **12** missed.
+- Testbench: **833/845** hit; **12** missed.
 - Generated/Other: **0/0** hit; **0** missed.
-- All LCOV records: **1681/1821** hit; **140** missed; reconciliation: **PASS**.
+- All LCOV records: **1697/1837** hit; **140** missed; reconciliation: **PASS**.
 - RTL manifest / compiler source reconciliation: **18/18 files; PASS**.
 Wrote docs/coverage_audit_phase1.md and docs/coherence_coverage_gap_review.md
 wrote reports/coherence/coverage_closure_raw_runs.md

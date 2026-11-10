@@ -28584,23 +28584,33 @@
         "0x0182a000": "0x0000000000001005",
         "0x01832000": "0x0000000000001006",
         "0x0183a000": "0x0000000000001007",
-        "0x01842000": "0x0000000000009999"
+        "0x01842000": "0x0000000000009999",
+        "0x02001040": "0xf122ee551234abcd"
       },
       "coverage": {
         "bins": {
           "FS.AXI.BRESP_ERROR": 1,
+          "FS.CPU.READ.CORE1": 1,
           "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_E": 1,
           "FS.MESI.I_TO_M": 8
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.WRITE": 8
+          "FS.CROSS.CORE0.WRITE": 8,
+          "FS.CROSS.CORE1.READ": 1
         },
         "sample_testcases": {
           "bins": {
             "FS.AXI.BRESP_ERROR": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ],
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
             "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
+            "FS.MESI.I_TO_E": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ],
             "FS.MESI.I_TO_M": [
@@ -28609,6 +28619,9 @@
           },
           "cross_bins": {
             "FS.CROSS.CORE0.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
+            "FS.CROSS.CORE1.READ": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ]
           }
@@ -28618,18 +28631,27 @@
       "coverage_delta": {
         "bins": {
           "FS.AXI.BRESP_ERROR": 1,
+          "FS.CPU.READ.CORE1": 1,
           "FS.CPU.WRITE.CORE0": 8,
+          "FS.MESI.I_TO_E": 1,
           "FS.MESI.I_TO_M": 8
         },
         "cross_bins": {
-          "FS.CROSS.CORE0.WRITE": 8
+          "FS.CROSS.CORE0.WRITE": 8,
+          "FS.CROSS.CORE1.READ": 1
         },
         "sample_testcases": {
           "bins": {
             "FS.AXI.BRESP_ERROR": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ],
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
             "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
+            "FS.MESI.I_TO_E": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ],
             "FS.MESI.I_TO_M": [
@@ -28639,6 +28661,9 @@
           "cross_bins": {
             "FS.CROSS.CORE0.WRITE": [
               "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
+            ],
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_axi_bresp_error_fails_stop_on_dirty_victim_writeback"
             ]
           }
         },
@@ -28646,54 +28671,55 @@
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 9,
-          "directory.request_accept": 14,
-          "l2.lookup": 9,
-          "directory_context.allocate": 14,
-          "axi.read_address": 8,
-          "directory.same_set_conflict": 472,
-          "mshr.allocate": 8,
-          "axi.read_valid_gap": 320,
-          "axi.read_beat": 64,
-          "l2.refill_start": 8,
-          "l2.line_write_beat": 104,
-          "l2.refill_end": 8,
-          "directory.metadata_commit": 13,
-          "mshr.retire": 8,
-          "directory.grant_accept": 13,
-          "l1.metadata_commit": 13,
-          "cpu.response_complete": 8,
-          "directory_context.retire": 13,
+          "cpu.request_accept": 10,
+          "directory.request_accept": 15,
+          "l2.lookup": 10,
+          "directory_context.allocate": 15,
+          "axi.read_address": 9,
+          "directory.same_set_conflict": 540,
+          "mshr.allocate": 9,
+          "axi.read_valid_gap": 369,
+          "axi.read_beat": 72,
+          "l2.refill_start": 9,
+          "l2.line_write_beat": 112,
+          "l2.refill_end": 9,
+          "directory.metadata_commit": 14,
+          "mshr.retire": 9,
+          "directory.grant_accept": 14,
+          "l1.metadata_commit": 14,
+          "cpu.response_complete": 9,
+          "directory_context.retire": 14,
           "axi.stall": 3,
           "l2_victim.select": 1,
           "axi.write_address": 1,
           "axi.write_beat": 8,
           "axi.write_response": 1,
           "system.fatal_error": 1,
-          "apb.access_complete": 1
+          "apb.access_complete": 1,
+          "system.reset_assert": 1
         },
         "stall_cycles": {
           "AR": 1,
           "W": 2
         },
         "mshr_occupancy_histogram": {
-          "0": 305,
-          "1": 472
+          "0": 340,
+          "1": 540
         },
         "directory_context_histogram": {
-          "0": 50,
-          "1": 727
+          "0": 65,
+          "1": 815
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
-        "reset_epoch": 0,
+        "reset_epoch": 1,
         "axi_peak_reads": 1,
         "axi_peak_writes": 1,
-        "cpu_request_accepts": 9,
-        "cpu_response_completions": 8,
+        "cpu_request_accepts": 10,
+        "cpu_response_completions": 9,
         "replay_records": 0,
-        "protocol_error": 1,
-        "fatal_error": 1,
+        "protocol_error": 0,
+        "fatal_error": 0,
         "axi_error_count": 1
       }
     },
@@ -39321,7 +39347,7 @@
       }
     }
   ],
-  "git_sha": "69fdfe44f76d332e1e1664ee228d91f5b33886b0",
+  "git_sha": "b383383abea773decff022c149b7e767fb2df827",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",

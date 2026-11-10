@@ -1,13 +1,13 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-10 22:20 +08.
+Generated from the full regression artifacts on 2026-11-11 01:14 +08.
 
 ## Scope and source accounting
 
 No RTL behavior, interface, testcase sequence, Functional Coverage Bin ID, or waiver was changed. Product RTL classification uses exact normalized path membership in rtl/Coherence.files.f.
 
 - RTL Source Manifest: **18 files**; Verilator __verFiles.dat RTL source set: **18 files**; exact match: **PASS**.
-- LCOV source records: **34**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
+- LCOV source records: **35**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
 - A manifest source with no executable LCOV line points is reported as N/A, not as 0% coverage. Such files can still be parsed/compiled but may be packages, unelaborated top wrappers, or blocks outside this simulation top.
 
 ### LCOV line reconciliation
@@ -17,9 +17,9 @@ Each normalized (source, line) record is counted once. Hit + missed must equal t
 | Category | Hit | Total | Missed | Reconciliation |
 | --- | ---: | ---: | ---: | --- |
 | Product RTL | 864 | 992 | 128 | 864 + 128 = 992 |
-| Testbench | 817 | 829 | 12 | 817 + 12 = 829 |
+| Testbench | 833 | 845 | 12 | 833 + 12 = 845 |
 | Generated/Other | 0 | 0 | 0 | 0 + 0 = 0 |
-| **All source records** | **1681** | **1821** | **140** | **1681 + 140 = 1821** |
+| **All source records** | **1697** | **1837** | **140** | **1697 + 140 = 1837** |
 
 ## Native Verilator coverage by source category
 
@@ -27,8 +27,8 @@ Native point totals are parsed from merged coverage.dat by point type; point hit
 
 | Category | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: |
-| Product RTL | 473/556 | 21923/27474 | 30/54 | 13/48 |
-| Testbench | 248/286 | 4530/6630 | N/A (0 points) | N/A (0 points) |
+| Product RTL | 473/556 | 21931/27474 | 30/54 | 13/48 |
+| Testbench | 258/298 | 4532/6632 | N/A (0 points) | N/A (0 points) |
 | Generated/Other | N/A (0 points) | N/A (0 points) | N/A (0 points) | N/A (0 points) |
 
 ## Product RTL module raw coverage
@@ -44,12 +44,12 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 509/648 | N/A | N/A |
 | `rtl/common/CoherenceProtocol.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/directory/DirectoryController.sv` | 125/182 | 57 | 30/42 | 521/612 | 18/40 | 9/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 73/86 | 923/2292 | N/A | N/A |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 73/86 | 929/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 0 | N/A | 350/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 0 | 4/4 | 222/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 3 | 18/20 | 1608/1872 | N/A | N/A |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 0 | 4/4 | 1274/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1447/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1449/2054 | N/A | N/A |
 | `rtl/l1/MesiL1Controller.sv` | 106/126 | 20 | 32/46 | 1400/1532 | 12/14 | 4/12 |
 | `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 0 | N/A | 230/272 | N/A | N/A |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 4 | 67/74 | 1096/1324 | N/A | N/A |

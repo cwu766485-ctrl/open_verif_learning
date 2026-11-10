@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "69fdfe44f76d332e1e1664ee228d91f5b33886b0",
+  "git_sha": "b383383abea773decff022c149b7e767fb2df827",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
@@ -13,7 +13,7 @@
     "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
     "FS.CROSS.CORE0.READ": 465,
     "FS.CROSS.CORE0.WRITE": 335,
-    "FS.CROSS.CORE1.READ": 467,
+    "FS.CROSS.CORE1.READ": 468,
     "FS.CROSS.CORE1.WRITE": 297,
     "FS.CROSS.CR03_DIRTY_L1_VICTIM_AXI_WRITEBACK_STALL": 2,
     "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB": 2,

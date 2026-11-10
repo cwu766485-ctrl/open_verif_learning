@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-10 22:25 +08.
+Generated: 2026-11-11 01:19 +08.
 
 ## Scope and source manifest
 
@@ -16,7 +16,7 @@ Each row is one top/build and its documented run set. These denominators are not
 
 | Dataset | Line hit/total | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Full coherent subsystem regression | 864/992 | 473/556 | 21923/27474 | 30/54 | 13/48 |
+| Full coherent subsystem regression | 864/992 | 473/556 | 21931/27474 | 30/54 | 13/48 |
 | AXI cache subsystem E2E (five fixed seeds) | 901/1068 | 509/632 | 15623/32332 | 30/54 | 4/48 |
 | DirectoryController block | 178/182 | 37/42 | 260/612 | 10/10 | 3/9 |
 | DirectoryMshrBank block | 167/286 | 100/128 | 1249/2904 | 31/40 | 11/36 |
@@ -42,7 +42,7 @@ All 869 zero-count dataset-scoped records currently have status **OPEN**. Allowe
 ## Functional coverage and checker status
 
 Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
-Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `69fdfe44f76d332e1e1664ee228d91f5b33886b0`.
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `b383383abea773decff022c149b7e767fb2df827`.
 These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage
