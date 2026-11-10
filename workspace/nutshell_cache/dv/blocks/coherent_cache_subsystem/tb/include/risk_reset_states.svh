@@ -1,10 +1,10 @@
     begin : risk_reset_states
       logic reached;
       logic [31:0] reset_line;
-      // Observe, never force, context0 in six normal transient states.
+      // Observe, never force, context0 in seven normal transient states.
       // Context0 is selected after each reset. Error states and contexts 2/3
       // are separate obligations; this test makes no claim about them.
-      for (integer target = 1; target <= 7; target++) begin
+      for (integer target = 1; target <= 8; target++) begin
         if (target == 2) continue; // WAIT_XFER already exercised by existing reset tests.
         @(negedge clock); reset = 1; reference_clear();
         cpu_req_valid[0] = 0; cpu_req_valid[1] = 0;
@@ -34,5 +34,5 @@
         end
         expect_word(0, reset_line, memory_word(reset_line, 0));
       end
-      $display("PASS: six observed Directory transient reset cancellations and checked recovery reads");
+      $display("PASS: seven observed Directory transient reset cancellations and checked recovery reads");
     end

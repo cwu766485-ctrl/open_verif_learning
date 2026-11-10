@@ -9,6 +9,8 @@ module CoherentCacheSubsystem_tb;
 
 `include "include/coherence_invariants.svh"
 
+`include "include/freeze_protocol_observer.svh"
+
 `include "include/memory_model.svh"
 
 `include "include/reference_data_model.svh"

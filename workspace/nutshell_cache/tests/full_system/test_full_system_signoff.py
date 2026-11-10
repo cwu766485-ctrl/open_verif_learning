@@ -893,6 +893,21 @@ async def test_axi_bresp_error_fails_stop_on_dirty_victim_writeback(full_system_
         assert status & 0b00101 == 0b00101, f"APB error status={status:#x}"
         assert env.axi.write_completions[-1][1] == victim_addr
         env.coverage.sample_checked_event("FS.AXI.BRESP_ERROR", checked=True)
+        # The error is terminal until reset, not a delayed successful refill.
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.fatal_error.value) == 1
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        pending.cancel()
+        await asyncio.gather(pending, return_exceptions=True)
+        epoch = env.monitor.reset_epoch
+        await env.reset(cycles=3)
+        assert env.monitor.reset_epoch == epoch + 1
+        await ClockCycles(env.dut, 8)
+        assert int(env.dut.fatal_error.value) == 0
+        assert int(env.dut.cpu_resp_valid.value) == 0
+        recovery_addr = 0x0200_1040
+        env.seed_word(recovery_addr, 0xF122_EE55_1234_ABCD)
+        await env.cpu_access(1, recovery_addr)
     finally:
         pending.cancel()
         await asyncio.gather(pending, return_exceptions=True)
