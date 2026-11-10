@@ -1,0 +1,991 @@
+{
+  "raw_comparison": {
+    "main_subsystem": {
+      "line": {
+        "before_hit": 850,
+        "before_total": 992,
+        "after_hit": 850,
+        "after_total": 992,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 468,
+        "before_total": 556,
+        "after_hit": 468,
+        "after_total": 556,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 19996,
+        "before_total": 27474,
+        "after_hit": 21887,
+        "after_total": 27474,
+        "delta_hit": 1891,
+        "newly_hit_native_points": 1891,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 30,
+        "before_total": 54,
+        "after_hit": 30,
+        "after_total": 54,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 7,
+        "before_total": 48,
+        "after_hit": 13,
+        "after_total": 48,
+        "delta_hit": 6,
+        "newly_hit_native_points": 6,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "axi_subsystem": {
+      "line": {
+        "before_hit": 901,
+        "before_total": 1068,
+        "after_hit": 901,
+        "after_total": 1068,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 509,
+        "before_total": 632,
+        "after_hit": 509,
+        "after_total": 632,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 15623,
+        "before_total": 32332,
+        "after_hit": 15623,
+        "after_total": 32332,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 30,
+        "before_total": 54,
+        "after_hit": 30,
+        "after_total": 54,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 4,
+        "before_total": 48,
+        "after_hit": 4,
+        "after_total": 48,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "directory_controller": {
+      "line": {
+        "before_hit": 122,
+        "before_total": 182,
+        "after_hit": 149,
+        "after_total": 182,
+        "delta_hit": 27,
+        "newly_hit_native_points": 6,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 30,
+        "before_total": 42,
+        "after_hit": 33,
+        "after_total": 42,
+        "delta_hit": 3,
+        "newly_hit_native_points": 3,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 250,
+        "before_total": 612,
+        "after_hit": 255,
+        "after_total": 612,
+        "delta_hit": 5,
+        "newly_hit_native_points": 5,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 10,
+        "before_total": 10,
+        "after_hit": 10,
+        "after_total": 10,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 3,
+        "before_total": 9,
+        "after_hit": 3,
+        "after_total": 9,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "directory_mshr_bank": {
+      "line": {
+        "before_hit": 167,
+        "before_total": 286,
+        "after_hit": 167,
+        "after_total": 286,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 100,
+        "before_total": 128,
+        "after_hit": 100,
+        "after_total": 128,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 1063,
+        "before_total": 2904,
+        "after_hit": 1189,
+        "after_total": 2904,
+        "delta_hit": 126,
+        "newly_hit_native_points": 126,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 31,
+        "before_total": 40,
+        "after_hit": 31,
+        "after_total": 40,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 11,
+        "before_total": 36,
+        "after_hit": 11,
+        "after_total": 36,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "shared_line_engine": {
+      "line": {
+        "before_hit": 101,
+        "before_total": 104,
+        "after_hit": 101,
+        "after_total": 104,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 44,
+        "before_total": 52,
+        "after_hit": 44,
+        "after_total": 52,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 304,
+        "before_total": 648,
+        "after_hit": 304,
+        "after_total": 648,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "mesi_l1_controller": {
+      "line": {
+        "before_hit": 107,
+        "before_total": 132,
+        "after_hit": 107,
+        "after_total": 132,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 41,
+        "before_total": 46,
+        "after_hit": 41,
+        "after_total": 46,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 688,
+        "before_total": 1804,
+        "after_hit": 688,
+        "after_total": 1804,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 7,
+        "before_total": 7,
+        "after_hit": 7,
+        "after_total": 7,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 3,
+        "before_total": 6,
+        "after_hit": 3,
+        "after_total": 6,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "shared_l2_directory_array": {
+      "line": {
+        "before_hit": 75,
+        "before_total": 79,
+        "after_hit": 75,
+        "after_total": 79,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 65,
+        "before_total": 74,
+        "after_hit": 65,
+        "after_total": 74,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 197,
+        "before_total": 1778,
+        "after_hit": 197,
+        "after_total": 1778,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    },
+    "bus_blocks": {
+      "line": {
+        "before_hit": 67,
+        "before_total": 68,
+        "after_hit": 67,
+        "after_total": 68,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "branch": {
+        "before_hit": 70,
+        "before_total": 76,
+        "after_hit": 70,
+        "after_total": 76,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "toggle": {
+        "before_hit": 1100,
+        "before_total": 2450,
+        "after_hit": 1100,
+        "after_total": 2450,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_state": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      },
+      "fsm_arc": {
+        "before_hit": 0,
+        "before_total": 0,
+        "after_hit": 0,
+        "after_total": 0,
+        "delta_hit": 0,
+        "newly_hit_native_points": 0,
+        "scope": "Exact dataset only; baseline archive retained, no cross-top credit"
+      }
+    }
+  },
+  "source_sha": "3526950e59ff042973ccb822414d6a7361c682da",
+  "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+  "groups": [
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "CachePerformanceCsr",
+      "open": 1
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "CpuMmioRouter",
+      "open": 11
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "DirectoryController",
+      "open": 15
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "DirectoryMshrBank",
+      "open": 16
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "DualL1MesiCluster",
+      "open": 16
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "LineMemoryAxi4Adapter",
+      "open": 11
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "MemoryRefillMshrBank",
+      "open": 2
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "MesiL1Array",
+      "open": 9
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "MesiL1Controller",
+      "open": 17
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "SharedL2DirectoryArray",
+      "open": 7
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "branch",
+      "module": "SharedLineEngine",
+      "open": 18
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "fsm_arc",
+      "module": "DirectoryController",
+      "open": 34
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "fsm_arc",
+      "module": "MesiL1Controller",
+      "open": 10
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "fsm_state",
+      "module": "DirectoryController",
+      "open": 22
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "fsm_state",
+      "module": "MesiL1Controller",
+      "open": 2
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "CachePerformanceCsr",
+      "open": 4
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "CpuMmioRouter",
+      "open": 5
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "DirectoryController",
+      "open": 69
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "DirectoryMshrBank",
+      "open": 13
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "DualL1MesiCluster",
+      "open": 10
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "LineMemoryAxi4Adapter",
+      "open": 1
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "MesiL1Controller",
+      "open": 23
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "SharedL2DirectoryArray",
+      "open": 4
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "line",
+      "module": "SharedLineEngine",
+      "open": 38
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CachePerformanceCsr",
+      "open": 441
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CoherenceRequestArbiter",
+      "open": 259
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CoherenceRequestArbiterCore",
+      "open": 156
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CoherentCacheAxiSubsystem",
+      "open": 1157
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CoherentCacheSubsystem",
+      "open": 3549
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "CpuMmioRouter",
+      "open": 1001
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "DirectoryController",
+      "open": 330
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "DirectoryMshrBank",
+      "open": 1776
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "DualL1MesiCluster",
+      "open": 2940
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "L2LineWriteArbiter",
+      "open": 376
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "LineMemoryAxi4Adapter",
+      "open": 1099
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "MemoryRefillMshrBank",
+      "open": 478
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1Array",
+      "open": 1255
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1Controller",
+      "open": 611
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1SnoopArbiter",
+      "open": 209
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "SharedL2DirectoryArray",
+      "open": 733
+    },
+    {
+      "dataset": "axi_subsystem",
+      "metric": "toggle",
+      "module": "SharedLineEngine",
+      "open": 339
+    },
+    {
+      "dataset": "bus_blocks",
+      "metric": "branch",
+      "module": "LineMemoryAxi4Adapter",
+      "open": 6
+    },
+    {
+      "dataset": "bus_blocks",
+      "metric": "line",
+      "module": "CachePerformanceCsr",
+      "open": 1
+    },
+    {
+      "dataset": "bus_blocks",
+      "metric": "toggle",
+      "module": "CachePerformanceCsr",
+      "open": 125
+    },
+    {
+      "dataset": "bus_blocks",
+      "metric": "toggle",
+      "module": "LineMemoryAxi4Adapter",
+      "open": 1225
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "branch",
+      "module": "DirectoryController",
+      "open": 9
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "fsm_arc",
+      "module": "DirectoryController",
+      "open": 6
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "line",
+      "module": "DirectoryController",
+      "open": 33
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "toggle",
+      "module": "DirectoryController",
+      "open": 357
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "branch",
+      "module": "DirectoryController",
+      "open": 23
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "branch",
+      "module": "DirectoryMshrBank",
+      "open": 5
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "fsm_arc",
+      "module": "DirectoryController",
+      "open": 25
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "fsm_state",
+      "module": "DirectoryController",
+      "open": 9
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "line",
+      "module": "DirectoryController",
+      "open": 119
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "toggle",
+      "module": "DirectoryController",
+      "open": 300
+    },
+    {
+      "dataset": "directory_mshr_bank",
+      "metric": "toggle",
+      "module": "DirectoryMshrBank",
+      "open": 1415
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "CpuMmioRouter",
+      "open": 2
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "DirectoryController",
+      "open": 13
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "DirectoryMshrBank",
+      "open": 15
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "DualL1MesiCluster",
+      "open": 10
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "MemoryRefillMshrBank",
+      "open": 2
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "MesiL1Array",
+      "open": 8
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "MesiL1Controller",
+      "open": 15
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "SharedL2DirectoryArray",
+      "open": 7
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "branch",
+      "module": "SharedLineEngine",
+      "open": 16
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "fsm_arc",
+      "module": "DirectoryController",
+      "open": 27
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "fsm_arc",
+      "module": "MesiL1Controller",
+      "open": 8
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "fsm_state",
+      "module": "DirectoryController",
+      "open": 22
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "fsm_state",
+      "module": "MesiL1Controller",
+      "open": 2
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "CpuMmioRouter",
+      "open": 3
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "DirectoryController",
+      "open": 68
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "DirectoryMshrBank",
+      "open": 10
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "DualL1MesiCluster",
+      "open": 3
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "MesiL1Controller",
+      "open": 23
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "SharedL2DirectoryArray",
+      "open": 4
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "line",
+      "module": "SharedLineEngine",
+      "open": 31
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "CoherenceRequestArbiter",
+      "open": 64
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "CoherenceRequestArbiterCore",
+      "open": 38
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "CoherentCacheSubsystem",
+      "open": 1234
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "CpuMmioRouter",
+      "open": 264
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "DirectoryController",
+      "open": 91
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "DirectoryMshrBank",
+      "open": 1405
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "DualL1MesiCluster",
+      "open": 950
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "L2LineWriteArbiter",
+      "open": 100
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "MemoryRefillMshrBank",
+      "open": 293
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1Array",
+      "open": 607
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1Controller",
+      "open": 132
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "MesiL1SnoopArbiter",
+      "open": 42
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "SharedL2DirectoryArray",
+      "open": 228
+    },
+    {
+      "dataset": "main_subsystem",
+      "metric": "toggle",
+      "module": "SharedLineEngine",
+      "open": 139
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "branch",
+      "module": "MesiL1Controller",
+      "open": 5
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "fsm_arc",
+      "module": "MesiL1Controller",
+      "open": 3
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "line",
+      "module": "MesiL1Controller",
+      "open": 25
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "toggle",
+      "module": "MesiL1Controller",
+      "open": 942
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "toggle",
+      "module": "MesiL1SnoopArbiter",
+      "open": 174
+    },
+    {
+      "dataset": "shared_l2_directory_array",
+      "metric": "branch",
+      "module": "SharedL2DirectoryArray",
+      "open": 9
+    },
+    {
+      "dataset": "shared_l2_directory_array",
+      "metric": "line",
+      "module": "SharedL2DirectoryArray",
+      "open": 4
+    },
+    {
+      "dataset": "shared_l2_directory_array",
+      "metric": "toggle",
+      "module": "SharedL2DirectoryArray",
+      "open": 1581
+    },
+    {
+      "dataset": "shared_line_engine",
+      "metric": "branch",
+      "module": "SharedLineEngine",
+      "open": 8
+    },
+    {
+      "dataset": "shared_line_engine",
+      "metric": "line",
+      "module": "SharedLineEngine",
+      "open": 3
+    },
+    {
+      "dataset": "shared_line_engine",
+      "metric": "toggle",
+      "module": "SharedLineEngine",
+      "open": 344
+    }
+  ],
+  "policy": "All group labels are worklists, not reviewed dispositions. Raw denominators and required obligations unchanged."
+}

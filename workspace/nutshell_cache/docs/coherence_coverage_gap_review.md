@@ -1,11 +1,11 @@
 # Coherence RTL Coverage Gap Review
 
-Generated from the Phase 1 source audit on 2026-11-09 22:29 +08.
+Generated from the Phase 1 source audit on 2026-11-10 10:27 +08.
 
 - Product RTL: **850/992** hit; **142** missed.
-- Testbench: **757/769** hit; **12** missed.
+- Testbench: **788/800** hit; **12** missed.
 - Generated/Other: **0/0** hit; **0** missed.
-- All LCOV records: **1607/1761** hit; **154** missed; reconciliation: **PASS**.
+- All LCOV records: **1638/1792** hit; **154** missed; reconciliation: **PASS**.
 - RTL manifest / compiler source reconciliation: **18/18 files; PASS**.
 
 The detailed audit lists every uncovered Product RTL source line, review category, module-level raw coverage, native Verilator point coverage, checker mapping and remaining testpoints.

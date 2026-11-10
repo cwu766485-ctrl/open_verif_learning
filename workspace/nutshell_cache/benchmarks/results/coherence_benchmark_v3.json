@@ -20,8 +20,8 @@
       "initial_cache_state": "Core0 line resident before the 64 measured reads",
       "ops": 64,
       "window_cycles": 256,
-      "mean_req_to_resp_cycles": 2.0,
-      "p95_req_to_resp_cycles": 2,
+      "mean_req_to_resp_cycles": 3.0,
+      "p95_req_to_resp_cycles": 3,
       "ops_per_cycle": 0.25,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -88,8 +88,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -156,8 +156,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -224,8 +224,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -292,8 +292,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -360,8 +360,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -428,8 +428,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -496,8 +496,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -564,8 +564,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -632,8 +632,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
       "ops": 16,
       "window_cycles": 592,
-      "mean_req_to_resp_cycles": 35.0,
-      "p95_req_to_resp_cycles": 35,
+      "mean_req_to_resp_cycles": 36.0,
+      "p95_req_to_resp_cycles": 36,
       "ops_per_cycle": 0.02702702702702703,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -700,8 +700,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
       "ops": 16,
       "window_cycles": 408,
-      "mean_req_to_resp_cycles": 44.5,
-      "p95_req_to_resp_cycles": 49,
+      "mean_req_to_resp_cycles": 45.5,
+      "p95_req_to_resp_cycles": 50,
       "ops_per_cycle": 0.0392156862745098,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -768,8 +768,8 @@
       "initial_cache_state": "Core0 owns the line in M before alternating core stores",
       "ops": 16,
       "window_cycles": 424,
-      "mean_req_to_resp_cycles": 24.5,
-      "p95_req_to_resp_cycles": 26,
+      "mean_req_to_resp_cycles": 25.5,
+      "p95_req_to_resp_cycles": 27,
       "ops_per_cycle": 0.03773584905660377,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -836,8 +836,8 @@
       "initial_cache_state": "Core0 line resident before the 64 measured reads",
       "ops": 64,
       "window_cycles": 256,
-      "mean_req_to_resp_cycles": 2.0,
-      "p95_req_to_resp_cycles": 2,
+      "mean_req_to_resp_cycles": 3.0,
+      "p95_req_to_resp_cycles": 3,
       "ops_per_cycle": 0.25,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -904,8 +904,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -972,8 +972,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1040,8 +1040,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1108,8 +1108,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1176,8 +1176,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1244,8 +1244,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1312,8 +1312,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1380,8 +1380,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1448,8 +1448,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
       "ops": 16,
       "window_cycles": 886,
-      "mean_req_to_resp_cycles": 53.375,
-      "p95_req_to_resp_cycles": 59,
+      "mean_req_to_resp_cycles": 54.375,
+      "p95_req_to_resp_cycles": 60,
       "ops_per_cycle": 0.01805869074492099,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1516,8 +1516,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
       "ops": 16,
       "window_cycles": 547,
-      "mean_req_to_resp_cycles": 61.875,
-      "p95_req_to_resp_cycles": 67,
+      "mean_req_to_resp_cycles": 62.875,
+      "p95_req_to_resp_cycles": 68,
       "ops_per_cycle": 0.029250457038391225,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1584,8 +1584,8 @@
       "initial_cache_state": "Core0 owns the line in M before alternating core stores",
       "ops": 16,
       "window_cycles": 424,
-      "mean_req_to_resp_cycles": 24.5,
-      "p95_req_to_resp_cycles": 26,
+      "mean_req_to_resp_cycles": 25.5,
+      "p95_req_to_resp_cycles": 27,
       "ops_per_cycle": 0.03773584905660377,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1652,8 +1652,8 @@
       "initial_cache_state": "Core0 line resident before the 64 measured reads",
       "ops": 64,
       "window_cycles": 256,
-      "mean_req_to_resp_cycles": 2.0,
-      "p95_req_to_resp_cycles": 2,
+      "mean_req_to_resp_cycles": 3.0,
+      "p95_req_to_resp_cycles": 3,
       "ops_per_cycle": 0.25,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1720,8 +1720,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1788,8 +1788,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1856,8 +1856,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1924,8 +1924,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -1992,8 +1992,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2060,8 +2060,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2128,8 +2128,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2196,8 +2196,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2264,8 +2264,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
       "ops": 16,
       "window_cycles": 1408,
-      "mean_req_to_resp_cycles": 86.0,
-      "p95_req_to_resp_cycles": 89,
+      "mean_req_to_resp_cycles": 87.0,
+      "p95_req_to_resp_cycles": 90,
       "ops_per_cycle": 0.011363636363636364,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2332,8 +2332,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
       "ops": 16,
       "window_cycles": 752,
-      "mean_req_to_resp_cycles": 87.5,
-      "p95_req_to_resp_cycles": 92,
+      "mean_req_to_resp_cycles": 88.5,
+      "p95_req_to_resp_cycles": 93,
       "ops_per_cycle": 0.02127659574468085,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2400,8 +2400,8 @@
       "initial_cache_state": "Core0 owns the line in M before alternating core stores",
       "ops": 16,
       "window_cycles": 424,
-      "mean_req_to_resp_cycles": 24.5,
-      "p95_req_to_resp_cycles": 26,
+      "mean_req_to_resp_cycles": 25.5,
+      "p95_req_to_resp_cycles": 27,
       "ops_per_cycle": 0.03773584905660377,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2468,8 +2468,8 @@
       "initial_cache_state": "Core0 line resident before the 64 measured reads",
       "ops": 64,
       "window_cycles": 256,
-      "mean_req_to_resp_cycles": 2.0,
-      "p95_req_to_resp_cycles": 2,
+      "mean_req_to_resp_cycles": 3.0,
+      "p95_req_to_resp_cycles": 3,
       "ops_per_cycle": 0.25,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2536,8 +2536,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2604,8 +2604,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2672,8 +2672,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2740,8 +2740,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2808,8 +2808,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2876,8 +2876,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -2944,8 +2944,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3012,8 +3012,8 @@
       "initial_cache_state": "Target absent from L1 and retained in L2 after four same-index L1 conflicts",
       "ops": 1,
       "window_cycles": 24,
-      "mean_req_to_resp_cycles": 22.0,
-      "p95_req_to_resp_cycles": 22,
+      "mean_req_to_resp_cycles": 23.0,
+      "p95_req_to_resp_cycles": 23,
       "ops_per_cycle": 0.041666666666666664,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3080,8 +3080,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2",
       "ops": 16,
       "window_cycles": 2208,
-      "mean_req_to_resp_cycles": 136.0,
-      "p95_req_to_resp_cycles": 139,
+      "mean_req_to_resp_cycles": 137.0,
+      "p95_req_to_resp_cycles": 140,
       "ops_per_cycle": 0.007246376811594203,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3148,8 +3148,8 @@
       "initial_cache_state": "16 distinct lines absent from both L1s and shared L2; paired issue",
       "ops": 16,
       "window_cycles": 1152,
-      "mean_req_to_resp_cycles": 137.5,
-      "p95_req_to_resp_cycles": 142,
+      "mean_req_to_resp_cycles": 138.5,
+      "p95_req_to_resp_cycles": 143,
       "ops_per_cycle": 0.013888888888888888,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3216,8 +3216,8 @@
       "initial_cache_state": "Core0 owns the line in M before alternating core stores",
       "ops": 16,
       "window_cycles": 424,
-      "mean_req_to_resp_cycles": 24.5,
-      "p95_req_to_resp_cycles": 26,
+      "mean_req_to_resp_cycles": 25.5,
+      "p95_req_to_resp_cycles": 27,
       "ops_per_cycle": 0.03773584905660377,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3284,8 +3284,8 @@
       "initial_cache_state": "Eight same-set M lines live across both L1s; ninth line triggers L2 victim writeback",
       "ops": 1,
       "window_cycles": 260,
-      "mean_req_to_resp_cycles": 258.0,
-      "p95_req_to_resp_cycles": 258,
+      "mean_req_to_resp_cycles": 259.0,
+      "p95_req_to_resp_cycles": 259,
       "ops_per_cycle": 0.0038461538461538464,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3352,8 +3352,8 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1007,
-      "mean_req_to_resp_cycles": 15.544117647058824,
-      "p95_req_to_resp_cycles": 59,
+      "mean_req_to_resp_cycles": 16.544117647058822,
+      "p95_req_to_resp_cycles": 60,
       "ops_per_cycle": 0.05561072492552135,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3420,8 +3420,8 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1203,
-      "mean_req_to_resp_cycles": 17.529411764705884,
-      "p95_req_to_resp_cycles": 59,
+      "mean_req_to_resp_cycles": 18.529411764705884,
+      "p95_req_to_resp_cycles": 60,
       "ops_per_cycle": 0.046550290939318374,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3488,8 +3488,8 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1162,
-      "mean_req_to_resp_cycles": 17.83823529411765,
-      "p95_req_to_resp_cycles": 65,
+      "mean_req_to_resp_cycles": 18.83823529411765,
+      "p95_req_to_resp_cycles": 66,
       "ops_per_cycle": 0.04819277108433735,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3556,8 +3556,8 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1153,
-      "mean_req_to_resp_cycles": 16.88235294117647,
-      "p95_req_to_resp_cycles": 59,
+      "mean_req_to_resp_cycles": 17.88235294117647,
+      "p95_req_to_resp_cycles": 60,
       "ops_per_cycle": 0.04856895056374675,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {
@@ -3624,8 +3624,8 @@
       "initial_cache_state": "Eight target lines absent from both L1s and L2; disjoint region per seed",
       "ops": 56,
       "window_cycles": 1144,
-      "mean_req_to_resp_cycles": 18.205882352941178,
-      "p95_req_to_resp_cycles": 64,
+      "mean_req_to_resp_cycles": 19.205882352941178,
+      "p95_req_to_resp_cycles": 65,
       "ops_per_cycle": 0.04895104895104895,
       "phase_cycles": {
         "l1_miss_to_directory_accept": {

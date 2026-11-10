@@ -1,639 +1,166 @@
 {
-  "branch_at_test_time": "codex/final-rtl-coverage-closure",
-  "completed_utc": "2026-11-09T08:26:32.388858+00:00",
-  "coverage_datasets": {
-    "approved_waivers": 0,
-    "dataset_count": 8,
-    "datasets": {
-      "axi_subsystem": {
-        "compiled_manifest_sha256": "61266b4c87a699880c52b902cb5772ceb573b79f37504ff9e4d629e65f1955ff",
-        "filelist": "dv/blocks/coherent_cache_axi_subsystem/filelist.f",
-        "fingerprint": "049d9df2f88e8d4ba6b2ef2793af2156581b992939a3a77d59cfc81e33cf5e4b",
-        "line_info_sha256": "5f5a6538ab4f3e13f8ca15515ed87c269f9ddd9940c8a6f28572d47cc4bb513b",
-        "metrics": {
-          "branch": {
-            "hit": 509,
-            "miss": 123,
-            "total": 632
-          },
-          "fsm_arc": {
-            "hit": 4,
-            "miss": 44,
-            "total": 48
-          },
-          "fsm_state": {
-            "hit": 30,
-            "miss": 24,
-            "total": 54
-          },
-          "line": {
-            "hit": 901,
-            "miss": 167,
-            "total": 1068
-          },
-          "toggle": {
-            "hit": 15623,
-            "miss": 16709,
-            "total": 32332
-          }
-        },
-        "raw_sha256": "97330f3cce65d9cf83898bd9000f3ca87598f49f952c97b83a95427804542681",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "CoherentCacheAxiSubsystem_tb"
-      },
-      "bus_blocks": {
-        "compiled_manifest_sha256": "b87e1d2e87ce3c8cfb77b3721ba088e5e27b06b576e9a8fa32b94a88085cbcf6",
-        "filelist": "dv/blocks/bus_blocks/filelist.f",
-        "fingerprint": "e1fc8fc137973fc53e6f2f7321a4f68706a63b7d97ba45a147bf8f8e2beb2473",
-        "line_info_sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a",
-        "metrics": {
-          "branch": {
-            "hit": 70,
-            "miss": 6,
-            "total": 76
-          },
-          "fsm_arc": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "fsm_state": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "line": {
-            "hit": 67,
-            "miss": 1,
-            "total": 68
-          },
-          "toggle": {
-            "hit": 1100,
-            "miss": 1350,
-            "total": 2450
-          }
-        },
-        "raw_sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "CacheBusBlocks_tb"
-      },
-      "directory_controller": {
-        "compiled_manifest_sha256": "c6335e7a5628c52241c51db8b741a2d93d2da9edccb99fc3f48eb043273032d6",
-        "filelist": "dv/blocks/directory_controller/filelist.f",
-        "fingerprint": "e3eaf7c266786a552e578f7cbb74b48b588f6b6f831d7b343cce33b334e1f4cd",
-        "line_info_sha256": "7bde28864200949dc75b110ff62316149d2ca6de110abdb5052f14538fdd2f85",
-        "metrics": {
-          "branch": {
-            "hit": 30,
-            "miss": 12,
-            "total": 42
-          },
-          "fsm_arc": {
-            "hit": 3,
-            "miss": 6,
-            "total": 9
-          },
-          "fsm_state": {
-            "hit": 10,
-            "miss": 0,
-            "total": 10
-          },
-          "line": {
-            "hit": 122,
-            "miss": 60,
-            "total": 182
-          },
-          "toggle": {
-            "hit": 250,
-            "miss": 362,
-            "total": 612
-          }
-        },
-        "raw_sha256": "77a14033b470b97f95f4b32775119fb0231405a5e8f1dc05053f5e26dfe3e6a4",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "DirectoryController_tb"
-      },
-      "directory_mshr_bank": {
-        "compiled_manifest_sha256": "5030aa013d09669638b4a5176245f0c3a2f9d34f265b33e2e6e9e4ed52ed7f81",
-        "filelist": "dv/blocks/directory_mshr_bank/filelist.f",
-        "fingerprint": "e7c850f15d17493c179e2a645f27663fafcd899fd9e963ec3aacad063d56f927",
-        "line_info_sha256": "eb5810629a58ed43e3877fa51659ff6ee9160f589654993bd40d301a629c1b8a",
-        "metrics": {
-          "branch": {
-            "hit": 100,
-            "miss": 28,
-            "total": 128
-          },
-          "fsm_arc": {
-            "hit": 11,
-            "miss": 25,
-            "total": 36
-          },
-          "fsm_state": {
-            "hit": 31,
-            "miss": 9,
-            "total": 40
-          },
-          "line": {
-            "hit": 167,
-            "miss": 119,
-            "total": 286
-          },
-          "toggle": {
-            "hit": 1063,
-            "miss": 1841,
-            "total": 2904
-          }
-        },
-        "raw_sha256": "f40ae220240d4cb06b0ecdd5226b89d799061b8372a5940f242a5f14a3e10bbe",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "DirectoryMshrBank_tb"
-      },
-      "main_subsystem": {
-        "compiled_manifest_sha256": "1caf87daba54c81e68db872ba353805e849a9f9ad44add8d03d305a2aff589e7",
-        "filelist": "rtl/Coherence.files.f",
-        "fingerprint": "088e562f0860f73adbdbdc61709aebe88e251c4f8328df56bebdfedcadaa6d26",
-        "line_info_sha256": "93a9b86c873f6ebc8698a04122df7743ecf84d02490c903f2e5b2ebb198065c3",
-        "metrics": {
-          "branch": {
-            "hit": 468,
-            "miss": 88,
-            "total": 556
-          },
-          "fsm_arc": {
-            "hit": 7,
-            "miss": 41,
-            "total": 48
-          },
-          "fsm_state": {
-            "hit": 30,
-            "miss": 24,
-            "total": 54
-          },
-          "line": {
-            "hit": 850,
-            "miss": 142,
-            "total": 992
-          },
-          "toggle": {
-            "hit": 19996,
-            "miss": 7478,
-            "total": 27474
-          }
-        },
-        "raw_sha256": "3842959397c72acb828f25f26f1d9f0cccc09340ac6ef942b98043b2307d8ba8",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "CoherentCacheSubsystem_tb"
-      },
-      "mesi_l1_controller": {
-        "compiled_manifest_sha256": "40ce8ecd1c04df85d035e2367febf416c0000329b2eb1c374f7fd4e4b887ca15",
-        "filelist": "dv/blocks/mesi_l1_controller/filelist.f",
-        "fingerprint": "a3a5b0e7841e5c561fbb7a5c3013a6b3b9c5a6c2d429e58062cd5188d619c3b1",
-        "line_info_sha256": "846e323899763b69052c9ef1da0c4538a1d898ddead856e61a64d9ec247ad6eb",
-        "metrics": {
-          "branch": {
-            "hit": 41,
-            "miss": 5,
-            "total": 46
-          },
-          "fsm_arc": {
-            "hit": 3,
-            "miss": 3,
-            "total": 6
-          },
-          "fsm_state": {
-            "hit": 7,
-            "miss": 0,
-            "total": 7
-          },
-          "line": {
-            "hit": 107,
-            "miss": 25,
-            "total": 132
-          },
-          "toggle": {
-            "hit": 688,
-            "miss": 1116,
-            "total": 1804
-          }
-        },
-        "raw_sha256": "fbeea2dae027e1bb9c786e40cee33cd4a777fa016f202954cf3b669e479b399d",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "MesiL1Controller_tb"
-      },
-      "shared_l2_directory_array": {
-        "compiled_manifest_sha256": "5058fd3b467929b2d6bd8c1df7cecedf2a9f8768c094f024de6f5616d5483284",
-        "filelist": "dv/blocks/shared_l2_directory_array/filelist.f",
-        "fingerprint": "e884ab0246796a02d49fc5f787faeea14cfea8dfd02eceb509b097b34a859c0a",
-        "line_info_sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79",
-        "metrics": {
-          "branch": {
-            "hit": 65,
-            "miss": 9,
-            "total": 74
-          },
-          "fsm_arc": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "fsm_state": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "line": {
-            "hit": 75,
-            "miss": 4,
-            "total": 79
-          },
-          "toggle": {
-            "hit": 197,
-            "miss": 1581,
-            "total": 1778
-          }
-        },
-        "raw_sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "SharedL2DirectoryArray_tb"
-      },
-      "shared_line_engine": {
-        "compiled_manifest_sha256": "f1c150f18bf15fc4156fb9c8d25a309474031846acf355e9b9c1061bc29c6275",
-        "filelist": "dv/blocks/shared_line_engine/filelist.f",
-        "fingerprint": "443dd1b654e3538f81825e3593d36366a61c5995fa32833516520e85e20afe57",
-        "line_info_sha256": "e1dc407973a643997381b79923b8ac4636c3961f51570f176cce1e4429e8d191",
-        "metrics": {
-          "branch": {
-            "hit": 44,
-            "miss": 8,
-            "total": 52
-          },
-          "fsm_arc": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "fsm_state": {
-            "hit": 0,
-            "miss": 0,
-            "total": 0
-          },
-          "line": {
-            "hit": 101,
-            "miss": 3,
-            "total": 104
-          },
-          "toggle": {
-            "hit": 304,
-            "miss": 344,
-            "total": 648
-          }
-        },
-        "raw_sha256": "2577449b714135d44bb4eb101d3dd26d14e7c936431dbe26af557a45c686f575",
-        "test_scope": "See raw-run inventory; distinct elaboration/test scope.",
-        "top": "SharedLineEngine_tb"
-      }
-    },
-    "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-    "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97"
+  "approved_exclusions": 0,
+  "branch_at_test_time": "dv-closure-phase2",
+  "ci": {
+    "baseline_only_runs": [
+      42642245560,
+      42642231316
+    ],
+    "new_source": "NOT_RUN: GitHub HTTPS push failed, no username/credentials available"
   },
-  "coverage_evidence_tool_versions": {
-    "python": "3.12.3",
-    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
-    "verilator_coverage": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)"
-  },
+  "coverage_manifest": "reports/final/risk_closure/dataset_manifest.json",
   "decision": "OPEN",
   "full_system_checked_coverage": {
-    "required_cross_passed": 35,
-    "required_cross_total": 35,
-    "required_functional_passed": 53,
-    "required_functional_total": 53,
-    "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-    "testcase_exit_status": 0
+    "cross": "35/35",
+    "functional": "53/53",
+    "stress_seeds": "280/280"
   },
-  "local_only_logs": false,
-  "open_reasons": [
-    "74831 dataset-scoped RTL coverage points are inventoried across 8 independent elaborated-top datasets; no current source/dataset-bound disposition is accepted.",
-    "43074 raw-hit points and 31757 zero-count points remain without current review evidence; the 19 old ledger rows are stale and receive no credit.",
-    "Reviewed Eligible Coverage is not computable; no waivers or unreachable points were approved.",
-    "Raw Main Subsystem misses include legal, recovery, defensive and tool/instrumentation cases that still need point-specific disposition.",
-    "This is a functional RTL/DV candidate only; PPA, STA, physical SRAM macro and chip-level implementation are out of scope."
-  ],
-  "project_root": "workspace/nutshell_cache",
-  "python_coherence_checked_coverage": {
-    "cross": "19/19",
-    "evidence": "reports/coherence/python_coverage_closure.json",
-    "functional": "49/49"
-  },
+  "independent_approver": null,
   "regressions": {
-    "coherence_coverage_audit": {
-      "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-09T08:24:17.453590+00:00",
-      "log": "reports/closure/release_runs/coherence_coverage_audit.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+    "completed_utc": "2026-11-10T02:30:28.872804+00:00",
+    "required_gates": [
+      "coherence_verify",
+      "coherence_full_system_verify",
+      "coherence_hit_under_miss",
+      "coherence_full_system_cross_closure",
+      "coherence_full_system_stress",
+      "coherence_coverage_audit",
+      "coherence_full_system_evidence_gate",
+      "coherence_full_system_replay_closure"
+    ],
+    "runs": {
+      "coherence_coverage_audit": {
+        "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
+        "completed_utc": "2026-11-10T02:28:16.354192+00:00",
+        "log": "reports/closure/release_runs/coherence_coverage_audit.log",
+        "log_sha256": "ba38819cc5d8f84cb8309a806492b526078d63190a83ecfe7bc54d8ba932473d",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_full_system_cross_closure": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
+        "completed_utc": "2026-11-10T01:50:51.496903+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
+        "log_sha256": "8a87761661e4e988d1d896682aabd138f87d474d326b3b4a597e2ca74993c491",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_full_system_evidence_gate": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
+        "completed_utc": "2026-11-10T02:28:18.960652+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
+        "log_sha256": "e292abd9fddc67736b5113ce72bdb7c77152969d81b8481a09026cec7e04fe1a",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_full_system_replay_closure": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
+        "completed_utc": "2026-11-10T02:30:28.872395+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
+        "log_sha256": "4c2e8d939a881e09d506671cfada8a36a589e92059f07d0eddfb08b560aad53d",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_full_system_stress": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
+        "completed_utc": "2026-11-10T02:22:18.773998+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_stress.log",
+        "log_sha256": "13f9d8bf7c73c31614631f83253c9d1908384bf1aba70471729bc78721871bc7",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_full_system_verify": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
+        "completed_utc": "2026-11-10T01:43:40.607934+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_verify.log",
+        "log_sha256": "130d02d9a02f5a7a6cc6ecd73f8f69d7da7df0dc8740a510938e96f89a7ab285",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_hit_under_miss": {
+        "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
+        "completed_utc": "2026-11-10T01:48:13.019078+00:00",
+        "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
+        "log_sha256": "17ebdfdcde94ef743a70aca837f99d142dbdbc89a5c6bee8caaaa3db32bf15b3",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      },
+      "coherence_verify": {
+        "command": "make COHERENCE_JOBS=2 coherence_verify",
+        "completed_utc": "2026-11-10T01:23:56.356121+00:00",
+        "log": "reports/closure/release_runs/coherence_verify.log",
+        "log_sha256": "94f62fa32b1dbba5141e8598121712203fec107adb0d5cc7ae09d4c797496bcd",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+        "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
+      }
     },
-    "coherence_full_system_cross_closure": {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-09T07:49:03.133197+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_full_system_evidence_gate": {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-09T08:24:20.490043+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_full_system_replay_closure": {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-09T08:26:32.386941+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_full_system_stress": {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-09T08:19:36.452653+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_stress.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_full_system_verify": {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-09T07:42:53.625400+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_hit_under_miss": {
-      "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-09T07:46:47.268948+00:00",
-      "log": "reports/closure/release_runs/coherence_hit_under_miss.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    },
-    "coherence_verify": {
-      "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-09T07:27:00.228525+00:00",
-      "log": "reports/closure/release_runs/coherence_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint_after": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_fingerprint_before": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
-    }
+    "schema_version": 1,
+    "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+    "started_utc": "2026-11-10T01:08:08.454344+00:00",
+    "updated_utc": "2026-11-10T02:30:28.872411+00:00"
   },
   "release_gate": {
-    "approved_waivers": 0,
-    "current_valid_dispositions": 0,
-    "decision": "OPEN",
-    "gate_command": "make COHERENCE_JOBS=2 coherence_release_gate",
-    "gate_generated_utc": "2026-11-09T08:27:04.262078+00:00",
-    "gate_unit_tests": {
-      "failed": 0,
-      "passed": 15,
-      "result": "PASS"
+    "attested_points_by_dataset": {
+      "axi_subsystem": 17067,
+      "bus_blocks": 1237,
+      "directory_controller": 450,
+      "directory_mshr_bank": 1498,
+      "main_subsystem": 23248,
+      "mesi_l1_controller": 846,
+      "shared_l2_directory_array": 337,
+      "shared_line_engine": 449
     },
-    "historical_stale_ledger_rows": 19,
-    "json": "reports/final/rtl_release_gate.json.gz",
-    "log": "reports/closure/rtl_release_gate.log.gz",
-    "make_returncode": 2,
-    "point_inventory": "reports/final/rtl_release_point_matrix.csv.gz",
-    "python_gate_returncode": 1,
-    "raw_hit_points_without_current_review": 43074,
-    "raw_points": 74831,
-    "raw_zero_count_points_without_current_review": 31757,
-    "reviewed_eligible_coverage": "NOT COMPUTABLE"
+    "generated_utc": "2026-11-10T02:31:22.936340+00:00",
+    "hit_count_points": 45132,
+    "manifest_errors": [],
+    "point_count": 74831,
+    "raw_hit_attested_points": 45132,
+    "raw_hit_unattested_points": 0,
+    "repository_head": "3526950e59ff042973ccb822414d6a7361c682da",
+    "required_regression_gates": [
+      "coherence_verify",
+      "coherence_full_system_verify",
+      "coherence_hit_under_miss",
+      "coherence_full_system_cross_closure",
+      "coherence_full_system_stress",
+      "coherence_coverage_audit",
+      "coherence_full_system_evidence_gate",
+      "coherence_full_system_replay_closure"
+    ],
+    "schema_version": 1,
+    "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+    "stale_decision_history_count": 19,
+    "status": "OPEN",
+    "waiver_count": 0,
+    "zero_count_points": 29699,
+    "zero_open_or_blocked_points": 29699
   },
-  "release_gate_unit_tests": {
+  "release_gate_command_status": {
     "command": "make COHERENCE_JOBS=2 coherence_release_gate",
-    "failed": 0,
-    "make_exit_nonzero_expected": true,
-    "make_returncode": 2,
-    "passed": 15,
-    "python_gate_returncode": 1,
-    "release_decision": "OPEN",
-    "result": "PASS"
+    "log_sha256": "641e2ef5022830630cbb218d08b9e3ab4cfe79f02666124443e2ef8d3c4c7b0c",
+    "returncode": 2,
+    "source_sha": "3526950e59ff042973ccb822414d6a7361c682da"
   },
+  "report_commit": "Resolve with git log -1 --format=%H -- reports/final/risk_based_closure_report.md; report-only commit is distinct from tested source",
   "repository": "cwu766485-ctrl/open_verif_learning",
-  "required_gates": [
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-09T07:27:00.228525+00:00",
-      "log": "reports/closure/release_runs/coherence_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_verify"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-09T07:42:53.625400+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_verify"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-09T07:46:47.268948+00:00",
-      "log": "reports/closure/release_runs/coherence_hit_under_miss.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_hit_under_miss"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-09T07:49:03.133197+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_cross_closure"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-09T08:19:36.452653+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_stress.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_stress"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-09T08:24:17.453590+00:00",
-      "log": "reports/closure/release_runs/coherence_coverage_audit.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_coverage_audit"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-09T08:24:20.490043+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_evidence_gate"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-09T08:26:32.386941+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_replay_closure"
-    }
-  ],
-  "required_regression_gates": [
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-09T07:27:00.228525+00:00",
-      "log": "reports/closure/release_runs/coherence_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_verify"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-09T07:42:53.625400+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_verify.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_verify"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-09T07:46:47.268948+00:00",
-      "log": "reports/closure/release_runs/coherence_hit_under_miss.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_hit_under_miss"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-09T07:49:03.133197+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_cross_closure"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-09T08:19:36.452653+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_stress.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_stress"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-09T08:24:17.453590+00:00",
-      "log": "reports/closure/release_runs/coherence_coverage_audit.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_coverage_audit"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-09T08:24:20.490043+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_evidence_gate"
-    },
-    {
-      "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-09T08:26:32.386941+00:00",
-      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log.gz",
-      "result": "PASS",
-      "returncode": 0,
-      "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-      "source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-      "target": "coherence_full_system_replay_closure"
-    }
-  ],
-  "rtl_source_manifest": {
-    "path": "rtl/Coherence.files.f",
-    "sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
-    "source_count": 18,
-    "source_sha256": {
-      "rtl/bus/apb/CachePerformanceCsr.sv": "798f51129c519c7b0b20e956e71e530c8acf8f0eb867d0f7e2bc8872c4572f14",
-      "rtl/bus/axi/LineMemoryAxi4Adapter.sv": "e0a274002ca3f03d2bfc7ba65acf10880d9603b1b1022d46ca2a19bfa66fc6fe",
-      "rtl/bus/axi/MemoryRefillMshrBank.sv": "c2592378db9c071c39d90fc0c174712279cc206178d48a71cb9c237cc9616778",
-      "rtl/cluster/DualL1MesiCluster.sv": "50fcbf565d76e96b8335b6063d4f1454de01e83133bc5700449f88a66492cd89",
-      "rtl/coherence/SharedLineEngine.sv": "268eb16e56bce7dc99c37f13fbccdd94ce69d293847bcc2059370ac2b534d364",
-      "rtl/common/CoherenceProtocol.sv": "e184896a6b35152c7f6d4b9a8470ea8aeb40891e4cb3c10973990bc46cfdd3f3",
-      "rtl/directory/DirectoryController.sv": "18febf562aed53538ff5929bb6c7e48ec6c50de0730832c5dbdcc4cfa49db81c",
-      "rtl/directory/DirectoryMshrBank.sv": "d5c370d3bab3409214e8f5775c47397bcfeb6bf280d93e01c63893c4a8c91a95",
-      "rtl/interconnect/CoherenceRequestArbiter.sv": "cc0ea69f05d0cfe9520ba6645042849223d7ea9c7dc389e35b44f37ce3951107",
-      "rtl/interconnect/CoherenceRequestArbiterCore.sv": "7b3ce2989d0c4dcaadae47b731fe2e887e7da6d98a0ee624bf38171163f1720b",
-      "rtl/interconnect/CpuMmioRouter.sv": "2f3e129ba67949c8de0cbf74ee151ff8bec5e89110b706dcc8432100db4b8966",
-      "rtl/interconnect/L2LineWriteArbiter.sv": "226f6ddf8e037882ba6c1b094f9e45f91fc9170c217e68d7c343616e359611db",
-      "rtl/l1/MesiL1Array.sv": "d8262ebbc8e3d94edc89016dd6795a2f55313c8abb6e823764f0769dc13fd295",
-      "rtl/l1/MesiL1Controller.sv": "21be7f1b19a6c217827e44f1122a7ecf191ab589aa829e18268ce16de981f90f",
-      "rtl/l1/MesiL1SnoopArbiter.sv": "e0c84977fd94255651adbce03ee72b1df078538f7d317bac6a6b0a44a37ba29f",
-      "rtl/l2/SharedL2DirectoryArray.sv": "7f3805013905f7ede743403c1bd6de6abf6b6d444390efb5a1319ee374133b1e",
-      "rtl/top/CoherentCacheAxiSubsystem.sv": "8de813a432493d92069a75fbba447012cee30e793158b32f7b664291c31babb5",
-      "rtl/top/CoherentCacheSubsystem.sv": "da26c45ebeee0436b12baef5a327a5a9db46d4e77339ccc1bf2b7a9a4e7a0189"
-    }
-  },
-  "schema_version": 3,
-  "source_commit_ci_before_this_candidate": {
-    "scope_note": "The local tested source SHA is distinct from the historical PR CI SHA.",
-    "status": "Historical PR head CI result only; not evidence for tested source SHA. Recheck Actions after publishing this candidate.",
-    "tested_sha": "d194d3f4552aa6d8f6e6c251f1995fc0f5bbff42"
-  },
-  "started_utc": "2026-11-09T07:13:53.289919+00:00",
-  "tested_at_local": "2026-11-09 Asia/Singapore",
-  "tested_source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006",
-  "tested_source_sha": "8e268bda19f14ff6d587ca38d2813f69b868da97",
-  "tool_versions": {
-    "python": "3.12.3",
-    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
-    "verilator_coverage": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)"
-  }
+  "schema_version": 2,
+  "source_commit": "3526950e59ff042973ccb822414d6a7361c682da",
+  "tested_source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+  "tested_source_sha": "3526950e59ff042973ccb822414d6a7361c682da"
 }

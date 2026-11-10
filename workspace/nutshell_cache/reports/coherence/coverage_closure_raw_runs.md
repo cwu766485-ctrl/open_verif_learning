@@ -12,26 +12,26 @@ Main subsystem smoke, multisnoop and five seeded regressions, all from one commo
 | --- | ---: | ---: |
 | line | 850/992 | 142 |
 | branch | 468/556 | 88 |
-| toggle | 19996/27474 | 7478 |
+| toggle | 21887/27474 | 5587 |
 | fsm_state | 30/54 | 24 |
-| fsm_arc | 7/48 | 41 |
+| fsm_arc | 13/48 | 35 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 72/82 | 5162/6796 | N/A | N/A |
-| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 468/648 | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 114/182 | 29/42 | 497/612 | 18/40 | 4/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 847/2292 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 276/414 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 183/260 | N/A | N/A |
-| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1517/1872 | N/A | N/A |
-| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1215/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1314/2054 | N/A | N/A |
-| `rtl/l1/MesiL1Controller.sv` | 103/126 | 31/46 | 1291/1532 | 12/14 | 3/12 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 195/272 | N/A | N/A |
-| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 992/1324 | N/A | N/A |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 5610/7286 | N/A | N/A |
+| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 445/738 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 72/82 | 5846/6796 | N/A | N/A |
+| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 509/648 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 114/182 | 29/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 887/2292 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 350/414 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 222/260 | N/A | N/A |
+| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1608/1872 | N/A | N/A |
+| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1274/1374 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1447/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Controller.sv` | 103/126 | 31/46 | 1400/1532 | 12/14 | 4/12 |
+| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 230/272 | N/A | N/A |
+| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 1096/1324 | N/A | N/A |
+| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 6052/7286 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 
@@ -82,15 +82,15 @@ Standalone DirectoryController directed TB.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 122/182 | 60 |
-| branch | 30/42 | 12 |
-| toggle | 250/612 | 362 |
+| line | 149/182 | 33 |
+| branch | 33/42 | 9 |
+| toggle | 255/612 | 357 |
 | fsm_state | 10/10 | 0 |
 | fsm_arc | 3/9 | 6 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/directory/DirectoryController.sv` | 122/182 | 30/42 | 250/612 | 10/10 | 3/9 |
+| `rtl/directory/DirectoryController.sv` | 149/182 | 33/42 | 255/612 | 10/10 | 3/9 |
 
 No Product RTL points emitted in this run:
 
@@ -120,14 +120,14 @@ Standalone four-context MSHR directed/stress TB, including transfer-start backpr
 | --- | ---: | ---: |
 | line | 167/286 | 119 |
 | branch | 100/128 | 28 |
-| toggle | 1063/2904 | 1841 |
+| toggle | 1189/2904 | 1715 |
 | fsm_state | 31/40 | 9 |
 | fsm_arc | 11/36 | 25 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/directory/DirectoryController.sv` | 63/182 | 19/42 | 276/612 | 31/40 | 11/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 104/104 | 81/86 | 787/2292 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 63/182 | 19/42 | 312/612 | 31/40 | 11/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 104/104 | 81/86 | 877/2292 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 

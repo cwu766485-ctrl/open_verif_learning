@@ -1,4 +1,5 @@
 {
+  "completed_utc": "2026-11-10T02:30:28.872804+00:00",
   "required_gates": [
     "coherence_verify",
     "coherence_full_system_verify",
@@ -12,95 +13,87 @@
   "runs": {
     "coherence_coverage_audit": {
       "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-09T14:30:44.107270+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T02:28:16.354192+00:00",
       "log": "reports/closure/release_runs/coherence_coverage_audit.log",
-      "log_sha256": "efc18f5007355aead618ea00f9e296d6e2f99bb44a7bde1b06bb880be455c503",
+      "log_sha256": "ba38819cc5d8f84cb8309a806492b526078d63190a83ecfe7bc54d8ba932473d",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_full_system_cross_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-09T13:05:58.674785+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T01:50:51.496903+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
-      "log_sha256": "0f13572b63028f4f31214a02bc78f376acb10d8a156d54a51f36c488c3b00d7f",
+      "log_sha256": "8a87761661e4e988d1d896682aabd138f87d474d326b3b4a597e2ca74993c491",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_full_system_evidence_gate": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-09T14:30:56.034023+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T02:28:18.960652+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
-      "log_sha256": "2519bdb450221640ef69bd6b8445df0ef4154ad871a9b7a388834072c20ea7f5",
+      "log_sha256": "e292abd9fddc67736b5113ce72bdb7c77152969d81b8481a09026cec7e04fe1a",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_full_system_replay_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-09T14:33:24.931747+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T02:30:28.872395+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
-      "log_sha256": "1c6957264c9356b50d51f222a46f96d75b949ea7a9eb4c28cc6aac88027c0ddf",
+      "log_sha256": "4c2e8d939a881e09d506671cfada8a36a589e92059f07d0eddfb08b560aad53d",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_full_system_stress": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-09T14:37:36.517767+00:00",
-      "completion_recorded_from": "captured completed interactive Make result; concise log notes full stream limitation",
-      "log": "reports/closure/release_runs/coherence_full_system_stress.manual.log",
-      "log_sha256": "c3e0d18640cda40e8600f2f76f84eee240390c4114bcfd73c92c0a72f6989ce2",
+      "completed_utc": "2026-11-10T02:22:18.773998+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_stress.log",
+      "log_sha256": "13f9d8bf7c73c31614631f83253c9d1908384bf1aba70471729bc78721871bc7",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_full_system_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-09T12:58:42.491969+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T01:43:40.607934+00:00",
       "log": "reports/closure/release_runs/coherence_full_system_verify.log",
-      "log_sha256": "62ea3b27bda34cc60176565496a66b498c8617122c907bf7301c12ff1ca88b1d",
+      "log_sha256": "130d02d9a02f5a7a6cc6ecd73f8f69d7da7df0dc8740a510938e96f89a7ab285",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_hit_under_miss": {
       "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-09T13:03:20.464053+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T01:48:13.019078+00:00",
       "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
-      "log_sha256": "28a5e5f9eed59d2f9de328530d2526841b1fc676ad625ecf130c9de8984d371a",
+      "log_sha256": "17ebdfdcde94ef743a70aca837f99d142dbdbc89a5c6bee8caaaa3db32bf15b3",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     },
     "coherence_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-09T12:40:23.638227+00:00",
-      "completion_recorded_from": "captured required Make target log",
+      "completed_utc": "2026-11-10T01:23:56.356121+00:00",
       "log": "reports/closure/release_runs/coherence_verify.log",
-      "log_sha256": "f4d6188eab31a0ebc60a8911f7b308c5ae4aef6622c873fba5b3d3066c8ed5e8",
+      "log_sha256": "94f62fa32b1dbba5141e8598121712203fec107adb0d5cc7ae09d4c797496bcd",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-      "source_fingerprint_before": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd"
+      "source_fingerprint_after": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+      "source_fingerprint_before": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846"
     }
   },
   "schema_version": 1,
-  "source_fingerprint": "51545483279d0f053de85e8abbb2dd845f9df577cd1f3343c77aab4f6034f8bd",
-  "started_utc": "2026-11-09T12:25:46.226457+00:00",
-  "updated_utc": "2026-11-09T14:37:36.611808+00:00"
+  "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+  "started_utc": "2026-11-10T01:08:08.454344+00:00",
+  "updated_utc": "2026-11-10T02:30:28.872411+00:00"
 }

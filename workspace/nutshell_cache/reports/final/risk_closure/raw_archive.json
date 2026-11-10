@@ -1,0 +1,114 @@
+[
+  {
+    "dataset": "axi_subsystem",
+    "top": "CoherentCacheAxiSubsystem_tb",
+    "original": "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",
+    "archive": "reports/final/risk_closure/raw/axi_subsystem.dat.gz",
+    "sha256": "97330f3cce65d9cf83898bd9000f3ca87598f49f952c97b83a95427804542681"
+  },
+  {
+    "dataset": "axi_subsystem",
+    "top": "CoherentCacheAxiSubsystem_tb",
+    "original": "reports/coherence/block_coverage/coherent_cache_axi_subsystem_line.info",
+    "archive": "reports/final/risk_closure/raw/axi_subsystem.info.gz",
+    "sha256": "5f5a6538ab4f3e13f8ca15515ed87c269f9ddd9940c8a6f28572d47cc4bb513b"
+  },
+  {
+    "dataset": "bus_blocks",
+    "top": "CacheBusBlocks_tb",
+    "original": "reports/coherence/block_coverage/bus_blocks.dat",
+    "archive": "reports/final/risk_closure/raw/bus_blocks.dat.gz",
+    "sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf"
+  },
+  {
+    "dataset": "bus_blocks",
+    "top": "CacheBusBlocks_tb",
+    "original": "reports/coherence/block_coverage/bus_blocks_line.info",
+    "archive": "reports/final/risk_closure/raw/bus_blocks.info.gz",
+    "sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a"
+  },
+  {
+    "dataset": "directory_controller",
+    "top": "DirectoryController_tb",
+    "original": "reports/coherence/block_coverage/directory_controller.dat",
+    "archive": "reports/final/risk_closure/raw/directory_controller.dat.gz",
+    "sha256": "5ed6047354fe3c6355a4c3041817e2af242f53a5208942e57a4b03c60f32a5dd"
+  },
+  {
+    "dataset": "directory_controller",
+    "top": "DirectoryController_tb",
+    "original": "reports/coherence/block_coverage/directory_controller_line.info",
+    "archive": "reports/final/risk_closure/raw/directory_controller.info.gz",
+    "sha256": "a4e9ef0def2ff921c21414ee54734f7a525dda85bda7bda2b231cc4c90424342"
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "top": "DirectoryMshrBank_tb",
+    "original": "reports/coherence/block_coverage/directory_mshr_bank.dat",
+    "archive": "reports/final/risk_closure/raw/directory_mshr_bank.dat.gz",
+    "sha256": "5a8ba28775f7c71626832864128b19befafb504cffeea71483a23cb55941b796"
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "top": "DirectoryMshrBank_tb",
+    "original": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
+    "archive": "reports/final/risk_closure/raw/directory_mshr_bank.info.gz",
+    "sha256": "e27f51b9eeb1355bf1b1035bd33c748bff997669c438d8c7c8ad445fae8aaf1c"
+  },
+  {
+    "dataset": "main_subsystem",
+    "top": "CoherentCacheSubsystem_tb",
+    "original": "reports/coherence/coverage.dat",
+    "archive": "reports/final/risk_closure/raw/main_subsystem.dat.gz",
+    "sha256": "157f71df4a7b2d8f96c00bd2b88d2f6109b1c4161ee7451643b8fd2b4f2e9fd0"
+  },
+  {
+    "dataset": "main_subsystem",
+    "top": "CoherentCacheSubsystem_tb",
+    "original": "reports/coherence/coverage.info",
+    "archive": "reports/final/risk_closure/raw/main_subsystem.info.gz",
+    "sha256": "d5b26c7617fefb4db4e3118bc23a75fc43461252332c815228dc1ba82baef3b7"
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "top": "MesiL1Controller_tb",
+    "original": "reports/coherence/block_coverage/mesi_l1_controller.dat",
+    "archive": "reports/final/risk_closure/raw/mesi_l1_controller.dat.gz",
+    "sha256": "b9bc5e838fb33736a52ab5484c4b62b38aed3afdffeaf05067ed16909a1498fb"
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "top": "MesiL1Controller_tb",
+    "original": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
+    "archive": "reports/final/risk_closure/raw/mesi_l1_controller.info.gz",
+    "sha256": "8dd04bb16c03bf32b889c7e5bed70a5034d1ca5ad8443126ea5c359ab92b92ee"
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "top": "SharedL2DirectoryArray_tb",
+    "original": "reports/coherence/block_coverage/shared_l2_directory_array.dat",
+    "archive": "reports/final/risk_closure/raw/shared_l2_directory_array.dat.gz",
+    "sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c"
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "top": "SharedL2DirectoryArray_tb",
+    "original": "reports/coherence/block_coverage/shared_l2_directory_array_line.info",
+    "archive": "reports/final/risk_closure/raw/shared_l2_directory_array.info.gz",
+    "sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79"
+  },
+  {
+    "dataset": "shared_line_engine",
+    "top": "SharedLineEngine_tb",
+    "original": "reports/coherence/block_coverage/shared_line_engine.dat",
+    "archive": "reports/final/risk_closure/raw/shared_line_engine.dat.gz",
+    "sha256": "2577449b714135d44bb4eb101d3dd26d14e7c936431dbe26af557a45c686f575"
+  },
+  {
+    "dataset": "shared_line_engine",
+    "top": "SharedLineEngine_tb",
+    "original": "reports/coherence/block_coverage/shared_line_engine_line.info",
+    "archive": "reports/final/risk_closure/raw/shared_line_engine.info.gz",
+    "sha256": "e1dc407973a643997381b79923b8ac4636c3961f51570f176cce1e4429e8d191"
+  }
+]

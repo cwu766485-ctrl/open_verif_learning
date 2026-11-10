@@ -1,9 +1,9 @@
 {
   "code_coverage": {
     "lcov": "reports/coherence/coverage.info",
-    "line_hit": 1607,
-    "line_total": 1767,
-    "percent": 90.94510469722694
+    "line_hit": 1638,
+    "line_total": 1792,
+    "percent": 91.40625
   },
   "coverage_event_errors": [],
   "functional_coverage": {
@@ -747,23 +747,23 @@
   "missing_stall_bins": [],
   "performance_proxy": {
     "cpu_req_ready_stall_cycles": 0,
-    "l1_cold_miss_avg_cycles": 45,
-    "l1_cold_miss_count": 140,
+    "l1_cold_miss_avg_cycles": 28,
+    "l1_cold_miss_count": 1526,
     "l1_hit_avg_cycles": 2,
-    "l1_hit_count": 59,
-    "l1_miss_avg_cycles": 43,
-    "l1_miss_count": 150,
-    "l1_miss_penalty_cycles": 41,
+    "l1_hit_count": 57,
+    "l1_miss_avg_cycles": 19,
+    "l1_miss_count": 2880,
+    "l1_miss_penalty_cycles": 17,
     "read_hit_avg_cycles": 2,
-    "read_hit_count": 43,
-    "snoop_avg_cycles": 19,
-    "snoop_count": 41,
+    "read_hit_count": 40,
+    "snoop_avg_cycles": 14,
+    "snoop_count": 2746,
     "storage_capacity_bytes": 327680,
     "storage_capacity_kib": 320,
-    "upgrade_avg_cycles": 11,
-    "upgrade_count": 10,
+    "upgrade_avg_cycles": 9,
+    "upgrade_count": 1354,
     "write_hit_avg_cycles": 3,
-    "write_hit_count": 16
+    "write_hit_count": 17
   },
   "regression": "dual_l1_shared_l2_mesi",
   "schema_version": 2,
@@ -781,14 +781,14 @@
     "cpu_resp": 33,
     "dir_req": 45,
     "l2_fill": 2,
-    "mem_rd_req": 24,
-    "mem_wr_data": 831,
-    "mem_wr_req": 10,
+    "mem_rd_req": 25,
+    "mem_wr_data": 1065,
+    "mem_wr_req": 13,
     "mmio_req": 4,
     "mmio_resp": 5
   },
   "status": "PASS",
-  "test_pass_markers": 204,
+  "test_pass_markers": 217,
   "waivers": {
     "count": 0,
     "file": "dv/coverage/coherence_waivers.json"

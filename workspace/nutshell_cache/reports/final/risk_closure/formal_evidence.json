@@ -1,0 +1,12 @@
+{
+  "status": "PROOF_PASS_PENDING_INDEPENDENT_REVIEW",
+  "scope": "DirectoryController state_q and snoop_resume_q valid encodings only, all port inputs unconstrained",
+  "command": "source scripts/env.sh && sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_directory_unconstrained.sby",
+  "assumptions": [],
+  "initialization": "init_reset_count starts at zero, reset asserted for first two sampled rising edges",
+  "clock": "single synchronous input clock; no generated multiclock abstraction",
+  "excluded_points": 0,
+  "reviewed_by": "Codex analysis; not independent approval",
+  "approved_by": null,
+  "proof_log_sha256": "88cde57ef40153b9831a0a9379f737f1001592bc7935d3b618704b3d1ab08133"
+}
