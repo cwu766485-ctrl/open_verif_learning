@@ -154,6 +154,8 @@
 
 `include "include/risk_closure_patterns.svh"
 
+`include "include/risk_reset_states.svh"
+
 `include "include/random_and_reset_cases.svh"
 
 `include "include/error_and_summary_cases.svh"
