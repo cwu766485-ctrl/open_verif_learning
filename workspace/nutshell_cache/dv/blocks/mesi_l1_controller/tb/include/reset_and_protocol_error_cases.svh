@@ -85,6 +85,7 @@
     tick(); @(negedge clock); snoop_array_data_valid = 0; snoop_data_ready = 0;
     if (!protocol_error || monitor_snoop_state != 3'd5 || snoop_rsp_valid)
       $fatal(1, "beat-7 missing-Last snoop did not fail-stop");
+`include "include/closure_boundary_cases.svh"
     $display("PASS MesiL1Controller_tb");
     $finish;
   end

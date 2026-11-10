@@ -223,6 +223,42 @@
     end
     if (protocol_error) $fatal(1, "legal permission matrix raised protocol error");
     $display("PASS: both requesters legal shared/unique/last-sharer/stale-Put permission matrix");
+    // Legal stale Upgrade recovery: current unique owner grants M directly.
+    for (integer src = 0; src < 2; src++) begin
+      issue_req(src[0], REQ_UPGRADE, 32'h3000_0000, 4'h7, DIR_U, 0, src[0]);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h7, GRANT_M, 0, src[0]);
+    end
+    // A PutS from a non-owner cannot discard a unique owner's data.
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_PUTS, 32'h3000_0000, 4'h8, DIR_U, 0, 1);
+    repeat (4) begin
+      tick();
+      if (!protocol_error || protocol_error_code != 5 || grant_valid || dir_write_valid)
+        $fatal(1, "non-owner PutS did not fail-stop");
+    end
+    // Reserved response encoding is injectable at the external Snoop port.
+    // READ, required-data INVALIDATE, and ACK-only INVALIDATE have distinct errors.
+    for (integer fault = 0; fault < 3; fault++) begin
+      @(negedge clock); reset = 1; repeat (2) tick();
+      @(negedge clock); reset = 0;
+      if (fault == 0)
+        issue_req(0, REQ_GETS, 32'h3000_0000, 4'h9, DIR_U, 0, 1);
+      else if (fault == 1)
+        issue_req(0, REQ_GETM, 32'h3000_0000, 4'h9, DIR_U, 0, 1);
+      else
+        issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h9, DIR_S, 2'b11, 0);
+      finish_snoop(1, fault == 0 ? SNOOP_READ : SNOOP_INVALIDATE,
+                   4'h9, snoop_response_t'(3), fault != 2);
+      repeat (4) begin
+        tick();
+        if (!protocol_error || protocol_error_code != (fault == 0 ? 8 : fault == 1 ? 10 : 11) ||
+            grant_valid || dir_write_valid || line_xfer_start_valid)
+          $fatal(1, "reserved snoop response did not fail-stop fault=%0d", fault);
+      end
+    end
+    $display("PASS: unique Upgrade and non-owner Put/reserved Snoop response checks");
     $display("PASS DirectoryController_tb");
     $finish;
   end

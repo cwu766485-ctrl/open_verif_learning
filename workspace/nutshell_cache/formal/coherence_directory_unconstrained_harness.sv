@@ -79,6 +79,12 @@ module CoherenceDirectoryFormal(
     past_valid <= 1'b1;
     if (init_reset_count < 2) init_reset_count <= init_reset_count + 1'b1;
     if (past_valid && init_reset_count >= 2) begin
+      // Structural line alignment is invariant even with arbitrary inputs.
+      assert (dut.line_addr_q[5:0] == 0);
+      assert (dir_write_line_addr[5:0] == 0);
+      assert (snoop_req_line_addr[5:0] == 0);
+      assert (line_xfer_addr[5:0] == 0);
+      assert (grant_line_addr[5:0] == 0);
       assert (dut.state_q <= 4'd9);
       assert (dut.snoop_resume_q <= 4'd9);
     end
