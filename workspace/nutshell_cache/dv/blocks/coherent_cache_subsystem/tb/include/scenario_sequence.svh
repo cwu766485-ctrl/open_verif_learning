@@ -152,6 +152,8 @@
 
 `include "include/replacement_and_l2_victims.svh"
 
+`include "include/phase4_replacement_race.svh"
+
 `include "include/risk_closure_patterns.svh"
 
 `include "include/risk_reset_states.svh"

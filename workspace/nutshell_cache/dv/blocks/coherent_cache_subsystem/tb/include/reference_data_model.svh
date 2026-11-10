@@ -233,10 +233,14 @@
         state_model_set(dut.cluster_dir_req_addr, put_core, MESI_I);
       end
       for (integer snoop_core = 0; snoop_core < 2; snoop_core = snoop_core + 1) begin
-        if (monitor_snoop_accept_valid[snoop_core])
+        if (monitor_snoop_accept_valid[snoop_core]) begin
+          state_model_get(monitor_snoop_accept_addr[snoop_core], snoop_core, model_state);
+          // A replacement Put may already have removed this copy. SnoopRead
+          // of an absent line returns ACK; it cannot create a Shared copy.
           state_model_set(monitor_snoop_accept_addr[snoop_core], snoop_core,
-                          (monitor_snoop_accept_opcode[snoop_core] == SNOOP_READ) ?
-                            MESI_S : MESI_I);
+                          (monitor_snoop_accept_opcode[snoop_core] == SNOOP_READ &&
+                           model_state != MESI_I) ? MESI_S : MESI_I);
+        end
       end
     end
   endtask

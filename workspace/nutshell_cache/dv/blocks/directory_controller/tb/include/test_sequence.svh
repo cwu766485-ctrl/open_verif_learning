@@ -195,6 +195,34 @@
     finish_grant(4'hF, GRANT_DATA_E, 1, 0);
     if (protocol_error) $fatal(1, "post-fault legal transaction failed");
     $display("PASS: nine interface faults fail-stop and reset recovers checked legal refill");
+    for (integer src = 0; src < 2; src++) begin
+      // Legal coherent metadata for each case, and an explicit expected result.
+      issue_req(src[0], REQ_GETS, 32'h3000_0000, 4'h1, DIR_S, 2'b11, 0);
+      finish_xfer(4'h1, 32'h3000_0000, XFER_L2_REFILL);
+      finish_commit(DIR_S, 2'b11, 0);
+      finish_grant(4'h1, GRANT_DATA_S, 1, src[0]);
+      issue_req(src[0], REQ_GETM, 32'h3000_0000, 4'h2, DIR_U, 0, src[0]);
+      finish_snoop(src[0], SNOOP_INVALIDATE, 4'h2, SNOOP_RSP_DATA, 1);
+      finish_xfer(4'h2, 32'h3000_0000, XFER_L2_REFILL);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h2, GRANT_DATA_M, 1, src[0]);
+      issue_req(src[0], REQ_UPGRADE, 32'h3000_0000, 4'h3, DIR_S,
+                src ? 2'b10 : 2'b01, 0);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h3, GRANT_M, 0, src[0]);
+      issue_req(src[0], REQ_PUTS, 32'h3000_0000, 4'h4, DIR_S,
+                src ? 2'b10 : 2'b01, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h4, GRANT_PUT_ACK, 0, src[0]);
+      issue_req(src[0], REQ_PUTE, 32'h3000_0000, 4'h5, DIR_I, 0, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h5, GRANT_PUT_ACK, 0, src[0]);
+      issue_req(src[0], REQ_PUTS, 32'h3000_0000, 4'h6, DIR_I, 0, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h6, GRANT_PUT_ACK, 0, src[0]);
+    end
+    if (protocol_error) $fatal(1, "legal permission matrix raised protocol error");
+    $display("PASS: both requesters legal shared/unique/last-sharer/stale-Put permission matrix");
     $display("PASS DirectoryController_tb");
     $finish;
   end

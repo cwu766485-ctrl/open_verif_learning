@@ -116,3 +116,18 @@ sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_dire
 
 The property is supporting proof evidence only. It grants no exclusion until
 individual coverage point mapping and independent review are complete.
+
+Phase 4 transaction safety: `coherence_directory_transactions.sby` reuses the
+unconstrained Directory harness with `DirectoryTransactionProperties`. It checks
+one metadata write/grant per accepted transaction, commit-after-grant, coherent
+written metadata, and cancellation after reset. No interface assumptions are
+introduced. `mode bmc`, depth 24 is BOUNDED SAFETY only. The initial attempt at
+k-induction passed the base case but failed induction (UNKNOWN); it must not be
+reported as an unbounded protocol proof. The separate unconstrained encoding
+configuration remains `mode prove` and excludes the transaction properties.
+The MSHR bounded harness additionally checks each slot changes allocation only
+on accept/retire and reset clears all contexts. Its existing legal-metadata
+assumptions remain, so it cannot discharge malformed-metadata fault obligations.
+Reproduce the unclosed induction attempt separately using
+`sby -f formal/coherence_directory_transactions_induction.sby`. This optional
+configuration is expected to return UNKNOWN; it is not a required PASS gate.

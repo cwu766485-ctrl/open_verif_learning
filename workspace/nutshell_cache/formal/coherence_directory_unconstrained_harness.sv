@@ -83,4 +83,20 @@ module CoherenceDirectoryFormal(
       assert (dut.snoop_resume_q <= 4'd9);
     end
   end
+`ifdef TRANSACTION_PROPERTIES
+  DirectoryTransactionProperties transaction_properties (
+    .clock, .reset,
+    .req_fire(req_valid && req_ready),
+    .write_fire(dir_write_valid && dir_write_ready),
+    .grant_fire(grant_valid && grant_ready),
+    .commit_fire(grant_commit_valid && grant_commit_ready),
+    .state(dut.state_q), .write_valid(dir_write_valid),
+    .write_state(dir_write_state), .write_sharers(dir_write_sharers),
+    .write_owner(dir_write_owner_id), .req_ready,
+    .snoop_valid(snoop_req_valid), .xfer_valid(line_xfer_start_valid),
+    .grant_valid, .snoop_ready(snoop_rsp_ready),
+    .xfer_done_ready(line_xfer_done_ready), .commit_ready(grant_commit_ready),
+    .error(protocol_error)
+  );
+`endif
 endmodule

@@ -1,0 +1,18 @@
+[options]
+mode prove
+depth 24
+
+[engines]
+smtbmc z3
+
+[script]
+plugin -i slang
+read_slang -D FORMAL -D TRANSACTION_PROPERTIES CoherenceProtocol.sv DirectoryController.sv directory_transaction_properties.sv coherence_directory_unconstrained_harness.sv
+prep -top CoherenceDirectoryFormal
+
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/directory/DirectoryController.sv
+formal/coherence_directory_unconstrained_harness.sv
+
+formal/directory_transaction_properties.sv

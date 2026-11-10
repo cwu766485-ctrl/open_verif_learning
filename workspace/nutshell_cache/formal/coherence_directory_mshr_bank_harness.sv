@@ -221,6 +221,22 @@ module CoherenceDirectoryMshrBankFormal(
       end
     end
 
+    // Allocation/retirement accounting is checked per slot against the
+    // public handshakes and selected context. No fairness assumptions.
+    if (past_valid && $past(reset)) begin
+      assert (dut.active_q == 0);
+      assert (!dir_write_valid && !snoop_req_valid && !line_xfer_start_valid && !grant_valid);
+    end
+    if (past_valid && !reset && !$past(reset)) begin
+      for (integer slot = 0; slot < NUM_MSHRS; slot++) begin
+        if ($past(grant_commit_valid && grant_commit_ready && dut.commit_sel == slot))
+          assert (!dut.active_q[slot]);
+        else if ($past(req_valid && req_ready && dut.req_sel == slot))
+          assert (dut.active_q[slot]);
+        else assert (dut.active_q[slot] == $past(dut.active_q[slot]));
+      end
+    end
+
     // Context request fields are captured exactly at acceptance. A commit
     // cannot free a context unless the requester and transaction both match.
     if (past_valid && !reset && !$past(reset)) begin

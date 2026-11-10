@@ -92,6 +92,7 @@ coherence_formal:
 	 sby -f -d reports/formal/coherence_snoop_arbiter formal/coherence_snoop_arbiter.sby && \
 	 sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
 	 sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_directory_unconstrained.sby && \
+	 sby -f -d reports/formal/coherence_directory_transactions formal/coherence_directory_transactions.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
 	 sby -f -d reports/formal/coherence_directory_progress formal/coherence_directory_progress.sby && \

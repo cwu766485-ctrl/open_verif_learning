@@ -92,31 +92,42 @@ def full_system_counts() -> tuple[str, str, str]:
     return functional, cross, data.get("git_sha", "source SHA unavailable")
 
 
-def full_regression_status() -> tuple[str, str]:
-    """Read an explicit exit-status record written by the make invocation."""
-    if not RUN_STATUS.is_file():
-        return "not recorded", "No final-candidate full-regression status file is present."
-    fields = {}
-    for line in RUN_STATUS.read_text(encoding="utf-8", errors="replace").splitlines():
-        if "=" in line:
-            key, value = line.split("=", 1)
-            fields[key.strip()] = value.strip()
-    result = fields.get("result", "UNKNOWN")
-    sha = fields.get("source_sha", "unknown source SHA")
-    timestamp = fields.get("timestamp", "time not recorded")
-    log = fields.get("log", "log path not recorded")
-    summary = f"Local {fields.get('command', 'coherence_verify')} result: {result} at source SHA `{sha}` ({timestamp}); log: `{log}`."
-    return result, summary
-
-
-def regression_gate_rows() -> list[dict[str, str]]:
-    if not RUN_MANIFEST.is_file():
-        return []
+def regression_gate_rows() -> list[dict]:
+    """Use current hashed run records; stale/missing evidence fails closed."""
+    from dv.coverage import rtl_release_gate as gate
+    from dv.coverage.rtl_coverage_dataset_manifest import source_fingerprint
+    import hashlib
+    path = gate.RUN_STATUS
     try:
-        data = json.loads(RUN_MANIFEST.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text())
     except (OSError, json.JSONDecodeError):
         return []
-    return data.get("required_gates", [])
+    fingerprint = source_fingerprint()[0]
+    rows = []
+    for target in gate.REQUIRED_GATES:
+        run = data.get("runs", {}).get(target, {})
+        log = ROOT / run.get("log", "__missing__")
+        valid = (data.get("source_fingerprint") == fingerprint
+                 and run.get("source_fingerprint_before") == fingerprint
+                 and run.get("source_fingerprint_after") == fingerprint
+                 and run.get("result") == "PASS" and run.get("returncode") == 0
+                 and log.is_file()
+                 and hashlib.sha256(log.read_bytes()).hexdigest() == run.get("log_sha256"))
+        rows.append(dict(target=target, status="PASS" if valid else "OPEN",
+                         log=run.get("log"), source_fingerprint=fingerprint))
+    return rows
+
+
+def full_regression_status() -> tuple[str, str]:
+    rows = regression_gate_rows()
+    if not rows:
+        return "OPEN", "Current fingerprint-bound regression evidence is not available."
+    passed = sum(row["status"] == "PASS" for row in rows)
+    result = "PASS" if passed == len(rows) else "OPEN"
+    return result, (f"Current source fingerprint: {passed}/{len(rows)} required regression targets "
+                    f"have PASS exit status and verified log hashes. Regression status: {result}. "
+                    "Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage "
+                    "and Full Code Coverage Sign-off; code coverage remains OPEN.")
 
 
 def main() -> None:
