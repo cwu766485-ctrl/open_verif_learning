@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-10 16:14 +08.
+Generated: 2026-11-10 17:54 +08.
 
 ## Scope and source manifest
 
@@ -18,16 +18,16 @@ Each row is one top/build and its documented run set. These denominators are not
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Full coherent subsystem regression | 864/992 | 473/556 | 21923/27474 | 30/54 | 13/48 |
 | AXI cache subsystem E2E (five fixed seeds) | 901/1068 | 509/632 | 15623/32332 | 30/54 | 4/48 |
-| DirectoryController block | 160/182 | 36/42 | 258/612 | 10/10 | 3/9 |
+| DirectoryController block | 178/182 | 37/42 | 260/612 | 10/10 | 3/9 |
 | DirectoryMshrBank block | 167/286 | 100/128 | 1249/2904 | 31/40 | 11/36 |
 | SharedLineEngine block | 101/104 | 44/52 | 304/648 | N/A | N/A |
-| MesiL1Controller block | 107/132 | 41/46 | 688/1804 | 7/7 | 3/6 |
+| MesiL1Controller block | 124/132 | 43/46 | 741/1804 | 7/7 | 3/6 |
 | SharedL2DirectoryArray block | 75/79 | 65/74 | 197/1778 | N/A | N/A |
 | Bus blocks | 67/68 | 70/76 | 1100/2450 | N/A | N/A |
 
 ## Gap inventory
 
-The detailed `coverage_closure_matrix.csv` contains **907 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
+The detailed `coverage_closure_matrix.csv` contains **869 dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.
 
 | Primary subsystem gap type | Unhit points |
 | --- | ---: |
@@ -37,7 +37,7 @@ The detailed `coverage_closure_matrix.csv` contains **907 dataset-scoped zero-co
 | FSM arc | 35 |
 
 The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.
-All 907 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
+All 869 zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are BLOCKED, COVERED, OPEN, PROVEN_UNREACHABLE, REVIEWED_WAIVER; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.
 
 ## Functional coverage and checker status
 
@@ -60,7 +60,7 @@ These are separate coverage plans and are not added together. Full-system counts
 
 ## Regression evidence and remaining status
 
-Current source fingerprint: 8/8 required regression targets have PASS exit status and verified log hashes. Regression status: PASS. Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage and Full Code Coverage Sign-off; code coverage remains OPEN.
+Current source fingerprint: 0/8 required regression targets have PASS exit status and verified log hashes. Regression status: OPEN. Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage and Full Code Coverage Sign-off; code coverage remains OPEN.
 This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.
 
 Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.

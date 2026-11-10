@@ -1,0 +1,1272 @@
+{
+  "schema_version": 1,
+  "repository_head": "28fa00a331248035226fff48bb210b81f3b90677",
+  "branch": "dv-closure-phase2",
+  "source_fingerprint": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+  "product_rtl_fingerprint": "15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a",
+  "rtl_manifest": {
+    "path": "rtl/Coherence.files.f",
+    "sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
+    "source_count": 18,
+    "sources": [
+      "rtl/bus/apb/CachePerformanceCsr.sv",
+      "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+      "rtl/bus/axi/MemoryRefillMshrBank.sv",
+      "rtl/cluster/DualL1MesiCluster.sv",
+      "rtl/coherence/SharedLineEngine.sv",
+      "rtl/common/CoherenceProtocol.sv",
+      "rtl/directory/DirectoryController.sv",
+      "rtl/directory/DirectoryMshrBank.sv",
+      "rtl/interconnect/CoherenceRequestArbiter.sv",
+      "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+      "rtl/interconnect/CpuMmioRouter.sv",
+      "rtl/interconnect/L2LineWriteArbiter.sv",
+      "rtl/l1/MesiL1Array.sv",
+      "rtl/l1/MesiL1Controller.sv",
+      "rtl/l1/MesiL1SnoopArbiter.sv",
+      "rtl/l2/SharedL2DirectoryArray.sv",
+      "rtl/top/CoherentCacheAxiSubsystem.sv",
+      "rtl/top/CoherentCacheSubsystem.sv"
+    ],
+    "source_sha256": {
+      "rtl/bus/apb/CachePerformanceCsr.sv": "798f51129c519c7b0b20e956e71e530c8acf8f0eb867d0f7e2bc8872c4572f14",
+      "rtl/bus/axi/LineMemoryAxi4Adapter.sv": "e0a274002ca3f03d2bfc7ba65acf10880d9603b1b1022d46ca2a19bfa66fc6fe",
+      "rtl/bus/axi/MemoryRefillMshrBank.sv": "c2592378db9c071c39d90fc0c174712279cc206178d48a71cb9c237cc9616778",
+      "rtl/cluster/DualL1MesiCluster.sv": "50fcbf565d76e96b8335b6063d4f1454de01e83133bc5700449f88a66492cd89",
+      "rtl/coherence/SharedLineEngine.sv": "268eb16e56bce7dc99c37f13fbccdd94ce69d293847bcc2059370ac2b534d364",
+      "rtl/common/CoherenceProtocol.sv": "e184896a6b35152c7f6d4b9a8470ea8aeb40891e4cb3c10973990bc46cfdd3f3",
+      "rtl/directory/DirectoryController.sv": "18febf562aed53538ff5929bb6c7e48ec6c50de0730832c5dbdcc4cfa49db81c",
+      "rtl/directory/DirectoryMshrBank.sv": "d5c370d3bab3409214e8f5775c47397bcfeb6bf280d93e01c63893c4a8c91a95",
+      "rtl/interconnect/CoherenceRequestArbiter.sv": "cc0ea69f05d0cfe9520ba6645042849223d7ea9c7dc389e35b44f37ce3951107",
+      "rtl/interconnect/CoherenceRequestArbiterCore.sv": "7b3ce2989d0c4dcaadae47b731fe2e887e7da6d98a0ee624bf38171163f1720b",
+      "rtl/interconnect/CpuMmioRouter.sv": "2f3e129ba67949c8de0cbf74ee151ff8bec5e89110b706dcc8432100db4b8966",
+      "rtl/interconnect/L2LineWriteArbiter.sv": "226f6ddf8e037882ba6c1b094f9e45f91fc9170c217e68d7c343616e359611db",
+      "rtl/l1/MesiL1Array.sv": "d8262ebbc8e3d94edc89016dd6795a2f55313c8abb6e823764f0769dc13fd295",
+      "rtl/l1/MesiL1Controller.sv": "21be7f1b19a6c217827e44f1122a7ecf191ab589aa829e18268ce16de981f90f",
+      "rtl/l1/MesiL1SnoopArbiter.sv": "e0c84977fd94255651adbce03ee72b1df078538f7d317bac6a6b0a44a37ba29f",
+      "rtl/l2/SharedL2DirectoryArray.sv": "7f3805013905f7ede743403c1bd6de6abf6b6d444390efb5a1319ee374133b1e",
+      "rtl/top/CoherentCacheAxiSubsystem.sv": "8de813a432493d92069a75fbba447012cee30e793158b32f7b664291c31babb5",
+      "rtl/top/CoherentCacheSubsystem.sv": "da26c45ebeee0436b12baef5a327a5a9db46d4e77339ccc1bf2b7a9a4e7a0189"
+    }
+  },
+  "source_file_sha256": {
+    "Makefile": "cc50be56caed499b54e12899d6a12b37bd04964b81c03f5a1ab59bbe25e0713e",
+    "docs/cache.md": "4e45597da2d798d3fe3d5f825ae69f20e1638a57758f6b2681f0e0701454e9e7",
+    "dv/__init__.py": "f8b69c67ddb9019fe0dab4482d77d9950d4fdabbc90224b91de21db3a431227a",
+    "dv/agents/__init__.py": "90d8565af74a74b0d9638d3b2325ab2744b378674400a3566e03c3882ceaf6e9",
+    "dv/agents/apb_master_agent.py": "9e6f3477b10bd2f43dd4d786bd0907096e91cff28c72bb2ba8c9609fcd432cb3",
+    "dv/agents/axi4_backing_memory_agent.py": "fb7167b5a0fcbfa6e9cd7ed23b98754599f5dc2e0ae8b9921f9fdc75097edb8f",
+    "dv/agents/axi4_memory_agent.py": "debe14c8647101e42a6b209e09a4db39d80387053e5b3bde770bebe65dbb608e",
+    "dv/agents/coherence_agent.py": "19ba5094bf6a4a380ebbecf41870c12e63608d7838148d6bccaf0f2099bad459",
+    "dv/agents/coherent_cpu_agent.py": "b77a56f643d3c9ecd7462799c5aefc964d799bdbc71503aaba1dd2986ce13c65",
+    "dv/agents/cpu_agent.py": "315437e72adca4fe6b838e01821a0870cd2a303a14c0a0606707fa3f69815521",
+    "dv/agents/line_memory_axi_agent.py": "103b2954046017babeaef0428c24a58185699a140b55f9fffdf26013abe0b2d8",
+    "dv/agents/memory_agent.py": "c6cf26f85b07420a76220f8f35347eba7276935dd9634153c295fbfeece44bc6",
+    "dv/agents/mmio_agent.py": "aef1e6e9adcdf48b1c0cd37a1c21edb7b9dcdc310e4102ce38600b06271274a4",
+    "dv/agents/mmio_slave_agent.py": "32290ec47afcb659048c3e5d280bcfa2ddd0e2677e66ce5e1185f438bf1f9aac",
+    "dv/agents/simplebus/__init__.py": "f8aff2d202db678bda849c7722e6eb54fa9b0837c39811f41e986fb620448854",
+    "dv/agents/simplebus/master_driver.py": "a1768a3013c3ddd535a14147b6695fe4a3e07e90414c5f31f15f601001b3e95c",
+    "dv/agents/simplebus/monitor.py": "56151665dd2dc49d86e9f20c286efa3d421b80ee6333a238b19f9606abead59a",
+    "dv/agents/simplebus/sequencer.py": "08ae756c50f8dc82c7947900ab2b5925026811c0b395ea47a8a488cd75a1b42d",
+    "dv/agents/simplebus/slave_driver.py": "338818086c6e8dba39f9a1fad36680591900ff31227fdfa198b7086c48f63da1",
+    "dv/blocks/README.md": "13a6303a01ce58afbec0f925567c1053094ee5acd6bdb6b703ee89e7e7852002",
+    "dv/blocks/bus_blocks/README.md": "099bdddcbb604b7d59cd2a000389dd396652753273e63c05d5db500c09a96d08",
+    "dv/blocks/bus_blocks/filelist.f": "030261883e8baa055756743fa39a4c82b385d5fe16466d69c6c5aa1bb6c6f6dd",
+    "dv/blocks/bus_blocks/tb/CacheBusBlocks_tb.sv": "633980a9fbfa28d362568f28e36cfd9c757cb26fb93438bca7aac912cc62176d",
+    "dv/blocks/bus_blocks/tb/include/apb_csr_cases.svh": "30efdbbb5dedb14320baa4fd70fae8a918fda82b8213adfd11d96ef0e393e6e8",
+    "dv/blocks/bus_blocks/tb/include/axi_read_cases.svh": "9bb562eae1f6dd5ddf3755cf7f23a0ace8b642eef54f2a487640b6371b682301",
+    "dv/blocks/bus_blocks/tb/include/axi_write_cases.svh": "7c20e31d23e50a6be3a259ba256064eb23136b2785b485a3c37eae2f07d49966",
+    "dv/blocks/bus_blocks/tb/include/bus_agents.svh": "5c47da0d1ac1903ac7a45287288f150b63381ece544bcde6cdea9e6ca8f76349",
+    "dv/blocks/bus_blocks/tb/include/invalid_response_cases.svh": "aee7e955860263cd59b7e4297301587662bfcd9e95303b1205aa61c1c185e616",
+    "dv/blocks/bus_blocks/tb/include/outstanding_id_cases.svh": "b1283d5eb00ebb11565cfd322904f9a68962c7d6f1275f82ef261ed970cb1c54",
+    "dv/blocks/bus_blocks/tb/include/scenario_sequence.svh": "29a493aeecab9f848f4effcfc28a7c436bf688005da17b5c7ca64281d1053af2",
+    "dv/blocks/bus_blocks/tb/include/signals.svh": "ae662a3de535b58ccbcd558fc8ab871031f9da620caef8bf2ae168a7b65336c8",
+    "dv/blocks/bus_blocks/testplan.md": "f1f124873ab2fc8d7a2cfb64f92bda640414baa78b6de6e456c36436f59ec3e5",
+    "dv/blocks/coherence_request_arbiter/README.md": "f176c4d68dc47227edbf710d199212799ca3d823471ca0c331a442645cd593ca",
+    "dv/blocks/coherence_request_arbiter/filelist.f": "2274ed800072bd00385c1b820882658fe10f937bfd768b33068abd3d4bf03685",
+    "dv/blocks/coherence_request_arbiter/tb/CoherenceRequestArbiter_tb.sv": "e6b5b1e8be239a8dc0e9e640dc7fef50d141add4ef8f83fa264e179e24f20231",
+    "dv/blocks/coherence_request_arbiter/testplan.md": "5978dc78b4479e7a6e15cc1126177bdc0a5c1953be9ceda7e11bc609e16cf46a",
+    "dv/blocks/coherent_cache_axi_subsystem/README.md": "f70731a37589fe664e20d073f7edac80a41a62a02b19f61421187f8ac0b73e4c",
+    "dv/blocks/coherent_cache_axi_subsystem/filelist.f": "7a5363895d9b056bcdf919142830d802063cf0f106df303c3c573b94e8a0dc5d",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/CoherentCacheAxiSubsystem_tb.sv": "2e3fa5a85a7b1a5405e3d0b1e1f96b1edbd881068a6d18e6b67377cfed618d23",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/axi_memory_model.svh": "30b0acf50c50c2d3a98bf8a7b46bd61b7faf1bcac4767a0094a3740273bbb107",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/benchmark_sequence.svh": "dc46bff36e1a9e202cd6a7288cd963ab23521bf120689fc865b0e4a2d3f24a8e",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/reference_model_and_cpu_tasks.svh": "a28af0ab65a36054b1d242ea9c6d5d50f1f4db3c14475bf932c66e7d785691e1",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/response_backpressure.svh": "a8729a93bece49b841cb9e59ddb7462988c75ada180d8a53015f7b6de0437411",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/signals.svh": "8a4503c976b0fec8d9b4c01c1fe1b0f10e6478d913b921b6de58205804daef84",
+    "dv/blocks/coherent_cache_axi_subsystem/tb/include/timeout_guard.svh": "3662973e5f9de791d4805304d3c0baa31aa6f06e057ef751a5344a106cee933b",
+    "dv/blocks/coherent_cache_axi_subsystem/testplan.md": "a651f2331683be2d25aecd69c6fb622272bd5f4c112f437e891f18c53e5816b4",
+    "dv/blocks/coherent_cache_subsystem/README.md": "79ff1d3474c327b8099a36a4feef469b87f8df45e1d4b85556fede1534e285d1",
+    "dv/blocks/coherent_cache_subsystem/filelist.f": "63f6a41a226ebc808c66cf5cdcd9f9707fa2fb2dc6f4b76eebee18b2fc673e3f",
+    "dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv": "110543304589c0e4eb30606c03660e7d1bd63cd74a492eb7d15666c41ecbfa58",
+    "dv/blocks/coherent_cache_subsystem/tb/include/backpressure_cases.svh": "72f8c52fe6169f66160f365214e181fa340307efb3193240822a6a13af178c0a",
+    "dv/blocks/coherent_cache_subsystem/tb/include/coherence_invariants.svh": "3c31f97779223e319a0f4e5bb099b5afa3f592247fb2c9836e6c6cb8f211ee4b",
+    "dv/blocks/coherent_cache_subsystem/tb/include/cpu_drivers.svh": "694ef85eb9b360dd098beb1b31d90032ae45fc94a1a71e04c557bbcc16422b33",
+    "dv/blocks/coherent_cache_subsystem/tb/include/error_and_summary_cases.svh": "32cf1c9c095f5dde091aba9b54008128778f6a0a147ee0b4949d1f985c6e498b",
+    "dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh": "0b22e43abbd945c5b26ec29e953899ff42861549d798df3da147529df44cd891",
+    "dv/blocks/coherent_cache_subsystem/tb/include/l2_multisnoop_victim.svh": "44201ca5386fed07354565b2bf9ea8c169a1688cedd2152edc1ba272914df867",
+    "dv/blocks/coherent_cache_subsystem/tb/include/memory_model.svh": "a04663cc80cbfa61f8e82f9cda33133c7a15874ca634df158dc19d08215a71a7",
+    "dv/blocks/coherent_cache_subsystem/tb/include/mesi_and_concurrency_cases.svh": "f5cb9c3b7fd4d318e901b6d77f5238967b28eaf00f432faed0652dd9ee3cc086",
+    "dv/blocks/coherent_cache_subsystem/tb/include/performance_monitors.svh": "845950c568da8315a9954528044ea1ee9a49325021831fbcb62b0459edde7fb3",
+    "dv/blocks/coherent_cache_subsystem/tb/include/phase4_replacement_race.svh": "f725ab3bc69174bffd3d41c5c1bdc19e7e153046b6895fa5ef688c85b7b5c8c2",
+    "dv/blocks/coherent_cache_subsystem/tb/include/random_and_reset_cases.svh": "74b635fe57fcaee67743fcf0e505c21e894f70d5f085836cfe22baeca0a55f4b",
+    "dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh": "0a9651ee28d0558919aed5f88c4343f831acd9f8a74e7b0c49f32da64dc76282",
+    "dv/blocks/coherent_cache_subsystem/tb/include/reference_data_model.svh": "886dadb88bb0f0c431dacb2f118151ebe766999b72a58a28932b0b64cb1a1174",
+    "dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh": "0329a38781d830b010bb737eeaefb8acfedaf7a12f09db6e4e469c0160f3e8fd",
+    "dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh": "967e0e6ea59d48f7136c72cba529f51943aecdba07373687c23f000f8028e342",
+    "dv/blocks/coherent_cache_subsystem/tb/include/risk_closure_patterns.svh": "04adffbe849ac56d000b0dfc204ee3833561f27eca794458e525e7f5876c294f",
+    "dv/blocks/coherent_cache_subsystem/tb/include/risk_reset_states.svh": "cab13945ccef3af90aeff8aebbfbe678aef9a281661c6163fa0f858ab21e697e",
+    "dv/blocks/coherent_cache_subsystem/tb/include/scenario_sequence.svh": "4a329f95ec2e3bff22870df8a77316c10e66b94597166f0dc9fe9f57f28d7972",
+    "dv/blocks/coherent_cache_subsystem/tb/include/signals.svh": "0ed87b42c53c1337aa02e8b5e3fc735131520b09b56ea7c9fa36bf42653daa34",
+    "dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh": "bb24841233aa12a3bb796a210131efb7e1c7f13e43453164d1ed10b2869b8cf9",
+    "dv/blocks/coherent_cache_subsystem/testplan.md": "8437c0f54630d30980b7a29c688b5d750bdbea32697613d946c14c4116e61daa",
+    "dv/blocks/directory_controller/README.md": "a136d81bdb58b479329bea7d251f18a1d9d1606228f063c5061a91d8338d5421",
+    "dv/blocks/directory_controller/filelist.f": "ba1faeb90ec1a2b99cce410c6cfb4d284a521bb1679e3e5120d866164ae2d022",
+    "dv/blocks/directory_controller/tb/DirectoryController_tb.sv": "81c3926089fb33dc00fd8feba1906aa90dc05c6d3756ffbf2181dd3f1efe348c",
+    "dv/blocks/directory_controller/tb/include/directory_agents.svh": "8ca7090bb39687a001174100567d791daed0a61345e24fb6bc2b0336f3fdab2b",
+    "dv/blocks/directory_controller/tb/include/signals.svh": "b2c6a57ffa76173e08b68d35437bcb88661452f2f91468f09824f5a86fbd5e5d",
+    "dv/blocks/directory_controller/tb/include/test_sequence.svh": "565be85e1ed6f68ff0fb28a31724a060b74d645a1cfc100d6015191837908ae6",
+    "dv/blocks/directory_controller/testplan.md": "87d2c9b2fd92d725f592ac7f5f04224aa74b51a251a0895c497f6a89f196a8fb",
+    "dv/blocks/directory_mshr_bank/README.md": "cb23c0aee1d6b32ebdc889ffc7df9048cc740420d37301f6d0c2ab3f6d054361",
+    "dv/blocks/directory_mshr_bank/filelist.f": "06f73bd8b5c19471e738679a54b58fa9e916c0364fb8b7902fe9d52c5f5942a4",
+    "dv/blocks/directory_mshr_bank/tb/DirectoryMshrBank_tb.sv": "789cacb26ae0783e3037a536719898a9b6c8e039bde94a745a7355456fec8d13",
+    "dv/blocks/directory_mshr_bank/tb/include/context_allocation_and_routing.svh": "6221f22db6f4cdbfe1f54b8cab680885a159ee164de81253abf7942ca0ad7a8b",
+    "dv/blocks/directory_mshr_bank/tb/include/mshr_agents.svh": "6f2fa362198545793c43abee74d30f95bef4932ec631f97c419663b2a61f8432",
+    "dv/blocks/directory_mshr_bank/tb/include/offer_competition.svh": "fdef7f71d6675ac49f54831e30d78ebbe3102186c8c1ea4d4438469acce759ff",
+    "dv/blocks/directory_mshr_bank/tb/include/reset_cancellation.svh": "a213dcdc4e0e39dd0016572b8781d24d0bdeb1fae207ca8a91386dec0d713054",
+    "dv/blocks/directory_mshr_bank/tb/include/same_line_put_serialization.svh": "70aa2f862f64278b4cba11ac8d38bbd93185ddec0958d3b1d62c760b327c918b",
+    "dv/blocks/directory_mshr_bank/tb/include/scenario_sequence.svh": "605980047fa996c6ee20198df8585ec86927fa29a87640532028e7bbd1333cca",
+    "dv/blocks/directory_mshr_bank/tb/include/signals.svh": "4c94854835450263f482b574481ba1e2ac9aaf6c9830e43b67adceba50388803",
+    "dv/blocks/directory_mshr_bank/tb/include/snoop_independence.svh": "b31eb761cc0a0e747d0c37a9f5813c98e6c7e779bee1a38d1b6f2ff832df72f7",
+    "dv/blocks/directory_mshr_bank/tb/include/xfer_start_backpressure.svh": "e06b2c713a3790cd8cd4365d6bb7130bb94c23b4b5d73e416512ff8616d84fd4",
+    "dv/blocks/directory_mshr_bank/testplan.md": "79cfb6b0311d2d295f8a3e5d95d45b229f2a889fb7343ac45d10895dbab3d004",
+    "dv/blocks/dual_l1_mesi_cluster/README.md": "3e55ae054cc7e1c17d6ff12f1b7aebe1b8a70db0b616d0c25b64c418c3dd04d5",
+    "dv/blocks/dual_l1_mesi_cluster/filelist.f": "e2a74274ff21d51b814e71da10a4596f363ccc266f94ff91041d2920ae5717d1",
+    "dv/blocks/dual_l1_mesi_cluster/tb/DualL1MesiCluster_tb.sv": "e2a74b187f045e8f9964c4fd52bf5191012fe6e547cb08cfae94bb3d53678c72",
+    "dv/blocks/dual_l1_mesi_cluster/tb/include/cluster_agents.svh": "3b53a517a11164016607329dc700a8ae5d77e80f796ed8fd6bf6b9ed91fa602e",
+    "dv/blocks/dual_l1_mesi_cluster/tb/include/interface_and_monitors.svh": "8267aa6fdd9dcb1ea9a23a60b6d5620fa54ae5ef364216562b091b091e049c5c",
+    "dv/blocks/dual_l1_mesi_cluster/tb/include/test_sequence.svh": "eb9cf1cca1c17bc2683359c07c1c9f373a481bde913a0c6ed6ca1857f7762990",
+    "dv/blocks/dual_l1_mesi_cluster/testplan.md": "f9210749b59e7be19f23c3c4d18b8192ef5246ea34f0b7cf736d1e6ca2a181ee",
+    "dv/blocks/mesi_l1_array/README.md": "dae6984ca03a18874d82ae2767657cc9163e6c907eb7365b28747736fa816d71",
+    "dv/blocks/mesi_l1_array/filelist.f": "8391cd1c9c384cced933203dbce815c0e200a37bb70be14cc10658a0c0960644",
+    "dv/blocks/mesi_l1_array/tb/MesiL1Array_tb.sv": "33f5233b50c1a39ce885abd8d97b172bb6ef62c83b3588300e9a6173df85bf1f",
+    "dv/blocks/mesi_l1_array/testplan.md": "fe3448b849a52f3589ddf8a0f56fe612c53e00c38fc2b360438007e3e95b67c3",
+    "dv/blocks/mesi_l1_controller/README.md": "8aa66aef0156883be1bd2df8787d7d7a08a32bd01b00ae26987f84f6086c7105",
+    "dv/blocks/mesi_l1_controller/filelist.f": "8fe3750be7883e34091f358978bec943c69208fd40bd72cd55dcfe102403303e",
+    "dv/blocks/mesi_l1_controller/tb/MesiL1Controller_tb.sv": "2e7e08688ce36d10ce906277aaec9b0d63684b2dfd298d6cf89e1002bc537bf9",
+    "dv/blocks/mesi_l1_controller/tb/include/clock_driver.svh": "4e08d75c8d42ff607bbfb681d1805122193e6d516b3be372766d116bda707593",
+    "dv/blocks/mesi_l1_controller/tb/include/closure_boundary_cases.svh": "f8e4e787cc82e68a56555bd3a5797cda7cd03478704ffb811d8cd9f73df41375",
+    "dv/blocks/mesi_l1_controller/tb/include/cold_refill_and_local_write.svh": "c9b74269b19a8711c1d1e75e2ab95a7542b238f1157af99d39ede31f9b759b79",
+    "dv/blocks/mesi_l1_controller/tb/include/remote_owner_and_upgrade.svh": "fd47d65f800ba7ae741591e277e6122b9960afece68251e0e0cc2663c5cb6316",
+    "dv/blocks/mesi_l1_controller/tb/include/reset_and_protocol_error_cases.svh": "90a3fb5ebe4817c5f98ea6450856b4aedda8cbf0ffa9c305cc910f773322777a",
+    "dv/blocks/mesi_l1_controller/tb/include/scenario_sequence.svh": "ec0cac35ad71423f87313cc492603d2464321e1be31822040f8efa2d066204ac",
+    "dv/blocks/mesi_l1_controller/tb/include/signals_and_dut.svh": "4cf2b44349200eb3f243812bd4dcaee74174a2447c82cdb9d7925cd3aa81c491",
+    "dv/blocks/mesi_l1_controller/tb/include/snoop_cases.svh": "dfe9f1c42a6adf8462b7bb061a3a9d74e9a4325b45dd0d3874b08a4d10eceffc",
+    "dv/blocks/mesi_l1_controller/testplan.md": "8cbd9171066f09f6e5f9e11cada8a99b326a8fb5c13f73f5047fec402e8f760e",
+    "dv/blocks/mesi_l1_snoop_arbiter/README.md": "41d8d5edce877239862f91fbe7d269af3301b3713b32daea5d0483f366cfb718",
+    "dv/blocks/mesi_l1_snoop_arbiter/filelist.f": "9908a05bad0582c94c1e3d2e39890d5ccef7d203b7beecc1b0eb0b736268f17d",
+    "dv/blocks/mesi_l1_snoop_arbiter/tb/MesiL1SnoopArbiter_tb.sv": "4a061cf8a939df6f270c9951d16fe1a22b4ed95c7ab0ee76d3dde5b174f1015f",
+    "dv/blocks/mesi_l1_snoop_arbiter/testplan.md": "41156db53e0755d608d0111bc2c369537e5df56ee281cf2dd7085e863f871668",
+    "dv/blocks/shared_l2_directory_array/README.md": "8f0df5507b5a9a3ce48b2d7c9eada186aab62f324f1abef62c45477255b7c9e2",
+    "dv/blocks/shared_l2_directory_array/filelist.f": "1f2df34e40d7a71f7a42d9a027a09672ac7b760a7d58b716154215a2973b3c55",
+    "dv/blocks/shared_l2_directory_array/tb/SharedL2DirectoryArray_tb.sv": "21a3408e6bc2c2ad22d35c56c8c560c01f91ed5fd68e31a0c635f45514bfef38",
+    "dv/blocks/shared_l2_directory_array/testplan.md": "8e6bc34f2ea8e9f8f1a697e080322048a80111b7b702eb831939b049007fef7c",
+    "dv/blocks/shared_line_engine/README.md": "437c0da7e748a67b7cb63833d53145df1f1035d14d5f27fe5601bb068a40a3e6",
+    "dv/blocks/shared_line_engine/filelist.f": "e7dbd0b9ac5341cb3f0bcfc411bbadcf0a8fe17857de0301ab4703e76cc8044e",
+    "dv/blocks/shared_line_engine/tb/SharedLineEngine_tb.sv": "3c70e6e2afd4bc3d26f5bf8f1ac10465502404b7b74eb4e491d0c97e6f644e2a",
+    "dv/blocks/shared_line_engine/tb/include/engine_clean_victim_case.svh": "6d6cdbb5b399e43c5da7edf108e759dd6256f126e7c8f4f4b0a68f7d1d6f8bbe",
+    "dv/blocks/shared_line_engine/tb/include/engine_dirty_owner_case.svh": "e1bb4cf1506afb6a24f405075dfe35e6cc992c93e9ad7977cb49eda43dfbe65f",
+    "dv/blocks/shared_line_engine/tb/include/engine_fault_cases.svh": "f5f6d693fa79aa6ee30beb056c666a7a08b2670411fd517c1613ef8f9c3b6960",
+    "dv/blocks/shared_line_engine/tb/include/engine_grant_cases.svh": "5f1ed0d973f8243699e12c6cba79572aeed376351c89af5fb61c29744732fed5",
+    "dv/blocks/shared_line_engine/tb/include/engine_test_tasks.svh": "4c1b4a747384f935a7cf32cc57c8d8f06ae086f3b3fc1253e716b368616c0f28",
+    "dv/blocks/shared_line_engine/tb/include/engine_xfer_cases.svh": "77719997b1c230e02b711cbead69b8a2ecbebc838269ee42a2151298885bbbde",
+    "dv/blocks/shared_line_engine/testplan.md": "3529ca4601eb7464a40d6265b0c83d1015e2d68036846fbf049d03cc2a60a99a",
+    "dv/checkers/__init__.py": "f4d51d826b31f285a26dda80cd9454282a609b9cda13b85d06f0124bf3c83c9a",
+    "dv/checkers/cache_protocol_checker.py": "b34bafba69b8a7bb8b00a64110d690f69aad8456b137c2749015620bd70e6418",
+    "dv/checkers/dut_properties.py": "f3844f20df19c94f9198b83c4d7c68830a5eeb23b0a31d41fc334bddc65752b7",
+    "dv/checkers/mshr_lifecycle_checker.py": "5bdf9a27312c5dec775f652e6d39b3ffa37b088104288ff8fb02030e6ffb2e7d",
+    "dv/checkers/ready_valid_checker.py": "1d4c9c7ce1dab465eac768eaa81178c29ff5dd274b3e046c34e7e7ceb4327864",
+    "dv/checkers/transaction_lifecycle_checker.py": "a351fcee858a04a01469332f467a5567e2a762bfa8b7219f03864621a41330c9",
+    "dv/common/__init__.py": "44564a4a6ba43239d0114be9b666bcd59967fdafd5a816de50ad2ebcdcdb7ccb",
+    "dv/common/config.py": "d0cdb57cfeaf80ad6f8a77d689da9f57f86dd0ec5628b9f3cff6a598e97a5d0f",
+    "dv/common/transaction/__init__.py": "c5d808ee2c9f66ff368007d91e047f0d927bcddfd75b7ad3c202dbc1edc55d0c",
+    "dv/common/transaction/coherence_transaction.py": "7cbdfd90aed6ddb9ceee30f96f248828abb2be427f8d0ad698882228df9d3788",
+    "dv/common/transaction/simplebus_request.py": "8bce865d0cb7ff8a50649bc07edf2335652edb77082402c349bb5cafeaef948a",
+    "dv/common/transaction/simplebus_response.py": "edaa08e47e19bd828d2c187c865a4b964105dd27f0f9c62ff5fe12aad6df67ad",
+    "dv/common/utils/__init__.py": "1466e126ddefa808202ca339fb323372e3d73e1b7d33b1b969aeeb1c7127f7d2",
+    "dv/common/utils/cmd_code.py": "5cbf13f659887ed194d3947d5b8be4155782058c8c5fd63978d18887c947de04",
+    "dv/common/utils/common.py": "9584aa9f8c33793a3e9124db3629ae1793f24339189c920f216eea80abf862c9",
+    "dv/coverage/__init__.py": "496feb4ee6bb19f36cd26a9ec9f7a652bb99c97c24904eb31fdf62cea0a62061",
+    "dv/coverage/checked_cross_evidence.py": "bc4dee8603c98b1fd28efdb95ea1d12894442c44f6c447e02a94e6c7d93ebae4",
+    "dv/coverage/closure.py": "951f9645c6d8c20a997642e48f6c76d1f5fa6894155d8c2ada74bb5a2c15982a",
+    "dv/coverage/coherence_closure.py": "4f7165f08cafc31c41c7c0f6cda2b0893e1c2ae08dc9771e4c33ddc524495d0e",
+    "dv/coverage/coherence_coverage.py": "d38d3923f15ef597513def4e9727dbb4abff24b49865da01fc210fcb20cd404b",
+    "dv/coverage/coherence_gap_review.py": "0fc4a895d12b7a449c350a6042d635a1e3d0413c922e883d3fda0fb836ae0468",
+    "dv/coverage/coherence_map.json": "2612f3fdbc42b11da9fe41cdb6238367304f48afc194ab5b2d97643fb2e52c7a",
+    "dv/coverage/coherence_waivers.json": "1a53dacac2848b1e0f8989f876d8f7b27c1afc641c6fb7fc2348f15d24551c6a",
+    "dv/coverage/collector.py": "c6711a7d8d49e6c48714a091df2410ba0395bc661c4085ac42b1c385061c54f0",
+    "dv/coverage/coverage_closure_matrix.py": "e3b7eb47f85dc8f4046014304a196780144ecdacdf5d826d08eb0092b380c346",
+    "dv/coverage/coverage_raw_runs.py": "7ce8528f9ad46b4027540615a7135a2c52efaebb8bd04e6a681d5384eac0f062",
+    "dv/coverage/coverage_triage.py": "d728fbf5580e49cf27290fa7229710bc63fde790c2191947d2cab2a43e830ba6",
+    "dv/coverage/full_system_closure.py": "f165131c95661646d0dfde5ce0436ea7a4242467afa3a7d50a9200f349385075",
+    "dv/coverage/full_system_coverage.py": "95d33b9ee4cff17023475d12bb55aeb0601a09716ce5e1ce312e6650278f8387",
+    "dv/coverage/full_system_coverage_plan.json": "7329744894ccdd0284f6bc8892264485fdc2e14ed6eb4536a3006321b1bfda25",
+    "dv/coverage/full_system_evidence_gate.py": "ed94e2cb0eb496060eb43e198699b488e504f9316acfca059c49e642485ccb20",
+    "dv/coverage/full_system_stress_summary.py": "0d9896882933697366e50451049af58ed67695036f691de9497130ba998acc83",
+    "dv/coverage/functional_closure.py": "0d2237efa74eafe30142379fc9ea8bd5e619922679098debbe6e6becdb4bcc94",
+    "dv/coverage/phase4_point_diff.py": "2e5014e8b12f9569ed32d605a5691f49a6bb88da396b79b92545def9c0440450",
+    "dv/coverage/python_closure.py": "de7265e37e8721411b1badf34af5835aa3f86eb029bdf3f9c3df5c0807582a9b",
+    "dv/coverage/python_coherence_map.json": "b84a9197ca4fe6f2701ab921500bb37e430e6a24ced896f047f88bba591d8460",
+    "dv/coverage/report.py": "b9fbe5cd701544328955b5fb8c5962ccc102ce489dd4c25a7db390ce2384f834",
+    "dv/coverage/risk_closure_review.py": "b565fa64970cf7b59229d7a51319bdbdb56cce78d7b95004125e63e59a5e2746",
+    "dv/coverage/rtl_coverage_closure.py": "3611e90b31ba056c80f6239d83c7b33aa83d1f6e8fc0f5d02fcfa36e0219d195",
+    "dv/coverage/rtl_coverage_dataset_manifest.py": "62534682d4908f08ec6af039385cd1705a5f30bf8a37dbafdcdfca7c57a491d9",
+    "dv/coverage/rtl_release_gate.py": "95bf5ba0e7fbdc343e20281d9b80c99c9166169e4cc0e3b66a29c49b644718bc",
+    "dv/coverage/testcase_selector.py": "19fe8274a4026910a26ebc114db40fc243f51f33fe87ce136179d48b60bc3cd1",
+    "dv/coverage/waivers.json": "86ad405faad2454c6a95c9deb0c7c9bd39a0eac001ecbe2312d77b71e57184d2",
+    "dv/env/__init__.py": "80820d68fc4e2d02fd69de72964bedba95fc144e8cdd62d6f3fdc9833de1dfe1",
+    "dv/env/cache_env.py": "fb569ba2e8a4d343d775509f65dc45e973e9325f20692ca30b74ab8d39d90eef",
+    "dv/env/coherence_env.py": "46d0e0ae6dfb91eea8cf843a97537b56e83a09564eaed5b97a71a824332eccd5",
+    "dv/env/full_system_env.py": "2ae3cbb794d6a2997b4bb20544caa00fa86ac939d1751482ec0216dc56f6127b",
+    "dv/fault_injection/__init__.py": "9f34e34f54b8c7adb226c77f990d96f9e3acd5bbbb9e32abffa10a34e25b9092",
+    "dv/fault_injection/run.py": "a05d50108e1b9bd8313d8433699d55c9fe3e1e1b9ceb3c656c32bcbe2a19d052",
+    "dv/models/__init__.py": "32707ed9964d5afa530bc4b87f63bdc10468d4d3bccfef3f23643f2792f5fa8d",
+    "dv/models/backing_memory_model.py": "e58df7e222410abb34681cc0cf64f43a2dc410388e2ad96a0cec7008c867594d",
+    "dv/models/cache_reference_model.py": "c10cd9683cde9f6812315b521ba7506a4bea7396f6a0f6f82d9e8f8673440b78",
+    "dv/models/mmio_register_model.py": "ae630779e2333ed33c1d099b0adc4314173e0113d2937c3954a7f6a8e50cb0ea",
+    "dv/models/reference.py": "8332eb397a44b8ab5652caec2dc2878d2d987c783da93790c8de727917bb7d54",
+    "dv/models/simplebus_ram.py": "354a31d1de02538e4259ea1cc05e5192fce93fe54a9aea4fc9855e87e0685710",
+    "dv/monitors/__init__.py": "a2705d372b42626265b334e3ecd1932bcd5f3004b1c1a9e05945e18a5c537fb1",
+    "dv/monitors/cache_perf_monitor.py": "0a88f1d8a511fdece96e8ef9cde7fc70397b3de1fa41ce12affc67aa98502a21",
+    "dv/monitors/full_system_monitor.py": "8f75f6294d4e275325d27718f35779fcb2828cb7004aa750ed3a96e34fa7c477",
+    "dv/monitors/snoop_data_monitor.py": "7a82b77e585cff090103fbacbc85a5eb971ce37ed23d910e04c01c2cba0a043f",
+    "dv/mutation_testing/__init__.py": "e3d934dae0e290ab5258cc3d23a3abae8aee89a90148dff1d0c814096512e06e",
+    "dv/mutation_testing/axi_adapter_mutations.py": "2f0b208b717d36e7949791a1fbb4e2ecc0d0592124592ce2b988ede3f9cbb82e",
+    "dv/mutation_testing/coherence_rtl_mutations.py": "e7f0475d9dab7c9d89ed1f5de5abde2bbeedcaee19e4d4ef54d0035114956950",
+    "dv/mutation_testing/directory_mshr_mutations.py": "cb0b3b960ebdeb62ce846104a8c28acf9d2c4997dcef5063c188591e20cdc40a",
+    "dv/mutation_testing/rtl_campaign.py": "78c8675eda6ea20603821da7941402d51192932b16a03444cf52a88970028a4e",
+    "dv/protocol/__init__.py": "35dcc2fc1e19ebe05572432a6d70b366d0d213a596c410ae1cf02786b9fe0ba9",
+    "dv/protocol/simplebus/__init__.py": "bba509825cabe83fbec64f822b4c4bb6bde9b397f52b5fbb89c5bdf54e7afc78",
+    "dv/protocol/simplebus/bundle.py": "f70a8a2b76220baa1eca2779bdd3d802492772bad547f0e03577a7557cd64ac0",
+    "dv/rtl/CoherentCacheAxiPythonWrapper.sv": "8317778abd7d81dd68765d4437cd2657c2693b9b72e2a41463d31de474c85895",
+    "dv/rtl/CoherentCachePythonWrapper.sv": "044ab7ecd28b953018b5cbd72049a90b1ae3ce320bf8ab957762d4a8291134a9",
+    "dv/rtl/LineMemoryAxi4PythonWrapper.sv": "87fbc7a2fd1e1d0a61c52ac14b644cb29cd22bbcf34785f1fff66480e53053f6",
+    "dv/scoreboard/__init__.py": "ee0bdce2b91e17cb5aadaf4c93e3140bca85965420fe876e8c7b77bb8abdee9c",
+    "dv/scoreboard/cache_scoreboard.py": "9e04bce56a2590c1d4070cf5ceef9f2e7f6451e11800a22aec995b738769a0e2",
+    "dv/scoreboard/coherence_scoreboard.py": "9be088c37301b4f7682efc204a8ee3f0afc45922df2ff80325390918c661b142",
+    "dv/sequences/__init__.py": "3279d14b23272fd8ed7d4672494d09e638f0a77cc93c607cfdff5815678e42aa",
+    "dv/sequences/coherence_sequences.py": "39def3dae864bccfbb244a8193d7248f290b0e0b3689c9c37097c195eaf078fe",
+    "dv/sequences/cpu_sequences.py": "a8e24342a8534adff76b8025b0c315df6207faa2cf8adf14644ca37047223440",
+    "dv/sequences/cross_agent_sequences.py": "f12156825c18d5788ddcf29c9abd86ce7909c50a8dbdf4568b13f97d9439d857",
+    "dv/sequences/full_system_replay.py": "e8ec64d38ed2a6dc922b4ca1cdf97f26597fd64da2c1664536cce06c84342ed3",
+    "dv/sequences/full_system_sequences.py": "642d09f03f760441adb129bb0dfb857f1ef117920290822f4e7bfcd800843c1f",
+    "dv/sequences/trace_minimizer.py": "079b6a590d27601d71247966f14c6ce4ff99fcb0366e072c11dd7219cde3cb79",
+    "dv/testbench/__init__.py": "3cdb373b442276a89dac96cf5824a36e8eb2bf59b2ee58edb793bcb439d877a6",
+    "dv/testbench/cache_testbench.py": "a6dc5a045fe83cf2aabbcb1c823ddacbef66465e1938afc3fff56bbb0fe06de5",
+    "dv/testbench/conftest.py": "67428a9e209b9b4cb3db0c1209b6d01b1d5ad8f166083b939019d2ff975a3f27",
+    "dv/testbench/fixtures.py": "ff70c84f9cf83915e7e41d87ce1c6c5de145060b17daeafb3b5a66f7afb785d4",
+    "formal/cache_metadata_invariant.sby": "ed4e64b4a715bf2bf2839a93a9ab6a01b9b60dee154dfeee9c82e9912f31f056",
+    "formal/cache_metadata_invariant_harness.v": "4e5bf9f7437fe48ab3c1f98d4431236fcfe33966c233c368978f2c57474cde1e",
+    "formal/cache_metadata_reachability.sby": "6549639524b50161ceb97839d0b3b3cee263633dab21abb6ced3be6609cd6a35",
+    "formal/cache_metadata_stage3.ys": "7c66b8da3b429d10121fcbbb55ced7be79e5ce6543d3415aa69eece610d640b1",
+    "formal/cache_metadata_transition_harness.v": "aea1f8c23175d3538235065743eade7881c7fe1f72deaddcec66b1bd729a3375",
+    "formal/cache_stage2_stability.sby": "847cbf48f1c7c9d240c7f1bc2c4355dc81cc66e2f584cd7e7fd48fddeace7026",
+    "formal/cache_stage3_array.ys": "1961376811a10ecdaea2dd6fe312d5cbbaa8ef1633882810c9dba26fb4847c03",
+    "formal/cache_stage3_array_harness.v": "698372577291f068c28b00f3c4b72e4b366ec438164935bb9b2d1a05e58b778a",
+    "formal/cache_stage3_directed_cover_harness.v": "aa8acc06e9a4e25a480920e5ae1e07eceff726031e3f4c41d7405e210c4b2049",
+    "formal/cache_stage3_dirty_writeback_cover.sby": "bdff84bb304bcc03946c1064e1903d7fe4fc6230ab661d76d80d42188268f55e",
+    "formal/cache_stage3_lifecycle_harness.v": "64a5e9fdd9b9637c384e8ce302728d337eacd1e2fb28f102979ebd988b465652",
+    "formal/cache_stage3_memory_path_cover_harness.v": "1fc4fb7697112ed3dcf94c25892bd50e4ab485443a9ec955c2393e3188679d43",
+    "formal/cache_stage3_refill_cover.sby": "88d7e7c1d3354c478d903fa2f60b8ff7f48d4946383d48dff537a4e894396dad",
+    "formal/cache_stage3_reset_cover.sby": "a2e2ea6376de366258b7b9bea32811cddbacacba25b080cd9e3108861fffd9c7",
+    "formal/cache_stage3_response_lifecycle.ys": "7448063b8719369c4e56e31b498b6602377fd7c8696e1f35eceeca26f03286f0",
+    "formal/cache_stage3_stall_cover.sby": "25d2454be0cb7ab6c23d4d03f451c1b68bb9396f2ed42d30097b1368c4117997",
+    "formal/cache_way_selector.sby": "3daa230504fea598f2b3f5624c05590ed723841a1ca1bc2cd624fc81b752b804",
+    "formal/coherence_directory.sby": "f79cbc9fc8aed33065bc503f53892f013a602b7d23ca7dddc4179252552818df",
+    "formal/coherence_directory_harness.sv": "5720daeb3c49683b1ecbc30a11c810edbcc3bc25efa80b6ae5340e223d68b454",
+    "formal/coherence_directory_mshr_bank.sby": "cfd6a948ad892ec9ac4e628655980df567bdb0a836a6d086fb6d53a8304487f2",
+    "formal/coherence_directory_mshr_bank_cover.sby": "3fda2ae259b384e7e82a94f7315a0347f2184e4e6c59392b216b4238593ba998",
+    "formal/coherence_directory_mshr_bank_harness.sv": "c279e6df3643690a5f8f6ace603ee4e71d337a2bd048b8dabd2692699102433e",
+    "formal/coherence_directory_progress.sby": "69b5899479093c788c074e89df2dd15b458175ece0925d9eec02d4842e92530e",
+    "formal/coherence_directory_progress_harness.sv": "87540744eabc973d7b6380a31a2391f5ac48b50520eab5eff71cc0d0aa002ea0",
+    "formal/coherence_directory_transactions.sby": "b2910fbaaf98229ad6ae838562b965798b4d965d39c04d654456a14242bef6f8",
+    "formal/coherence_directory_transactions_induction.sby": "c78be3646db40ee73361fa044d18484c9f90b0e89c473cdb3c3100c377d0f87f",
+    "formal/coherence_directory_unconstrained.sby": "a0e353475fe667fe2e9f3308b769eb70656378dc3e66c406be113a34d5ad0b8d",
+    "formal/coherence_directory_unconstrained_harness.sv": "4521503b7dc4686b21ad568079956087d661cafdab3464cf2b10339cfd42d595",
+    "formal/coherence_l1_controller.sby": "9766a5a8706db2cfcf1d3b73a9106de1567bc518961fe5c25476df485cf5b9b3",
+    "formal/coherence_l1_controller_harness.sv": "a3f4f630b0f3867df2f57689928ec2648e55eac2273901fc35e9b4ffea750811",
+    "formal/coherence_request_arbiter.sby": "8d56f9ee58e41b40c3eff2cb1d2cea2d891349eb146bcb90e37e9a9001599a98",
+    "formal/coherence_request_arbiter_harness.v": "ba6a92b88e050be7af772cb536bc509d1d87767889f544c3f2a1b9142cf8d269",
+    "formal/coherence_snoop_arbiter.sby": "649500b1b1b79cdb23c97efe6d030a4c9601dc9e3f6bf5f5b9cdaf21ee22e86e",
+    "formal/coherence_snoop_arbiter_harness.sv": "3947cd2713b1e9e2acd99f537e90fa0a1fd29c25d31ff3c650c90a58c2a08437",
+    "formal/directory_transaction_properties.sv": "e24cc6540253caa7930bef507532aaa3d8da257d8b2ea5fffd5e0ccaac240746",
+    "formal/mutations/run.py": "1253c6ad4891b586809c01382adb3170c3e27954e369222520b2eff0640435ae",
+    "formal/replacement_selector.sby": "cc2a0e8f276481e60a1dd31eecc144ca27e4b38acab43d65b8562e63811d8c99",
+    "requirements-dv.txt": "491026a17fcaafa3385e496864bc23f85690f2483ce777cf9727faca4cb186e6",
+    "rtl/Cache.files.f": "53602a6f3f142fdfcb86b00bcf3699cf1e36d53399a6b6cb2572dca9ca4e13a3",
+    "rtl/Coherence.files.f": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
+    "rtl/bus/apb/CachePerformanceCsr.sv": "798f51129c519c7b0b20e956e71e530c8acf8f0eb867d0f7e2bc8872c4572f14",
+    "rtl/bus/axi/LineMemoryAxi4Adapter.sv": "e0a274002ca3f03d2bfc7ba65acf10880d9603b1b1022d46ca2a19bfa66fc6fe",
+    "rtl/bus/axi/MemoryRefillMshrBank.sv": "c2592378db9c071c39d90fc0c174712279cc206178d48a71cb9c237cc9616778",
+    "rtl/cluster/DualL1MesiCluster.sv": "50fcbf565d76e96b8335b6063d4f1454de01e83133bc5700449f88a66492cd89",
+    "rtl/coherence/SharedLineEngine.sv": "268eb16e56bce7dc99c37f13fbccdd94ce69d293847bcc2059370ac2b534d364",
+    "rtl/common/CoherenceProtocol.sv": "e184896a6b35152c7f6d4b9a8470ea8aeb40891e4cb3c10973990bc46cfdd3f3",
+    "rtl/directory/DirectoryController.sv": "18febf562aed53538ff5929bb6c7e48ec6c50de0730832c5dbdcc4cfa49db81c",
+    "rtl/directory/DirectoryMshrBank.sv": "d5c370d3bab3409214e8f5775c47397bcfeb6bf280d93e01c63893c4a8c91a95",
+    "rtl/interconnect/CoherenceRequestArbiter.sv": "cc0ea69f05d0cfe9520ba6645042849223d7ea9c7dc389e35b44f37ce3951107",
+    "rtl/interconnect/CoherenceRequestArbiterCore.sv": "7b3ce2989d0c4dcaadae47b731fe2e887e7da6d98a0ee624bf38171163f1720b",
+    "rtl/interconnect/CpuMmioRouter.sv": "2f3e129ba67949c8de0cbf74ee151ff8bec5e89110b706dcc8432100db4b8966",
+    "rtl/interconnect/L2LineWriteArbiter.sv": "226f6ddf8e037882ba6c1b094f9e45f91fc9170c217e68d7c343616e359611db",
+    "rtl/l1/MesiL1Array.sv": "d8262ebbc8e3d94edc89016dd6795a2f55313c8abb6e823764f0769dc13fd295",
+    "rtl/l1/MesiL1Controller.sv": "21be7f1b19a6c217827e44f1122a7ecf191ab589aa829e18268ce16de981f90f",
+    "rtl/l1/MesiL1SnoopArbiter.sv": "e0c84977fd94255651adbce03ee72b1df078538f7d317bac6a6b0a44a37ba29f",
+    "rtl/l2/SharedL2DirectoryArray.sv": "7f3805013905f7ede743403c1bd6de6abf6b6d444390efb5a1319ee374133b1e",
+    "rtl/legacy_l1/CacheTop.v": "49685ae520729c4002909e5a7bbf66e5c1c22731809cd326d86265049b3df83a",
+    "rtl/legacy_l1/array/DataArray.v": "7a602e929ef0d2920dfa328eb65d28e4761e9764d80ec7c3773eeebe83e7e1aa",
+    "rtl/legacy_l1/array/DataArrayWithArbiter.v": "6080b9c5e9a4b49869d6cfd0311d37a7a3197f4671dc7996a11786b5bfd79ce2",
+    "rtl/legacy_l1/array/MetaArray.v": "e0c48eee2f4fda6c974b64e73630344f32a00157d3e38ceba68b75c887d93d37",
+    "rtl/legacy_l1/array/MetaArrayWithArbiter.v": "8783ace290278b2415cbd909a8ad7ce8fd55bacee2c439114894efb37f3131c1",
+    "rtl/legacy_l1/control/AddressDecoder.v": "11189a3742e48ba8c2beaed7c5c6df91d9a76902a80e4b6b4cd9f9cdbbf96fde",
+    "rtl/legacy_l1/control/ByteMaskMerge.v": "27dadea1f62eb132588999b6c9d8478c595f69481ad1802dc77df1b326278dfe",
+    "rtl/legacy_l1/control/CacheWaySelector.v": "3669cee59be440cdc1364360c3a37be93f2180a4b34f339422dd66f56c5e9012",
+    "rtl/legacy_l1/control/CohArbiter.v": "7ab25db37137689132159286fc7011efad541bf562c25c9b419753f0a4892bd8",
+    "rtl/legacy_l1/control/DataWriteArbiter.v": "646df91ad8397c4d35f0a95b94e9f0cf9c91810c39e757ceafee7998fb499f14",
+    "rtl/legacy_l1/control/MetaWriteArbiter.v": "8bb66ecbec8a1b423b191de7f9f61dd088034f1c6649e90ea14d9a2f6d15b96a",
+    "rtl/legacy_l1/control/ReadArbiter.v": "01150af1bd3d99e7bee87c95d092f2e6532b260977e7e086f1c69bb07d82c561",
+    "rtl/legacy_l1/control/ReplacementSelector.v": "f2eaa445e134223f1707a28074201c42621573b333e7ef5811fa2cfb2ffdc56f",
+    "rtl/legacy_l1/control/RequestArbiter.v": "ebfda7e72c8785ff7da789a8c7023be4251bb98b093a9f37611b2167c2b994b8",
+    "rtl/legacy_l1/control/TagCompareUnit.v": "d9ea9e476d8f48d6d2128f51cd0527abcec0caf1f2946afb61cbc178948c0d79",
+    "rtl/legacy_l1/pipeline/CacheStage1.v": "26bd6be42b7101c37d1a5de01c85e3360a11b243be4496274a5f29e403497d52",
+    "rtl/legacy_l1/pipeline/CacheStage2.v": "85be2661f340219c7036e77e6ef7727b257e2dff5feab5b099be26c8e2794c2e",
+    "rtl/legacy_l1/pipeline/CacheStage3.v": "c75b5ea985339b5b1ec1c8b95129aadbf1306034c95b1f319fdd856936827ec7",
+    "rtl/top/CoherentCacheAxiSubsystem.sv": "8de813a432493d92069a75fbba447012cee30e793158b32f7b664291c31babb5",
+    "rtl/top/CoherentCacheSubsystem.sv": "da26c45ebeee0436b12baef5a327a5a9db46d4e77339ccc1bf2b7a9a4e7a0189",
+    "scripts/run_rtl_release_regressions.py": "7728a77f01eda73005548d3c8b1f5b1abea06ded5543eb088ce2e75a393823dd",
+    "tests/__init__.py": "b758764ba10439a4229d13f194b2a5aef8d0dca45b4788903b9ab325994ec92a",
+    "tests/axi/test_axi4_adapter_python.py": "9794e44b76cb672126b5047d9c17f41759fb7f8ce2f13f9864c3e9537ff6d3ea",
+    "tests/base_test.py": "8f09aa4284ae06bd56b5a862be91f500f2d92ffc5779c0f32a931abeffd2626a",
+    "tests/checkers/test_mshr_lifecycle_checker.py": "7edce2c01cf50ad9a126dec94a76a454304830e46018f7091df1adfb073a2808",
+    "tests/checkers/test_trace_minimizer.py": "3fd059eca5b33eab6af88eb4197014ed3f18737b9011b3ac96c0862b0e58a713",
+    "tests/coherence/__init__.py": "f3616f9edce6389217367d8720f49f0e08118b5e2a8db4ffc487519edfe1abe3",
+    "tests/coherence/conftest.py": "c60fb955243226885de4eae993dab887e7d8a62857fa77196f33563f76698974",
+    "tests/coherence/support.py": "3f56d1e4979483eee8ab41dc1c4c7ce0115eb66e9e5c166d3640411b871719e4",
+    "tests/coherence/test_benchmark_v3.py": "406c2c42d5cb5526eb7abd203a00a13ef7cd4e80d1e9274a12c47b6961474436",
+    "tests/coherence/test_benchmark_v4.py": "ea6ea377e8d3c5b01a0fc2ce4be60c875054ea01e9ee7c7aa90df4863f175f75",
+    "tests/coherence/test_directed_concurrency.py": "172c9dc58cdb88cf10bf11e4a648b50ec0db5ea1c236edb16b2cb42086b35867",
+    "tests/coherence/test_directory_arbitration.py": "9310a179e4edeeb3e7090b1fff94a555b0054cf316f6eff3bc1517d74661eb6d",
+    "tests/coherence/test_dual_lane.py": "47ad1cd977de8f7ce0ce952d171eb89f7ef9e5294fa5fd746deb5136db47f4c0",
+    "tests/coherence/test_false_sharing.py": "8826aa8332ae125e8429aa7d79ad56cc6af3374f9d9cdba1dbbff1ab1160206c",
+    "tests/coherence/test_flow_control.py": "645e4df33e8d5329c30df01c730eb99c786493865477fafb5058a428d9ca7eeb",
+    "tests/coherence/test_generation_counter.py": "99439b4806bfb00c08b601ada38bcc62acacb82c099cb679f262757ef3da9446",
+    "tests/coherence/test_hit_under_miss.py": "d9121b1f5096f3c8d1b29900f3eef7348ad5506db8c8a2dcee890610b56495c3",
+    "tests/coherence/test_litmus.py": "172c9dc58cdb88cf10bf11e4a648b50ec0db5ea1c236edb16b2cb42086b35867",
+    "tests/coherence/test_message_passing.py": "bde9c764bbf1de49e0d239cc519596c8710f2816f9fbc3348e036436bfcb8bb1",
+    "tests/coherence/test_mshr_arbitration.py": "1588f26c424abe23e71bfc188b45deb9916ef6012c36b09ce16f2c24e32430a9",
+    "tests/coherence/test_randomized.py": "3de658fab52a47df6639e0f8d4d4daa4c91aee7de38c6b0ec782c4ac2a1c4c87",
+    "tests/coherence/test_recovery.py": "36ecc346b4b977d29aecd11f13f9b43d5d58c237c33ea8ec66db788fcef749ce",
+    "tests/coherence/test_snoop_fill_concurrency.py": "e12e24f36e8eab65e8958290e2eeb6c13da103170e5885b1ef08b2e21ceee11b",
+    "tests/coherence/test_subsystem_python.py": "59b5d111136e25aef25e3de6aaed23e40fb75203acca3970106c1ca4be98c149",
+    "tests/coherence/test_victims.py": "b82707b951c6167a8be2b22bb2678ccd40363c73e7a226a5346a0db66ced1e03",
+    "tests/full_system/conftest.py": "afb2f73996962218b0f7aa01a96560a08af9ccb1badcebd7179eab2cb62d095d",
+    "tests/full_system/replay_candidate_worker.py": "03e4b1ce78fa16ad1785a417f8aab082fee78a37b7f0e841973942e704dd7b31",
+    "tests/full_system/test_cross_agent_directed.py": "8f17e6eff9c667d9507800fb83c09e459a029db0fd6c805d6b1662a8b341eb1e",
+    "tests/full_system/test_full_system_coherence.py": "bd9ee01ed0f94d0269b56577ef9375758ac301c6ae4236b5b20b167beaecdbf6",
+    "tests/full_system/test_full_system_random.py": "d325e8c9de22f3e797acf15ccd250bbf5796643f4808da5980355d0ad09e12b5",
+    "tests/full_system/test_full_system_replay.py": "07a29d751bb775c93934949503a5619b905345da83960e7ad29261572be230c6",
+    "tests/full_system/test_full_system_signoff.py": "1a19168088a36090365a690c22842ac5c263cd99d2ecb988eaca1d453f5cadd6",
+    "tests/full_system/test_hit_under_miss_axi.py": "fe0142b778f508e945bef95f21e0a80cac93289b9c67b1898f94784ad654458e",
+    "tests/full_system/test_mixed_agent_random.py": "1cccb96f407a2cfe5bac9fb3156e3cc7eca0a4b7f68a25cd0f5d9f7912680e26",
+    "tests/full_system/test_owner_transfer_apb_cross.py": "74dbe79fe071d76724dc4b983380fad0d36423677fc99b4b4efecd12b1a62f7b",
+    "tests/full_system/test_paired_l2_replacement.py": "266c2467437a3744f133646a8ae002e23f2d925dba8f0c0e18623babfe4224e8",
+    "tests/full_system/test_randomized_recovery.py": "d02c550cb80dd58630e7b427a5a6969fb83d0c32cce288d0108f4dc880a32797",
+    "tests/full_system/test_replay_closure.py": "ecf6ec85130f83ac008ebe93c8a71972600bee4f9f8b7b98b1f7107677074438",
+    "tests/full_system/test_resource_aware_random.py": "d32be0acedd70f84f4a065326eb1b63da902587d763358c6b153b7fcda439dc3",
+    "tests/l1/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/l1/test_array_patterns.py": "7afae04bcea9bc955e60293094ff98cbe537024b866607bfbd83334884d4fa5b",
+    "tests/l1/test_backpressure.py": "812d742fb97a3b6cbead0e99761fa33d2f3bc6eaf996bcb61316d7b5bfd277b6",
+    "tests/l1/test_coherence.py": "d2bc6426dffa8352370a3d82702fc1014bac43452bbd5cac749c68283b65ca5a",
+    "tests/l1/test_hit_miss.py": "6087ef89c7e3f40a32649981abf491f5026b54013388766506729adc7d8f6015",
+    "tests/l1/test_mmio.py": "533d99fed663bf1c9d89d9b1a2d94fe25ef3c66a31e28dd698772b246d58060d",
+    "tests/l1/test_random.py": "7303f90a2c28e1b40a34c1d58d0372ae1031ced6eb03a1d9aa4521fc60852c2d",
+    "tests/l1/test_replacement.py": "bc6e90632f5f99b18483911f4f27faf81c8ec00e6008e97dae7165c1646357cc",
+    "tests/l1/test_reset.py": "b369933bc75c698f0fe4c1060b28c494ce73ee3748e15bc9a64eb442020fae09",
+    "tests/l1/test_smoke.py": "99933fcd2ed5fa4aab56462bbc58dd24c99841c1e334f014234f3eb58750a365",
+    "tests/l1/test_timing.py": "d22c6bce726dca2de43787a9328410ce096d05b4d4df4a94c211a969bc0332dc",
+    "tests/l1/test_write_mask.py": "d35f85ae035fe03cd65915d0a7c02babe16e2fb561dd077e1b5bcbf070bbfe01",
+    "tests/unit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/unit/test_coverage_closure.py": "af861c9ba2e8415c9ffc07f0006d2e1b0b4e1120316ae1c20c74a93572989b15",
+    "tests/unit/test_coverage_manifest_and_gate.py": "1cff88b7d2c47cc9de4ff32777e2d56d35beefaf686347e16eeeed62e670aee5",
+    "tests/unit/test_coverage_triage.py": "bb596bfa7da09b951aa1607bbd6ae83097dc8b41883b85ade5807f90a5f85995",
+    "tests/unit/test_dut_properties.py": "fe38b6bf5126499f94701222b9b3704794ba5e4db6b3c0ea30168d7c17b60269",
+    "tests/unit/test_fault_injection.py": "e0e44fe52723e570e8ad5eaab5f9b14aef69f4d245def60532fd08bc923fd4bc",
+    "tests/unit/test_full_system_evidence_gate.py": "d6c77fe085b2b0826dad8901de11c2e551108f1aee3a30ac064c99321371391c",
+    "tests/unit/test_protocol_contract.py": "a16841eb5f09a332b43da2f24cd6f74008574f93642844f70c7c090b1c4e3351",
+    "tests/unit/test_reference_model.py": "d8f332e51b76ccfe24b915cc2cd29386e65ae5816f99bc077cdf622d77f5bfef",
+    "tests/unit/test_regression_report_consistency.py": "d4c87e15ef74874b1dfe989d679c0c0b4c4495bef58c794c7d55c9eb3438aabc",
+    "tests/unit/test_risk_closure_review.py": "5a19c457e39e879ce9879dded4e559d8f0c96fbb838fdfbfcb3d3482a9e28b3f",
+    "tests/unit/test_rtl_release_gate.py": "0cb2713939c50e0eb20d3b37e72c7d011b22d0dee6628b6dc3fc532800668bdf"
+  },
+  "tool_versions": {
+    "python": "3.12.3",
+    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
+    "verilator_coverage": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)"
+  },
+  "datasets": {
+    "main_subsystem": {
+      "label": "Full coherent subsystem regression",
+      "scope": "Main subsystem smoke, multisnoop and five seeded regressions, all from one common subsystem elaboration and coverage definition. The standalone Directory MSHR regression is a separate dataset and is not included here.",
+      "top": "CoherentCacheSubsystem_tb",
+      "filelist": "rtl/Coherence.files.f",
+      "filelist_sha256": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "smoke including risk_closure_patterns and phase4_replacement_race",
+        "l2_multisnoop_only",
+        "seeds:00000001,00001234,5EEDC0DE,DEADBEEF,2468ACE0"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/CoherentCacheSubsystem_tb.sv",
+            "markers": [
+              "`include \"include/scenario_sequence.svh\""
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh",
+            "markers": [
+              "PASS: raw RTL Hit-under-Miss preserves both checked responses"
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/include/replacement_and_l2_victims.svh",
+            "markers": [
+              "PASS: L2 live victim back-invalidates an M owner"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/include/reference_protocol_model.svh",
+            "markers": [
+              "task automatic state_model_check_all"
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/include/transaction_checkers.svh",
+            "markers": [
+              "task automatic expect_word",
+              "task automatic expect_protocol_state"
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_subsystem/tb/include/ready_valid_assertions.svh",
+            "markers": [
+              "always_ff @(posedge clock) begin : ready_valid_assertions",
+              "CPU%0d response changed while stalled"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "61fd896dea024e95c42621828bd00537f00af051fd4624430c22d3db2ecfc400",
+      "raw_file": "reports/coherence/coverage.dat",
+      "raw_sha256": "09aed47f7fe156b6b44b4f5cf4dd3e9218a5cb8538e5a7018dedbbf421d826e6",
+      "line_info_file": "reports/coherence/coverage.info",
+      "line_info_sha256": "dba3c0c9b9e0e50c95e98157aa6210b1203a03e29f6dfe0e24d8b09a3a54990e",
+      "compiled_manifest_sha256": "f0c741ac31c92e6834c047e7c387473fa786d1e78bc08253f35533c44a372e3b",
+      "dataset_fingerprint": "e6d2c0bda10481c1986316f35a64163adc4cea5ff1e038fd8d24b5d4c1ff5ff3",
+      "compiled_product_sources": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [],
+      "metrics": {
+        "line": {
+          "hit": 864,
+          "total": 992,
+          "miss": 128
+        },
+        "branch": {
+          "hit": 473,
+          "total": 556,
+          "miss": 83
+        },
+        "toggle": {
+          "hit": 21923,
+          "total": 27474,
+          "miss": 5551
+        },
+        "fsm_state": {
+          "hit": 30,
+          "total": 54,
+          "miss": 24
+        },
+        "fsm_arc": {
+          "hit": 13,
+          "total": 48,
+          "miss": 35
+        }
+      }
+    },
+    "axi_subsystem": {
+      "label": "AXI cache subsystem E2E (five fixed seeds)",
+      "scope": "Five official AXI E2E seeds merged only within this identical top/build/test definition.",
+      "top": "CoherentCacheAxiSubsystem_tb",
+      "filelist": "dv/blocks/coherent_cache_axi_subsystem/filelist.f",
+      "filelist_sha256": "7a5363895d9b056bcdf919142830d802063cf0f106df303c3c573b94e8a0dc5d",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "seeds:6699,24301,12648430,195936478,219540062"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/coherent_cache_axi_subsystem/tb/include/benchmark_sequence.svh",
+            "markers": [
+              "PASS: AXI memory-model end-to-end MESI read/write stress"
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_axi_subsystem/tb/include/response_backpressure.svh",
+            "markers": [
+              "initial begin : axi_response_backpressure_injection",
+              "AXI R response changed during forced backpressure"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/coherent_cache_axi_subsystem/tb/include/reference_model_and_cpu_tasks.svh",
+            "markers": [
+              "task automatic cpu_access",
+              "returned %016x expected %016x"
+            ]
+          },
+          {
+            "path": "dv/blocks/coherent_cache_axi_subsystem/tb/include/timeout_guard.svh",
+            "markers": [
+              "$fatal"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "efaef312eaf9d3592c36eff9d16e063b94ca436c6808d5fd548edd91f2228c07",
+      "raw_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",
+      "raw_sha256": "97330f3cce65d9cf83898bd9000f3ca87598f49f952c97b83a95427804542681",
+      "line_info_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem_line.info",
+      "line_info_sha256": "5f5a6538ab4f3e13f8ca15515ed87c269f9ddd9940c8a6f28572d47cc4bb513b",
+      "compiled_manifest_sha256": "7a8bff84d30d1c37f8d7f1e24ee5a645bb2baee904617c7ac67d93ad49daf49f",
+      "dataset_fingerprint": "b9576ae8e1a81b2d23fe0f947f1080d6c88e75982c15190659ce760650da7681",
+      "compiled_product_sources": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [],
+      "metrics": {
+        "line": {
+          "hit": 901,
+          "total": 1068,
+          "miss": 167
+        },
+        "branch": {
+          "hit": 509,
+          "total": 632,
+          "miss": 123
+        },
+        "toggle": {
+          "hit": 15623,
+          "total": 32332,
+          "miss": 16709
+        },
+        "fsm_state": {
+          "hit": 30,
+          "total": 54,
+          "miss": 24
+        },
+        "fsm_arc": {
+          "hit": 4,
+          "total": 48,
+          "miss": 44
+        }
+      }
+    },
+    "directory_controller": {
+      "label": "DirectoryController block",
+      "scope": "Standalone DirectoryController directed TB.",
+      "top": "DirectoryController_tb",
+      "filelist": "dv/blocks/directory_controller/filelist.f",
+      "filelist_sha256": "ba1faeb90ec1a2b99cce410c6cfb4d284a521bb1679e3e5120d866164ae2d022",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone directed block sequence"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/directory_controller/tb/include/test_sequence.svh",
+            "markers": [
+              "PASS DirectoryController_tb",
+              "PASS: DIR_I Upgrade reports protocol error"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/directory_controller/tb/include/directory_agents.svh",
+            "markers": [
+              "task automatic finish_commit",
+              "task automatic finish_grant",
+              "$fatal"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "74c206a3f0758a550adb8c36bb0c57d300a58d6f212bcc31952e228618f92297",
+      "raw_file": "reports/coherence/block_coverage/directory_controller.dat",
+      "raw_sha256": "e9982c1f1462cd4bda4ddd16f5f82a4632c696e81e46f6636e0684a0020182a5",
+      "line_info_file": "reports/coherence/block_coverage/directory_controller_line.info",
+      "line_info_sha256": "dbd72be8ac9809a158747f73706c4bde4aa2165f9b970db8b32d67aa0fde4037",
+      "compiled_manifest_sha256": "d73dfd1e4a8045c8308559df4b20a7e1f89c04935c252f2c8600da9b11eeec9b",
+      "dataset_fingerprint": "42003c8d9fcc5aab87ba0a539290e2e0f937628ec847ff8eb1107b96d82dbfe9",
+      "compiled_product_sources": [
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/directory/DirectoryController.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 178,
+          "total": 182,
+          "miss": 4
+        },
+        "branch": {
+          "hit": 37,
+          "total": 42,
+          "miss": 5
+        },
+        "toggle": {
+          "hit": 260,
+          "total": 612,
+          "miss": 352
+        },
+        "fsm_state": {
+          "hit": 10,
+          "total": 10,
+          "miss": 0
+        },
+        "fsm_arc": {
+          "hit": 3,
+          "total": 9,
+          "miss": 6
+        }
+      }
+    },
+    "directory_mshr_bank": {
+      "label": "DirectoryMshrBank block",
+      "scope": "Standalone four-context MSHR directed/stress TB, including transfer-start backpressure.",
+      "top": "DirectoryMshrBank_tb",
+      "filelist": "dv/blocks/directory_mshr_bank/filelist.f",
+      "filelist_sha256": "06f73bd8b5c19471e738679a54b58fa9e916c0364fb8b7902fe9d52c5f5942a4",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone directed/stress sequence including write, transfer-start and grant stalls"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/directory_mshr_bank/tb/include/xfer_start_backpressure.svh",
+            "markers": [
+              "PASS: refill-start address/ID/context/source remain stable"
+            ]
+          },
+          {
+            "path": "dv/blocks/directory_mshr_bank/tb/include/context_allocation_and_routing.svh",
+            "markers": [
+              "routes four distinct contexts and out-of-order fills"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/directory_mshr_bank/tb/include/mshr_agents.svh",
+            "markers": [
+              "task automatic complete_xfer",
+              "task automatic accept_directory_writes",
+              "task automatic accept_grants"
+            ]
+          },
+          {
+            "path": "dv/blocks/directory_mshr_bank/tb/include/xfer_start_backpressure.svh",
+            "markers": [
+              "refill start payload changed during five-cycle backpressure",
+              "complete_xfer(held_context)"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "cb833cd13d86c1710003749797fa18370ff2d9c98cc1310c5c339722a4d330a4",
+      "raw_file": "reports/coherence/block_coverage/directory_mshr_bank.dat",
+      "raw_sha256": "1badff2d1a4c11f6aa6302b4d405248ff8318e19c2a0461424f87c428d7ec39b",
+      "line_info_file": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
+      "line_info_sha256": "1b1ed72e039d997eb69b50e637ee6fac04e345dac94c29da0029a9b747b586c7",
+      "compiled_manifest_sha256": "a84d8cc21f5ccf150e29c0735c6b185a51456240dd2fbf206392db3f900ff8d1",
+      "dataset_fingerprint": "4e52a44cf719a130908844821f5388bf8d5405c03f864504b9c5cfa0770f9432",
+      "compiled_product_sources": [
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 167,
+          "total": 286,
+          "miss": 119
+        },
+        "branch": {
+          "hit": 100,
+          "total": 128,
+          "miss": 28
+        },
+        "toggle": {
+          "hit": 1249,
+          "total": 2904,
+          "miss": 1655
+        },
+        "fsm_state": {
+          "hit": 31,
+          "total": 40,
+          "miss": 9
+        },
+        "fsm_arc": {
+          "hit": 11,
+          "total": 36,
+          "miss": 25
+        }
+      }
+    },
+    "shared_line_engine": {
+      "label": "SharedLineEngine block",
+      "scope": "Standalone immediate/delayed grant read, refill, PutM, multi-sharer clean victim, dirty-owner writeback, backpressure and selected protocol fault cases.",
+      "top": "SharedLineEngine_tb",
+      "filelist": "dv/blocks/shared_line_engine/filelist.f",
+      "filelist_sha256": "e7dbd0b9ac5341cb3f0bcfc411bbadcf0a8fe17857de0301ab4703e76cc8044e",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone grant, victim, refill, writeback and fault sequences"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/shared_line_engine/tb/include/engine_grant_cases.svh",
+            "markers": [
+              "test_grant_read_backpressure",
+              "PASS: grant read backpressure"
+            ]
+          },
+          {
+            "path": "dv/blocks/shared_line_engine/tb/include/engine_xfer_cases.svh",
+            "markers": [
+              "task automatic test_refill_hit_and_cold_miss",
+              "one ordered eight-beat line"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/shared_line_engine/tb/include/engine_xfer_cases.svh",
+            "markers": [
+              "task automatic complete_xfer",
+              "accepted transfer completion did not return engine to idle"
+            ]
+          },
+          {
+            "path": "dv/blocks/shared_line_engine/tb/include/engine_fault_cases.svh",
+            "markers": [
+              "task automatic expect_engine_protocol_error"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "c30b2bc3d159116eb37c106f56d3703b47fddd45ecb2d8fd81690efe376ab1fd",
+      "raw_file": "reports/coherence/block_coverage/shared_line_engine.dat",
+      "raw_sha256": "2577449b714135d44bb4eb101d3dd26d14e7c936431dbe26af557a45c686f575",
+      "line_info_file": "reports/coherence/block_coverage/shared_line_engine_line.info",
+      "line_info_sha256": "e1dc407973a643997381b79923b8ac4636c3961f51570f176cce1e4429e8d191",
+      "compiled_manifest_sha256": "65d0e534b3de3cc91e8238db57d92b783ae2cd57abd12f44030a814df09be361",
+      "dataset_fingerprint": "d74788effd08b5647ef4b929f41efd3455861610c166ecf7257f3dea216b2792",
+      "compiled_product_sources": [
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/common/CoherenceProtocol.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 101,
+          "total": 104,
+          "miss": 3
+        },
+        "branch": {
+          "hit": 44,
+          "total": 52,
+          "miss": 8
+        },
+        "toggle": {
+          "hit": 304,
+          "total": 648,
+          "miss": 344
+        },
+        "fsm_state": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        }
+      }
+    },
+    "mesi_l1_controller": {
+      "label": "MesiL1Controller block",
+      "scope": "Standalone controller refill, snoop, reset and malformed-beat tests.",
+      "top": "MesiL1Controller_tb",
+      "filelist": "dv/blocks/mesi_l1_controller/filelist.f",
+      "filelist_sha256": "8fe3750be7883e34091f358978bec943c69208fd40bd72cd55dcfe102403303e",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone refill, snoop, reset and malformed-beat sequences"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/mesi_l1_controller/tb/include/cold_refill_and_local_write.svh",
+            "markers": [
+              "read miss Directory request mismatch",
+              "refill completion did not request metadata update"
+            ]
+          },
+          {
+            "path": "dv/blocks/mesi_l1_controller/tb/include/snoop_cases.svh",
+            "markers": [
+              "M SnoopInvalidate not accepted",
+              "SnoopData first beat was not held under backpressure"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/mesi_l1_controller/tb/include/reset_and_protocol_error_cases.svh",
+            "markers": [
+              "$fatal",
+              "protocol_error"
+            ]
+          },
+          {
+            "path": "dv/blocks/mesi_l1_controller/tb/include/remote_owner_and_upgrade.svh",
+            "markers": [
+              "$fatal"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "bc4ff0e44e5ae858c6a95bf56f6f9eea44f8950e400bda621c2fd9ead5b10ef9",
+      "raw_file": "reports/coherence/block_coverage/mesi_l1_controller.dat",
+      "raw_sha256": "b5198eb88f08edc0798126c2d00b1719c885d66ef04301a2f52d98b78237a3cd",
+      "line_info_file": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
+      "line_info_sha256": "cce4d7629c79b82eb37c3cfa335c50a3a67d75c62047d6974e2f999ac95c8283",
+      "compiled_manifest_sha256": "94e123d26a257e30f918beaaef887d40985352e7b7344a793a888d252a2ffa1b",
+      "dataset_fingerprint": "10ec0cfd05707dc7f0e2a996da491c89c0878f347039da851aab2f5a76a56a65",
+      "compiled_product_sources": [
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 124,
+          "total": 132,
+          "miss": 8
+        },
+        "branch": {
+          "hit": 43,
+          "total": 46,
+          "miss": 3
+        },
+        "toggle": {
+          "hit": 741,
+          "total": 1804,
+          "miss": 1063
+        },
+        "fsm_state": {
+          "hit": 7,
+          "total": 7,
+          "miss": 0
+        },
+        "fsm_arc": {
+          "hit": 3,
+          "total": 6,
+          "miss": 3
+        }
+      }
+    },
+    "shared_l2_directory_array": {
+      "label": "SharedL2DirectoryArray block",
+      "scope": "Standalone L2 array lookup, stream, victim and malformed-write tests.",
+      "top": "SharedL2DirectoryArray_tb",
+      "filelist": "dv/blocks/shared_l2_directory_array/filelist.f",
+      "filelist_sha256": "1f2df34e40d7a71f7a42d9a027a09672ac7b760a7d58b716154215a2973b3c55",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone lookup, stream, victim and malformed-write sequences"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/shared_l2_directory_array/tb/SharedL2DirectoryArray_tb.sv",
+            "markers": [
+              "PASS SharedL2DirectoryArray_tb"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/shared_l2_directory_array/tb/SharedL2DirectoryArray_tb.sv",
+            "markers": [
+              "$fatal",
+              "protocol_error"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "c679a3df6f23983bf4d8f2ffd8284d50a80993a4ef307914afc7446bb7653826",
+      "raw_file": "reports/coherence/block_coverage/shared_l2_directory_array.dat",
+      "raw_sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c",
+      "line_info_file": "reports/coherence/block_coverage/shared_l2_directory_array_line.info",
+      "line_info_sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79",
+      "compiled_manifest_sha256": "e474645abfc91d68cc51f90a83b886d200b78a4da8024c8d161a8a360519686d",
+      "dataset_fingerprint": "6d88a66864000fbbc21007eede7150a280c40764d00b42aecd6f2c3a7b2568f4",
+      "compiled_product_sources": [
+        "rtl/common/CoherenceProtocol.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 75,
+          "total": 79,
+          "miss": 4
+        },
+        "branch": {
+          "hit": 65,
+          "total": 74,
+          "miss": 9
+        },
+        "toggle": {
+          "hit": 197,
+          "total": 1778,
+          "miss": 1581
+        },
+        "fsm_state": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        }
+      }
+    },
+    "bus_blocks": {
+      "label": "Bus blocks",
+      "scope": "Standalone AXI line adapter and APB CSR tests, including malformed response and outstanding-ID cases.",
+      "top": "CacheBusBlocks_tb",
+      "filelist": "dv/blocks/bus_blocks/filelist.f",
+      "filelist_sha256": "030261883e8baa055756743fa39a4c82b385d5fe16466d69c6c5aa1bb6c6f6dd",
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "tests": [
+        "standalone AXI adapter and APB CSR directed sequences"
+      ],
+      "regression_gate": "coherence_coverage_audit",
+      "verification_contract": {
+        "test_sources": [
+          {
+            "path": "dv/blocks/bus_blocks/tb/include/invalid_response_cases.svh",
+            "markers": [
+              "PASS: AXI4 burst adapter and APB performance CSR"
+            ]
+          },
+          {
+            "path": "dv/blocks/bus_blocks/tb/include/outstanding_id_cases.svh",
+            "markers": [
+              "read adapter accepted more than four outstanding requests",
+              "write adapter accepted more than four outstanding requests"
+            ]
+          }
+        ],
+        "checker_sources": [
+          {
+            "path": "dv/blocks/bus_blocks/tb/include/bus_agents.svh",
+            "markers": [
+              "task automatic apb_read",
+              "task automatic send_interleaved_r",
+              "$fatal"
+            ]
+          },
+          {
+            "path": "dv/blocks/bus_blocks/tb/include/invalid_response_cases.svh",
+            "markers": [
+              "adapter_protocol_error"
+            ]
+          }
+        ]
+      },
+      "verification_contract_sha256": "d66c30ea30a1dc11f076c4fa70b7967be3a07a57deb23dfdad958bc64a284405",
+      "raw_file": "reports/coherence/block_coverage/bus_blocks.dat",
+      "raw_sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf",
+      "line_info_file": "reports/coherence/block_coverage/bus_blocks_line.info",
+      "line_info_sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a",
+      "compiled_manifest_sha256": "9a79631f4b51fb9c3f8e855c06fa107c44782799022d3a1fbeaa7661c9761f97",
+      "dataset_fingerprint": "4d2e3829d6479fce6c8a5131a4b55fd85e01d6e592cdd5fe20ec1823d06df8d1",
+      "compiled_product_sources": [
+        "rtl/bus/apb/CachePerformanceCsr.sv",
+        "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+        "rtl/common/CoherenceProtocol.sv"
+      ],
+      "manifest_product_sources_missing_from_top": [
+        "rtl/bus/axi/MemoryRefillMshrBank.sv",
+        "rtl/cluster/DualL1MesiCluster.sv",
+        "rtl/coherence/SharedLineEngine.sv",
+        "rtl/directory/DirectoryController.sv",
+        "rtl/directory/DirectoryMshrBank.sv",
+        "rtl/interconnect/CoherenceRequestArbiter.sv",
+        "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+        "rtl/interconnect/CpuMmioRouter.sv",
+        "rtl/interconnect/L2LineWriteArbiter.sv",
+        "rtl/l1/MesiL1Array.sv",
+        "rtl/l1/MesiL1Controller.sv",
+        "rtl/l1/MesiL1SnoopArbiter.sv",
+        "rtl/l2/SharedL2DirectoryArray.sv",
+        "rtl/top/CoherentCacheAxiSubsystem.sv",
+        "rtl/top/CoherentCacheSubsystem.sv"
+      ],
+      "metrics": {
+        "line": {
+          "hit": 67,
+          "total": 68,
+          "miss": 1
+        },
+        "branch": {
+          "hit": 70,
+          "total": 76,
+          "miss": 6
+        },
+        "toggle": {
+          "hit": 1100,
+          "total": 2450,
+          "miss": 1350
+        },
+        "fsm_state": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "total": 0,
+          "miss": 0
+        }
+      }
+    }
+  }
+}

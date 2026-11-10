@@ -1,0 +1,46 @@
+[
+  {
+    "dataset": "directory_controller",
+    "original": "reports/coherence/block_coverage/directory_controller.dat",
+    "archive": "reports/final/triage/raw/directory_controller_directory_controller.dat.gz",
+    "sha256": "e9982c1f1462cd4bda4ddd16f5f82a4632c696e81e46f6636e0684a0020182a5"
+  },
+  {
+    "dataset": "directory_controller",
+    "original": "reports/coherence/block_coverage/directory_controller_line.info",
+    "archive": "reports/final/triage/raw/directory_controller_directory_controller_line.info.gz",
+    "sha256": "dbd72be8ac9809a158747f73706c4bde4aa2165f9b970db8b32d67aa0fde4037"
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "original": "reports/coherence/block_coverage/mesi_l1_controller.dat",
+    "archive": "reports/final/triage/raw/mesi_l1_controller_mesi_l1_controller.dat.gz",
+    "sha256": "b5198eb88f08edc0798126c2d00b1719c885d66ef04301a2f52d98b78237a3cd"
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "original": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
+    "archive": "reports/final/triage/raw/mesi_l1_controller_mesi_l1_controller_line.info.gz",
+    "sha256": "cce4d7629c79b82eb37c3cfa335c50a3a67d75c62047d6974e2f999ac95c8283"
+  },
+  {
+    "original": "/tmp/class_directory.log",
+    "archive": "reports/final/triage/directory_test.log.gz",
+    "sha256": "147052d48349d8f803a79113bc6508df217f3dddf3510de90a08f7737ee50ede"
+  },
+  {
+    "original": "/tmp/class_l1.log",
+    "archive": "reports/final/triage/l1_test.log.gz",
+    "sha256": "0058d6ddb6bb88cf304c2af6b833f2fcdd5672ce1330a0d04e8026a228c6883a"
+  },
+  {
+    "original": "/tmp/class_alignment.log",
+    "archive": "reports/final/triage/alignment_proof.log.gz",
+    "sha256": "5cc229d3f9775fa23ed434e8cd618784b031efbb6607919cb7ca2386b0b7d3af"
+  },
+  {
+    "original": "/tmp/class_audit.log",
+    "archive": "reports/final/triage/block_audit.log.gz",
+    "sha256": "b7e7722ef016d2c3e22cfb12ddc0a3e86fce1f5fac40ac3bdfbe362422214912"
+  }
+]

@@ -1,0 +1,162 @@
+[
+  {
+    "dataset": "axi_subsystem",
+    "metric": "branch",
+    "count": 123
+  },
+  {
+    "dataset": "axi_subsystem",
+    "metric": "fsm_arc",
+    "count": 44
+  },
+  {
+    "dataset": "axi_subsystem",
+    "metric": "fsm_state",
+    "count": 24
+  },
+  {
+    "dataset": "axi_subsystem",
+    "metric": "line",
+    "count": 167
+  },
+  {
+    "dataset": "axi_subsystem",
+    "metric": "toggle",
+    "count": 16709
+  },
+  {
+    "dataset": "bus_blocks",
+    "metric": "branch",
+    "count": 6
+  },
+  {
+    "dataset": "bus_blocks",
+    "metric": "line",
+    "count": 1
+  },
+  {
+    "dataset": "bus_blocks",
+    "metric": "toggle",
+    "count": 1350
+  },
+  {
+    "dataset": "directory_controller",
+    "metric": "branch",
+    "count": 5
+  },
+  {
+    "dataset": "directory_controller",
+    "metric": "fsm_arc",
+    "count": 6
+  },
+  {
+    "dataset": "directory_controller",
+    "metric": "line",
+    "count": 4
+  },
+  {
+    "dataset": "directory_controller",
+    "metric": "toggle",
+    "count": 292
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "metric": "branch",
+    "count": 28
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "metric": "fsm_arc",
+    "count": 25
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "metric": "fsm_state",
+    "count": 9
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "metric": "line",
+    "count": 119
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "metric": "toggle",
+    "count": 1655
+  },
+  {
+    "dataset": "main_subsystem",
+    "metric": "branch",
+    "count": 83
+  },
+  {
+    "dataset": "main_subsystem",
+    "metric": "fsm_arc",
+    "count": 35
+  },
+  {
+    "dataset": "main_subsystem",
+    "metric": "fsm_state",
+    "count": 24
+  },
+  {
+    "dataset": "main_subsystem",
+    "metric": "line",
+    "count": 128
+  },
+  {
+    "dataset": "main_subsystem",
+    "metric": "toggle",
+    "count": 5551
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "metric": "branch",
+    "count": 3
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "metric": "fsm_arc",
+    "count": 3
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "metric": "line",
+    "count": 8
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "metric": "toggle",
+    "count": 1063
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "metric": "branch",
+    "count": 9
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "metric": "line",
+    "count": 4
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "metric": "toggle",
+    "count": 1581
+  },
+  {
+    "dataset": "shared_line_engine",
+    "metric": "branch",
+    "count": 8
+  },
+  {
+    "dataset": "shared_line_engine",
+    "metric": "line",
+    "count": 3
+  },
+  {
+    "dataset": "shared_line_engine",
+    "metric": "toggle",
+    "count": 344
+  }
+]

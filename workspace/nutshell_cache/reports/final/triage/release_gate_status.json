@@ -1,0 +1,6 @@
+{
+  "make_exit": 2,
+  "source_sha": "28fa00a331248035226fff48bb210b81f3b90677",
+  "log_sha256": "7199c76a11b83ec53421356bcceada3aa9f7d42dc86f14628d0b6b0277fa5ffc",
+  "note": "Affected blocks and formal rerun; eight-target full regression not rerun. Old attestation must fail closed."
+}

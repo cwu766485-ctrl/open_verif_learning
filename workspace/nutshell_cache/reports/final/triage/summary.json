@@ -1,0 +1,94 @@
+{
+  "baseline_zero_points": 29567,
+  "categories": {
+    "REVIEW_REQUIRED": 29414,
+    "1_TESTABLE": 93,
+    "2_WAIVER_CANDIDATE": 60
+  },
+  "category_metric_counts": [
+    {
+      "category": "1_TESTABLE",
+      "metric": "branch",
+      "count": 3
+    },
+    {
+      "category": "1_TESTABLE",
+      "metric": "line",
+      "count": 35
+    },
+    {
+      "category": "1_TESTABLE",
+      "metric": "toggle",
+      "count": 55
+    },
+    {
+      "category": "2_WAIVER_CANDIDATE",
+      "metric": "toggle",
+      "count": 60
+    },
+    {
+      "category": "REVIEW_REQUIRED",
+      "metric": "branch",
+      "count": 265
+    },
+    {
+      "category": "REVIEW_REQUIRED",
+      "metric": "fsm_arc",
+      "count": 113
+    },
+    {
+      "category": "REVIEW_REQUIRED",
+      "metric": "fsm_state",
+      "count": 57
+    },
+    {
+      "category": "REVIEW_REQUIRED",
+      "metric": "line",
+      "count": 434
+    },
+    {
+      "category": "REVIEW_REQUIRED",
+      "metric": "toggle",
+      "count": 28545
+    }
+  ],
+  "new_same_top_hits": [
+    {
+      "dataset": "directory_controller",
+      "metric": "branch",
+      "count": 1
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "line",
+      "count": 18
+    },
+    {
+      "dataset": "directory_controller",
+      "metric": "toggle",
+      "count": 2
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "branch",
+      "count": 2
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "line",
+      "count": 17
+    },
+    {
+      "dataset": "mesi_l1_controller",
+      "metric": "toggle",
+      "count": 53
+    }
+  ],
+  "confirmed_deletable_dead_points": 0,
+  "approved_waivers": 0,
+  "source_sha": "28fa00a331248035226fff48bb210b81f3b90677",
+  "source_fingerprint": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+  "raw_denominators_unchanged": true,
+  "full_regression_status": "NOT_RERUN_FOR_NEW_TEST_SOURCE",
+  "policy": "Category2 is review candidate only; neither exclusions nor automatic waiver. Other tops remain frozen Phase4 evidence."
+}
