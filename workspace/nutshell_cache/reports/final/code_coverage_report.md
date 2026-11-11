@@ -1,7 +1,7 @@
 # NutShell Cache v1.1 代码覆盖率报告
 
 **Full RTL Code Coverage Sign-off: OPEN。**
-Source Commit：`e0b087c44e9131d2eb9ca7cbf0193e82bb18a22c`；Source Fingerprint：`a732ce942f791cc7ad3c2270ad31309d520b021e9997937ead656f2e9359776e`。
+Source Commit：`36303f48fc21f5aae655c6a2701360a13bca5480`；Source Fingerprint：`7f62dfc4c618f229f5745de358a62b2e0387639638f79aee3527da8c01bc6509`。
 
 Raw Point总数74831；命中45365；未命中29466。这是独立Top覆盖义务的统计，不是去重后的源码行数或合并覆盖率。
 
@@ -78,7 +78,7 @@ Raw Point总数74831；命中45365；未命中29466。这是独立Top覆盖义�
 - Tool Limited：实际L2+Engine Formal因数组混合赋值前端限制无法展开，保留配置及失败日志；不等于不可达。
 - Unresolved：Context2/3、剩余Producer与FSM源状态保持OPEN；Toggle不要求无依据地全部翻转。
 
-60个Directory低位候选的当前哈希及独立审批状态见`continued_freeze/waiver_review_submission.json`；未批准。
+60个Directory低位候选的当前哈希及独立审批状态见`../final_freeze/waiver_review_submission.json`；未批准。
 
 ## 逐点文件与证据
 
