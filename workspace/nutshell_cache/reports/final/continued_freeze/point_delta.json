@@ -1,0 +1,6 @@
+{
+  "new_hit_points": [],
+  "lost_hit_points": [],
+  "evidence": "All eight raw files byte-identical to final_freeze archive; point identity definition unchanged; exact current IDs in code_coverage files",
+  "raw_files_identical": 8
+}

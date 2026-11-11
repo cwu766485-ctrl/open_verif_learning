@@ -1,0 +1,26 @@
+[
+  {
+    "path": "reports/final/code_coverage/dataset_manifest.json",
+    "sha256": "e3982760863e6c2f4d7514ad0cf4c7cc01d09217040b5e4eb700767121c7daa1"
+  },
+  {
+    "path": "reports/final/code_coverage/main_uncovered_control_points.csv",
+    "sha256": "fc4dc3f4d4a3f696a0f1a31d5d4750fef8ed8d8e3bcfee458215d57334d64315"
+  },
+  {
+    "path": "reports/final/code_coverage/module_summary.json",
+    "sha256": "1166d5cb828b366fc997fa67792652a52040e41d8707acc8c92558c9b7732066"
+  },
+  {
+    "path": "reports/final/code_coverage/summary.json",
+    "sha256": "55e62eea6e5a8aed6b69f1d2b98d79a9e50d8d677ffad42d0c9abf7ace38ed87"
+  },
+  {
+    "path": "reports/final/code_coverage/uncovered_control_points.csv",
+    "sha256": "f4c22f4b51df44cfdf375ad63cee6f6396b8bd71b6e8b508e99b0847de54ec22"
+  },
+  {
+    "path": "reports/final/code_coverage/uncovered_points.csv.gz",
+    "sha256": "a9e097b79e6bfbb7075d08b5d9dad21624da48ef35e920cd3fdf3118b6459732"
+  }
+]

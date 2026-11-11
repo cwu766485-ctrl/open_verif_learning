@@ -1,0 +1,62 @@
+[
+  {
+    "configuration": "coherence_directory_unconstrained",
+    "status": "PASS 0 1",
+    "log": {
+      "original": "reports/formal/coherence_directory_unconstrained/logfile.txt",
+      "archive": "reports/final/continued_freeze/formal/coherence_directory_unconstrained.log.gz",
+      "sha256": "7901a6598a5ba5d1d2849849cf6148d68a19eae5078f2ce5f02929041ff1115d"
+    },
+    "config_sha256": "a0e353475fe667fe2e9f3308b769eb70656378dc3e66c406be113a34d5ad0b8d"
+  },
+  {
+    "configuration": "coherence_directory_transactions",
+    "status": "PASS 0 61",
+    "log": {
+      "original": "reports/formal/coherence_directory_transactions/logfile.txt",
+      "archive": "reports/final/continued_freeze/formal/coherence_directory_transactions.log.gz",
+      "sha256": "2a0d9fb240597bb76b5fbcdd82ae27f09f81bd9df792832075d222a9914dd4c4"
+    },
+    "config_sha256": "b2910fbaaf98229ad6ae838562b965798b4d965d39c04d654456a14242bef6f8"
+  },
+  {
+    "configuration": "coherence_directory_mshr_bank",
+    "status": "PASS 0 79",
+    "log": {
+      "original": "reports/formal/coherence_directory_mshr_bank/logfile.txt",
+      "archive": "reports/final/continued_freeze/formal/coherence_directory_mshr_bank.log.gz",
+      "sha256": "f389743b3052ad885b1afd10ec343de223fb6cbc13988025776576f0544224a9"
+    },
+    "config_sha256": "cfd6a948ad892ec9ac4e628655980df567bdb0a836a6d086fb6d53a8304487f2"
+  },
+  {
+    "configuration": "freeze_read_port",
+    "status": "PASS 0 5",
+    "log": {
+      "original": "reports/formal/freeze_read_port/logfile.txt",
+      "archive": "reports/final/continued_freeze/formal/freeze_read_port.log.gz",
+      "sha256": "f4f65e23529c1423c9b763c85583b70834ed2b04a0d6809e6248f72ef70c97f5"
+    },
+    "config_sha256": "f4dbaa78d72c51251e3b75b98b40887176cb5deeff55a3c4b6434480a17328e7"
+  },
+  {
+    "configuration": "freeze_l1_producer",
+    "status": "PASS 0 1",
+    "log": {
+      "original": "reports/formal/freeze_l1_producer/logfile.txt",
+      "archive": "reports/final/continued_freeze/formal/freeze_l1_producer.log.gz",
+      "sha256": "18aec75d4fd82990298eb1aca27a567430ce034fce01d791a8f690f1df3b6399"
+    },
+    "config_sha256": "70e071f4024ed54f4c5dc454f8681590d25efa10708a3f9d91029dbfc4cbf6d1"
+  },
+  {
+    "configuration": "freeze_actual_l2_read_port",
+    "result": "TOOL_ERROR_NOT_PROOF",
+    "boundary": "Slang rejects mixed blocking reset/nonblocking runtime array writes in actual production L2; no exclusions",
+    "log": {
+      "original": "/tmp/actual_l2_proof.log",
+      "archive": "reports/final/continued_freeze/formal/freeze_actual_l2_read_port.log.gz",
+      "sha256": "daa3e67ee1e50abbd6b1a99899bf86e187a4a57601510f502f4f1cf881363e11"
+    }
+  }
+]

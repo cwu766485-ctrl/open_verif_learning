@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "b383383abea773decff022c149b7e767fb2df827",
+  "git_sha": "e0b087c44e9131d2eb9ca7cbf0193e82bb18a22c",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",

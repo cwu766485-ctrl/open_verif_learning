@@ -1,6 +1,6 @@
 {
   "command": "make COHERENCE_JOBS=2 coherence_release_gate",
   "returncode": 2,
-  "source_sha": "b383383abea773decff022c149b7e767fb2df827",
-  "log_sha256": "1eaee29f975374b89c18394f3b36eb045a72040bc2e49faa3d5abf83cd125846"
+  "log_sha256": "af10dba6dbc01f9ea3994aaec30aefdbe8743b7e7dce1412ce3df418f57e11ed",
+  "log": "reports/closure/rtl_release_gate.log.gz"
 }

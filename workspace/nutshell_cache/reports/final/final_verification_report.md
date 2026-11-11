@@ -3,60 +3,60 @@
 **Functional Verification Release Candidate: OPEN**  
 **Full RTL Code Coverage Sign-off: OPEN**
 
-被测 Source / PR SHA：`b383383abea773decff022c149b7e767fb2df827`；Source Fingerprint：`819b8656e469947612ac43bbe740800ce09b1014cb9529e82eddb14c1ff2ae47`；Product RTL Fingerprint：`15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a`。报告 SHA 为包含本文件的实际提交。RTL未改，微架构与Required义务冻结。
+被测 Source SHA：`e0b087c44e9131d2eb9ca7cbf0193e82bb18a22c`；Source Fingerprint：`a732ce942f791cc7ad3c2270ad31309d520b021e9997937ead656f2e9359776e`；RTL Fingerprint：`15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a`。报告 SHA 为包含本文件的实际 Git 提交，与被测源码提交区分。未修改 RTL、架构、Required 义务或覆盖率分母。
 
-## 五类风险结果
+## 最终回归
 
-| 风险 | 本轮证据 | 结论 |
+八项完整回归 8/8 PASS。Functional 53/53、Cross 35/35、Stress 280/280（25分22秒）；Cross Closure 21/21、Hit-under-Miss 3/3、Replay 1/1。Evidence Gate 核验当前 Source SHA。`coherence_verify` 包含既有 Formal、Mutation 与模块/系统验证，新 L1 属性已纳入必需 Formal。
+
+Release Gate 实际 **OPEN**，make 退出 **2**，程序退出1；Gate单元测试19/19。45365个原始命中全部核验，未核验0；29466个Required零点仍OPEN。未忽略失败退出，未计算未经审核的Eligible Coverage。
+
+## 五类风险的实际结论
+
+| 风险 | Stimulus / Proof → DUT / Checker | 结论与最小剩余任务 |
 | --- | --- | --- |
-| Main Context2/3 | 双向替换/请求时间扫描，峰值2，slot2/3未活动；Block四Context Cover独立保留 | OPEN：未得到集成上限证明或合法反例 |
-| Grant Read × L2 Busy | 实际Engine+L2控制递推组合，k-induction PASS；实际Main连续读端口检查通过 | 结构不可达候选；连线对应待独立审查，不自动排除 |
-| Dirty Victim AXI BRESP Error | 错误、8拍fail-stop、Reset无旧响应、Core1恢复读PASS；写回ID/Beat/Last连续检查 | 错误场景PASS，完整Producer归纳安全仍OPEN |
-| Owner-missing Retry方向/Timing | 两个owner方向×offset0..9；每方向观察2次Retry，数据与MESI检查PASS | 固定扫描范围PASS |
-| Reset/Fatal/Resource Arc | 增加FINISH Reset，七种实际暂态Reset及恢复PASS；错误恢复与冲突回归PASS | 部分完成；未达实例/状态Arc OPEN |
+| Directory Context2/3集成 | 既有双向Owner替换与时序扫描，实际MSHR峰值2，slot2/3未活动；Block四Context Cover独立保留 | OPEN：需要组合实际L1/仲裁器/MSHR证明集成上限，或合法slot2/3分配及Retire反例 |
+| GrantRead × L2 Busy | 实际Engine+模型化L2控制递推k-induction PASS；Main运行时Grant Ready检查PASS | 候选不可达，待连线/模型对应独立审核；新增实际L2+Engine证明被Slang数组混合赋值限制阻塞，TOOL ERROR，不是证明 |
+| Dirty Victim Error / Producer | 既有真实BRESP错误→8拍fail-stop→reset→core1独立数据/MESI恢复检查PASS；新增实际L1 Controller+Snoop Arbiter归纳PASS | L1已接受CPU/Snoop事务ID来源、输出关联、编码和Reset清理已证明；Snoop Beat/Last仅证明转发输入，未证明输入合法。其余Array/AXI/Refill Producer不变量OPEN |
+| Owner-missing Retry方向/Timing | 两方向×offset0..9，实际每方向2次Retry，独立数据/MESI检查PASS | 有限扫描范围PASS，不扩展随机场景 |
+| Reset/Fatal/Resource Arc | 既有七种实际暂态Reset及FINISH Reset、恢复读检查PASS；新增L1编码/Reset归纳PASS | 未达Context/实例源状态及FSM Arc仍OPEN，需逐状态可达性判定 |
 
-逐点映射：`final_freeze/boundary_point_mapping.csv.gz`；合法行为后续清单：`final_freeze/legal_behavior_followup.json`。
+完整既有Stimulus/Event/Checker链见`final_freeze/five_boundary_evidence.json`、逐点映射`final_freeze/boundary_point_mapping.csv.gz`。这些历史刺激在本次当前源码回归中重新执行；新增L1逐点范围关联见`continued_freeze/l1_property_point_scope_mapping.json`（仅范围关联，零点均OPEN，不声称逐点不可达）。新增证明边界见`formal/freeze_l1_producer_scope.md`。不将ID证明推广为全协议安全、活性或全系统签核。
 
-完整 `RTL Condition → Stimulus/Proof → DUT Event → Independent Checker → Coverage Point → Evidence` 链及最小后续任务：`final_freeze/five_boundary_evidence.json`。未将运行时安全观察写为无界证明，未将组合式归纳写成全Top协议证明。
+## 代码覆盖率与未覆盖代码
 
-## Raw Coverage变化
+详见 [代码覆盖率报告](code_coverage_report.md)：各Dataset、Main各模块、零命中源码行范围。逐点CSV保留Top、Source、条件、实例/位/方向、Point ID和Source/Dataset/Raw Hash。
 
-| Dataset | Line 前→后 | Branch 前→后 | Toggle 前→后 | FSM State 前→后 | FSM Arc 前→后 |
+| 范围 | Line | Branch | Toggle | FSM State | FSM Arc |
 | --- | --- | --- | --- | --- | --- |
-| main_subsystem | 864/992 → 864/992 | 473/556 → 473/556 | 21923/27474 → 21931/27474 | 30/54 → 30/54 | 13/48 → 13/48 |
-| axi_subsystem | 901/1068 → 901/1068 | 509/632 → 509/632 | 15623/32332 → 15623/32332 | 30/54 → 30/54 | 4/48 → 4/48 |
-| directory_controller | 178/182 → 178/182 | 37/42 → 37/42 | 260/612 → 260/612 | 10/10 → 10/10 | 3/9 → 3/9 |
-| directory_mshr_bank | 167/286 → 167/286 | 100/128 → 100/128 | 1249/2904 → 1249/2904 | 31/40 → 31/40 | 11/36 → 11/36 |
-| shared_line_engine | 101/104 → 101/104 | 44/52 → 44/52 | 304/648 → 304/648 | 0/0 → 0/0 | 0/0 → 0/0 |
-| mesi_l1_controller | 124/132 → 124/132 | 43/46 → 43/46 | 741/1804 → 741/1804 | 7/7 → 7/7 | 3/6 → 3/6 |
-| shared_l2_directory_array | 75/79 → 75/79 | 65/74 → 65/74 | 197/1778 → 197/1778 | 0/0 → 0/0 | 0/0 → 0/0 |
-| bus_blocks | 67/68 → 67/68 | 70/76 → 70/76 | 1100/2450 → 1100/2450 | 0/0 → 0/0 | 0/0 → 0/0 |
+| Main 本次前→后 | 864/992→864/992 | 473/556→473/556 | 21931/27474→21931/27474 | 30/54→30/54 | 13/48→13/48 |
+| Main 零点 | 128 | 83 | 5543 | 24 | 35 |
+| 全部8个独立Dataset零点 | 434 | 265 | 28597 | 57 | 113 |
 
-本轮相对200d268归档：新增8个Main Toggle，Line/Branch/FSM均0增量，0丢失命中，Point总数74831不变。Raw Hit 45365，全部自动核验45365，未核验0。Zero 29466（非Toggle869，Toggle28597）。
+总74831点，Raw Hit45365，Zero29466（非Toggle869）。本次新增Raw Hit **0**，丢失 **0**，全部8份原始文件与前一轮逐字节相同；每Dataset前后比较见`continued_freeze/coverage_comparison.json`。相对最初200d268归档的前一轮实际新增8个Main Toggle独立保留，不能重复计作本次增量。
 
-Main仍128 Line、83 Branch、24 FSM State、35 FSM Arc。合法控制路径无新增Line/Branch的原因：双向Retry与FINISH Reset执行的是已有源码路径；Context2/3无真实分配；GrantRead得到组合式结构证明而不是刺激命中；内部错误guard未由合法Producer触发，完整不变量尚缺。独立Top已有命中不转记Main。
+Line/Branch/FSM没有增加的原因：已有Retry/Reset测试重复走已执行源码；Context2/3尚未集成分配；GrantRead Busy是结构证明研究而非命中；内部错误guard需要完整Producer不变量。Block命中未转记Main。
 
-当前逐点复核：`final_freeze/review_matrix.csv.gz`，97个结构不可达候选、123个明确错误处理点、29246个仍未充分判定点；全部OPEN。Main控制270点中13个证明候选、47个错误处理点、210个未决。分类保守：未因信号名/未命中推断Constant；未决中可能包含合法可达行为，不能当作无风险。完整差异`final_freeze/freeze_baseline_point_diff.csv.gz`；原始档案与哈希`raw_archive.json`。
+处置分类保持保守：合法可达缺口必须补同Top检查测试；明确错误赋值单列Illegal/Defensive；其余不足以判定的点标UNRESOLVED，不能根据低活动度批准Waiver或删除代码。现有分类候选见`final_freeze/review_matrix.csv.gz`（97结构候选、123错误处理、29246未决，均未排除）；当前逐点源码/哈希见`code_coverage/uncovered_points.csv.gz`。**没有已证明可直接删除的死代码，没有批准Waiver。**
 
-Tool/Instrumentation Limited：不同Top及原生FSM提取范围分开保留。新增Reset执行未增加原生Arc不能单独证明工具错误；相关Arc继续OPEN。未新增无证据的Tool Waiver。
+## Formal与审核
 
-## Formal与独立审查
+- 新`freeze_l1_producer`：实际未修改L1 RTL，初始两拍Reset，随后任意输入及任意后续Reset，无协议假设；独立已接受请求ID模型及断言式归纳引理，k-induction PASS。范围不含输入Beat合法性、AXI匹配或Context容量。
+- `freeze_read_port`：实际Engine与模型化L2递推组合归纳PASS，对应关系仍待审核。
+- `freeze_actual_l2_read_port`：实际生产参数L2数组因前端拒绝blocking reset/nonblocking runtime混用而TOOL ERROR；保留配置及失败日志，不改RTL绕过问题。
+- Directory编码/低位对齐归纳PASS；Directory事务depth24、MSHR depth12为有界安全PASS；历史可选事务归纳UNKNOWN仍UNKNOWN。
 
-新Read-Port组合式k-induction PASS；编码/对齐归纳PASS；Directory事务depth24和MSHR depth12有界PASS；既有可选事务归纳UNKNOWN保留。假设/保证边界见`formal/freeze_read_port_scope.md`及`final_freeze/formal_evidence.json`。初轮独立Beat抽象反例保留；它是Harness抽象错误，不宣称RTL缺陷。
+60个Standalone Directory低位Toggle候选已重新核对逐点身份、源码Hash、当前Dataset/Raw Hash及新Formal日志：`continued_freeze/waiver_review_submission.json`。独立审批者null，PENDING，实际排除0。不将候选当作已批准Unreachable。
 
-60个Standalone Directory低6位Toggle候选已逐点核对Source Hash、Point身份、当前Raw/Dataset Hash和最新Formal PASS：`final_freeze/waiver_review_submission.json`。以PR仓库附件提交审查，审批者null，PENDING_INDEPENDENT_REVIEW。批准Waiver/Unreachable排除0，不改分母；Reviewed Eligible Coverage不计算。没有冒充独立审核。
+## 冻结决定与交付
 
-## 最终回归与冻结决定
+Context2/3集成边界、其余Producer安全及未达FSM源状态仍需最小证明/合法测试，因此功能候选与完整代码签核均 **OPEN**。停止新增随机场景和架构扩展；现有53/35功能计划回归切片已通过，可供有限范围审核，但本报告不宣布冻结批准。
 
-八项目标实际8/8 PASS；Functional53/53、Cross35/35、Stress280/280（41分17秒）；Cross Closure21/21，Hit-under-Miss3/3，Replay1/1。Full-System Verify70passed/1skipped；skip不计PASS。Formal、Mutation及现有Checker Infrastructure保留。
+当前证据：`continued_freeze/dataset_manifest.json`、`raw_archive.json`、`formal_evidence.json`、`regression_status.json`、`evidence_hashes.json`；`verification_run_manifest.json`。日志与原始数据压缩归档，SHA256按解压内容核验。报告提交只包含证据，不改变被测源码。
 
-Release Gate实际OPEN，make退出2（程序退出1），29466条发现均为Required零点未处置；Manifest错误0，没有忽略非零退出。Gate单元测试19/19。当前标准签核报告已刷新8/8回归状态；代码签核仍OPEN。
+被测源码CI均success：
 
-**停止扩展测试/架构，提交冻结审查包，暂不宣布冻结候选通过。** Context2/3边界、完整内部Producer Safety和未达FSM源状态仍需最小证明/合法测试任务，见`remaining_risks.md`。现有53/35功能计划的回归切片通过可供审核，但不能代表全部高风险合法行为已验证。
+- https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42943297869
+- https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42943288219
 
-被测SHA的CI均success：
-
-- https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42844588610
-- https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42844268091
-
-PR #1：https://github.com/cwu766485-ctrl/open_verif_learning/pull/1。报告提交CI需按新HEAD另查，不借用被测源码CI。未合并、未创建Tag。Evidence Hash：`final_freeze/evidence_hashes.json`；Source/Dataset身份：`dataset_manifest.json`；完整回归日志哈希：`regression_status.json`。
+PR：https://github.com/cwu766485-ctrl/open_verif_learning/pull/1 。报告提交CI另查其实际HEAD，不能借用源码CI。未合并、未创建正式Tag。

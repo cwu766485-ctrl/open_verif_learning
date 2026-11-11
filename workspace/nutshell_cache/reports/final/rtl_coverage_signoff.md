@@ -2,7 +2,7 @@
 
 **Status: OPEN — not signed off.** This report preserves the raw coverage denominator and does not assign waivers. The latest available raw runs show unhit RTL coverage points and unresolved point-to-checker review. No claim of 100% reviewed/eligible code coverage is made.
 
-Generated: 2026-11-11 01:19 +08.
+Generated: 2026-11-11 11:28 +08.
 
 ## Scope and source manifest
 
@@ -42,7 +42,7 @@ All 869 zero-count dataset-scoped records currently have status **OPEN**. Allowe
 ## Functional coverage and checker status
 
 Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
-Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `b383383abea773decff022c149b7e767fb2df827`.
+Full-system checked closure artifact: functional 53/53; cross 35/35; source SHA `e0b087c44e9131d2eb9ca7cbf0193e82bb18a22c`.
 These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.
 
 ## Reviewed / eligible coverage

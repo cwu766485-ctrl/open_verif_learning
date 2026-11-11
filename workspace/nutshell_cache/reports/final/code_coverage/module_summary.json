@@ -1,0 +1,1154 @@
+[
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "branch",
+    "total": 8,
+    "hit": 7,
+    "zero": 1
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "line",
+    "total": 17,
+    "hit": 13,
+    "zero": 4
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "toggle",
+    "total": 558,
+    "hit": 117,
+    "zero": 441
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "branch",
+    "total": 68,
+    "hit": 57,
+    "zero": 11
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "line",
+    "total": 51,
+    "hit": 50,
+    "zero": 1
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "toggle",
+    "total": 1892,
+    "hit": 793,
+    "zero": 1099
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "branch",
+    "total": 34,
+    "hit": 32,
+    "zero": 2
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "line",
+    "total": 37,
+    "hit": 37,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "toggle",
+    "total": 738,
+    "hit": 260,
+    "zero": 478
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "branch",
+    "total": 82,
+    "hit": 66,
+    "zero": 16
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "line",
+    "total": 54,
+    "hit": 44,
+    "zero": 10
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "toggle",
+    "total": 6796,
+    "hit": 3856,
+    "zero": 2940
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "branch",
+    "total": 52,
+    "hit": 34,
+    "zero": 18
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "line",
+    "total": 104,
+    "hit": 66,
+    "zero": 38
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "toggle",
+    "total": 648,
+    "hit": 309,
+    "zero": 339
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "branch",
+    "total": 42,
+    "hit": 27,
+    "zero": 15
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_arc",
+    "total": 36,
+    "hit": 2,
+    "zero": 34
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_state",
+    "total": 40,
+    "hit": 18,
+    "zero": 22
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "line",
+    "total": 182,
+    "hit": 113,
+    "zero": 69
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "toggle",
+    "total": 612,
+    "hit": 282,
+    "zero": 330
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "branch",
+    "total": 86,
+    "hit": 70,
+    "zero": 16
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "line",
+    "total": 104,
+    "hit": 91,
+    "zero": 13
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "toggle",
+    "total": 2292,
+    "hit": 516,
+    "zero": 1776
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiter.sv",
+    "module": "CoherenceRequestArbiter",
+    "metric": "line",
+    "total": 5,
+    "hit": 5,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiter.sv",
+    "module": "CoherenceRequestArbiter",
+    "metric": "toggle",
+    "total": 414,
+    "hit": 155,
+    "zero": 259
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "branch",
+    "total": 4,
+    "hit": 4,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "line",
+    "total": 22,
+    "hit": 22,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "toggle",
+    "total": 260,
+    "hit": 104,
+    "zero": 156
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "branch",
+    "total": 20,
+    "hit": 9,
+    "zero": 11
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "line",
+    "total": 34,
+    "hit": 29,
+    "zero": 5
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "toggle",
+    "total": 1872,
+    "hit": 871,
+    "zero": 1001
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "branch",
+    "total": 4,
+    "hit": 4,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "line",
+    "total": 50,
+    "hit": 50,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "toggle",
+    "total": 1374,
+    "hit": 998,
+    "zero": 376
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "branch",
+    "total": 62,
+    "hit": 53,
+    "zero": 9
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "line",
+    "total": 67,
+    "hit": 67,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "toggle",
+    "total": 2054,
+    "hit": 799,
+    "zero": 1255
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "branch",
+    "total": 46,
+    "hit": 29,
+    "zero": 17
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_arc",
+    "total": 12,
+    "hit": 2,
+    "zero": 10
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_state",
+    "total": 14,
+    "hit": 12,
+    "zero": 2
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "line",
+    "total": 126,
+    "hit": 103,
+    "zero": 23
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "toggle",
+    "total": 1532,
+    "hit": 921,
+    "zero": 611
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "line",
+    "total": 6,
+    "hit": 6,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "toggle",
+    "total": 272,
+    "hit": 63,
+    "zero": 209
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "branch",
+    "total": 74,
+    "hit": 67,
+    "zero": 7
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "line",
+    "total": 79,
+    "hit": 75,
+    "zero": 4
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "toggle",
+    "total": 1324,
+    "hit": 591,
+    "zero": 733
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/top/CoherentCacheAxiSubsystem.sv",
+    "module": "CoherentCacheAxiSubsystem",
+    "metric": "line",
+    "total": 8,
+    "hit": 8,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/top/CoherentCacheAxiSubsystem.sv",
+    "module": "CoherentCacheAxiSubsystem",
+    "metric": "toggle",
+    "total": 2408,
+    "hit": 1251,
+    "zero": 1157
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "branch",
+    "total": 50,
+    "hit": 50,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "line",
+    "total": 122,
+    "hit": 122,
+    "zero": 0
+  },
+  {
+    "dataset": "axi_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "toggle",
+    "total": 7286,
+    "hit": 3737,
+    "zero": 3549
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "branch",
+    "total": 8,
+    "hit": 8,
+    "zero": 0
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "line",
+    "total": 17,
+    "hit": 16,
+    "zero": 1
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/apb/CachePerformanceCsr.sv",
+    "module": "CachePerformanceCsr",
+    "metric": "toggle",
+    "total": 558,
+    "hit": 433,
+    "zero": 125
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "branch",
+    "total": 68,
+    "hit": 62,
+    "zero": 6
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "line",
+    "total": 51,
+    "hit": 51,
+    "zero": 0
+  },
+  {
+    "dataset": "bus_blocks",
+    "source": "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
+    "module": "LineMemoryAxi4Adapter",
+    "metric": "toggle",
+    "total": 1892,
+    "hit": 667,
+    "zero": 1225
+  },
+  {
+    "dataset": "directory_controller",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "branch",
+    "total": 42,
+    "hit": 37,
+    "zero": 5
+  },
+  {
+    "dataset": "directory_controller",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_arc",
+    "total": 9,
+    "hit": 3,
+    "zero": 6
+  },
+  {
+    "dataset": "directory_controller",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_state",
+    "total": 10,
+    "hit": 10,
+    "zero": 0
+  },
+  {
+    "dataset": "directory_controller",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "line",
+    "total": 182,
+    "hit": 178,
+    "zero": 4
+  },
+  {
+    "dataset": "directory_controller",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "toggle",
+    "total": 612,
+    "hit": 260,
+    "zero": 352
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "branch",
+    "total": 42,
+    "hit": 19,
+    "zero": 23
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_arc",
+    "total": 36,
+    "hit": 11,
+    "zero": 25
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_state",
+    "total": 40,
+    "hit": 31,
+    "zero": 9
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "line",
+    "total": 182,
+    "hit": 63,
+    "zero": 119
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "toggle",
+    "total": 612,
+    "hit": 312,
+    "zero": 300
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "branch",
+    "total": 86,
+    "hit": 81,
+    "zero": 5
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "line",
+    "total": 104,
+    "hit": 104,
+    "zero": 0
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "toggle",
+    "total": 2292,
+    "hit": 937,
+    "zero": 1355
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "branch",
+    "total": 34,
+    "hit": 32,
+    "zero": 2
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "line",
+    "total": 37,
+    "hit": 37,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/bus/axi/MemoryRefillMshrBank.sv",
+    "module": "MemoryRefillMshrBank",
+    "metric": "toggle",
+    "total": 738,
+    "hit": 445,
+    "zero": 293
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "branch",
+    "total": 82,
+    "hit": 73,
+    "zero": 9
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "line",
+    "total": 54,
+    "hit": 51,
+    "zero": 3
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/cluster/DualL1MesiCluster.sv",
+    "module": "DualL1MesiCluster",
+    "metric": "toggle",
+    "total": 6796,
+    "hit": 5846,
+    "zero": 950
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "branch",
+    "total": 52,
+    "hit": 36,
+    "zero": 16
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "line",
+    "total": 104,
+    "hit": 73,
+    "zero": 31
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "toggle",
+    "total": 648,
+    "hit": 509,
+    "zero": 139
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "branch",
+    "total": 42,
+    "hit": 30,
+    "zero": 12
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_arc",
+    "total": 36,
+    "hit": 9,
+    "zero": 27
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "fsm_state",
+    "total": 40,
+    "hit": 18,
+    "zero": 22
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "line",
+    "total": 182,
+    "hit": 125,
+    "zero": 57
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryController.sv",
+    "module": "DirectoryController",
+    "metric": "toggle",
+    "total": 612,
+    "hit": 521,
+    "zero": 91
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "branch",
+    "total": 86,
+    "hit": 73,
+    "zero": 13
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "line",
+    "total": 104,
+    "hit": 94,
+    "zero": 10
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/directory/DirectoryMshrBank.sv",
+    "module": "DirectoryMshrBank",
+    "metric": "toggle",
+    "total": 2292,
+    "hit": 929,
+    "zero": 1363
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiter.sv",
+    "module": "CoherenceRequestArbiter",
+    "metric": "line",
+    "total": 5,
+    "hit": 5,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiter.sv",
+    "module": "CoherenceRequestArbiter",
+    "metric": "toggle",
+    "total": 414,
+    "hit": 350,
+    "zero": 64
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "branch",
+    "total": 4,
+    "hit": 4,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "line",
+    "total": 22,
+    "hit": 22,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+    "module": "CoherenceRequestArbiterCore",
+    "metric": "toggle",
+    "total": 260,
+    "hit": 222,
+    "zero": 38
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "branch",
+    "total": 20,
+    "hit": 18,
+    "zero": 2
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "line",
+    "total": 34,
+    "hit": 31,
+    "zero": 3
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/CpuMmioRouter.sv",
+    "module": "CpuMmioRouter",
+    "metric": "toggle",
+    "total": 1872,
+    "hit": 1608,
+    "zero": 264
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "branch",
+    "total": 4,
+    "hit": 4,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "line",
+    "total": 50,
+    "hit": 50,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/interconnect/L2LineWriteArbiter.sv",
+    "module": "L2LineWriteArbiter",
+    "metric": "toggle",
+    "total": 1374,
+    "hit": 1274,
+    "zero": 100
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "branch",
+    "total": 62,
+    "hit": 54,
+    "zero": 8
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "line",
+    "total": 67,
+    "hit": 67,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Array.sv",
+    "module": "MesiL1Array",
+    "metric": "toggle",
+    "total": 2054,
+    "hit": 1449,
+    "zero": 605
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "branch",
+    "total": 46,
+    "hit": 32,
+    "zero": 14
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_arc",
+    "total": 12,
+    "hit": 4,
+    "zero": 8
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_state",
+    "total": 14,
+    "hit": 12,
+    "zero": 2
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "line",
+    "total": 126,
+    "hit": 106,
+    "zero": 20
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "toggle",
+    "total": 1532,
+    "hit": 1400,
+    "zero": 132
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "line",
+    "total": 6,
+    "hit": 6,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "toggle",
+    "total": 272,
+    "hit": 230,
+    "zero": 42
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "branch",
+    "total": 74,
+    "hit": 67,
+    "zero": 7
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "line",
+    "total": 79,
+    "hit": 75,
+    "zero": 4
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "toggle",
+    "total": 1324,
+    "hit": 1096,
+    "zero": 228
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "branch",
+    "total": 50,
+    "hit": 50,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "line",
+    "total": 122,
+    "hit": 122,
+    "zero": 0
+  },
+  {
+    "dataset": "main_subsystem",
+    "source": "rtl/top/CoherentCacheSubsystem.sv",
+    "module": "CoherentCacheSubsystem",
+    "metric": "toggle",
+    "total": 7286,
+    "hit": 6052,
+    "zero": 1234
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "branch",
+    "total": 46,
+    "hit": 43,
+    "zero": 3
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_arc",
+    "total": 6,
+    "hit": 3,
+    "zero": 3
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "fsm_state",
+    "total": 7,
+    "hit": 7,
+    "zero": 0
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "line",
+    "total": 126,
+    "hit": 118,
+    "zero": 8
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1Controller.sv",
+    "module": "MesiL1Controller",
+    "metric": "toggle",
+    "total": 1532,
+    "hit": 628,
+    "zero": 904
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "line",
+    "total": 6,
+    "hit": 6,
+    "zero": 0
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+    "module": "MesiL1SnoopArbiter",
+    "metric": "toggle",
+    "total": 272,
+    "hit": 113,
+    "zero": 159
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "branch",
+    "total": 74,
+    "hit": 65,
+    "zero": 9
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "line",
+    "total": 79,
+    "hit": 75,
+    "zero": 4
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "source": "rtl/l2/SharedL2DirectoryArray.sv",
+    "module": "SharedL2DirectoryArray",
+    "metric": "toggle",
+    "total": 1778,
+    "hit": 197,
+    "zero": 1581
+  },
+  {
+    "dataset": "shared_line_engine",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "branch",
+    "total": 52,
+    "hit": 44,
+    "zero": 8
+  },
+  {
+    "dataset": "shared_line_engine",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "line",
+    "total": 104,
+    "hit": 101,
+    "zero": 3
+  },
+  {
+    "dataset": "shared_line_engine",
+    "source": "rtl/coherence/SharedLineEngine.sv",
+    "module": "SharedLineEngine",
+    "metric": "toggle",
+    "total": 648,
+    "hit": 304,
+    "zero": 344
+  }
+]
