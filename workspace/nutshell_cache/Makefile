@@ -93,6 +93,7 @@ coherence_formal:
 	 sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
 	 sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_directory_unconstrained.sby && \
 	 sby -f -d reports/formal/freeze_read_port formal/freeze_read_port.sby && \
+	 sby -f -d reports/formal/freeze_l1_producer formal/freeze_l1_producer.sby && \
 	 sby -f -d reports/formal/coherence_directory_transactions formal/coherence_directory_transactions.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
