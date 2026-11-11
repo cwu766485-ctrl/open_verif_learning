@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "repository_head": "36303f48fc21f5aae655c6a2701360a13bca5480",
+  "repository_head": "0e852178ee2fedb5cdf414846cf3920b62a92139",
   "branch": "dv-closure-phase2",
-  "source_fingerprint": "7f62dfc4c618f229f5745de358a62b2e0387639638f79aee3527da8c01bc6509",
+  "source_fingerprint": "5f3c2f4f370989a29608f161504d076d6082523d0302e19ed3baac9ef1bf860a",
   "product_rtl_fingerprint": "15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a",
   "rtl_manifest": {
     "path": "rtl/Coherence.files.f",
@@ -322,6 +322,21 @@
     "formal/freeze_read_port_harness.sv": "8dfae327d3c6ee85a99ac71099e23dddc18cd31624935061b42feb2adb2f30c7",
     "formal/mutations/run.py": "1253c6ad4891b586809c01382adb3170c3e27954e369222520b2eff0640435ae",
     "formal/replacement_selector.sby": "cc2a0e8f276481e60a1dd31eecc144ca27e4b38acab43d65b8562e63811d8c99",
+    "formal/resource_control/MesiL1Array.sv": "d99993ff9e1dab815904df75666410471ee324778edf3e619755625a5ef959b3",
+    "formal/resource_control/SharedL2DirectoryArray.sv": "b45061dfdcbc8e1d3851cdd3b9e3d252a53d46a1b52d3e0d92af0d51d79f8f03",
+    "formal/review_axi_ar.sby": "c39a84841155bc159dabaaee6cac2c13864bb3ca63b62282528fcb09a307eb6d",
+    "formal/review_axi_ar_harness.sv": "05502400d55c306abddbbae9cd5e873e0ffe3fc9b102f15783065e5f43652dde",
+    "formal/review_axi_aw.sby": "ff2c6a58cff89aff4d3ade66706faf7bdc6eb296350c378edc39cdce67e8cab9",
+    "formal/review_axi_aw_harness.sv": "1b8e2263b1231554720b6b39f0b38299c87eb690a6d9205c4ab63c65faf8dadc",
+    "formal/review_axi_read.sby": "e97d3fd59f8d239f5667b1414e50e7ca2d72a768beba83eb48974a4cc026ab05",
+    "formal/review_axi_read_harness.sv": "de6ad4819a122d96801f9a0e21027745d3996ff2001b21d81778850fe076ed8d",
+    "formal/review_axi_response.sby": "da09423fabf1388f968f1b684c08fd027d001f0d0aca182de56999bb9722915a",
+    "formal/review_axi_response_harness.sv": "63600c64183bc1a53b82e267b57f039df6f89c70c27e398607fbc43ad3f8aa59",
+    "formal/review_axi_w.sby": "fd780d4f959d6db89c45daa78b9e30503c2b8645a98adc4c52fd8f124efdea90",
+    "formal/review_axi_w_harness.sv": "f2c5aa1f63b5fe50714c7a191de5ebb3b2c5b1cb4cb5eab8bb7371283ce79b76",
+    "formal/review_context_resource_cover.sby": "2bd13ea65e1cfb8a79809234a7bde201963fa64014e8caee222062a31f0d9c45",
+    "formal/review_refill_caller.sby": "84f369add9f0940814518e64557e444c427107ac19c0197bed33e9bb785affad",
+    "formal/review_refill_caller_harness.sv": "28125de0196f2d7a8377abe1a56f95dcd6ce23a38dccdca2b39b24fe473a79cb",
     "requirements-dv.txt": "491026a17fcaafa3385e496864bc23f85690f2483ce777cf9727faca4cb186e6",
     "rtl/Cache.files.f": "53602a6f3f142fdfcb86b00bcf3699cf1e36d53399a6b6cb2572dca9ca4e13a3",
     "rtl/Coherence.files.f": "06af9024a62bc60b30f2bf33550d1c3d9e0362f231377d964e6a9ce64bfcc667",
@@ -361,7 +376,8 @@
     "rtl/legacy_l1/pipeline/CacheStage3.v": "c75b5ea985339b5b1ec1c8b95129aadbf1306034c95b1f319fdd856936827ec7",
     "rtl/top/CoherentCacheAxiSubsystem.sv": "8de813a432493d92069a75fbba447012cee30e793158b32f7b664291c31babb5",
     "rtl/top/CoherentCacheSubsystem.sv": "da26c45ebeee0436b12baef5a327a5a9db46d4e77339ccc1bf2b7a9a4e7a0189",
-    "scripts/extract_final_l2_read_control.py": "c3c21779201abaca6796e3dc80e5321d14a583d12092901fc2392c9ddc4b55a5",
+    "scripts/extract_final_l2_read_control.py": "c53a706fa0f8d7afded17e806807b115055870daca51ceb26e7325fc4875cb48",
+    "scripts/extract_release_resource_control.py": "ba5df574c28af9db0280ba14d2a287fad102e5edaffe8bdc3fa593a43ade8dac",
     "scripts/run_rtl_release_regressions.py": "7728a77f01eda73005548d3c8b1f5b1abea06ded5543eb088ce2e75a393823dd",
     "tests/__init__.py": "b758764ba10439a4229d13f194b2a5aef8d0dca45b4788903b9ab325994ec92a",
     "tests/axi/test_axi4_adapter_python.py": "9794e44b76cb672126b5047d9c17f41759fb7f8ce2f13f9864c3e9537ff6d3ea",
@@ -499,13 +515,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "ecb43d65cb9d91449cba16b7ab81e947a9de5d4f86d128d5d02bd4fccfce13e2",
+      "verification_contract_sha256": "132be34560c055a7ad21d53979702a57943e73abcb21030c8b3364d79e3fab0d",
       "raw_file": "reports/coherence/coverage.dat",
       "raw_sha256": "cf32934f7c2b5ae6def7520c2aa184f17bf1725c7ac85aa80d0ecef63ee5b4f4",
       "line_info_file": "reports/coherence/coverage.info",
       "line_info_sha256": "1c80f6df4eca26e1c498ca7c3897ddec420562a6de81906d86cbe5d7666e7b3d",
-      "compiled_manifest_sha256": "e7a5f1dae53b137fe24b6cb96c9ee3aa66307bd85bd71c427437a7b3685b5f06",
-      "dataset_fingerprint": "fb9b97412e1d975ba2912aa8db8d8cc4148f6992b2ba84984caf1e1b7261d350",
+      "compiled_manifest_sha256": "20278fcc469da90b54af9dbded392bc37e364e8d8c925bec2d25566a09600f85",
+      "dataset_fingerprint": "cc25be2a32170860cb89b2310507925a5a0ae1753981976787986e3440fe1d46",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -606,13 +622,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "5c053a230d083acffc60c17d2b8259c47c4b7cb1f2c3fb7b9cbbc3f777db9c09",
+      "verification_contract_sha256": "75936577f6f9385ab09de5452785eca44b32b0befe8c7e845ac17e61284b0596",
       "raw_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",
       "raw_sha256": "97330f3cce65d9cf83898bd9000f3ca87598f49f952c97b83a95427804542681",
       "line_info_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem_line.info",
       "line_info_sha256": "5f5a6538ab4f3e13f8ca15515ed87c269f9ddd9940c8a6f28572d47cc4bb513b",
-      "compiled_manifest_sha256": "a6f65878982889e71668148cd31b785243e7c704da26c9df99502c88fec71c4b",
-      "dataset_fingerprint": "c03d82dc0422ce8912a67cdf2ba2dbd1ed1059d3c2ab101c1bb7899ed054234b",
+      "compiled_manifest_sha256": "ee2e2ea7edd70c4a0fff62549e543bc073dc164630e1a6d96a2289ff5599b1e5",
+      "dataset_fingerprint": "b498430ef2706724a6aaac2d43dff1129ef09292012d3fd3bf577950622739fa",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
@@ -702,13 +718,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "8ebeaacda27d80418097993f80003a06372ebd6d7fec784b709cd5fb20a877e5",
+      "verification_contract_sha256": "4511317d09d472b09b88fafc5329c11819fc9937043999b4e5c4cff7de9ad0bd",
       "raw_file": "reports/coherence/block_coverage/directory_controller.dat",
       "raw_sha256": "e9982c1f1462cd4bda4ddd16f5f82a4632c696e81e46f6636e0684a0020182a5",
       "line_info_file": "reports/coherence/block_coverage/directory_controller_line.info",
       "line_info_sha256": "dbd72be8ac9809a158747f73706c4bde4aa2165f9b970db8b32d67aa0fde4037",
-      "compiled_manifest_sha256": "564ac7c4ec35017f5a0257c261e9abca7a6723b0fcfd66dbe92195106fb44a18",
-      "dataset_fingerprint": "106746f0b7ab1b62b087b350d04086332d36b08192820e29d13928aa5cee45fc",
+      "compiled_manifest_sha256": "a4426995ef340e5730675e6819b02507d088bade61e1a5e8439beede993574e2",
+      "dataset_fingerprint": "4745bc4b55de381493e7f63beff7315061571290d2212d031b340ec10457aef2",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/directory/DirectoryController.sv"
@@ -811,13 +827,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "0c7ea315823e9ec55ddebbd12896c378e46ca66c9139fbc852230d6d8d7cb280",
+      "verification_contract_sha256": "5178f972eb9e50714a5ed90b6e70a8604d93adb1d1ba2342ba3c65f8aa99cde3",
       "raw_file": "reports/coherence/block_coverage/directory_mshr_bank.dat",
       "raw_sha256": "1badff2d1a4c11f6aa6302b4d405248ff8318e19c2a0461424f87c428d7ec39b",
       "line_info_file": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
       "line_info_sha256": "1b1ed72e039d997eb69b50e637ee6fac04e345dac94c29da0029a9b747b586c7",
-      "compiled_manifest_sha256": "ea1f0ef068a46709d5628158d5b022925349a983aa4c9829aa90ee8ceb49e6dd",
-      "dataset_fingerprint": "23c407141780f2c14edf37ab5e221b5ee61e8363bd9969bab5c11567501493a0",
+      "compiled_manifest_sha256": "d66f0b877e61a77f0e4fe21b2f2220ed0f5228aaa3447fe57f84c69eff25e65a",
+      "dataset_fingerprint": "9f4a15293cea25ef6415939f1d35c9d87846fad8182a396871a173c479db5555",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/directory/DirectoryController.sv",
@@ -920,13 +936,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "cf5fbb3caca4b4a8b0e787e1be08be9cf68597465608dad36ce3ece3f44e2efc",
+      "verification_contract_sha256": "d900b6baf57a2a788073c40c45c5b824433b46f4298b7607945dc6ae05c98747",
       "raw_file": "reports/coherence/block_coverage/shared_line_engine.dat",
       "raw_sha256": "2577449b714135d44bb4eb101d3dd26d14e7c936431dbe26af557a45c686f575",
       "line_info_file": "reports/coherence/block_coverage/shared_line_engine_line.info",
       "line_info_sha256": "e1dc407973a643997381b79923b8ac4636c3961f51570f176cce1e4429e8d191",
-      "compiled_manifest_sha256": "780d838148aca60caf9d93f1589961aeb5d9c911f1c1cbdad274aeedf91fbe0b",
-      "dataset_fingerprint": "f74c58f53890d6bf6b18cf9cd9b2978d5f87ab5bc3522d9491af690ee1fafd99",
+      "compiled_manifest_sha256": "140e133f3478d2f5b5c4bb497e636fa57da3239775146072f375894fae7747ca",
+      "dataset_fingerprint": "04348550b553836999e4c2780732615fa4288d7f2db048238da746382f97cb2a",
       "compiled_product_sources": [
         "rtl/coherence/SharedLineEngine.sv",
         "rtl/common/CoherenceProtocol.sv"
@@ -1029,13 +1045,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "1ff6249a979640fb01867d8bacda0cbb5d52b5238519c6fd343ae81040ae0eac",
+      "verification_contract_sha256": "046061112f7b26af433311230e18b16f2247f1d4d4e705916a212766f46e08df",
       "raw_file": "reports/coherence/block_coverage/mesi_l1_controller.dat",
       "raw_sha256": "b5198eb88f08edc0798126c2d00b1719c885d66ef04301a2f52d98b78237a3cd",
       "line_info_file": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
       "line_info_sha256": "cce4d7629c79b82eb37c3cfa335c50a3a67d75c62047d6974e2f999ac95c8283",
-      "compiled_manifest_sha256": "4c05fca0230c6d39fac13a9d5e586164d69220e4e21c98d5f0a10122ba8565c8",
-      "dataset_fingerprint": "314c6e0eb77b3f816d7c5e486e598211e0e91aa220e8303595135d01537882c4",
+      "compiled_manifest_sha256": "eb4e43b5985a247e1248f1987e1a0a8d2d7317bbaa3e436c435a030dd92ac2f4",
+      "dataset_fingerprint": "0b62d3660381dcde4c68c81c406ae64cedf1613f903a8c73b8f60c2abe284c74",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/l1/MesiL1Controller.sv",
@@ -1124,13 +1140,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "6e27cb82e79d3b1426349dd75d619e3295705aa5a9d9effe264149fe6def7fe5",
+      "verification_contract_sha256": "2725dce3650db3b9343d47f5fc6611727bffacd31b811ff06f1fe340f59a4de9",
       "raw_file": "reports/coherence/block_coverage/shared_l2_directory_array.dat",
       "raw_sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c",
       "line_info_file": "reports/coherence/block_coverage/shared_l2_directory_array_line.info",
       "line_info_sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79",
-      "compiled_manifest_sha256": "452f41d0229b92de40842720e10dca922c2615db09bd667dffb276c9ba0e1495",
-      "dataset_fingerprint": "6450848ffc847a74b982741974560f15192d9068a069b21ca562eb979efc6f58",
+      "compiled_manifest_sha256": "61dbf04c8ece00ad2f793c1eb310ee98e895a05f4686bb51a0ac0c74b4fbf10d",
+      "dataset_fingerprint": "174f89b4442b9a584d12d42bdf5af72b8aa5a830595574fb8bdb4178e3167469",
       "compiled_product_sources": [
         "rtl/common/CoherenceProtocol.sv",
         "rtl/l2/SharedL2DirectoryArray.sv"
@@ -1233,13 +1249,13 @@
           }
         ]
       },
-      "verification_contract_sha256": "282df6e94eb10032f68962314ef1005790a24d49d57e1e5db8293c5e78653987",
+      "verification_contract_sha256": "84ddbaf76e3b1fd603c1b2c81a5e71cc1d417feaf10b691313f060d6cdb555da",
       "raw_file": "reports/coherence/block_coverage/bus_blocks.dat",
       "raw_sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf",
       "line_info_file": "reports/coherence/block_coverage/bus_blocks_line.info",
       "line_info_sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a",
-      "compiled_manifest_sha256": "f8e55ef6bc2fa1a7cfdf30557d9761c0ec02d7de5c509d8204d1551337c1e1f6",
-      "dataset_fingerprint": "62245cca2888720ded047d8af0f60342cbd5e94f2d4b6dd9bbdc1951d6cba1c9",
+      "compiled_manifest_sha256": "ca6cbec80f4d92cc15ef8909c7d13e88334c748700a6c4028e88328147ea16d2",
+      "dataset_fingerprint": "b81dfef5603e578f9be2c5eb3d257039d9d4c77acd4f68460df1fc0b6a93d35a",
       "compiled_product_sources": [
         "rtl/bus/apb/CachePerformanceCsr.sv",
         "rtl/bus/axi/LineMemoryAxi4Adapter.sv",

@@ -2,5 +2,5 @@
   "command": "make COHERENCE_JOBS=2 coherence_release_gate",
   "returncode": 2,
   "log": "reports/closure/rtl_release_gate.log.gz",
-  "log_sha256": "48b67638e310ee157faa9ff9e66d7f3fe9733224b21fb8ca0dd41507462681f5"
+  "log_sha256": "8284227099930507b09fc9eb832b3bae9aa14afbd1831cb4ff111cc12c690f65"
 }

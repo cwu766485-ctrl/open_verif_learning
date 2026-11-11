@@ -1,0 +1,101 @@
+{
+  "array_cuts": [
+    {
+      "source": "rtl/l1/MesiL1Array.sv",
+      "source_sha256": "d8262ebbc8e3d94edc89016dd6795a2f55313c8abb6e823764f0769dc13fd295",
+      "cut_outputs": [
+        "cpu_lookup_hit",
+        "cpu_lookup_way",
+        "cpu_lookup_state",
+        "cpu_lookup_word",
+        "snoop_lookup_hit",
+        "snoop_lookup_way",
+        "snoop_lookup_state",
+        "replace_valid",
+        "replace_way",
+        "replace_state",
+        "replace_line_addr",
+        "cpu_meta_write_ready",
+        "snoop_meta_write_ready",
+        "refill_ready",
+        "cpu_store_ready",
+        "line_rd_ready",
+        "line_rd_hit",
+        "line_data_valid",
+        "line_data_beat_idx",
+        "line_data",
+        "line_data_last",
+        "protocol_error"
+      ],
+      "artifact": "formal/resource_control/MesiL1Array.sv",
+      "artifact_sha256": "d99993ff9e1dab815904df75666410471ee324778edf3e619755625a5ef959b3"
+    },
+    {
+      "source": "rtl/l2/SharedL2DirectoryArray.sv",
+      "source_sha256": "7f3805013905f7ede743403c1bd6de6abf6b6d444390efb5a1319ee374133b1e",
+      "cut_outputs": [
+        "lookup_hit",
+        "lookup_way",
+        "lookup_dir_state",
+        "lookup_sharers",
+        "lookup_owner_id",
+        "dir_write_ready",
+        "alloc_victim_valid",
+        "alloc_way",
+        "alloc_victim_addr",
+        "alloc_victim_dir_state",
+        "alloc_victim_sharers",
+        "alloc_victim_owner_id",
+        "alloc_victim_dirty",
+        "entry_invalidate_ready",
+        "mark_clean_ready",
+        "line_wr_ready",
+        "line_rd_ready",
+        "line_rd_hit",
+        "line_data_valid",
+        "line_data_beat_idx",
+        "line_data",
+        "line_data_last",
+        "protocol_error"
+      ],
+      "artifact": "formal/resource_control/SharedL2DirectoryArray.sv",
+      "artifact_sha256": "b45061dfdcbc8e1d3851cdd3b9e3d252a53d46a1b52d3e0d92af0d51d79f8f03"
+    }
+  ],
+  "retained": [
+    {
+      "source": "rtl/cluster/DualL1MesiCluster.sv",
+      "source_sha256": "50fcbf565d76e96b8335b6063d4f1454de01e83133bc5700449f88a66492cd89"
+    },
+    {
+      "source": "rtl/l1/MesiL1Controller.sv",
+      "source_sha256": "21be7f1b19a6c217827e44f1122a7ecf191ab589aa829e18268ce16de981f90f"
+    },
+    {
+      "source": "rtl/l1/MesiL1SnoopArbiter.sv",
+      "source_sha256": "e0c84977fd94255651adbce03ee72b1df078538f7d317bac6a6b0a44a37ba29f"
+    },
+    {
+      "source": "rtl/interconnect/CoherenceRequestArbiter.sv",
+      "source_sha256": "cc0ea69f05d0cfe9520ba6645042849223d7ea9c7dc389e35b44f37ce3951107"
+    },
+    {
+      "source": "rtl/interconnect/CoherenceRequestArbiterCore.sv",
+      "source_sha256": "7b3ce2989d0c4dcaadae47b731fe2e887e7da6d98a0ee624bf38171163f1720b"
+    },
+    {
+      "source": "rtl/directory/DirectoryController.sv",
+      "source_sha256": "18febf562aed53538ff5929bb6c7e48ec6c50de0730832c5dbdcc4cfa49db81c"
+    },
+    {
+      "source": "rtl/directory/DirectoryMshrBank.sv",
+      "source_sha256": "d5c370d3bab3409214e8f5775c47397bcfeb6bf280d93e01c63893c4a8c91a95"
+    },
+    {
+      "source": "rtl/top/CoherentCacheSubsystem.sv",
+      "source_sha256": "da26c45ebeee0436b12baef5a327a5a9db46d4e77339ccc1bf2b7a9a4e7a0189"
+    }
+  ],
+  "boundary": "Overapproximate array outputs, including metadata/ready/streams; no occupancy cap; abstract witness is NOT legal integrated witness; unreachable result would need cutpoint soundness review",
+  "independent_approval": null
+}

@@ -1,7 +1,7 @@
 # NutShell Cache v1.1 代码覆盖率报告
 
 **Full RTL Code Coverage Sign-off: OPEN。**
-Source Commit：`36303f48fc21f5aae655c6a2701360a13bca5480`；Source Fingerprint：`7f62dfc4c618f229f5745de358a62b2e0387639638f79aee3527da8c01bc6509`。
+Source Commit：`0e852178ee2fedb5cdf414846cf3920b62a92139`；Source Fingerprint：`5f3c2f4f370989a29608f161504d076d6082523d0302e19ed3baac9ef1bf860a`。
 
 Raw Point总数74831；命中45365；未命中29466。这是独立Top覆盖义务的统计，不是去重后的源码行数或合并覆盖率。
 

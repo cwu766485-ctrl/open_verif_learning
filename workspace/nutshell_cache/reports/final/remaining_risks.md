@@ -1,11 +1,12 @@
-# Remaining release blockers
+# Remaining Risks
 
-**Functional Candidate OPEN; Full RTL Code Coverage OPEN.**
+Functional Candidate OPEN; Full RTL Coverage OPEN.
 
-1. Context2/3 — actual complete Main cover blocked by frontend array/unroll limits; no legal witness or capacity proof. Preserve replacement Put bypass; obtain supported full elaboration or independently reviewed resource cone. Runtime peak2 and standalone four-context cover cannot close this integrated obligation.
-2. Read-port equivalence — actual Engine plus source-extracted L2 busy/beat cone inductive PASS; independent extraction/noninterference/Main routing review pending. No full-top equivalence or approved unreachable disposition.
-3. Producer composition — actual refill bank and AXI local ID/error/reset properties inductive PASS; refill allocation-free assumption must be discharged by Main caller. AXI AR/AW/W and response stability depth8 bounded PASS only; broad induction TIMEOUT. Complete queue/lifetime safety is OPEN.
-4. Reset system boundary — docs/cache.md §6.1 already requires shared external reset/drain. Local slot cleanup PASS; no protection promised against an external old same-ID response after reset/reallocation in violation of that contract. External independent reset is outside current scope.
-5. Required coverage — 29466 zero points (869 control,28597 toggle) OPEN; Main270 control points explicitly mapped.60 aligned Directory toggle candidates pending independent approval; no exclusions, blanket waivers, or deletion conclusions.
+- Context2/3: actual control with symbolic array cutpoints cover TIMEOUT. No legal witness or unreachable proof. Require real array-compatible legal constraints plus trace concretization, or inductive upper bound without occupancy assumption.
+- Read slice: global busy/beat write audit and actual engine composition PASS retained; independent extraction/routing review PENDING. No automatic point waiver.
+- AXI: response stability inductive PASS; AR/AW/W/read stability UNKNOWN induction. FIFO queue ownership and complete ID/Beat/Last lifetime proof remain OPEN. Prior local guarantees and bounded checks do not substitute.
+- Refill: caller free-slot premise discharged for source-checked admission logic; independent integration correspondence review and other end-to-end data/ownership properties separate.
+- Reset requires existing common external reset/drain contract; no new epoch feature or implicit assumption.
+- 29466 Required zero points remain OPEN;60toggle candidates PENDING independent approval; no exclusions.
 
-Exact current source/hash, proof boundaries and gate exits: `final_verification_report.md`, `proof_release/`. No new random campaign or architecture work is authorized by this freeze task.
+Current source/evidence and exact point mapping: final_verification_report.md and release_review/. Stop expanding DV after this bounded review.
