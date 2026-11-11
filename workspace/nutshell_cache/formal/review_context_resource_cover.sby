@@ -8,6 +8,7 @@ smtbmc z3
 plugin -i slang
 read_slang -D FORMAL CoherenceProtocol.sv SharedLineEngine.sv MesiL1SnoopArbiter.sv MesiL1Controller.sv DirectoryController.sv DirectoryMshrBank.sv MesiL1Array.sv CoherenceRequestArbiterCore.sv CoherenceRequestArbiter.sv CpuMmioRouter.sv L2LineWriteArbiter.sv SharedL2DirectoryArray.sv CachePerformanceCsr.sv LineMemoryAxi4Adapter.sv MemoryRefillMshrBank.sv DualL1MesiCluster.sv CoherentCacheSubsystem.sv CoherentCacheAxiSubsystem.sv final_context_reachability_harness.sv
 prep -top FinalContextReachabilityFormal
+setundef -undriven -anyseq
 memory_map
 opt_clean
 [files]

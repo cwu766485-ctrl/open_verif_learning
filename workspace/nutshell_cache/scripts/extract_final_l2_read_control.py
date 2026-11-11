@@ -21,6 +21,11 @@ def extract():
  # Verify actual reset/outputs rather than assuming their correspondence.
  checks=["line_rd_busy_q <= 1'b0;","line_rd_beat_q <= '0;",'line_rd_ready = !line_rd_busy_q;','line_data_valid = line_rd_busy_q;','line_data_beat_idx = line_rd_beat_q;',"line_data_last = (line_rd_beat_q == 3'd7);"]
  assert all(x in s for x in checks)
+ # Global write-site closure: fail if another process starts driving control.
+ busy_writes=re.findall(r"line_rd_busy_q\s*<=\s*([^;]+);",s)
+ beat_writes=re.findall(r"line_rd_beat_q\s*<=\s*([^;]+);",s)
+ assert busy_writes==["1'b0",'line_rd_hit',"1'b0"]
+ assert beat_writes==["'0","'0","'0","line_rd_beat_q + 1'b1"]
  text='''// Generated source control slice; see extraction manifest and scope.
 module FinalL2ReadControl(input logic clock,reset,line_rd_valid,line_rd_hit,line_data_ready,
 output logic line_rd_ready,line_data_valid,line_data_last,output logic [2:0] line_data_beat_idx);

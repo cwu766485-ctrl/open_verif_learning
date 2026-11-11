@@ -78,26 +78,26 @@ module MesiL1Array #(
 
   output logic protocol_error
 );
-  assign cpu_lookup_hit = $anyseq;
-  assign cpu_lookup_way = $anyseq;
-  assign cpu_lookup_state = $anyseq;
-  assign cpu_lookup_word = $anyseq;
-  assign snoop_lookup_hit = $anyseq;
-  assign snoop_lookup_way = $anyseq;
-  assign snoop_lookup_state = $anyseq;
-  assign replace_valid = $anyseq;
-  assign replace_way = $anyseq;
-  assign replace_state = $anyseq;
-  assign replace_line_addr = $anyseq;
-  assign cpu_meta_write_ready = $anyseq;
-  assign snoop_meta_write_ready = $anyseq;
-  assign refill_ready = $anyseq;
-  assign cpu_store_ready = $anyseq;
-  assign line_rd_ready = $anyseq;
-  assign line_rd_hit = $anyseq;
-  assign line_data_valid = $anyseq;
-  assign line_data_beat_idx = $anyseq;
-  assign line_data = $anyseq;
-  assign line_data_last = $anyseq;
-  assign protocol_error = $anyseq;
+  // Symbolic undriven output cutpoint: cpu_lookup_hit
+  // Symbolic undriven output cutpoint: cpu_lookup_way
+  // Symbolic undriven output cutpoint: cpu_lookup_state
+  // Symbolic undriven output cutpoint: cpu_lookup_word
+  // Symbolic undriven output cutpoint: snoop_lookup_hit
+  // Symbolic undriven output cutpoint: snoop_lookup_way
+  // Symbolic undriven output cutpoint: snoop_lookup_state
+  // Symbolic undriven output cutpoint: replace_valid
+  // Symbolic undriven output cutpoint: replace_way
+  // Symbolic undriven output cutpoint: replace_state
+  // Symbolic undriven output cutpoint: replace_line_addr
+  // Symbolic undriven output cutpoint: cpu_meta_write_ready
+  // Symbolic undriven output cutpoint: snoop_meta_write_ready
+  // Symbolic undriven output cutpoint: refill_ready
+  // Symbolic undriven output cutpoint: cpu_store_ready
+  // Symbolic undriven output cutpoint: line_rd_ready
+  // Symbolic undriven output cutpoint: line_rd_hit
+  // Symbolic undriven output cutpoint: line_data_valid
+  // Symbolic undriven output cutpoint: line_data_beat_idx
+  // Symbolic undriven output cutpoint: line_data
+  // Symbolic undriven output cutpoint: line_data_last
+  // Symbolic undriven output cutpoint: protocol_error
 endmodule

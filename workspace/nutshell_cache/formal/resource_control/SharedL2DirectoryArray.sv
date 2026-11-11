@@ -82,27 +82,27 @@ module SharedL2DirectoryArray #(
 
   output logic protocol_error
 );
-  assign lookup_hit = $anyseq;
-  assign lookup_way = $anyseq;
-  assign lookup_dir_state = $anyseq;
-  assign lookup_sharers = $anyseq;
-  assign lookup_owner_id = $anyseq;
-  assign dir_write_ready = $anyseq;
-  assign alloc_victim_valid = $anyseq;
-  assign alloc_way = $anyseq;
-  assign alloc_victim_addr = $anyseq;
-  assign alloc_victim_dir_state = $anyseq;
-  assign alloc_victim_sharers = $anyseq;
-  assign alloc_victim_owner_id = $anyseq;
-  assign alloc_victim_dirty = $anyseq;
-  assign entry_invalidate_ready = $anyseq;
-  assign mark_clean_ready = $anyseq;
-  assign line_wr_ready = $anyseq;
-  assign line_rd_ready = $anyseq;
-  assign line_rd_hit = $anyseq;
-  assign line_data_valid = $anyseq;
-  assign line_data_beat_idx = $anyseq;
-  assign line_data = $anyseq;
-  assign line_data_last = $anyseq;
-  assign protocol_error = $anyseq;
+  // Symbolic undriven output cutpoint: lookup_hit
+  // Symbolic undriven output cutpoint: lookup_way
+  // Symbolic undriven output cutpoint: lookup_dir_state
+  // Symbolic undriven output cutpoint: lookup_sharers
+  // Symbolic undriven output cutpoint: lookup_owner_id
+  // Symbolic undriven output cutpoint: dir_write_ready
+  // Symbolic undriven output cutpoint: alloc_victim_valid
+  // Symbolic undriven output cutpoint: alloc_way
+  // Symbolic undriven output cutpoint: alloc_victim_addr
+  // Symbolic undriven output cutpoint: alloc_victim_dir_state
+  // Symbolic undriven output cutpoint: alloc_victim_sharers
+  // Symbolic undriven output cutpoint: alloc_victim_owner_id
+  // Symbolic undriven output cutpoint: alloc_victim_dirty
+  // Symbolic undriven output cutpoint: entry_invalidate_ready
+  // Symbolic undriven output cutpoint: mark_clean_ready
+  // Symbolic undriven output cutpoint: line_wr_ready
+  // Symbolic undriven output cutpoint: line_rd_ready
+  // Symbolic undriven output cutpoint: line_rd_hit
+  // Symbolic undriven output cutpoint: line_data_valid
+  // Symbolic undriven output cutpoint: line_data_beat_idx
+  // Symbolic undriven output cutpoint: line_data
+  // Symbolic undriven output cutpoint: line_data_last
+  // Symbolic undriven output cutpoint: protocol_error
 endmodule
