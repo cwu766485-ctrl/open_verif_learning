@@ -99,10 +99,19 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
         "memory_latency_cycles": 48,
         "apb_sample": "during_outstanding_refills",
     })
-    addr0, addr1 = 0x0040_0008, 0x0040_1048
-    value0, value1 = 0xA0A1_A2A3_A4A5_A6A7, 0xB0B1_B2B3_B4B5_B6B7
-    env.seed_word(addr0, value0)
-    env.seed_word(addr1, value1)
+    line0, line1 = 0x0040_0000, 0x0040_1040
+    addr0, addr1 = line0 + 0x08, line1 + 0x08
+    signatures = {
+        line0 + beat * 8: (0xA0 << 56) | (beat << 48) | (line0 + beat * 8)
+        for beat in range(8)
+    }
+    signatures.update({
+        line1 + beat * 8: (0xB0 << 56) | (beat << 48) | (line1 + beat * 8)
+        for beat in range(8)
+    })
+    for address, value in signatures.items():
+        env.seed_word(address, value)
+    value0, value1 = signatures[addr0], signatures[addr1]
 
     event_start = len(env.monitor.events)
     env.axi.force_next_reads_out_of_order(2)
@@ -139,6 +148,31 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     assert [item[0] for item in first_two_r] == [
         item[0] for item in reversed(first_two_ar)
     ], f"AXI R completions were not out of order: AR={first_two_ar}, R={first_two_r}"
+    read_events = [event for event in env.monitor.events[event_start:]
+                   if event["source"] == "axi" and
+                   event["event_type"] == "read_beat" and
+                   event["address"] & ~0x3F in (line0, line1)]
+    assert len(read_events) == 16
+    by_id = {}
+    for event in read_events:
+        by_id.setdefault(event["txn_id"], []).append(event)
+    id_by_line = {line: next(txn_id for txn_id, address, _cycle in first_two_ar
+                             if address == line)
+                  for line in (line0, line1)}
+    for line, txn_id in id_by_line.items():
+        beats = sorted(by_id[txn_id], key=lambda event: event["beat"])
+        assert [event["beat"] for event in beats] == list(range(8))
+        assert [event["data"] for event in beats] == [
+            signatures[line + beat * 8] for beat in range(8)
+        ]
+        assert [event["last"] for event in beats] == [0] * 7 + [1]
+    rid_switch = next((right for left, right in zip(read_events, read_events[1:])
+                       if left["txn_id"] != right["txn_id"]), None)
+    assert rid_switch is not None, "AXI R beats never switched RID between bursts"
+    first_completion_cycle = min(event["cycle"] for event in read_events
+                                 if event["last"])
+    assert rid_switch["cycle"] < first_completion_cycle
+    assert len({event["txn_id"] for event in read_events}) == 2
     assert env.monitor.mshr_occupancy_histogram[2] > 0
     lifecycle = MshrLifecycleChecker.check(
         env.monitor.events[event_start:],
@@ -246,8 +280,19 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     for index, event in enumerate(events):
         if event["source"] == "axi" and event["event_type"] == "read_beat":
             event_refs.append(event_reference(f"axi_read_beat_{index}", "axi_beat", event))
+    first_r_event = min(read_events, key=lambda event: event["cycle"])
+    last_r_event = max(read_events, key=lambda event: event["cycle"])
+    for index, event in enumerate(read_events):
+        event_refs.append(event_reference(
+            f"axi_interleaved_beat_{index}", "axi_r_interleave", event
+        ))
+    event_refs.extend([
+        event_reference("axi_r_first", "axi_r_interleave", first_r_event),
+        event_reference("axi_r_last", "axi_r_interleave", last_r_event),
+    ])
     proof = checked_overlap_proof(
-        checker="paired cold-miss CPU/reference + MSHR lifecycle + AXI ID/beat + APB checker",
+        checker=("paired cold-miss CPU/reference + per-ID eight-beat signature "
+                 "and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB"),
         checker_pass=True,
         role_endpoints={
             "cpu0_miss": ("cpu0_request", "cpu0_response"),
@@ -274,6 +319,12 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
             {"role": "directory_grant1", "protocol": "MESI", "event_ref_ids": ["directory_grant_1"]},
             {"role": "apb_sample", "protocol": "APB", "address": env.apb.CSR_ACCESS_CYCLES,
              "event_ref_ids": ["apb_sample"]},
+            *[{"role": f"axi_r_line_{index}", "protocol": "AXI4-R",
+               "txn_id": id_by_line[line], "address": line,
+               "event_ref_ids": [f"axi_interleaved_beat_{beat}"
+                                 for beat, event in enumerate(read_events)
+                                 if event["address"] & ~0x3F == line]}
+              for index, line in enumerate((line0, line1))],
         ],
         state_transitions=[
             {"event_ref_id": "l1_commit_core0", "old_state": l1_commits[0]["old_state"],
@@ -287,6 +338,16 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     )
     env.coverage.sample_checked_cross(
         "FS.CROSS.MSHR_LIFECYCLE_END_TO_END", checked=True, evidence=proof
+    )
+    proof["axi_interleaving"] = {
+        "rid_switch_cycle": rid_switch["cycle"],
+        "switch_to_id": rid_switch["txn_id"],
+        "first_rlast_cycle": first_completion_cycle,
+        "switch_preceded_rlast": True,
+        "beat_ids": [event["txn_id"] for event in read_events],
+    }
+    env.coverage.sample_checked_cross(
+        "FS.CROSS.AXI_R_BEAT_INTERLEAVE", checked=True, evidence=proof
     )
     assert int(env.dut.protocol_error.value) == 0
 
