@@ -1,0 +1,14 @@
+[options]
+mode prove
+depth 24
+[engines]
+smtbmc z3
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv SharedLineEngine.sv SharedL2DirectoryArray.sv freeze_actual_l2_read_port_harness.sv
+prep -top FreezeActualL2ReadPortFormal
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/coherence/SharedLineEngine.sv
+rtl/l2/SharedL2DirectoryArray.sv
+formal/freeze_actual_l2_read_port_harness.sv

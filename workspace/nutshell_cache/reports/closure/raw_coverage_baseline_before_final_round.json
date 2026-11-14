@@ -1,0 +1,433 @@
+{
+  "captured_utc": "2026-11-09T11:31:08.134848+00:00",
+  "datasets": {
+    "axi_subsystem": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "61266b4c87a699880c52b902cb5772ceb573b79f37504ff9e4d629e65f1955ff",
+      "dataset_fingerprint": "049d9df2f88e8d4ba6b2ef2793af2156581b992939a3a77d59cfc81e33cf5e4b",
+      "filelist": "dv/blocks/coherent_cache_axi_subsystem/filelist.f",
+      "filelist_sha256": null,
+      "label": "AXI cache subsystem E2E (five fixed seeds)",
+      "line_info_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem_line.info",
+      "line_info_sha256": "5f5a6538ab4f3e13f8ca15515ed87c269f9ddd9940c8a6f28572d47cc4bb513b",
+      "metrics": {
+        "branch": {
+          "hit": 509,
+          "miss": 123,
+          "total": 632
+        },
+        "fsm_arc": {
+          "hit": 4,
+          "miss": 44,
+          "total": 48
+        },
+        "fsm_state": {
+          "hit": 30,
+          "miss": 24,
+          "total": 54
+        },
+        "line": {
+          "hit": 901,
+          "miss": 167,
+          "total": 1068
+        },
+        "toggle": {
+          "hit": 15623,
+          "miss": 16709,
+          "total": 32332
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/coherent_cache_axi_subsystem.dat",
+      "raw_sha256": "97330f3cce65d9cf83898bd9000f3ca87598f49f952c97b83a95427804542681",
+      "regression_gate": null,
+      "tests": [
+        "seeds:6699,24301,12648430,195936478,219540062"
+      ],
+      "top": "CoherentCacheAxiSubsystem_tb",
+      "verification_contract_sha256": null
+    },
+    "bus_blocks": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "b87e1d2e87ce3c8cfb77b3721ba088e5e27b06b576e9a8fa32b94a88085cbcf6",
+      "dataset_fingerprint": "e1fc8fc137973fc53e6f2f7321a4f68706a63b7d97ba45a147bf8f8e2beb2473",
+      "filelist": "dv/blocks/bus_blocks/filelist.f",
+      "filelist_sha256": null,
+      "label": "Bus blocks",
+      "line_info_file": "reports/coherence/block_coverage/bus_blocks_line.info",
+      "line_info_sha256": "a53ae7fa7f59d2a1576460361721fbbe033fcac2a8f6601b40e00653950fcc4a",
+      "metrics": {
+        "branch": {
+          "hit": 70,
+          "miss": 6,
+          "total": 76
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "fsm_state": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "line": {
+          "hit": 67,
+          "miss": 1,
+          "total": 68
+        },
+        "toggle": {
+          "hit": 1100,
+          "miss": 1350,
+          "total": 2450
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/bus_blocks.dat",
+      "raw_sha256": "4ddfd4e57fb4e5f4578a494e3729f9c19da334a252894205f6ea1c61b65653bf",
+      "regression_gate": null,
+      "tests": [
+        "standalone AXI adapter and APB CSR directed sequences"
+      ],
+      "top": "CacheBusBlocks_tb",
+      "verification_contract_sha256": null
+    },
+    "directory_controller": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "c6335e7a5628c52241c51db8b741a2d93d2da9edccb99fc3f48eb043273032d6",
+      "dataset_fingerprint": "e3eaf7c266786a552e578f7cbb74b48b588f6b6f831d7b343cce33b334e1f4cd",
+      "filelist": "dv/blocks/directory_controller/filelist.f",
+      "filelist_sha256": null,
+      "label": "DirectoryController block",
+      "line_info_file": "reports/coherence/block_coverage/directory_controller_line.info",
+      "line_info_sha256": "7bde28864200949dc75b110ff62316149d2ca6de110abdb5052f14538fdd2f85",
+      "metrics": {
+        "branch": {
+          "hit": 30,
+          "miss": 12,
+          "total": 42
+        },
+        "fsm_arc": {
+          "hit": 3,
+          "miss": 6,
+          "total": 9
+        },
+        "fsm_state": {
+          "hit": 10,
+          "miss": 0,
+          "total": 10
+        },
+        "line": {
+          "hit": 122,
+          "miss": 60,
+          "total": 182
+        },
+        "toggle": {
+          "hit": 250,
+          "miss": 362,
+          "total": 612
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/directory_controller.dat",
+      "raw_sha256": "77a14033b470b97f95f4b32775119fb0231405a5e8f1dc05053f5e26dfe3e6a4",
+      "regression_gate": null,
+      "tests": [
+        "standalone directed block sequence"
+      ],
+      "top": "DirectoryController_tb",
+      "verification_contract_sha256": null
+    },
+    "directory_mshr_bank": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "5030aa013d09669638b4a5176245f0c3a2f9d34f265b33e2e6e9e4ed52ed7f81",
+      "dataset_fingerprint": "e7c850f15d17493c179e2a645f27663fafcd899fd9e963ec3aacad063d56f927",
+      "filelist": "dv/blocks/directory_mshr_bank/filelist.f",
+      "filelist_sha256": null,
+      "label": "DirectoryMshrBank block",
+      "line_info_file": "reports/coherence/block_coverage/directory_mshr_bank_line.info",
+      "line_info_sha256": "eb5810629a58ed43e3877fa51659ff6ee9160f589654993bd40d301a629c1b8a",
+      "metrics": {
+        "branch": {
+          "hit": 100,
+          "miss": 28,
+          "total": 128
+        },
+        "fsm_arc": {
+          "hit": 11,
+          "miss": 25,
+          "total": 36
+        },
+        "fsm_state": {
+          "hit": 31,
+          "miss": 9,
+          "total": 40
+        },
+        "line": {
+          "hit": 167,
+          "miss": 119,
+          "total": 286
+        },
+        "toggle": {
+          "hit": 1063,
+          "miss": 1841,
+          "total": 2904
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/directory_mshr_bank.dat",
+      "raw_sha256": "f40ae220240d4cb06b0ecdd5226b89d799061b8372a5940f242a5f14a3e10bbe",
+      "regression_gate": null,
+      "tests": [
+        "standalone directed/stress sequence including write, transfer-start and grant stalls"
+      ],
+      "top": "DirectoryMshrBank_tb",
+      "verification_contract_sha256": null
+    },
+    "main_subsystem": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "1caf87daba54c81e68db872ba353805e849a9f9ad44add8d03d305a2aff589e7",
+      "dataset_fingerprint": "088e562f0860f73adbdbdc61709aebe88e251c4f8328df56bebdfedcadaa6d26",
+      "filelist": "rtl/Coherence.files.f",
+      "filelist_sha256": null,
+      "label": "Full coherent subsystem regression",
+      "line_info_file": "reports/coherence/coverage.info",
+      "line_info_sha256": "93a9b86c873f6ebc8698a04122df7743ecf84d02490c903f2e5b2ebb198065c3",
+      "metrics": {
+        "branch": {
+          "hit": 468,
+          "miss": 88,
+          "total": 556
+        },
+        "fsm_arc": {
+          "hit": 7,
+          "miss": 41,
+          "total": 48
+        },
+        "fsm_state": {
+          "hit": 30,
+          "miss": 24,
+          "total": 54
+        },
+        "line": {
+          "hit": 850,
+          "miss": 142,
+          "total": 992
+        },
+        "toggle": {
+          "hit": 19996,
+          "miss": 7478,
+          "total": 27474
+        }
+      },
+      "raw_file": "reports/coherence/coverage.dat",
+      "raw_sha256": "3842959397c72acb828f25f26f1d9f0cccc09340ac6ef942b98043b2307d8ba8",
+      "regression_gate": null,
+      "tests": [
+        "smoke",
+        "l2_multisnoop_only",
+        "seeds:00000001,00001234,5EEDC0DE,DEADBEEF,2468ACE0"
+      ],
+      "top": "CoherentCacheSubsystem_tb",
+      "verification_contract_sha256": null
+    },
+    "mesi_l1_controller": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "40ce8ecd1c04df85d035e2367febf416c0000329b2eb1c374f7fd4e4b887ca15",
+      "dataset_fingerprint": "a3a5b0e7841e5c561fbb7a5c3013a6b3b9c5a6c2d429e58062cd5188d619c3b1",
+      "filelist": "dv/blocks/mesi_l1_controller/filelist.f",
+      "filelist_sha256": null,
+      "label": "MesiL1Controller block",
+      "line_info_file": "reports/coherence/block_coverage/mesi_l1_controller_line.info",
+      "line_info_sha256": "846e323899763b69052c9ef1da0c4538a1d898ddead856e61a64d9ec247ad6eb",
+      "metrics": {
+        "branch": {
+          "hit": 41,
+          "miss": 5,
+          "total": 46
+        },
+        "fsm_arc": {
+          "hit": 3,
+          "miss": 3,
+          "total": 6
+        },
+        "fsm_state": {
+          "hit": 7,
+          "miss": 0,
+          "total": 7
+        },
+        "line": {
+          "hit": 107,
+          "miss": 25,
+          "total": 132
+        },
+        "toggle": {
+          "hit": 688,
+          "miss": 1116,
+          "total": 1804
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/mesi_l1_controller.dat",
+      "raw_sha256": "fbeea2dae027e1bb9c786e40cee33cd4a777fa016f202954cf3b669e479b399d",
+      "regression_gate": null,
+      "tests": [
+        "standalone refill, snoop, reset and malformed-beat sequences"
+      ],
+      "top": "MesiL1Controller_tb",
+      "verification_contract_sha256": null
+    },
+    "shared_l2_directory_array": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "5058fd3b467929b2d6bd8c1df7cecedf2a9f8768c094f024de6f5616d5483284",
+      "dataset_fingerprint": "e884ab0246796a02d49fc5f787faeea14cfea8dfd02eceb509b097b34a859c0a",
+      "filelist": "dv/blocks/shared_l2_directory_array/filelist.f",
+      "filelist_sha256": null,
+      "label": "SharedL2DirectoryArray block",
+      "line_info_file": "reports/coherence/block_coverage/shared_l2_directory_array_line.info",
+      "line_info_sha256": "88745381ba32d5d1d3a4c6d6e7be849f96984ad342c99acf6b12b85b5b72bf79",
+      "metrics": {
+        "branch": {
+          "hit": 65,
+          "miss": 9,
+          "total": 74
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "fsm_state": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "line": {
+          "hit": 75,
+          "miss": 4,
+          "total": 79
+        },
+        "toggle": {
+          "hit": 197,
+          "miss": 1581,
+          "total": 1778
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/shared_l2_directory_array.dat",
+      "raw_sha256": "23bc422d613c62f41a4e8a6b834523e6a596d175bc3d3f8234be51b3c99b053c",
+      "regression_gate": null,
+      "tests": [
+        "standalone lookup, stream, victim and malformed-write sequences"
+      ],
+      "top": "SharedL2DirectoryArray_tb",
+      "verification_contract_sha256": null
+    },
+    "shared_line_engine": {
+      "compile_options": [
+        "verilator --binary --timing --assert",
+        "--coverage-line",
+        "--coverage-branch",
+        "--coverage-toggle",
+        "--coverage-fsm",
+        "-CFLAGS -O0",
+        "-Wall -Wno-fatal -Wno-BLKSEQ"
+      ],
+      "compiled_manifest_sha256": "f1c150f18bf15fc4156fb9c8d25a309474031846acf355e9b9c1061bc29c6275",
+      "dataset_fingerprint": "443dd1b654e3538f81825e3593d36366a61c5995fa32833516520e85e20afe57",
+      "filelist": "dv/blocks/shared_line_engine/filelist.f",
+      "filelist_sha256": null,
+      "label": "SharedLineEngine block",
+      "line_info_file": "reports/coherence/block_coverage/shared_line_engine_line.info",
+      "line_info_sha256": "e1dc407973a643997381b79923b8ac4636c3961f51570f176cce1e4429e8d191",
+      "metrics": {
+        "branch": {
+          "hit": 44,
+          "miss": 8,
+          "total": 52
+        },
+        "fsm_arc": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "fsm_state": {
+          "hit": 0,
+          "miss": 0,
+          "total": 0
+        },
+        "line": {
+          "hit": 101,
+          "miss": 3,
+          "total": 104
+        },
+        "toggle": {
+          "hit": 304,
+          "miss": 344,
+          "total": 648
+        }
+      },
+      "raw_file": "reports/coherence/block_coverage/shared_line_engine.dat",
+      "raw_sha256": "2577449b714135d44bb4eb101d3dd26d14e7c936431dbe26af557a45c686f575",
+      "regression_gate": null,
+      "tests": [
+        "standalone grant, victim, refill, writeback and fault sequences"
+      ],
+      "top": "SharedLineEngine_tb",
+      "verification_contract_sha256": null
+    }
+  },
+  "manifest_sha256": "47423f346acb61114bdd33ec8ec359a7668663f0ad4bffb0ce424b5b3a654a02",
+  "source_fingerprint": "552e2c15801193839282bda632b0ce250d49af255d15cc7e5f462be36300f006"
+}

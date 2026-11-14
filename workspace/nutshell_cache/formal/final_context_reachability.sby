@@ -1,0 +1,32 @@
+[options]
+mode cover
+depth 48
+timeout 180
+[engines]
+smtbmc z3
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv SharedLineEngine.sv MesiL1SnoopArbiter.sv MesiL1Controller.sv DirectoryController.sv DirectoryMshrBank.sv MesiL1Array.sv CoherenceRequestArbiterCore.sv CoherenceRequestArbiter.sv CpuMmioRouter.sv L2LineWriteArbiter.sv SharedL2DirectoryArray.sv CachePerformanceCsr.sv LineMemoryAxi4Adapter.sv MemoryRefillMshrBank.sv DualL1MesiCluster.sv CoherentCacheSubsystem.sv CoherentCacheAxiSubsystem.sv final_context_reachability_harness.sv
+prep -top FinalContextReachabilityFormal
+memory_map
+opt_clean
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/coherence/SharedLineEngine.sv
+rtl/l1/MesiL1SnoopArbiter.sv
+rtl/l1/MesiL1Controller.sv
+rtl/directory/DirectoryController.sv
+rtl/directory/DirectoryMshrBank.sv
+rtl/l1/MesiL1Array.sv
+rtl/interconnect/CoherenceRequestArbiterCore.sv
+rtl/interconnect/CoherenceRequestArbiter.sv
+rtl/interconnect/CpuMmioRouter.sv
+rtl/interconnect/L2LineWriteArbiter.sv
+rtl/l2/SharedL2DirectoryArray.sv
+rtl/bus/apb/CachePerformanceCsr.sv
+rtl/bus/axi/LineMemoryAxi4Adapter.sv
+rtl/bus/axi/MemoryRefillMshrBank.sv
+rtl/cluster/DualL1MesiCluster.sv
+rtl/top/CoherentCacheSubsystem.sv
+rtl/top/CoherentCacheAxiSubsystem.sv
+formal/final_context_reachability_harness.sv

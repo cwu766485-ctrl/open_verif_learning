@@ -1,0 +1,107 @@
+SBY 23:17:48 [reports/formal/freeze_read_port] Removing directory '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/formal/freeze_read_port'.
+SBY 23:17:48 [reports/formal/freeze_read_port] Copy '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/rtl/common/CoherenceProtocol.sv' to '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/formal/freeze_read_port/src/CoherenceProtocol.sv'.
+SBY 23:17:48 [reports/formal/freeze_read_port] Copy '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/rtl/coherence/SharedLineEngine.sv' to '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/formal/freeze_read_port/src/SharedLineEngine.sv'.
+SBY 23:17:48 [reports/formal/freeze_read_port] Copy '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/formal/freeze_read_port_harness.sv' to '/home/preston/workspace/open_verif_learning-risk-closure/workspace/nutshell_cache/reports/formal/freeze_read_port/src/freeze_read_port_harness.sv'.
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0: smtbmc z3
+SBY 23:17:48 [reports/formal/freeze_read_port] base: starting process "cd reports/formal/freeze_read_port/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 23:17:48 [reports/formal/freeze_read_port] base: finished (returncode=0)
+SBY 23:17:48 [reports/formal/freeze_read_port] prep: starting process "cd reports/formal/freeze_read_port/model; yosys -ql design_prep.log design_prep.ys"
+SBY 23:17:48 [reports/formal/freeze_read_port] prep: finished (returncode=0)
+SBY 23:17:48 [reports/formal/freeze_read_port] smt2: starting process "cd reports/formal/freeze_read_port/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 23:17:48 [reports/formal/freeze_read_port] smt2: finished (returncode=0)
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: starting process "cd reports/formal/freeze_read_port; yosys-smtbmc -s z3 --presat --noprogress -t 24  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: starting process "cd reports/formal/freeze_read_port; yosys-smtbmc -s z3 --presat -i --noprogress -t 24  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2"
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Solver: z3
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Solver: z3
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 24..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 23..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 22..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 21..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 20..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 19..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 18..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 17..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 16..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 15..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 14..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 13..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 12..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 11..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 10..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 9..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 8..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 10..
+SBY 23:17:48 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 10..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 11..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 11..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 7..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 6..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 5..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:00  Trying induction in step 4..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assumptions in step 12..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:00  Checking assertions in step 12..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:01  Checking assumptions in step 13..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:01  Checking assertions in step 13..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Trying induction in step 3..
+SBY 23:17:49 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Trying induction in step 2..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:01  Checking assumptions in step 14..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:01  Checking assertions in step 14..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Trying induction in step 1..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Trying induction in step 0..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Temporal induction failed!
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Assert failed in FreezeReadPortFormal: freeze_read_port_harness.sv:119.7-119.44 (_witness_.check_490)
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Writing trace to VCD file: engine_0/trace_induct.vcd
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Writing trace to Verilog testbench: engine_0/trace_induct_tb.v
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Writing trace to constraints file: engine_0/trace_induct.smtc
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Writing trace to Yosys witness file: engine_0/trace_induct.yw
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: ##   0:00:01  Status: failed
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: finished (returncode=1)
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.induction: Status returned by engine for induction: FAIL
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:02  Checking assumptions in step 15..
+SBY 23:17:50 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:02  Checking assertions in step 15..
+SBY 23:17:51 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:02  Checking assumptions in step 16..
+SBY 23:17:51 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:02  Checking assertions in step 16..
+SBY 23:17:52 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:03  Checking assumptions in step 17..
+SBY 23:17:52 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:03  Checking assertions in step 17..
+SBY 23:17:53 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:04  Checking assumptions in step 18..
+SBY 23:17:53 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:04  Checking assertions in step 18..
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  BMC failed!
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  Assert failed in FreezeReadPortFormal: freeze_read_port_harness.sv:119.7-119.44 (_witness_.check_490)
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  Assert failed in FreezeReadPortFormal: freeze_read_port_harness.sv:120.7-120.83 (_witness_.check_495)
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  Writing trace to VCD file: engine_0/trace.vcd
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  Writing trace to Verilog testbench: engine_0/trace_tb.v
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:05  Writing trace to constraints file: engine_0/trace.smtc
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:06  Writing trace to Yosys witness file: engine_0/trace.yw
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: ##   0:00:06  Status: failed
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: finished (returncode=1)
+SBY 23:17:54 [reports/formal/freeze_read_port] engine_0.basecase: Status returned by engine for basecase: FAIL
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:06 (6)
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:08 (8)
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: engine_0 (smtbmc z3) returned FAIL for basecase
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: engine_0 (smtbmc z3) returned FAIL for induction
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: counterexample trace [basecase]: reports/formal/freeze_read_port/engine_0/trace.vcd
+SBY 23:17:54 [reports/formal/freeze_read_port] summary:   failed assertion FreezeReadPortFormal._witness_.check_490 at freeze_read_port_harness.sv:119.7-119.44 step 18
+SBY 23:17:54 [reports/formal/freeze_read_port] summary:   failed assertion FreezeReadPortFormal._witness_.check_495 at freeze_read_port_harness.sv:120.7-120.83 step 18
+SBY 23:17:54 [reports/formal/freeze_read_port] summary: counterexample trace [induction]: reports/formal/freeze_read_port/engine_0/trace_induct.vcd
+SBY 23:17:54 [reports/formal/freeze_read_port] summary:   failed assertion FreezeReadPortFormal._witness_.check_490 at freeze_read_port_harness.sv:119.7-119.44
+SBY 23:17:54 [reports/formal/freeze_read_port] DONE (FAIL, rc=2)

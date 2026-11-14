@@ -8,6 +8,10 @@ from toffee_test import case
 
 from dv.agents.coherent_cpu_agent import CpuRequest
 from dv.checkers.mshr_lifecycle_checker import MshrLifecycleChecker
+from dv.coverage.checked_cross_evidence import (
+    checked_overlap_proof,
+    event_reference,
+)
 from dv.sequences.full_system_sequences import run_legal_mesi_transition_scenario
 
 
@@ -82,16 +86,58 @@ async def test_cold_store_silent_upgrade_and_remote_getm(full_system_env):
 
 @case
 async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env):
-    env = await full_system_env(axi_options={"latency": 10})
-    addr0, addr1 = 0x0040_0008, 0x0040_1048
-    value0, value1 = 0xA0A1_A2A3_A4A5_A6A7, 0xB0B1_B2B3_B4B5_B6B7
-    env.seed_word(addr0, value0)
-    env.seed_word(addr1, value1)
+    env = await full_system_env(
+        seed=0xC006,
+        axi_options={"latency": 48, "r_valid_gap_period": 2,
+                     "read_reorder_window": 2},
+    )
+    env.trace_scenario_id = "CR06_DUAL_COLD_MISS_OOO_AXI_R_APB"
+    env.trace_config.update({
+        "core0_line": 0x0040_0000,
+        "core1_line": 0x0040_1040,
+        "axi_read_reorder": "reverse_two_ids",
+        "memory_latency_cycles": 48,
+        "apb_sample": "during_outstanding_refills",
+    })
+    line0, line1 = 0x0040_0000, 0x0040_1040
+    addr0, addr1 = line0 + 0x08, line1 + 0x08
+    signatures = {
+        line0 + beat * 8: (0xA0 << 56) | (beat << 48) | (line0 + beat * 8)
+        for beat in range(8)
+    }
+    signatures.update({
+        line1 + beat * 8: (0xB0 << 56) | (beat << 48) | (line1 + beat * 8)
+        for beat in range(8)
+    })
+    for address, value in signatures.items():
+        env.seed_word(address, value)
+    value0, value1 = signatures[addr0], signatures[addr1]
 
     event_start = len(env.monitor.events)
-    result0, result1 = await env.cpu_access_pair(
+    env.axi.force_next_reads_out_of_order(2)
+    env.trace_operations.extend([
+        {"kind": "legal_prelude", "operation": "seed_line",
+         "addresses": [addr0, addr1], "values": [value0, value1]},
+        {"kind": "stimulus", "operation": "paired_cold_read",
+         "cores": [0, 1], "axi_reorder": "reverse_two_ids"},
+    ])
+    pair_task = asyncio.create_task(env.cpu_access_pair(
         CpuRequest(addr0), CpuRequest(addr1)
-    )
+    ))
+    for _ in range(500):
+        await ClockCycles(env.dut, 1)
+        if len(env.axi.read_addresses) >= 2:
+            break
+    assert len(env.axi.read_addresses) >= 2, "both AXI read IDs were not accepted"
+    assert not env.axi.read_completions, "refill completed before APB sampling"
+    apb_value = await env.apb.read(env.apb.CSR_ACCESS_CYCLES)
+    apb_events = [event for event in env.monitor.events[event_start:]
+                  if event["source"] == "apb" and
+                  event["event_type"] == "access_complete" and
+                  event["address"] == env.apb.CSR_ACCESS_CYCLES]
+    assert len(apb_events) == 1 and apb_events[0]["payload"]["read_data"] == apb_value
+    assert len(env.axi.read_completions) < 2, "APB sample missed the outstanding refill window"
+    result0, result1 = await pair_task
     assert (result0, result1) == (value0, value1)
     assert env.axi.peak_reads >= 2, (
         "two independent CPU cold misses did not overlap at AXI AR"
@@ -102,6 +148,31 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     assert [item[0] for item in first_two_r] == [
         item[0] for item in reversed(first_two_ar)
     ], f"AXI R completions were not out of order: AR={first_two_ar}, R={first_two_r}"
+    read_events = [event for event in env.monitor.events[event_start:]
+                   if event["source"] == "axi" and
+                   event["event_type"] == "read_beat" and
+                   event["address"] & ~0x3F in (line0, line1)]
+    assert len(read_events) == 16
+    by_id = {}
+    for event in read_events:
+        by_id.setdefault(event["txn_id"], []).append(event)
+    id_by_line = {line: next(txn_id for txn_id, address, _cycle in first_two_ar
+                             if address == line)
+                  for line in (line0, line1)}
+    for line, txn_id in id_by_line.items():
+        beats = sorted(by_id[txn_id], key=lambda event: event["beat"])
+        assert [event["beat"] for event in beats] == list(range(8))
+        assert [event["data"] for event in beats] == [
+            signatures[line + beat * 8] for beat in range(8)
+        ]
+        assert [event["last"] for event in beats] == [0] * 7 + [1]
+    rid_switch = next((right for left, right in zip(read_events, read_events[1:])
+                       if left["txn_id"] != right["txn_id"]), None)
+    assert rid_switch is not None, "AXI R beats never switched RID between bursts"
+    first_completion_cycle = min(event["cycle"] for event in read_events
+                                 if event["last"])
+    assert rid_switch["cycle"] < first_completion_cycle
+    assert len({event["txn_id"] for event in read_events}) == 2
     assert env.monitor.mshr_occupancy_histogram[2] > 0
     lifecycle = MshrLifecycleChecker.check(
         env.monitor.events[event_start:],
@@ -116,8 +187,168 @@ async def test_dual_cold_misses_overlap_and_route_axi_responses(full_system_env)
     env.coverage.sample_checked_event("FS.MSHR.OCCUPANCY_2", checked=True)
     env.coverage.sample_checked_event("FS.MSHR.LIFECYCLE_END_TO_END",
                                       checked=True)
-    env.coverage.sample_checked_cross("FS.CROSS.MSHR_LIFECYCLE_END_TO_END",
-                                      checked=True)
+
+    # The independent CPU/reference checker, MSHR lifecycle checker, and AXI
+    # ID/beat checker have all completed before this three-role proof is built.
+    events = env.monitor.events[event_start:]
+    cpu_events = [event for event in events
+                  if event["source"] == "cpu" and
+                  event["event_type"] in ("request_accept", "response_complete")
+                  and event["address"] in (addr0, addr1)]
+    cpu_by = {}
+    for core, address in ((0, addr0), (1, addr1)):
+        cpu_by[core] = {
+            "request": next(event for event in cpu_events
+                            if event["event_type"] == "request_accept" and
+                            event["core"] == core and event["address"] == address),
+            "response": next(event for event in cpu_events
+                             if event["event_type"] == "response_complete" and
+                             event["core"] == core and event["address"] == address),
+        }
+    ar_by_line = {
+        line: next(event for event in events
+                   if event["source"] == "axi" and
+                   event["event_type"] == "read_address" and
+                   event["address"] == line)
+        for line in (addr0 & ~0x3F, addr1 & ~0x3F)
+    }
+    last_r_by_id = {}
+    for event in events:
+        if event["source"] == "axi" and event["event_type"] == "read_beat" and event["last"]:
+            last_r_by_id[event["txn_id"]] = event
+    mshr_allocations = [event for event in events
+                        if event["source"] == "mshr" and
+                        event["event_type"] == "allocate"]
+    mshr_retirements = [event for event in events
+                        if event["source"] == "mshr" and
+                        event["event_type"] == "retire"]
+    assert len(mshr_allocations) == len(mshr_retirements) == 2
+    allocations_by_slot = {event["slot"]: event for event in mshr_allocations}
+    retirements_by_slot = {event["slot"]: event for event in mshr_retirements}
+    assert set(allocations_by_slot) == set(retirements_by_slot) == {0, 1}
+    l2_fill_beats = [event for event in events
+                     if event["source"] == "l2" and
+                     event["event_type"] == "line_write_beat"]
+    grant_events = [event for event in events
+                    if event["source"] == "directory" and
+                    event["event_type"] == "grant_accept"]
+    assert len(l2_fill_beats) == 16 and len(grant_events) == 2
+    l1_commits = {}
+    for core, address in ((0, addr0), (1, addr1)):
+        l1_commits[core] = next(event for event in events
+                                if event["source"] == "l1" and
+                                event["event_type"] == "metadata_commit" and
+                                event["core"] == core and
+                                event["address"] & ~0x3F == address & ~0x3F)
+    dir_commits = [event for event in events
+                   if event["source"] == "directory" and
+                   event["event_type"] == "metadata_commit" and
+                   event["address"] & ~0x3F in (addr0 & ~0x3F, addr1 & ~0x3F)]
+    assert len(dir_commits) >= 2
+    apb_event = apb_events[0]
+    assert all(ar_by_line[line]["cycle"] <= apb_event["cycle"] <
+               last_r_by_id[ar_by_line[line]["txn_id"]]["cycle"]
+               for line in ar_by_line), "APB read did not overlap both AXI refills"
+
+    axi0_line, axi1_line = addr0 & ~0x3F, addr1 & ~0x3F
+    event_refs = [
+        event_reference("cpu0_request", "cpu0_miss", cpu_by[0]["request"]),
+        event_reference("cpu0_response", "cpu0_miss", cpu_by[0]["response"]),
+        event_reference("cpu1_request", "cpu1_miss", cpu_by[1]["request"]),
+        event_reference("cpu1_response", "cpu1_miss", cpu_by[1]["response"]),
+        event_reference("axi0_ar", "axi0_refill", ar_by_line[axi0_line]),
+        event_reference("axi1_ar", "axi1_refill", ar_by_line[axi1_line]),
+        event_reference("axi0_rlast", "axi0_refill", last_r_by_id[ar_by_line[axi0_line]["txn_id"]]),
+        event_reference("axi1_rlast", "axi1_refill", last_r_by_id[ar_by_line[axi1_line]["txn_id"]]),
+        event_reference("apb_sample", "apb_sample", apb_event),
+        event_reference("l1_commit_core0", "mesi_commit", l1_commits[0]),
+        event_reference("l1_commit_core1", "mesi_commit", l1_commits[1]),
+    ]
+    for index, event in enumerate(dir_commits[-2:]):
+        event_refs.append(event_reference(f"directory_commit_{index}", "directory_commit", event))
+    for slot in (0, 1):
+        event_refs.append(event_reference(
+            f"mshr_allocate_{slot}", f"mshr{slot}", allocations_by_slot[slot]
+        ))
+        event_refs.append(event_reference(
+            f"mshr_retire_{slot}", f"mshr{slot}", retirements_by_slot[slot]
+        ))
+    for index, event in enumerate(l2_fill_beats):
+        event_refs.append(event_reference(f"l2_fill_beat_{index}", "l2_fill", event))
+    for index, event in enumerate(grant_events):
+        event_refs.append(event_reference(f"directory_grant_{index}", "directory_grant", event))
+    for index, event in enumerate(events):
+        if event["source"] == "axi" and event["event_type"] == "read_beat":
+            event_refs.append(event_reference(f"axi_read_beat_{index}", "axi_beat", event))
+    first_r_event = min(read_events, key=lambda event: event["cycle"])
+    last_r_event = max(read_events, key=lambda event: event["cycle"])
+    for index, event in enumerate(read_events):
+        event_refs.append(event_reference(
+            f"axi_interleaved_beat_{index}", "axi_r_interleave", event
+        ))
+    event_refs.extend([
+        event_reference("axi_r_first", "axi_r_interleave", first_r_event),
+        event_reference("axi_r_last", "axi_r_interleave", last_r_event),
+    ])
+    proof = checked_overlap_proof(
+        checker=("paired cold-miss CPU/reference + per-ID eight-beat signature "
+                 "and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB"),
+        checker_pass=True,
+        role_endpoints={
+            "cpu0_miss": ("cpu0_request", "cpu0_response"),
+            "cpu1_miss": ("cpu1_request", "cpu1_response"),
+            "axi0_refill": ("axi0_ar", "axi0_rlast"),
+            "axi1_refill": ("axi1_ar", "axi1_rlast"),
+            "mshr0": ("mshr_allocate_0", "mshr_retire_0"),
+            "mshr1": ("mshr_allocate_1", "mshr_retire_1"),
+            "apb_sample": ("apb_sample", "apb_sample"),
+        },
+        event_refs=event_refs,
+        transactions=[
+            {"role": "cpu0_miss", "protocol": "CPU", "txn_id": cpu_by[0]["response"]["txn_id"],
+             "address": addr0, "event_ref_ids": ["cpu0_request", "cpu0_response"]},
+            {"role": "cpu1_miss", "protocol": "CPU", "txn_id": cpu_by[1]["response"]["txn_id"],
+             "address": addr1, "event_ref_ids": ["cpu1_request", "cpu1_response"]},
+            {"role": "axi0_refill", "protocol": "AXI4-R", "txn_id": ar_by_line[axi0_line]["txn_id"],
+             "address": axi0_line, "event_ref_ids": ["axi0_ar", "axi0_rlast"]},
+            {"role": "axi1_refill", "protocol": "AXI4-R", "txn_id": ar_by_line[axi1_line]["txn_id"],
+             "address": axi1_line, "event_ref_ids": ["axi1_ar", "axi1_rlast"]},
+            {"role": "mshr0", "protocol": "refill_mshr", "event_ref_ids": ["mshr_allocate_0", "mshr_retire_0"]},
+            {"role": "mshr1", "protocol": "refill_mshr", "event_ref_ids": ["mshr_allocate_1", "mshr_retire_1"]},
+            {"role": "directory_grant0", "protocol": "MESI", "event_ref_ids": ["directory_grant_0"]},
+            {"role": "directory_grant1", "protocol": "MESI", "event_ref_ids": ["directory_grant_1"]},
+            {"role": "apb_sample", "protocol": "APB", "address": env.apb.CSR_ACCESS_CYCLES,
+             "event_ref_ids": ["apb_sample"]},
+            *[{"role": f"axi_r_line_{index}", "protocol": "AXI4-R",
+               "txn_id": id_by_line[line], "address": line,
+               "event_ref_ids": [f"axi_interleaved_beat_{beat}"
+                                 for beat, event in enumerate(read_events)
+                                 if event["address"] & ~0x3F == line]}
+              for index, line in enumerate((line0, line1))],
+        ],
+        state_transitions=[
+            {"event_ref_id": "l1_commit_core0", "old_state": l1_commits[0]["old_state"],
+             "new_state": l1_commits[0]["new_state"]},
+            {"event_ref_id": "l1_commit_core1", "old_state": l1_commits[1]["old_state"],
+             "new_state": l1_commits[1]["new_state"]},
+            *[{"event_ref_id": f"directory_commit_{index}", "state": event["state"],
+               "owner": event["owner"], "sharers": event["sharers"]}
+              for index, event in enumerate(dir_commits[-2:])],
+        ],
+    )
+    env.coverage.sample_checked_cross(
+        "FS.CROSS.MSHR_LIFECYCLE_END_TO_END", checked=True, evidence=proof
+    )
+    proof["axi_interleaving"] = {
+        "rid_switch_cycle": rid_switch["cycle"],
+        "switch_to_id": rid_switch["txn_id"],
+        "first_rlast_cycle": first_completion_cycle,
+        "switch_preceded_rlast": True,
+        "beat_ids": [event["txn_id"] for event in read_events],
+    }
+    env.coverage.sample_checked_cross(
+        "FS.CROSS.AXI_R_BEAT_INTERLEAVE", checked=True, evidence=proof
+    )
     assert int(env.dut.protocol_error.value) == 0
 
 

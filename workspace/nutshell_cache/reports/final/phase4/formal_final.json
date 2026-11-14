@@ -1,0 +1,23 @@
+[
+  {
+    "configuration": "coherence_directory_unconstrained",
+    "result": "INDUCTIVE_ENCODING_PASS",
+    "log": "reports/final/phase4/formal/final_coherence_directory_unconstrained.log.gz",
+    "sha256": "1a623745aa178d679007e25c7d29be47673f952512689b7d6d820f982b72ea3c",
+    "approved_exclusions": 0
+  },
+  {
+    "configuration": "coherence_directory_transactions",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH24",
+    "log": "reports/final/phase4/formal/final_coherence_directory_transactions.log.gz",
+    "sha256": "edb2a53d813871ac4f0ea50a81fdd82b4bb20f26d04bd4d36a718242395cb6a7",
+    "approved_exclusions": 0
+  },
+  {
+    "configuration": "coherence_directory_mshr_bank",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH12",
+    "log": "reports/final/phase4/formal/final_coherence_directory_mshr_bank.log.gz",
+    "sha256": "6dbd9e53cb37a1de623443f138133a9c7b86a707f068f643988fb50f03898feb",
+    "approved_exclusions": 0
+  }
+]

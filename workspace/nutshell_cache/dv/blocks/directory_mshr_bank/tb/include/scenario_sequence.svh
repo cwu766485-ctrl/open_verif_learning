@@ -41,6 +41,8 @@
 
 `include "include/xfer_start_backpressure.svh"
 
+`include "include/offer_competition.svh"
+
 `include "include/same_line_put_serialization.svh"
 
 `include "include/snoop_independence.svh"

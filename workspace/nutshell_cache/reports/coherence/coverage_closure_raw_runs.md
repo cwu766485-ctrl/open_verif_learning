@@ -6,32 +6,32 @@ Coverage ratios are raw observations, not signoff closure by themselves. Functio
 
 ## Full coherent subsystem regression
 
-Main subsystem smoke, multisnoop, five seeded regressions and Directory MSHR regression; one common elaboration and coverage definition.
+Main subsystem smoke, multisnoop and five seeded regressions, all from one common subsystem elaboration and coverage definition. The standalone Directory MSHR regression is a separate dataset and is not included here.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 843/998 | 155 |
-| branch | 461/556 | 95 |
-| toggle | 19980/27474 | 7494 |
+| line | 864/992 | 128 |
+| branch | 473/556 | 83 |
+| toggle | 21931/27474 | 5543 |
 | fsm_state | 30/54 | 24 |
-| fsm_arc | 7/48 | 41 |
+| fsm_arc | 13/48 | 35 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 65/82 | 5130/6796 | N/A | N/A |
-| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 468/648 | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 114/188 | 29/42 | 497/612 | 18/40 | 4/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 71/86 | 863/2292 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 276/414 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 183/260 | N/A | N/A |
-| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1517/1872 | N/A | N/A |
-| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1215/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1314/2054 | N/A | N/A |
-| `rtl/l1/MesiL1Controller.sv` | 103/126 | 31/46 | 1291/1532 | 12/14 | 3/12 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 195/272 | N/A | N/A |
-| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 992/1324 | N/A | N/A |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 5610/7286 | N/A | N/A |
+| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 445/738 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 73/82 | 5846/6796 | N/A | N/A |
+| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 509/648 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 125/182 | 30/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 73/86 | 929/2292 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 350/414 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 222/260 | N/A | N/A |
+| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1608/1872 | N/A | N/A |
+| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1274/1374 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1449/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Controller.sv` | 106/126 | 32/46 | 1400/1532 | 12/14 | 4/12 |
+| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 230/272 | N/A | N/A |
+| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 1096/1324 | N/A | N/A |
+| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 6052/7286 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 
@@ -46,7 +46,7 @@ Five official AXI E2E seeds merged only within this identical top/build/test def
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 901/1074 | 173 |
+| line | 901/1068 | 167 |
 | branch | 509/632 | 123 |
 | toggle | 15623/32332 | 16709 |
 | fsm_state | 30/54 | 24 |
@@ -59,7 +59,7 @@ Five official AXI E2E seeds merged only within this identical top/build/test def
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 260/738 | N/A | N/A |
 | `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 66/82 | 3856/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 66/104 | 34/52 | 309/648 | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 113/188 | 27/42 | 282/612 | 18/40 | 2/36 |
+| `rtl/directory/DirectoryController.sv` | 113/182 | 27/42 | 282/612 | 18/40 | 2/36 |
 | `rtl/directory/DirectoryMshrBank.sv` | 91/104 | 70/86 | 516/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 155/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 104/260 | N/A | N/A |
@@ -82,15 +82,15 @@ Standalone DirectoryController directed TB.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 117/188 | 71 |
-| branch | 30/42 | 12 |
-| toggle | 236/612 | 376 |
-| fsm_state | 9/10 | 1 |
-| fsm_arc | 2/9 | 7 |
+| line | 178/182 | 4 |
+| branch | 37/42 | 5 |
+| toggle | 260/612 | 352 |
+| fsm_state | 10/10 | 0 |
+| fsm_arc | 3/9 | 6 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/directory/DirectoryController.sv` | 117/188 | 30/42 | 236/612 | 9/10 | 2/9 |
+| `rtl/directory/DirectoryController.sv` | 178/182 | 37/42 | 260/612 | 10/10 | 3/9 |
 
 No Product RTL points emitted in this run:
 
@@ -118,16 +118,16 @@ Standalone four-context MSHR directed/stress TB, including transfer-start backpr
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 167/292 | 125 |
+| line | 167/286 | 119 |
 | branch | 100/128 | 28 |
-| toggle | 1063/2904 | 1841 |
+| toggle | 1249/2904 | 1655 |
 | fsm_state | 31/40 | 9 |
 | fsm_arc | 11/36 | 25 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/directory/DirectoryController.sv` | 63/188 | 19/42 | 276/612 | 31/40 | 11/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 104/104 | 81/86 | 787/2292 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 63/182 | 19/42 | 312/612 | 31/40 | 11/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 104/104 | 81/86 | 937/2292 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 
@@ -190,16 +190,16 @@ Standalone controller refill, snoop, reset and malformed-beat tests.
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 104/132 | 28 |
-| branch | 40/46 | 6 |
-| toggle | 629/1804 | 1175 |
+| line | 124/132 | 8 |
+| branch | 43/46 | 3 |
+| toggle | 741/1804 | 1063 |
 | fsm_state | 7/7 | 0 |
-| fsm_arc | 2/6 | 4 |
+| fsm_arc | 3/6 | 3 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/l1/MesiL1Controller.sv` | 98/126 | 40/46 | 542/1532 | 7/7 | 2/6 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 87/272 | N/A | N/A |
+| `rtl/l1/MesiL1Controller.sv` | 118/126 | 43/46 | 628/1532 | 7/7 | 3/6 |
+| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 113/272 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 

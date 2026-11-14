@@ -1,0 +1,10 @@
+{
+  "baseline_remote_head": "2c40bfecec9e50a7cd03b7115dd2193a3d5fdafb",
+  "source_commit": "3526950e59ff042973ccb822414d6a7361c682da",
+  "source_fingerprint": "5e6fbd81eee6091df1a5d9028df0af5b5a516c6612f2f3e920398746c92ca846",
+  "report_commit": "To be recorded by Git commit containing this report; not the tested source SHA",
+  "pr": "https://github.com/cwu766485-ctrl/open_verif_learning/pull/1",
+  "scope_change": false,
+  "approved_exclusions": 0,
+  "approval_subject": null
+}

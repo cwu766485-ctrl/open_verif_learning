@@ -1,0 +1,44 @@
+[
+  {
+    "configuration": "coherence_directory_unconstrained",
+    "result": "INDUCTIVE_PROOF_PASS",
+    "assumption_guarantee_boundary": "Initial two reset edges; arbitrary interface inputs; encoding and five low-six-bit alignment invariants only",
+    "status": "PASS 0 2",
+    "log": {
+      "original": "reports/formal/coherence_directory_unconstrained/logfile.txt",
+      "archive": "reports/final/freeze/formal/coherence_directory_unconstrained.log.gz",
+      "sha256": "f233d9b15411de431cab51f2c552cdb2c9bdc496694e02f3bb30613b5b6c17e2"
+    },
+    "config_sha256": "a0e353475fe667fe2e9f3308b769eb70656378dc3e66c406be113a34d5ad0b8d"
+  },
+  {
+    "configuration": "coherence_directory_transactions",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH24",
+    "assumption_guarantee_boundary": "Same initialization; arbitrary interface inputs; handshake accounting, coherent write and reset safety within bound",
+    "status": "PASS 0 77",
+    "log": {
+      "original": "reports/formal/coherence_directory_transactions/logfile.txt",
+      "archive": "reports/final/freeze/formal/coherence_directory_transactions.log.gz",
+      "sha256": "5213f801895a69ee6db2f090cc47eb81c661359877cb300d578fa8123ed7e3a4"
+    },
+    "config_sha256": "b2910fbaaf98229ad6ae838562b965798b4d965d39c04d654456a14242bef6f8"
+  },
+  {
+    "configuration": "coherence_directory_mshr_bank",
+    "result": "BOUNDED_SAFETY_PASS_DEPTH12",
+    "assumption_guarantee_boundary": "Existing legal opcode/metadata assumptions; allocate/retire and reset assertions within bound",
+    "status": "PASS 0 88",
+    "log": {
+      "original": "reports/formal/coherence_directory_mshr_bank/logfile.txt",
+      "archive": "reports/final/freeze/formal/coherence_directory_mshr_bank.log.gz",
+      "sha256": "9594406775f5b1c05ec123d89e5a3114a435c6c15d02b79bd0c517aa61fa2d86"
+    },
+    "config_sha256": "cfd6a948ad892ec9ac4e628655980df567bdb0a836a6d086fb6d53a8304487f2"
+  },
+  {
+    "configuration": "coherence_directory_transactions_induction",
+    "result": "UNKNOWN",
+    "scope": "Historical optional exploration: basecase PASS, induction unsuccessful; no unbounded guarantee",
+    "evidence": "reports/final/phase4/formal_exploration.json"
+  }
+]

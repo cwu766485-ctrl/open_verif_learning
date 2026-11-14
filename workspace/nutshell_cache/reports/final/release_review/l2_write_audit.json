@@ -1,0 +1,18 @@
+{
+  "source": "rtl/l2/SharedL2DirectoryArray.sv",
+  "source_sha256": "7f3805013905f7ede743403c1bd6de6abf6b6d444390efb5a1319ee374133b1e",
+  "retained_control": "      if (line_rd_valid && line_rd_ready) begin\n        line_rd_busy_q <= line_rd_hit;\n        line_rd_beat_q <= '0;\n      end else if (line_data_valid && line_data_ready) begin\n        if (line_rd_beat_q == 3'd7) begin\n          line_rd_busy_q <= 1'b0;\n          line_rd_beat_q <= '0;\n        end else begin\n          line_rd_beat_q <= line_rd_beat_q + 1'b1;\n        end\n      end",
+  "removed_data_only": [
+    "        line_rd_set_q <= rd_set;\n",
+    "        for (j = 0; j < WAYS; j = j + 1)\n          if (valid_array[rd_set][j] && tag_array[rd_set][j] == rd_tag)\n            line_rd_way_q <= WAY_WIDTH'(j);\n"
+  ],
+  "checked_reset_and_output_statements": [
+    "line_rd_busy_q <= 1'b0;",
+    "line_rd_beat_q <= '0;",
+    "line_rd_ready = !line_rd_busy_q;",
+    "line_data_valid = line_rd_busy_q;",
+    "line_data_beat_idx = line_rd_beat_q;",
+    "line_data_last = (line_rd_beat_q == 3'd7);"
+  ],
+  "boundary": "No claim of automatic full-cone equivalence; extraction and noninterference require independent review; hit unconstrained"
+}

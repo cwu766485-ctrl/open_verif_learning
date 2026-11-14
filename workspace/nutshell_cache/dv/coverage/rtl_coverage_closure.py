@@ -25,10 +25,14 @@ WAIVERS = OUT / "coverage_waivers.json"
 RTL_REPORT = OUT / "rtl_coverage_signoff.md"
 VERIFY_REPORT = OUT / "verification_signoff.md"
 RUN_STATUS = ROOT / "reports/closure/coherence_verify_final.status"
+RUN_MANIFEST = OUT / "verification_run_manifest.json"
 
 EXTRA_FIELDS = [
     "disposition", "closure_status", "resolution_evidence", "remaining_action",
 ]
+VALID_CLOSURE_STATUSES = {
+    "OPEN", "COVERED", "PROVEN_UNREACHABLE", "REVIEWED_WAIVER", "BLOCKED",
+}
 
 
 def disposition(action: str) -> str:
@@ -77,21 +81,53 @@ def functional_counts() -> tuple[str, str]:
     return count("functional_coverage"), count("cross_coverage")
 
 
+def full_system_counts() -> tuple[str, str, str]:
+    """Read the checked full-system artifact without mixing it with Python bins."""
+    path = ROOT / "reports/full_system/full_system_coverage_closure.json"
+    if not path.is_file():
+        return "not available", "not available", "source SHA unavailable"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    functional = f"{data.get('required_bins_passed', 0)}/{data.get('required_bins_total', 0)}"
+    cross = f"{data.get('required_cross_bins_passed', 0)}/{data.get('required_cross_bins_total', 0)}"
+    return functional, cross, data.get("git_sha", "source SHA unavailable")
+
+
+def regression_gate_rows() -> list[dict]:
+    """Use current hashed run records; stale/missing evidence fails closed."""
+    from dv.coverage import rtl_release_gate as gate
+    from dv.coverage.rtl_coverage_dataset_manifest import source_fingerprint
+    import hashlib
+    path = gate.RUN_STATUS
+    try:
+        data = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return []
+    fingerprint = source_fingerprint()[0]
+    rows = []
+    for target in gate.REQUIRED_GATES:
+        run = data.get("runs", {}).get(target, {})
+        log = ROOT / run.get("log", "__missing__")
+        valid = (data.get("source_fingerprint") == fingerprint
+                 and run.get("source_fingerprint_before") == fingerprint
+                 and run.get("source_fingerprint_after") == fingerprint
+                 and run.get("result") == "PASS" and run.get("returncode") == 0
+                 and log.is_file()
+                 and hashlib.sha256(log.read_bytes()).hexdigest() == run.get("log_sha256"))
+        rows.append(dict(target=target, status="PASS" if valid else "OPEN",
+                         log=run.get("log"), source_fingerprint=fingerprint))
+    return rows
+
+
 def full_regression_status() -> tuple[str, str]:
-    """Read an explicit exit-status record written by the make invocation."""
-    if not RUN_STATUS.is_file():
-        return "not recorded", "No final-candidate full-regression status file is present."
-    fields = {}
-    for line in RUN_STATUS.read_text(encoding="utf-8", errors="replace").splitlines():
-        if "=" in line:
-            key, value = line.split("=", 1)
-            fields[key.strip()] = value.strip()
-    result = fields.get("result", "UNKNOWN")
-    sha = fields.get("source_sha", "unknown source SHA")
-    timestamp = fields.get("timestamp", "time not recorded")
-    log = fields.get("log", "log path not recorded")
-    summary = f"Local {fields.get('command', 'coherence_verify')} result: {result} at source SHA `{sha}` ({timestamp}); log: `{log}`."
-    return result, summary
+    rows = regression_gate_rows()
+    if not rows:
+        return "OPEN", "Current fingerprint-bound regression evidence is not available."
+    passed = sum(row["status"] == "PASS" for row in rows)
+    result = "PASS" if passed == len(rows) else "OPEN"
+    return result, (f"Current source fingerprint: {passed}/{len(rows)} required regression targets "
+                    f"have PASS exit status and verified log hashes. Regression status: {result}. "
+                    "Functional Verification Candidate evidence is separate from Reviewed RTL Code Coverage "
+                    "and Full Code Coverage Sign-off; code coverage remains OPEN.")
 
 
 def main() -> None:
@@ -102,9 +138,14 @@ def main() -> None:
     for source_row in raw_rows:
         row = dict(source_row)
         row["disposition"] = disposition(row["recommended_action"])
-        row["closure_status"] = "OPEN_DATASET_MISS"
+        # A zero-count raw point is an open obligation in this dataset. A hit
+        # in another elaborated top is retained as provenance, never promoted
+        # to COVERED here. Other statuses require explicit reviewed evidence.
+        row["closure_status"] = "OPEN"
         row["resolution_evidence"] = row["separate_raw_dataset_evidence"]
         row["remaining_action"] = row["recommended_action"]
+        if row["closure_status"] not in VALID_CLOSURE_STATUSES:
+            raise AssertionError(f"invalid closure status for {row['point_id']}: {row['closure_status']}")
         rows.append(row)
 
     with MATRIX.open("w", newline="", encoding="utf-8") as stream:
@@ -120,6 +161,7 @@ def main() -> None:
 
     metrics = current_raw_metrics()
     func, cross = functional_counts()
+    full_func, full_cross, full_system_sha = full_system_counts()
     per_dataset = Counter(row["raw_dataset"] for row in rows)
     primary = "Full coherent subsystem regression"
     primary_misses = Counter(
@@ -150,6 +192,7 @@ def main() -> None:
         report.append(f"| {name} | {fmt('line')} | {fmt('branch')} | {fmt('toggle')} | {fmt('fsm_state')} | {fmt('fsm_arc')} |")
 
     run_result, run_summary = full_regression_status()
+    gate_rows = regression_gate_rows()
     report += [
         "", "## Gap inventory", "",
         f"The detailed `coverage_closure_matrix.csv` contains **{len(rows)} dataset-scoped zero-count records**. A point hit by another separately listed dataset is recorded as provenance, not credited to this dataset or denominator.", "",
@@ -158,11 +201,12 @@ def main() -> None:
     for metric in ("LCOV RTL line", "Verilator branch", "FSM state", "FSM arc"):
         report.append(f"| {metric} | {primary_misses[metric]} |")
     report += [
-        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.", "",
+        "", "The matrix records source path, source line, Block, branch/state/arc identity, feature/spec relationship, reachability review, protocol guard, risk, testcase/checker/formal references, other-dataset evidence, recommended disposition, and remaining action. Source inspection labels are not proofs. No automatic removal or waiver is performed.",
+        f"All {len(rows)} zero-count dataset-scoped records currently have status **OPEN**. Allowed statuses are {', '.join(sorted(VALID_CLOSURE_STATUSES))}; promotion requires explicitly reviewed evidence and is never inferred from a hit in another raw dataset.", "",
         "## Functional coverage and checker status", "",
-        f"Functional coverage closure artifact: {func}.",
-        f"Cross coverage closure artifact: {cross}.",
-        "These are the latest existing closure JSON observations, not newly rerun closure from this report generator. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.", "",
+        f"Python/Toffee coherence closure: functional {func}; cross {cross}.",
+        f"Full-system checked closure artifact: functional {full_func}; cross {full_cross}; source SHA `{full_system_sha}`.",
+        "These are separate coverage plans and are not added together. Full-system counts require testcase, monitor-event, cycle-overlap, and checker evidence under the evidence contract. Coverage Bin IDs were not edited. Functional bins are not substituted for RTL source coverage.", "",
         "## Reviewed / eligible coverage", "",
         "**Reviewed/eligible percentages are not yet computable.** The raw points still need point-level review against the independent checker and the intended coverage obligation. The CSV preserves all zero-count points without marking them waived, unreachable, or redundant. Eligible Coverage must only be computed after that review; therefore there is no supported 100% closure claim yet.", "",
         "## Tool and scope limits", "",
@@ -175,6 +219,7 @@ def main() -> None:
         "## Regression evidence and remaining status", "",
         run_summary,
         "This is local evidence only; it does not establish a remote GitHub Actions result. The full regression result does not close raw RTL coverage gaps by itself.", "",
+        "Required local gates are listed with source SHA and log references in `verification_run_manifest.json`. `coherence_full_system_verify` invokes `coherence_verify` as a nested prerequisite; the run manifest records that relationship so the nested execution is not mistaken for a separate simulator configuration.", "",
         "**Sign-off: OPEN.** Raw uncovered legal paths, protocol fault paths, and per-instance FSM obligations remain for directed testing, fault injection, formal evidence, or reviewed disposition. No unresolved coverage gap is represented as closed. This sign-off excludes PPA, STA, real SRAM macro implementation, and chip-level physical implementation.", "",
     ]
     RTL_REPORT.write_text("\n".join(report), encoding="utf-8")
@@ -182,14 +227,15 @@ def main() -> None:
     verification = [
         "# Verification Sign-off Status", "",
         "**Status: OPEN — not a release sign-off.** This file is the current coverage-closure status view; consult the per-run raw reports and CI for test results.", "",
-        f"Functional closure (existing artifact): {func}.",
-        f"Cross closure (existing artifact): {cross}.",
+        f"Python/Toffee coherence closure: functional {func}; cross {cross}.",
+        f"Full-system checked closure artifact: functional {full_func}; cross {full_cross}; source SHA `{full_system_sha}`.",
         f"Dataset-scoped zero-count RTL points: {len(rows)}.",
         "Approved coverage waivers: 0.",
         "Reviewed/eligible RTL coverage: not computed; point-by-checker review is incomplete.",
         f"Final full regression status: {run_result}.",
         run_summary,
-        "Remote CI on the current local candidate: not verified; local branch contains commits not present on origin and shell push authentication was unavailable at the last attempt.",
+        "Required gate summary: " + (", ".join(f"`{row.get('target', 'unknown')}` {row.get('status', 'UNKNOWN')}" for row in gate_rows) if gate_rows else "not recorded in the machine-readable run manifest."),
+        "Candidate remote CI must be checked against the published PR head; see the final verification report for the SHA-scoped GitHub Actions link. This local report generator does not query GitHub.",
         "PPA, STA, real SRAM macro implementation, and chip-level physical implementation are excluded.", "",
     ]
     VERIFY_REPORT.write_text("\n".join(verification), encoding="utf-8")

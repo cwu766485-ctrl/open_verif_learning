@@ -1,0 +1,161 @@
+{
+  "approved_exclusions": 0,
+  "branch": "dv-closure-phase2",
+  "cross": "35/35",
+  "full_code_coverage_signoff": "OPEN",
+  "functional": "53/53",
+  "functional_candidate": "PROPOSED_FOR_REVIEW_WITH_LIMITED_SCOPE",
+  "independent_approver": null,
+  "regressions": {
+    "completed_utc": "2026-11-10T08:13:01.847694+00:00",
+    "required_gates": [
+      "coherence_verify",
+      "coherence_full_system_verify",
+      "coherence_hit_under_miss",
+      "coherence_full_system_cross_closure",
+      "coherence_full_system_stress",
+      "coherence_coverage_audit",
+      "coherence_full_system_evidence_gate",
+      "coherence_full_system_replay_closure"
+    ],
+    "runs": {
+      "coherence_coverage_audit": {
+        "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
+        "completed_utc": "2026-11-10T08:10:44.569419+00:00",
+        "log": "reports/closure/release_runs/coherence_coverage_audit.log",
+        "log_sha256": "c7d60423176f7467f69d273fa21523401d48bc794443b45a72341f7bf92fbcf0",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_full_system_cross_closure": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
+        "completed_utc": "2026-11-10T07:33:51.796678+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
+        "log_sha256": "99a6061d9402cdc69a445c4e676e7e33a4c77cce95deffc8fa798d2baeb391aa",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_full_system_evidence_gate": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
+        "completed_utc": "2026-11-10T08:10:47.247521+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
+        "log_sha256": "79b7149655e01988930ef9dd001968a909fe937b7f4396cd69d0b753187c94b1",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_full_system_replay_closure": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
+        "completed_utc": "2026-11-10T08:13:01.846219+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
+        "log_sha256": "6086b11d8b0a6d787f85c5f5e5497a9d85da931c4dc03f12e83c48a49bac81f6",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_full_system_stress": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
+        "completed_utc": "2026-11-10T08:04:32.583955+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_stress.log",
+        "log_sha256": "6facc29415d9b36960e23fc5e3fcc9eafb4363c3bd29cc6f7c28280b79fa44ba",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_full_system_verify": {
+        "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
+        "completed_utc": "2026-11-10T07:25:58.769366+00:00",
+        "log": "reports/closure/release_runs/coherence_full_system_verify.log",
+        "log_sha256": "0cf61bfc380bf531d52c7212e06bacce190f776a6707e760fa7ede43d623b755",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_hit_under_miss": {
+        "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
+        "completed_utc": "2026-11-10T07:31:00.249212+00:00",
+        "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
+        "log_sha256": "089f8f677d9b62488c83f560e91365079522c9cc4ba0249e0dc466e1205876ac",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      },
+      "coherence_verify": {
+        "command": "make COHERENCE_JOBS=2 coherence_verify",
+        "completed_utc": "2026-11-10T07:05:11.295075+00:00",
+        "log": "reports/closure/release_runs/coherence_verify.log",
+        "log_sha256": "7a527d774a0dd599917c0b60054b06664d692d6262342b182817c29165978cc7",
+        "result": "PASS",
+        "returncode": 0,
+        "source_fingerprint_after": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+        "source_fingerprint_before": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c"
+      }
+    },
+    "schema_version": 1,
+    "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+    "started_utc": "2026-11-10T06:49:17.135867+00:00",
+    "updated_utc": "2026-11-10T08:13:01.846235+00:00"
+  },
+  "release_gate": {
+    "attested_points_by_dataset": {
+      "axi_subsystem": 17067,
+      "bus_blocks": 1237,
+      "directory_controller": 467,
+      "directory_mshr_bank": 1558,
+      "main_subsystem": 23303,
+      "mesi_l1_controller": 846,
+      "shared_l2_directory_array": 337,
+      "shared_line_engine": 449
+    },
+    "generated_utc": "2026-11-10T08:14:19.630779+00:00",
+    "hit_count_points": 45264,
+    "manifest_errors": [],
+    "point_count": 74831,
+    "raw_hit_attested_points": 45264,
+    "raw_hit_unattested_points": 0,
+    "repository_head": "69f9fb4615717b9d9b096d9e11262438522cd960",
+    "required_regression_gates": [
+      "coherence_verify",
+      "coherence_full_system_verify",
+      "coherence_hit_under_miss",
+      "coherence_full_system_cross_closure",
+      "coherence_full_system_stress",
+      "coherence_coverage_audit",
+      "coherence_full_system_evidence_gate",
+      "coherence_full_system_replay_closure"
+    ],
+    "schema_version": 1,
+    "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+    "stale_decision_history_count": 19,
+    "status": "OPEN",
+    "waiver_count": 0,
+    "zero_count_points": 29567,
+    "zero_open_or_blocked_points": 29567
+  },
+  "release_gate_status": {
+    "command": "make COHERENCE_JOBS=2 coherence_release_gate",
+    "log_sha256": "82680f90f77ee30ef16351992c284e828807d65b244adb3b37aa9d29a6151e86",
+    "returncode": 2,
+    "source_sha": "69f9fb4615717b9d9b096d9e11262438522cd960"
+  },
+  "report_commit": "Resolve git log -1 --format=%H -- reports/final/phase4_closure_report.md",
+  "reviewed_eligible_coverage": null,
+  "schema_version": 2,
+  "source_ci": [
+    "https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42771057555",
+    "https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/42771051488"
+  ],
+  "source_ci_status": "success",
+  "stress": "280/280",
+  "tested_source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+  "tested_source_sha": "69f9fb4615717b9d9b096d9e11262438522cd960"
+}

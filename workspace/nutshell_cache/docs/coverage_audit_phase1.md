@@ -1,13 +1,13 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-04 23:40 +08.
+Generated from the full regression artifacts on 2026-11-13 16:12 +08.
 
 ## Scope and source accounting
 
 No RTL behavior, interface, testcase sequence, Functional Coverage Bin ID, or waiver was changed. Product RTL classification uses exact normalized path membership in rtl/Coherence.files.f.
 
 - RTL Source Manifest: **18 files**; Verilator __verFiles.dat RTL source set: **18 files**; exact match: **PASS**.
-- LCOV source records: **30**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
+- LCOV source records: **35**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
 - A manifest source with no executable LCOV line points is reported as N/A, not as 0% coverage. Such files can still be parsed/compiled but may be packages, unelaborated top wrappers, or blocks outside this simulation top.
 
 ### LCOV line reconciliation
@@ -16,10 +16,10 @@ Each normalized (source, line) record is counted once. Hit + missed must equal t
 
 | Category | Hit | Total | Missed | Reconciliation |
 | --- | ---: | ---: | ---: | --- |
-| Product RTL | 843 | 998 | 155 | 843 + 155 = 998 |
-| Testbench | 738 | 748 | 10 | 738 + 10 = 748 |
+| Product RTL | 864 | 992 | 128 | 864 + 128 = 992 |
+| Testbench | 833 | 845 | 12 | 833 + 12 = 845 |
 | Generated/Other | 0 | 0 | 0 | 0 + 0 = 0 |
-| **All source records** | **1581** | **1746** | **165** | **1581 + 165 = 1746** |
+| **All source records** | **1697** | **1837** | **140** | **1697 + 140 = 1837** |
 
 ## Native Verilator coverage by source category
 
@@ -27,8 +27,8 @@ Native point totals are parsed from merged coverage.dat by point type; point hit
 
 | Category | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: |
-| Product RTL | 461/556 | 19980/27474 | 30/54 | 7/48 |
-| Testbench | 235/266 | 4060/6628 | N/A (0 points) | N/A (0 points) |
+| Product RTL | 473/556 | 21931/27474 | 30/54 | 13/48 |
+| Testbench | 258/298 | 4532/6632 | N/A (0 points) | N/A (0 points) |
 | Generated/Other | N/A (0 points) | N/A (0 points) | N/A (0 points) | N/A (0 points) |
 
 ## Product RTL module raw coverage
@@ -39,43 +39,42 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `rtl/bus/apb/CachePerformanceCsr.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 429/738 | N/A | N/A |
-| `rtl/cluster/DualL1MesiCluster.sv` | 44/54 | 10 | 65/82 | 5130/6796 | N/A | N/A |
-| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 468/648 | N/A | N/A |
+| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 445/738 | N/A | N/A |
+| `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 3 | 73/82 | 5846/6796 | N/A | N/A |
+| `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 509/648 | N/A | N/A |
 | `rtl/common/CoherenceProtocol.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 114/188 | 74 | 29/42 | 497/612 | 18/40 | 4/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 71/86 | 863/2292 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 0 | N/A | 276/414 | N/A | N/A |
-| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 0 | 4/4 | 183/260 | N/A | N/A |
-| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 3 | 18/20 | 1517/1872 | N/A | N/A |
-| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 0 | 4/4 | 1215/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1314/2054 | N/A | N/A |
-| `rtl/l1/MesiL1Controller.sv` | 103/126 | 23 | 31/46 | 1291/1532 | 12/14 | 3/12 |
-| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 0 | N/A | 195/272 | N/A | N/A |
-| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 4 | 67/74 | 992/1324 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 125/182 | 57 | 30/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 73/86 | 929/2292 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 0 | N/A | 350/414 | N/A | N/A |
+| `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 0 | 4/4 | 222/260 | N/A | N/A |
+| `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 3 | 18/20 | 1608/1872 | N/A | N/A |
+| `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 0 | 4/4 | 1274/1374 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1449/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Controller.sv` | 106/126 | 20 | 32/46 | 1400/1532 | 12/14 | 4/12 |
+| `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 0 | N/A | 230/272 | N/A | N/A |
+| `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 4 | 67/74 | 1096/1324 | N/A | N/A |
 | `rtl/top/CoherentCacheAxiSubsystem.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 5610/7286 | N/A | N/A |
+| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 6052/7286 | N/A | N/A |
 
-## Every uncovered Product RTL line (155 lines)
+## Every uncovered Product RTL line (128 lines)
 
 Each missed executable source line is linked to its original RTL path and line. Categories are source-context review labels: the default/FSM label is only an unreachability candidate, never a proof; error labels identify checks/actions, and legal/recovery labels identify paths for which directed stimulus is appropriate. No category automatically waives a line.
 
 | Review category | Lines |
 | --- | ---: |
-| FSM/default 防御分支（不可达候选，未证明） | 10 |
-| 合法恢复 / 重试路径未命中 | 13 |
-| 合法路径未命中 | 36 |
-| 非法协议检测 / 错误处理 | 96 |
+| DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径 | 4 |
+| Directory 状态编码 default：防御性 fail-stop，未证明不可达 | 4 |
+| FSM/default 防御分支（不可达候选，未证明） | 8 |
+| MMIO FSM 非法编码 default：防御性复位，未证明不可达 | 3 |
+| Refill beat/last 异常：CPU fail-stop 错误路径 | 2 |
+| Snoop beat/last 异常：Snoop fail-stop 错误路径 | 2 |
+| 合法 Grant Read / L2 Hit 等待路径（独立 Block 有命中） | 1 |
+| 合法 ready/valid Offer Lock（独立 Block 有命中） | 10 |
+| 合法路径未命中 | 6 |
+| 非法协议检测 / 错误处理 | 88 |
 
 | Source line | Review category | Source text |
 | --- | --- | --- |
-| [`rtl/cluster/DualL1MesiCluster.sv:419`](../rtl/cluster/DualL1MesiCluster.sv#L419) | 合法路径未命中 | `if (hit_under_miss_accept) begin` |
-| [`rtl/cluster/DualL1MesiCluster.sv:420`](../rtl/cluster/DualL1MesiCluster.sv#L420) | 合法路径未命中 | `hit_resp_valid_q <= 1'b1;` |
-| [`rtl/cluster/DualL1MesiCluster.sv:421`](../rtl/cluster/DualL1MesiCluster.sv#L421) | 合法路径未命中 | `hit_resp_addr_q <= cpu_req_addr[core];` |
-| [`rtl/cluster/DualL1MesiCluster.sv:422`](../rtl/cluster/DualL1MesiCluster.sv#L422) | 合法路径未命中 | `hit_resp_data_q <= lookup_word;` |
-| [`rtl/cluster/DualL1MesiCluster.sv:425`](../rtl/cluster/DualL1MesiCluster.sv#L425) | 合法路径未命中 | `hit_resp_txn_id_q <= hit_alloc_txn_id_safe;` |
-| [`rtl/cluster/DualL1MesiCluster.sv:426`](../rtl/cluster/DualL1MesiCluster.sv#L426) | 合法路径未命中 | `hit_next_txn_id_q <= hit_next_txn_id_safe;` |
-| [`rtl/cluster/DualL1MesiCluster.sv:427`](../rtl/cluster/DualL1MesiCluster.sv#L427) | 合法路径未命中 | `hit_bypass_started_q <= 1'b1;` |
 | [`rtl/cluster/DualL1MesiCluster.sv:472`](../rtl/cluster/DualL1MesiCluster.sv#L472) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
 | [`rtl/cluster/DualL1MesiCluster.sv:473`](../rtl/cluster/DualL1MesiCluster.sv#L473) | 非法协议检测 / 错误处理 | `replace_protocol_error_q <= 1'b1;` |
 | [`rtl/cluster/DualL1MesiCluster.sv:474`](../rtl/cluster/DualL1MesiCluster.sv#L474) | 非法协议检测 / 错误处理 | `replace_state_q <= REPLACE_ERROR;` |
@@ -106,7 +105,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | [`rtl/coherence/SharedLineEngine.sv:332`](../rtl/coherence/SharedLineEngine.sv#L332) | 非法协议检测 / 错误处理 | `(l2_line_wr_last != (l2_line_wr_beat_idx == 3'd7))) begin` |
 | [`rtl/coherence/SharedLineEngine.sv:333`](../rtl/coherence/SharedLineEngine.sv#L333) | 非法协议检测 / 错误处理 | `memory_adapter_protocol_error <= 1'b1;` |
 | [`rtl/coherence/SharedLineEngine.sv:334`](../rtl/coherence/SharedLineEngine.sv#L334) | 非法协议检测 / 错误处理 | `engine_state_q <= ENGINE_ERROR;` |
-| [`rtl/coherence/SharedLineEngine.sv:348`](../rtl/coherence/SharedLineEngine.sv#L348) | 合法路径未命中 | `ENGINE_GRANT_READ: begin` |
+| [`rtl/coherence/SharedLineEngine.sv:348`](../rtl/coherence/SharedLineEngine.sv#L348) | 合法 Grant Read / L2 Hit 等待路径（独立 Block 有命中） | `ENGINE_GRANT_READ: begin` |
 | [`rtl/coherence/SharedLineEngine.sv:366`](../rtl/coherence/SharedLineEngine.sv#L366) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
 | [`rtl/coherence/SharedLineEngine.sv:367`](../rtl/coherence/SharedLineEngine.sv#L367) | 非法协议检测 / 错误处理 | `memory_adapter_protocol_error <= 1'b1;` |
 | [`rtl/coherence/SharedLineEngine.sv:368`](../rtl/coherence/SharedLineEngine.sv#L368) | 非法协议检测 / 错误处理 | `engine_state_q <= ENGINE_ERROR;` |
@@ -118,104 +117,84 @@ Each missed executable source line is linked to its original RTL path and line. 
 | [`rtl/directory/DirectoryController.sv:300`](../rtl/directory/DirectoryController.sv#L300) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
 | [`rtl/directory/DirectoryController.sv:301`](../rtl/directory/DirectoryController.sv#L301) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd2;` |
 | [`rtl/directory/DirectoryController.sv:302`](../rtl/directory/DirectoryController.sv#L302) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:353`](../rtl/directory/DirectoryController.sv#L353) | 合法恢复 / 重试路径未命中 | `DIR_I: begin` |
-| [`rtl/directory/DirectoryController.sv:356`](../rtl/directory/DirectoryController.sv#L356) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:357`](../rtl/directory/DirectoryController.sv#L357) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd4;` |
-| [`rtl/directory/DirectoryController.sv:358`](../rtl/directory/DirectoryController.sv#L358) | 合法恢复 / 重试路径未命中 | `grant_opcode_q <= GRANT_DATA_M;` |
-| [`rtl/directory/DirectoryController.sv:359`](../rtl/directory/DirectoryController.sv#L359) | 合法恢复 / 重试路径未命中 | `grant_has_data_q <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:360`](../rtl/directory/DirectoryController.sv#L360) | 合法恢复 / 重试路径未命中 | `next_dir_state_q <= DIR_U;` |
-| [`rtl/directory/DirectoryController.sv:361`](../rtl/directory/DirectoryController.sv#L361) | 合法恢复 / 重试路径未命中 | `next_sharers_q <= 2'b00;` |
-| [`rtl/directory/DirectoryController.sv:362`](../rtl/directory/DirectoryController.sv#L362) | 合法恢复 / 重试路径未命中 | `next_owner_q <= req_src_id;` |
-| [`rtl/directory/DirectoryController.sv:363`](../rtl/directory/DirectoryController.sv#L363) | 合法恢复 / 重试路径未命中 | `line_xfer_kind_q <= XFER_L2_REFILL;` |
-| [`rtl/directory/DirectoryController.sv:364`](../rtl/directory/DirectoryController.sv#L364) | 合法路径未命中 | `state_q <= DIR_START_XFER;` |
-| [`rtl/directory/DirectoryController.sv:366`](../rtl/directory/DirectoryController.sv#L366) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
-| [`rtl/directory/DirectoryController.sv:367`](../rtl/directory/DirectoryController.sv#L367) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:368`](../rtl/directory/DirectoryController.sv#L368) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd2;` |
-| [`rtl/directory/DirectoryController.sv:369`](../rtl/directory/DirectoryController.sv#L369) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:388`](../rtl/directory/DirectoryController.sv#L388) | 非法协议检测 / 错误处理 | `end else if ((lookup_dir_state == DIR_U) &&` |
-| [`rtl/directory/DirectoryController.sv:389`](../rtl/directory/DirectoryController.sv#L389) | 合法路径未命中 | `(lookup_owner_id == req_src_id)) begin` |
-| [`rtl/directory/DirectoryController.sv:392`](../rtl/directory/DirectoryController.sv#L392) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:393`](../rtl/directory/DirectoryController.sv#L393) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd5;` |
-| [`rtl/directory/DirectoryController.sv:394`](../rtl/directory/DirectoryController.sv#L394) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:395`](../rtl/directory/DirectoryController.sv#L395) | 合法路径未命中 | `grant_opcode_q <= GRANT_PUT_ACK;` |
-| [`rtl/directory/DirectoryController.sv:396`](../rtl/directory/DirectoryController.sv#L396) | 非法协议检测 / 错误处理 | `end else if (lookup_dir_state != DIR_I) begin` |
-| [`rtl/directory/DirectoryController.sv:397`](../rtl/directory/DirectoryController.sv#L397) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:398`](../rtl/directory/DirectoryController.sv#L398) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd5;` |
-| [`rtl/directory/DirectoryController.sv:399`](../rtl/directory/DirectoryController.sv#L399) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:400`](../rtl/directory/DirectoryController.sv#L400) | 非法协议检测 / 错误处理 | `end else begin` |
-| [`rtl/directory/DirectoryController.sv:401`](../rtl/directory/DirectoryController.sv#L401) | 合法路径未命中 | `state_q <= DIR_COMMIT;` |
-| [`rtl/directory/DirectoryController.sv:413`](../rtl/directory/DirectoryController.sv#L413) | 非法协议检测 / 错误处理 | `end else if (lookup_dir_state == DIR_I) begin` |
-| [`rtl/directory/DirectoryController.sv:414`](../rtl/directory/DirectoryController.sv#L414) | 合法路径未命中 | `state_q <= DIR_COMMIT;` |
-| [`rtl/directory/DirectoryController.sv:415`](../rtl/directory/DirectoryController.sv#L415) | 非法协议检测 / 错误处理 | `end else begin` |
-| [`rtl/directory/DirectoryController.sv:416`](../rtl/directory/DirectoryController.sv#L416) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:417`](../rtl/directory/DirectoryController.sv#L417) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd6;` |
-| [`rtl/directory/DirectoryController.sv:418`](../rtl/directory/DirectoryController.sv#L418) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:438`](../rtl/directory/DirectoryController.sv#L438) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
-| [`rtl/directory/DirectoryController.sv:439`](../rtl/directory/DirectoryController.sv#L439) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:440`](../rtl/directory/DirectoryController.sv#L440) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd2;` |
-| [`rtl/directory/DirectoryController.sv:441`](../rtl/directory/DirectoryController.sv#L441) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:467`](../rtl/directory/DirectoryController.sv#L467) | 合法恢复 / 重试路径未命中 | `if (((snoop_rsp_opcode == SNOOP_RSP_INV_ACK) \|\|` |
-| [`rtl/directory/DirectoryController.sv:470`](../rtl/directory/DirectoryController.sv#L470) | 合法恢复 / 重试路径未命中 | `snoop_response_must_be_data_q)) begin` |
-| [`rtl/directory/DirectoryController.sv:475`](../rtl/directory/DirectoryController.sv#L475) | 合法恢复 / 重试路径未命中 | `next_dir_state_q <= DIR_U;` |
-| [`rtl/directory/DirectoryController.sv:476`](../rtl/directory/DirectoryController.sv#L476) | 合法恢复 / 重试路径未命中 | `next_sharers_q <= 2'b00;` |
-| [`rtl/directory/DirectoryController.sv:477`](../rtl/directory/DirectoryController.sv#L477) | 合法恢复 / 重试路径未命中 | `next_owner_q <= src_id_q;` |
-| [`rtl/directory/DirectoryController.sv:478`](../rtl/directory/DirectoryController.sv#L478) | 合法恢复 / 重试路径未命中 | `grant_has_data_q <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:483`](../rtl/directory/DirectoryController.sv#L483) | 合法路径未命中 | `line_xfer_kind_q <= XFER_L2_REFILL;` |
-| [`rtl/directory/DirectoryController.sv:484`](../rtl/directory/DirectoryController.sv#L484) | 合法路径未命中 | `snoop_response_must_be_data_q <= 1'b0;` |
-| [`rtl/directory/DirectoryController.sv:485`](../rtl/directory/DirectoryController.sv#L485) | 合法路径未命中 | `snoop_resume_q <= DIR_COMMIT;` |
-| [`rtl/directory/DirectoryController.sv:486`](../rtl/directory/DirectoryController.sv#L486) | 合法路径未命中 | `pending_targets_q <= 2'b00;` |
-| [`rtl/directory/DirectoryController.sv:487`](../rtl/directory/DirectoryController.sv#L487) | 合法路径未命中 | `state_q <= DIR_START_XFER;` |
-| [`rtl/directory/DirectoryController.sv:488`](../rtl/directory/DirectoryController.sv#L488) | 非法协议检测 / 错误处理 | `end else if ((snoop_opcode_q == SNOOP_READ) &&` |
-| [`rtl/directory/DirectoryController.sv:489`](../rtl/directory/DirectoryController.sv#L489) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_DATA)) begin` |
-| [`rtl/directory/DirectoryController.sv:490`](../rtl/directory/DirectoryController.sv#L490) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:491`](../rtl/directory/DirectoryController.sv#L491) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd8;` |
-| [`rtl/directory/DirectoryController.sv:492`](../rtl/directory/DirectoryController.sv#L492) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:493`](../rtl/directory/DirectoryController.sv#L493) | 非法协议检测 / 错误处理 | `end else if ((snoop_opcode_q == SNOOP_INVALIDATE) &&` |
-| [`rtl/directory/DirectoryController.sv:495`](../rtl/directory/DirectoryController.sv#L495) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_DATA)) begin` |
-| [`rtl/directory/DirectoryController.sv:496`](../rtl/directory/DirectoryController.sv#L496) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:497`](../rtl/directory/DirectoryController.sv#L497) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd10;` |
-| [`rtl/directory/DirectoryController.sv:498`](../rtl/directory/DirectoryController.sv#L498) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:501`](../rtl/directory/DirectoryController.sv#L501) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_INV_ACK)) begin` |
-| [`rtl/directory/DirectoryController.sv:502`](../rtl/directory/DirectoryController.sv#L502) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:503`](../rtl/directory/DirectoryController.sv#L503) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd11;` |
-| [`rtl/directory/DirectoryController.sv:504`](../rtl/directory/DirectoryController.sv#L504) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:529`](../rtl/directory/DirectoryController.sv#L529) | 非法协议检测 / 错误处理 | `DIR_ERROR: state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryController.sv:531`](../rtl/directory/DirectoryController.sv#L531) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
-| [`rtl/directory/DirectoryController.sv:532`](../rtl/directory/DirectoryController.sv#L532) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/directory/DirectoryController.sv:533`](../rtl/directory/DirectoryController.sv#L533) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd9;` |
-| [`rtl/directory/DirectoryController.sv:534`](../rtl/directory/DirectoryController.sv#L534) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
-| [`rtl/directory/DirectoryMshrBank.sv:339`](../rtl/directory/DirectoryMshrBank.sv#L339) | 合法路径未命中 | `if (dir_write_valid && !dir_write_ready && !write_offer_lock_q) begin` |
-| [`rtl/directory/DirectoryMshrBank.sv:340`](../rtl/directory/DirectoryMshrBank.sv#L340) | 合法路径未命中 | `write_offer_lock_q <= 1'b1;` |
-| [`rtl/directory/DirectoryMshrBank.sv:341`](../rtl/directory/DirectoryMshrBank.sv#L341) | 合法路径未命中 | `write_offer_idx_q <= write_sel;` |
-| [`rtl/directory/DirectoryMshrBank.sv:362`](../rtl/directory/DirectoryMshrBank.sv#L362) | 合法路径未命中 | `if (line_xfer_start_valid && !line_xfer_start_ready &&` |
-| [`rtl/directory/DirectoryMshrBank.sv:363`](../rtl/directory/DirectoryMshrBank.sv#L363) | 合法路径未命中 | `!xfer_offer_lock_q) begin` |
-| [`rtl/directory/DirectoryMshrBank.sv:364`](../rtl/directory/DirectoryMshrBank.sv#L364) | 合法路径未命中 | `xfer_offer_lock_q <= 1'b1;` |
-| [`rtl/directory/DirectoryMshrBank.sv:365`](../rtl/directory/DirectoryMshrBank.sv#L365) | 合法路径未命中 | `xfer_offer_idx_q <= xfer_sel;` |
-| [`rtl/directory/DirectoryMshrBank.sv:372`](../rtl/directory/DirectoryMshrBank.sv#L372) | 合法路径未命中 | `if (grant_valid && !grant_ready && !grant_offer_lock_q) begin` |
-| [`rtl/directory/DirectoryMshrBank.sv:373`](../rtl/directory/DirectoryMshrBank.sv#L373) | 合法路径未命中 | `grant_offer_lock_q <= 1'b1;` |
-| [`rtl/directory/DirectoryMshrBank.sv:374`](../rtl/directory/DirectoryMshrBank.sv#L374) | 合法路径未命中 | `grant_offer_idx_q <= grant_sel;` |
-| [`rtl/interconnect/CpuMmioRouter.sv:162`](../rtl/interconnect/CpuMmioRouter.sv#L162) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
-| [`rtl/interconnect/CpuMmioRouter.sv:163`](../rtl/interconnect/CpuMmioRouter.sv#L163) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/interconnect/CpuMmioRouter.sv:164`](../rtl/interconnect/CpuMmioRouter.sv#L164) | 合法路径未命中 | `mmio_state_q <= MMIO_IDLE;` |
+| [`rtl/directory/DirectoryController.sv:353`](../rtl/directory/DirectoryController.sv#L353) | DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径 | `DIR_I: begin` |
+| [`rtl/directory/DirectoryController.sv:358`](../rtl/directory/DirectoryController.sv#L358) | DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:359`](../rtl/directory/DirectoryController.sv#L359) | DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径 | `protocol_error_code <= 4'd4;` |
+| [`rtl/directory/DirectoryController.sv:360`](../rtl/directory/DirectoryController.sv#L360) | DIR_I 上收到 Upgrade：非法状态组合，fail-stop 错误路径 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:362`](../rtl/directory/DirectoryController.sv#L362) | Directory 状态编码 default：防御性 fail-stop，未证明不可达 | `default: begin` |
+| [`rtl/directory/DirectoryController.sv:363`](../rtl/directory/DirectoryController.sv#L363) | Directory 状态编码 default：防御性 fail-stop，未证明不可达 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:364`](../rtl/directory/DirectoryController.sv#L364) | Directory 状态编码 default：防御性 fail-stop，未证明不可达 | `protocol_error_code <= 4'd2;` |
+| [`rtl/directory/DirectoryController.sv:365`](../rtl/directory/DirectoryController.sv#L365) | Directory 状态编码 default：防御性 fail-stop，未证明不可达 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:384`](../rtl/directory/DirectoryController.sv#L384) | 非法协议检测 / 错误处理 | `end else if ((lookup_dir_state == DIR_U) &&` |
+| [`rtl/directory/DirectoryController.sv:385`](../rtl/directory/DirectoryController.sv#L385) | 合法路径未命中 | `(lookup_owner_id == req_src_id)) begin` |
+| [`rtl/directory/DirectoryController.sv:388`](../rtl/directory/DirectoryController.sv#L388) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:389`](../rtl/directory/DirectoryController.sv#L389) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd5;` |
+| [`rtl/directory/DirectoryController.sv:390`](../rtl/directory/DirectoryController.sv#L390) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:391`](../rtl/directory/DirectoryController.sv#L391) | 合法路径未命中 | `grant_opcode_q <= GRANT_PUT_ACK;` |
+| [`rtl/directory/DirectoryController.sv:392`](../rtl/directory/DirectoryController.sv#L392) | 非法协议检测 / 错误处理 | `end else if (lookup_dir_state != DIR_I) begin` |
+| [`rtl/directory/DirectoryController.sv:393`](../rtl/directory/DirectoryController.sv#L393) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:394`](../rtl/directory/DirectoryController.sv#L394) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd5;` |
+| [`rtl/directory/DirectoryController.sv:395`](../rtl/directory/DirectoryController.sv#L395) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:396`](../rtl/directory/DirectoryController.sv#L396) | 非法协议检测 / 错误处理 | `end else begin` |
+| [`rtl/directory/DirectoryController.sv:397`](../rtl/directory/DirectoryController.sv#L397) | 合法路径未命中 | `state_q <= DIR_COMMIT;` |
+| [`rtl/directory/DirectoryController.sv:409`](../rtl/directory/DirectoryController.sv#L409) | 非法协议检测 / 错误处理 | `end else if (lookup_dir_state == DIR_I) begin` |
+| [`rtl/directory/DirectoryController.sv:410`](../rtl/directory/DirectoryController.sv#L410) | 合法路径未命中 | `state_q <= DIR_COMMIT;` |
+| [`rtl/directory/DirectoryController.sv:411`](../rtl/directory/DirectoryController.sv#L411) | 非法协议检测 / 错误处理 | `end else begin` |
+| [`rtl/directory/DirectoryController.sv:412`](../rtl/directory/DirectoryController.sv#L412) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:413`](../rtl/directory/DirectoryController.sv#L413) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd6;` |
+| [`rtl/directory/DirectoryController.sv:414`](../rtl/directory/DirectoryController.sv#L414) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:434`](../rtl/directory/DirectoryController.sv#L434) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
+| [`rtl/directory/DirectoryController.sv:435`](../rtl/directory/DirectoryController.sv#L435) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:436`](../rtl/directory/DirectoryController.sv#L436) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd2;` |
+| [`rtl/directory/DirectoryController.sv:437`](../rtl/directory/DirectoryController.sv#L437) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:484`](../rtl/directory/DirectoryController.sv#L484) | 非法协议检测 / 错误处理 | `end else if ((snoop_opcode_q == SNOOP_READ) &&` |
+| [`rtl/directory/DirectoryController.sv:485`](../rtl/directory/DirectoryController.sv#L485) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_DATA)) begin` |
+| [`rtl/directory/DirectoryController.sv:486`](../rtl/directory/DirectoryController.sv#L486) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:487`](../rtl/directory/DirectoryController.sv#L487) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd8;` |
+| [`rtl/directory/DirectoryController.sv:488`](../rtl/directory/DirectoryController.sv#L488) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:489`](../rtl/directory/DirectoryController.sv#L489) | 非法协议检测 / 错误处理 | `end else if ((snoop_opcode_q == SNOOP_INVALIDATE) &&` |
+| [`rtl/directory/DirectoryController.sv:491`](../rtl/directory/DirectoryController.sv#L491) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_DATA)) begin` |
+| [`rtl/directory/DirectoryController.sv:492`](../rtl/directory/DirectoryController.sv#L492) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:493`](../rtl/directory/DirectoryController.sv#L493) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd10;` |
+| [`rtl/directory/DirectoryController.sv:494`](../rtl/directory/DirectoryController.sv#L494) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:497`](../rtl/directory/DirectoryController.sv#L497) | 非法协议检测 / 错误处理 | `(snoop_rsp_opcode != SNOOP_RSP_INV_ACK)) begin` |
+| [`rtl/directory/DirectoryController.sv:498`](../rtl/directory/DirectoryController.sv#L498) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:499`](../rtl/directory/DirectoryController.sv#L499) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd11;` |
+| [`rtl/directory/DirectoryController.sv:500`](../rtl/directory/DirectoryController.sv#L500) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:525`](../rtl/directory/DirectoryController.sv#L525) | 非法协议检测 / 错误处理 | `DIR_ERROR: state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryController.sv:527`](../rtl/directory/DirectoryController.sv#L527) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
+| [`rtl/directory/DirectoryController.sv:528`](../rtl/directory/DirectoryController.sv#L528) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
+| [`rtl/directory/DirectoryController.sv:529`](../rtl/directory/DirectoryController.sv#L529) | 非法协议检测 / 错误处理 | `protocol_error_code <= 4'd9;` |
+| [`rtl/directory/DirectoryController.sv:530`](../rtl/directory/DirectoryController.sv#L530) | 非法协议检测 / 错误处理 | `state_q <= DIR_ERROR;` |
+| [`rtl/directory/DirectoryMshrBank.sv:339`](../rtl/directory/DirectoryMshrBank.sv#L339) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (dir_write_valid && !dir_write_ready && !write_offer_lock_q) begin` |
+| [`rtl/directory/DirectoryMshrBank.sv:340`](../rtl/directory/DirectoryMshrBank.sv#L340) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `write_offer_lock_q <= 1'b1;` |
+| [`rtl/directory/DirectoryMshrBank.sv:341`](../rtl/directory/DirectoryMshrBank.sv#L341) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `write_offer_idx_q <= write_sel;` |
+| [`rtl/directory/DirectoryMshrBank.sv:362`](../rtl/directory/DirectoryMshrBank.sv#L362) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (line_xfer_start_valid && !line_xfer_start_ready &&` |
+| [`rtl/directory/DirectoryMshrBank.sv:363`](../rtl/directory/DirectoryMshrBank.sv#L363) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `!xfer_offer_lock_q) begin` |
+| [`rtl/directory/DirectoryMshrBank.sv:364`](../rtl/directory/DirectoryMshrBank.sv#L364) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `xfer_offer_lock_q <= 1'b1;` |
+| [`rtl/directory/DirectoryMshrBank.sv:365`](../rtl/directory/DirectoryMshrBank.sv#L365) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `xfer_offer_idx_q <= xfer_sel;` |
+| [`rtl/directory/DirectoryMshrBank.sv:372`](../rtl/directory/DirectoryMshrBank.sv#L372) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (grant_valid && !grant_ready && !grant_offer_lock_q) begin` |
+| [`rtl/directory/DirectoryMshrBank.sv:373`](../rtl/directory/DirectoryMshrBank.sv#L373) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `grant_offer_lock_q <= 1'b1;` |
+| [`rtl/directory/DirectoryMshrBank.sv:374`](../rtl/directory/DirectoryMshrBank.sv#L374) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `grant_offer_idx_q <= grant_sel;` |
+| [`rtl/interconnect/CpuMmioRouter.sv:162`](../rtl/interconnect/CpuMmioRouter.sv#L162) | MMIO FSM 非法编码 default：防御性复位，未证明不可达 | `default: begin` |
+| [`rtl/interconnect/CpuMmioRouter.sv:163`](../rtl/interconnect/CpuMmioRouter.sv#L163) | MMIO FSM 非法编码 default：防御性复位，未证明不可达 | `protocol_error <= 1'b1;` |
+| [`rtl/interconnect/CpuMmioRouter.sv:164`](../rtl/interconnect/CpuMmioRouter.sv#L164) | MMIO FSM 非法编码 default：防御性复位，未证明不可达 | `mmio_state_q <= MMIO_IDLE;` |
 | [`rtl/l1/MesiL1Controller.sv:254`](../rtl/l1/MesiL1Controller.sv#L254) | 非法协议检测 / 错误处理 | `if (cpu_req_hit && (cpu_req_line_state == MESI_I)) begin` |
 | [`rtl/l1/MesiL1Controller.sv:255`](../rtl/l1/MesiL1Controller.sv#L255) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
 | [`rtl/l1/MesiL1Controller.sv:256`](../rtl/l1/MesiL1Controller.sv#L256) | 非法协议检测 / 错误处理 | `cpu_state_q <= CPU_ERROR;` |
 | [`rtl/l1/MesiL1Controller.sv:287`](../rtl/l1/MesiL1Controller.sv#L287) | 非法协议检测 / 错误处理 | `if (grant_opcode == GRANT_PUT_ACK) begin` |
 | [`rtl/l1/MesiL1Controller.sv:288`](../rtl/l1/MesiL1Controller.sv#L288) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
 | [`rtl/l1/MesiL1Controller.sv:289`](../rtl/l1/MesiL1Controller.sv#L289) | 非法协议检测 / 错误处理 | `cpu_state_q <= CPU_ERROR;` |
-| [`rtl/l1/MesiL1Controller.sv:317`](../rtl/l1/MesiL1Controller.sv#L317) | 合法路径未命中 | `(grant_data_beat_idx == 3'd7)) begin` |
-| [`rtl/l1/MesiL1Controller.sv:318`](../rtl/l1/MesiL1Controller.sv#L318) | 非法协议检测 / 错误处理 | `cpu_state_q <= CPU_ERROR;` |
+| [`rtl/l1/MesiL1Controller.sv:317`](../rtl/l1/MesiL1Controller.sv#L317) | Refill beat/last 异常：CPU fail-stop 错误路径 | `(grant_data_beat_idx == 3'd7)) begin` |
+| [`rtl/l1/MesiL1Controller.sv:318`](../rtl/l1/MesiL1Controller.sv#L318) | Refill beat/last 异常：CPU fail-stop 错误路径 | `cpu_state_q <= CPU_ERROR;` |
 | [`rtl/l1/MesiL1Controller.sv:345`](../rtl/l1/MesiL1Controller.sv#L345) | 非法协议检测 / 错误处理 | `CPU_ERROR: cpu_state_q <= CPU_ERROR;` |
 | [`rtl/l1/MesiL1Controller.sv:347`](../rtl/l1/MesiL1Controller.sv#L347) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
 | [`rtl/l1/MesiL1Controller.sv:348`](../rtl/l1/MesiL1Controller.sv#L348) | 合法路径未命中 | `cpu_state_q <= CPU_IDLE;` |
 | [`rtl/l1/MesiL1Controller.sv:349`](../rtl/l1/MesiL1Controller.sv#L349) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/l1/MesiL1Controller.sv:365`](../rtl/l1/MesiL1Controller.sv#L365) | 合法路径未命中 | `if (!snoop_tag_hit \|\| (snoop_line_state == MESI_I)) begin` |
-| [`rtl/l1/MesiL1Controller.sv:366`](../rtl/l1/MesiL1Controller.sv#L366) | 合法路径未命中 | `snoop_rsp_opcode_q <= (snoop_opcode == SNOOP_INVALIDATE) ?` |
-| [`rtl/l1/MesiL1Controller.sv:368`](../rtl/l1/MesiL1Controller.sv#L368) | 合法路径未命中 | `snoop_state_q <= SNP_SEND_RSP;` |
 | [`rtl/l1/MesiL1Controller.sv:394`](../rtl/l1/MesiL1Controller.sv#L394) | 非法协议检测 / 错误处理 | `end else begin` |
 | [`rtl/l1/MesiL1Controller.sv:395`](../rtl/l1/MesiL1Controller.sv#L395) | 非法协议检测 / 错误处理 | `protocol_error <= 1'b1;` |
-| [`rtl/l1/MesiL1Controller.sv:439`](../rtl/l1/MesiL1Controller.sv#L439) | 合法路径未命中 | `(snoop_array_beat_idx == 3'd7)) begin` |
-| [`rtl/l1/MesiL1Controller.sv:440`](../rtl/l1/MesiL1Controller.sv#L440) | 非法协议检测 / 错误处理 | `snoop_state_q <= SNP_ERROR;` |
+| [`rtl/l1/MesiL1Controller.sv:439`](../rtl/l1/MesiL1Controller.sv#L439) | Snoop beat/last 异常：Snoop fail-stop 错误路径 | `(snoop_array_beat_idx == 3'd7)) begin` |
+| [`rtl/l1/MesiL1Controller.sv:440`](../rtl/l1/MesiL1Controller.sv#L440) | Snoop beat/last 异常：Snoop fail-stop 错误路径 | `snoop_state_q <= SNP_ERROR;` |
 | [`rtl/l1/MesiL1Controller.sv:454`](../rtl/l1/MesiL1Controller.sv#L454) | 非法协议检测 / 错误处理 | `SNP_ERROR: snoop_state_q <= SNP_ERROR;` |
 | [`rtl/l1/MesiL1Controller.sv:456`](../rtl/l1/MesiL1Controller.sv#L456) | FSM/default 防御分支（不可达候选，未证明） | `default: begin` |
 | [`rtl/l1/MesiL1Controller.sv:457`](../rtl/l1/MesiL1Controller.sv#L457) | 合法路径未命中 | `snoop_state_q <= SNP_IDLE;` |
@@ -229,12 +208,12 @@ Each missed executable source line is linked to its original RTL path and line. 
 
 | RTL module | Raw gap | Suggested Testpoint / checker |
 | --- | ---: | --- |
-| `rtl/cluster/DualL1MesiCluster.sv` | 10 (419–422, 425–427, 472–474) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/cluster/DualL1MesiCluster.sv` | 3 (472–474) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/coherence/SharedLineEngine.sv` | 31 (133–135, 141–143, 182–184, 191–193, 232–235, 246–248, 276, 278–280, 331–334, 348, 366–368) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
-| `rtl/directory/DirectoryController.sv` | 74 (238–241, 299–302, 353, 356–364, 366–369, 388–389, 392–401, 413–418, 438–441, 467, 470, 475–478, 483–493, 495–498, 501–504, 529, 531–534) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/directory/DirectoryController.sv` | 57 (238–241, 299–302, 353, 358–360, 362–365, 384–385, 388–397, 409–414, 434–437, 484–489, 491–494, 497–500, 525, 527–530) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/directory/DirectoryMshrBank.sv` | 10 (339–341, 362–365, 372–374) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/interconnect/CpuMmioRouter.sv` | 3 (162–164) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
-| `rtl/l1/MesiL1Controller.sv` | 23 (254–256, 287–289, 317–318, 345, 347–349, 365–366, 368, 394–395, 439–440, 454, 456–458) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/l1/MesiL1Controller.sv` | 20 (254–256, 287–289, 317–318, 345, 347–349, 394–395, 439–440, 454, 456–458) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 4 (313–314, 326–327) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 
 ## Functional Coverage map and checker closure

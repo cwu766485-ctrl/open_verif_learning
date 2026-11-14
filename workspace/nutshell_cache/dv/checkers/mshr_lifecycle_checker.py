@@ -68,19 +68,56 @@ class MshrLifecycleChecker:
                 if line in expected_lines:
                     responses[line].append(event)
 
-        ar_records = []
+        # Check each externally visible refill slot as a lifecycle, rather
+        # than only comparing aggregate allocation/retirement counts. The
+        # reset epoch is part of the correlation so a late pre-reset response
+        # cannot satisfy a post-reset allocation.
         for slot in range(4):
-            slot_allocs = allocs[slot]
-            slot_retires = retires[slot]
-            slot_ars = ar_by_id[slot]
+            slot_allocs = sorted(allocs[slot], key=lambda item: item["cycle"])
+            slot_retires = sorted(retires[slot], key=lambda item: item["cycle"])
+            slot_ars = sorted(ar_by_id[slot], key=lambda item: item["cycle"])
             if not (len(slot_allocs) == len(slot_retires) == len(slot_ars)):
                 raise AssertionError(
                     f"MSHR slot {slot} lifecycle count mismatch: "
                     f"alloc={len(slot_allocs)} AR={len(slot_ars)} "
                     f"retire={len(slot_retires)}"
                 )
+            active = False
+            alloc_index = retire_index = 0
+            slot_events = sorted(
+                [(event["cycle"], "allocate", event) for event in slot_allocs] +
+                [(event["cycle"], "retire", event) for event in slot_retires],
+                key=lambda item: (item[0], 0 if item[1] == "retire" else 1),
+            )
+            for cycle, kind, event in slot_events:
+                if kind == "allocate":
+                    if active:
+                        raise AssertionError(
+                            f"MSHR slot {slot} allocated twice without retirement "
+                            f"at cycle {cycle}"
+                        )
+                    active = True
+                    alloc_index += 1
+                else:
+                    if not active:
+                        raise AssertionError(
+                            f"MSHR slot {slot} retired while inactive at cycle {cycle}"
+                        )
+                    active = False
+                    retire_index += 1
+            if active or alloc_index != retire_index:
+                raise AssertionError(f"MSHR slot {slot} remained active at end of trace")
+
             for index, (allocation, ar, retirement) in enumerate(
                     zip(slot_allocs, slot_ars, slot_retires)):
+                alloc_epoch = int(allocation.get("reset_epoch", 0))
+                if (int(ar.get("reset_epoch", 0)) != alloc_epoch or
+                        int(retirement.get("reset_epoch", 0)) != alloc_epoch):
+                    raise AssertionError(
+                        f"MSHR slot {slot} lifecycle {index} crosses reset epochs: "
+                        f"alloc={alloc_epoch} AR={ar.get('reset_epoch', 0)} "
+                        f"retire={retirement.get('reset_epoch', 0)}"
+                    )
                 if allocation["cycle"] > ar["cycle"] + 1:
                     raise AssertionError(
                         f"MSHR slot {slot} allocation is not correlated with "
@@ -92,6 +129,22 @@ class MshrLifecycleChecker:
                         f"MSHR slot {slot} retired before its AXI request "
                         f"(lifecycle {index})"
                     )
+                if int(ar.get("txn_id", -1)) != slot:
+                    raise AssertionError(
+                        f"MSHR slot {slot} was issued with AXI ID "
+                        f"{ar.get('txn_id')} (lifecycle {index})"
+                    )
+
+        ar_records = []
+        for slot in range(4):
+            slot_allocs = allocs[slot]
+            slot_retires = retires[slot]
+            slot_ars = ar_by_id[slot]
+            slot_allocs.sort(key=lambda item: item["cycle"])
+            slot_retires.sort(key=lambda item: item["cycle"])
+            slot_ars.sort(key=lambda item: item["cycle"])
+            for index, (allocation, ar, retirement) in enumerate(
+                    zip(slot_allocs, slot_ars, slot_retires)):
                 ar_records.append((slot, ar, allocation, retirement))
 
         observed_lines = [int(ar["address"]) & LINE_MASK
@@ -116,6 +169,11 @@ class MshrLifecycleChecker:
                     f"observed {len(beats)}"
                 )
             for beat_index, beat in enumerate(beats):
+                if int(beat.get("reset_epoch", 0)) != int(ar.get("reset_epoch", 0)):
+                    raise AssertionError(
+                        f"line {line:#x} AXI R beat {beat_index} belongs to a "
+                        "different reset epoch than its AR"
+                    )
                 if (int(beat["beat"]) != beat_index or
                         (int(beat["address"]) & 0xFFFF_FFFF) !=
                         ((line + beat_index * 8) & 0xFFFF_FFFF) or
@@ -131,6 +189,14 @@ class MshrLifecycleChecker:
                     f"line {line:#x} L2 refill writes are incomplete or duplicated: "
                     f"{[item['beat'] for item in writes]}"
                 )
+            for beat_index, beat in enumerate(writes):
+                # The passive L2 monitor reports the line base for every
+                # accepted beat; the beat index carries the word position.
+                if (int(beat["address"]) & LINE_MASK) != line:
+                    raise AssertionError(
+                        f"line {line:#x} L2 fill beat belongs to another line "
+                        f"{beat_index}: {beat}"
+                    )
             if writes[-1]["cycle"] > retirement["cycle"] + 1:
                 raise AssertionError(
                     f"MSHR slot {slot} retired before L2 accepted its final refill beat"
@@ -143,34 +209,82 @@ class MshrLifecycleChecker:
                 raise AssertionError(
                     f"MSHR slot {slot} line {line:#x} retired before final AXI R beat"
                 )
+            if int(allocation.get("address", line)) & LINE_MASK != line:
+                raise AssertionError(
+                    f"MSHR slot {slot} allocation address does not match AXI line "
+                    f"{line:#x}: {allocation.get('address')}"
+                )
             if len(directory[line]) != 1:
                 raise AssertionError(
                     f"line {line:#x} expected one accepted Directory miss, "
                     f"observed {len(directory[line])}"
                 )
-            if not grants[line]:
-                raise AssertionError(f"line {line:#x} refill has no accepted Directory grant")
+            if len(grants[line]) != 1:
+                raise AssertionError(
+                    f"line {line:#x} expected one accepted Directory grant, "
+                    f"observed {len(grants[line])}"
+                )
             if not responses[line]:
                 raise AssertionError(f"line {line:#x} refill has no completed CPU response")
-            request_cycle = int(directory[line][0]["cycle"])
+            request = directory[line][0]
+            grant = grants[line][0]
+            if int(request.get("txn_id", -1)) != int(grant.get("txn_id", -2)):
+                raise AssertionError(
+                    f"line {line:#x} Directory grant transaction ID does not match "
+                    f"accepted request: request={request.get('txn_id')} "
+                    f"grant={grant.get('txn_id')}"
+                )
+            if line in expected_cores:
+                expected_core = expected_cores[line]
+                if int(request.get("source_id", -1)) != expected_core:
+                    raise AssertionError(
+                        f"line {line:#x} Directory request came from core "
+                        f"{request.get('source_id')}, expected core{expected_core}"
+                    )
+                if int(grant.get("destination", -1)) != expected_core:
+                    raise AssertionError(
+                        f"line {line:#x} Directory grant routed to core "
+                        f"{grant.get('destination')}, expected core{expected_core}"
+                    )
+            transaction_epoch = int(ar.get("reset_epoch", 0))
+            for source_name, records in (
+                    ("L2 refill", writes), ("Directory request", directory[line]),
+                    ("Directory grant", grants[line]),
+                    ("CPU response", responses[line])):
+                if any(int(item.get("reset_epoch", 0)) != transaction_epoch
+                       for item in records):
+                    raise AssertionError(
+                        f"line {line:#x} {source_name} evidence crosses reset epochs"
+                    )
+            request_cycle = int(request["cycle"])
             if request_cycle > int(ar["cycle"]) + 1:
                 raise AssertionError(
                     f"line {line:#x} AXI refill started before Directory accepted the miss"
                 )
             final_fill_cycle = int(writes[-1]["cycle"])
-            if min(int(item["cycle"]) for item in grants[line]) < final_fill_cycle - 1:
+            if int(grant["cycle"]) < final_fill_cycle - 1:
                 raise AssertionError(
                     f"line {line:#x} Directory grant preceded completed L2 refill"
                 )
-            if min(int(item["cycle"]) for item in responses[line]) < \
-                    min(int(item["cycle"]) for item in grants[line]) - 1:
+            matching_responses = [
+                item for item in responses[line]
+                if line not in expected_cores or
+                int(item.get("core", -1)) == expected_cores[line]
+            ]
+            if not matching_responses:
+                raise AssertionError(
+                    f"line {line:#x} has no CPU response for the expected requester"
+                )
+            if min(int(item["cycle"]) for item in matching_responses) < \
+                    int(grant["cycle"]) - 1:
                 raise AssertionError(
                     f"line {line:#x} CPU response preceded accepted Directory grant"
                 )
 
             if line in expected_words:
                 expected = int(expected_words[line]) & ((1 << 64) - 1)
-                if not any(int(item["data"]) == expected for item in responses[line]):
+                if not any(int(item["data"]) == expected
+                           for item in matching_responses):
                     raise AssertionError(
                         f"line {line:#x} CPU response did not return expected "
                         f"word {expected:#018x}"

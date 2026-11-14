@@ -1,0 +1,9 @@
+{
+  "total": 270,
+  "classification": {
+    "UNRESOLVED": 210,
+    "STRUCTURALLY_UNREACHABLE_CANDIDATE": 13,
+    "ILLEGAL_PROTOCOL": 47
+  },
+  "note": "Prior classifications are unapproved candidates only; zero-point status stays OPEN; no legal point silently treated unreachable"
+}

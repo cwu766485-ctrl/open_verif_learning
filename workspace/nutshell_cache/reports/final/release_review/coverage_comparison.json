@@ -1,0 +1,466 @@
+[
+  {
+    "dataset": "main_subsystem",
+    "before": {
+      "line": {
+        "hit": 864,
+        "total": 992,
+        "miss": 128
+      },
+      "branch": {
+        "hit": 473,
+        "total": 556,
+        "miss": 83
+      },
+      "toggle": {
+        "hit": 21931,
+        "total": 27474,
+        "miss": 5543
+      },
+      "fsm_state": {
+        "hit": 30,
+        "total": 54,
+        "miss": 24
+      },
+      "fsm_arc": {
+        "hit": 13,
+        "total": 48,
+        "miss": 35
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 864,
+        "total": 992,
+        "miss": 128
+      },
+      "branch": {
+        "hit": 473,
+        "total": 556,
+        "miss": 83
+      },
+      "toggle": {
+        "hit": 21931,
+        "total": 27474,
+        "miss": 5543
+      },
+      "fsm_state": {
+        "hit": 30,
+        "total": 54,
+        "miss": 24
+      },
+      "fsm_arc": {
+        "hit": 13,
+        "total": 48,
+        "miss": 35
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "axi_subsystem",
+    "before": {
+      "line": {
+        "hit": 901,
+        "total": 1068,
+        "miss": 167
+      },
+      "branch": {
+        "hit": 509,
+        "total": 632,
+        "miss": 123
+      },
+      "toggle": {
+        "hit": 15623,
+        "total": 32332,
+        "miss": 16709
+      },
+      "fsm_state": {
+        "hit": 30,
+        "total": 54,
+        "miss": 24
+      },
+      "fsm_arc": {
+        "hit": 4,
+        "total": 48,
+        "miss": 44
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 901,
+        "total": 1068,
+        "miss": 167
+      },
+      "branch": {
+        "hit": 509,
+        "total": 632,
+        "miss": 123
+      },
+      "toggle": {
+        "hit": 15623,
+        "total": 32332,
+        "miss": 16709
+      },
+      "fsm_state": {
+        "hit": 30,
+        "total": 54,
+        "miss": 24
+      },
+      "fsm_arc": {
+        "hit": 4,
+        "total": 48,
+        "miss": 44
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "directory_controller",
+    "before": {
+      "line": {
+        "hit": 178,
+        "total": 182,
+        "miss": 4
+      },
+      "branch": {
+        "hit": 37,
+        "total": 42,
+        "miss": 5
+      },
+      "toggle": {
+        "hit": 260,
+        "total": 612,
+        "miss": 352
+      },
+      "fsm_state": {
+        "hit": 10,
+        "total": 10,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 3,
+        "total": 9,
+        "miss": 6
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 178,
+        "total": 182,
+        "miss": 4
+      },
+      "branch": {
+        "hit": 37,
+        "total": 42,
+        "miss": 5
+      },
+      "toggle": {
+        "hit": 260,
+        "total": 612,
+        "miss": 352
+      },
+      "fsm_state": {
+        "hit": 10,
+        "total": 10,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 3,
+        "total": 9,
+        "miss": 6
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "directory_mshr_bank",
+    "before": {
+      "line": {
+        "hit": 167,
+        "total": 286,
+        "miss": 119
+      },
+      "branch": {
+        "hit": 100,
+        "total": 128,
+        "miss": 28
+      },
+      "toggle": {
+        "hit": 1249,
+        "total": 2904,
+        "miss": 1655
+      },
+      "fsm_state": {
+        "hit": 31,
+        "total": 40,
+        "miss": 9
+      },
+      "fsm_arc": {
+        "hit": 11,
+        "total": 36,
+        "miss": 25
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 167,
+        "total": 286,
+        "miss": 119
+      },
+      "branch": {
+        "hit": 100,
+        "total": 128,
+        "miss": 28
+      },
+      "toggle": {
+        "hit": 1249,
+        "total": 2904,
+        "miss": 1655
+      },
+      "fsm_state": {
+        "hit": 31,
+        "total": 40,
+        "miss": 9
+      },
+      "fsm_arc": {
+        "hit": 11,
+        "total": 36,
+        "miss": 25
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "shared_line_engine",
+    "before": {
+      "line": {
+        "hit": 101,
+        "total": 104,
+        "miss": 3
+      },
+      "branch": {
+        "hit": 44,
+        "total": 52,
+        "miss": 8
+      },
+      "toggle": {
+        "hit": 304,
+        "total": 648,
+        "miss": 344
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 101,
+        "total": 104,
+        "miss": 3
+      },
+      "branch": {
+        "hit": 44,
+        "total": 52,
+        "miss": 8
+      },
+      "toggle": {
+        "hit": 304,
+        "total": 648,
+        "miss": 344
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "mesi_l1_controller",
+    "before": {
+      "line": {
+        "hit": 124,
+        "total": 132,
+        "miss": 8
+      },
+      "branch": {
+        "hit": 43,
+        "total": 46,
+        "miss": 3
+      },
+      "toggle": {
+        "hit": 741,
+        "total": 1804,
+        "miss": 1063
+      },
+      "fsm_state": {
+        "hit": 7,
+        "total": 7,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 3,
+        "total": 6,
+        "miss": 3
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 124,
+        "total": 132,
+        "miss": 8
+      },
+      "branch": {
+        "hit": 43,
+        "total": 46,
+        "miss": 3
+      },
+      "toggle": {
+        "hit": 741,
+        "total": 1804,
+        "miss": 1063
+      },
+      "fsm_state": {
+        "hit": 7,
+        "total": 7,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 3,
+        "total": 6,
+        "miss": 3
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "shared_l2_directory_array",
+    "before": {
+      "line": {
+        "hit": 75,
+        "total": 79,
+        "miss": 4
+      },
+      "branch": {
+        "hit": 65,
+        "total": 74,
+        "miss": 9
+      },
+      "toggle": {
+        "hit": 197,
+        "total": 1778,
+        "miss": 1581
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 75,
+        "total": 79,
+        "miss": 4
+      },
+      "branch": {
+        "hit": 65,
+        "total": 74,
+        "miss": 9
+      },
+      "toggle": {
+        "hit": 197,
+        "total": 1778,
+        "miss": 1581
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "raw_identical": true
+  },
+  {
+    "dataset": "bus_blocks",
+    "before": {
+      "line": {
+        "hit": 67,
+        "total": 68,
+        "miss": 1
+      },
+      "branch": {
+        "hit": 70,
+        "total": 76,
+        "miss": 6
+      },
+      "toggle": {
+        "hit": 1100,
+        "total": 2450,
+        "miss": 1350
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "after": {
+      "line": {
+        "hit": 67,
+        "total": 68,
+        "miss": 1
+      },
+      "branch": {
+        "hit": 70,
+        "total": 76,
+        "miss": 6
+      },
+      "toggle": {
+        "hit": 1100,
+        "total": 2450,
+        "miss": 1350
+      },
+      "fsm_state": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      },
+      "fsm_arc": {
+        "hit": 0,
+        "total": 0,
+        "miss": 0
+      }
+    },
+    "raw_identical": true
+  }
+]

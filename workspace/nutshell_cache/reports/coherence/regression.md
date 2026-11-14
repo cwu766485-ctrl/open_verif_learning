@@ -1,9 +1,9 @@
 # Dual-L1 MESI Regression Report
 
 - **Status:** PASS
-- **PASS markers:** 198
+- **PASS markers:** 219
 - **Functional coverage:** 38/38 (100.0%)
-- **Code line coverage:** 1581/1746 (90.5%)
+- **Code line coverage:** 1697/1837 (92.4%)
 - **Documented waivers:** 0
 
 Functional bins close only from structured `COV_EVENT` records emitted after the corresponding checker completes; PASS text is informational.
@@ -53,14 +53,14 @@ Functional bins close only from structured `COV_EVENT` records emitted after the
 
 | Channel | Stalled cycles | Status |
 |---|---:|---|
-| `cpu_resp` | 26 | hit |
+| `cpu_resp` | 443 | hit |
 | `mmio_req` | 4 | hit |
 | `mmio_resp` | 5 | hit |
-| `mem_rd_req` | 9 | hit |
+| `mem_rd_req` | 45 | hit |
 | `l2_fill` | 2 | hit |
-| `mem_wr_req` | 11 | hit |
-| `mem_wr_data` | 756 | hit |
-| `dir_req` | 42 | hit |
+| `mem_wr_req` | 13 | hit |
+| `mem_wr_data` | 1061 | hit |
+| `dir_req` | 537 | hit |
 
 Logs:
 
@@ -76,13 +76,13 @@ Logs:
 
 ## Performance and storage baseline
 
-- L1 hit: 2 average cycles (59 samples)
-- L1 miss: 41 average cycles (150 samples; 39 cycle penalty vs. hit)
-- Read hit: 2 average cycles (43 samples)
-- Write hit (E/M): 3 average cycles (16 samples)
-- S-to-M upgrade: 11 average cycles (10 samples)
-- Cold L1 miss: 43 average cycles (140 samples)
+- L1 hit: 2 average cycles (67 samples)
+- L1 miss: 20 average cycles (3012 samples; 18 cycle penalty vs. hit)
+- Read hit: 2 average cycles (50 samples)
+- Write hit (E/M): 3 average cycles (17 samples)
+- S-to-M upgrade: 9 average cycles (1354 samples)
+- Cold L1 miss: 29 average cycles (1658 samples)
 - CPU request-ready stalled cycles: 0
-- Remote snoop: 19 average cycles (41 samples)
+- Remote snoop: 14 average cycles (2756 samples)
 - Configured data capacity: 320 KiB (two 32 KiB L1s plus 256 KiB shared L2)
 - These are RTL simulation cycle counts and configured capacity. No target standard-cell library, SRAM compiler model, clock constraint, or physical-design flow is configured, so this report does not claim silicon area or static timing closure.

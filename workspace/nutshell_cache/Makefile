@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_coverage coherence_full_system_verify coherence_full_system_cross_closure coherence_python_coverage_close coherence_coverage_audit coherence_shared_line_engine clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_replay_closure coherence_full_system_coverage coherence_full_system_checker_tests coherence_full_system_verify coherence_full_system_cross_closure coherence_full_system_evidence_gate coherence_python_coverage_close coherence_coverage_audit coherence_release_regression coherence_release_gate coherence_shared_line_engine clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -91,6 +91,14 @@ coherence_formal:
 	 sby -f -d reports/formal/coherence_request_arbiter formal/coherence_request_arbiter.sby && \
 	 sby -f -d reports/formal/coherence_snoop_arbiter formal/coherence_snoop_arbiter.sby && \
 	 sby -f -d reports/formal/coherence_directory formal/coherence_directory.sby && \
+	 sby -f -d reports/formal/coherence_directory_unconstrained formal/coherence_directory_unconstrained.sby && \
+	 sby -f -d reports/formal/freeze_read_port formal/freeze_read_port.sby && \
+	 sby -f -d reports/formal/freeze_l1_producer formal/freeze_l1_producer.sby && \
+	 python3 scripts/extract_final_l2_read_control.py --check > reports/formal/final_l2_extraction.json && \
+	 sby -f -d reports/formal/final_read_port formal/final_read_port.sby && \
+	 sby -f -d reports/formal/final_refill_producer formal/final_refill_producer.sby && \
+	 sby -f -d reports/formal/final_axi_local formal/final_axi_local.sby && \
+	 sby -f -d reports/formal/coherence_directory_transactions formal/coherence_directory_transactions.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank formal/coherence_directory_mshr_bank.sby && \
 	 sby -f -d reports/formal/coherence_directory_mshr_bank_cover formal/coherence_directory_mshr_bank_cover.sby && \
 	 sby -f -d reports/formal/coherence_directory_progress formal/coherence_directory_progress.sby && \
@@ -301,7 +309,9 @@ coherence_hit_under_miss: coherence_python_build coherence_full_system_build
 	 PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -sv \
 	 tests/coherence/test_hit_under_miss.py
 	@python3 benchmarks/collect_hit_under_miss.py
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/hit_under_miss/full_system_coverage.json \
+	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/hit_under_miss/full_system_trace.jsonl \
+	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_hit_under_miss_axi.py
 
 # One clean Picker export, then the Python functional DV and Benchmark v2.
@@ -365,7 +375,9 @@ coherence_full_system_build:
 	  --tdir ../.tooling/coherent_axi_python --lang python --sim verilator -e -c
 
 coherence_full_system_smoke: coherence_full_system_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/smoke/full_system_coverage.json \
+	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/smoke/full_system_trace.jsonl \
+	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_coherence.py
 
 # Reproducible full-system random regression. Override the seed count and
@@ -380,6 +392,8 @@ coherence_full_system_random: coherence_full_system_build
 	  FULL_SYSTEM_RANDOM_OPERATIONS=$(FULL_SYSTEM_RANDOM_OPERATIONS) \
 	  FULL_SYSTEM_RANDOM_BASE_SEED=$(FULL_SYSTEM_RANDOM_BASE_SEED) \
 	  FULL_SYSTEM_RANDOM_ADDRESS_COUNT=$(FULL_SYSTEM_RANDOM_ADDRESS_COUNT) \
+	  FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/random/full_system_coverage.json \
+	  FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/random/full_system_trace.jsonl \
 	  PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_random.py \
 	    tests/full_system/test_mixed_agent_random.py \
@@ -387,13 +401,26 @@ coherence_full_system_random: coherence_full_system_build
 
 # Four-agent mixed timing stress with independent CPU/MMIO/APB/AXI checks.
 coherence_full_system_mixed: coherence_full_system_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/mixed/full_system_coverage.json \
+	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/mixed/full_system_trace.jsonl \
+	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_mixed_agent_random.py
 
-# Directed cross-interface closure: M-owner transfer + unrelated AXI refill + APB.
+# Directed cross-interface closure: strict CR01-CR10 scenarios where implemented
+# scenarios with checked event overlap and independent scoreboards.
 coherence_full_system_cross_closure: coherence_full_system_build
-	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
-	  python3 -m pytest -sv tests/full_system/test_owner_transfer_apb_cross.py
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/cross_closure/full_system_coverage.json \
+	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/cross_closure/full_system_trace.jsonl \
+	 FULL_SYSTEM_RECOVERY_SEED_COUNT=4 \
+	 PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_owner_transfer_apb_cross.py \
+	    tests/full_system/test_cross_agent_directed.py \
+	    tests/full_system/test_full_system_signoff.py::test_dirty_l1_victim_overlaps_axi_writeback_stall \
+	    tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner \
+	    tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss \
+	    tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses \
+	    tests/full_system/test_randomized_recovery.py::test_seeded_reset_during_directory_snoop_pending \
+	    tests/full_system/test_randomized_recovery.py::test_seeded_axi_read_error_beat_and_recovery
 
 # Extended state/resource/timing-aware regression. Both the CPU-directed
 # stream and the four-role CPU/MMIO/APB/AXI campaign start at 100 x 500.
@@ -412,6 +439,8 @@ coherence_full_system_stress: coherence_full_system_build
 	  FULL_SYSTEM_MIXED_ROUNDS=$(FULL_SYSTEM_MIXED_ROUNDS) \
 	  FULL_SYSTEM_RESOURCE_SEED_COUNT=$(FULL_SYSTEM_RESOURCE_SEED_COUNT) \
 	  FULL_SYSTEM_RECOVERY_SEED_COUNT=$(FULL_SYSTEM_RECOVERY_SEED_COUNT) \
+	  FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/stress/full_system_coverage.json \
+	  FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/stress/full_system_trace.jsonl \
 	  PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_random.py \
 	    tests/full_system/test_mixed_agent_random.py \
@@ -425,6 +454,8 @@ FULL_SYSTEM_REPLAY_OPERATIONS ?= 100
 coherence_full_system_replay: coherence_full_system_build
 	@source $(ENV_SCRIPT); FULL_SYSTEM_RANDOM_SEEDS=$(FULL_SYSTEM_REPLAY_SEED) \
 	  FULL_SYSTEM_RANDOM_OPERATIONS=$(FULL_SYSTEM_REPLAY_OPERATIONS) \
+	  FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/replay/full_system_coverage.json \
+	  FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/replay/full_system_trace.jsonl \
 	  PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_random.py
 
@@ -434,13 +465,33 @@ FULL_SYSTEM_REPLAY_TEST_ID ?=
 coherence_full_system_replay_trace: coherence_full_system_build
 	@source $(ENV_SCRIPT); FULL_SYSTEM_REPLAY_TRACE='$(FULL_SYSTEM_TRACE)' \
 	  FULL_SYSTEM_REPLAY_TEST_ID='$(FULL_SYSTEM_REPLAY_TEST_ID)' \
+	  FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/replay_trace/full_system_coverage.json \
+	  FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/replay_trace/full_system_trace.jsonl \
 	  PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system/test_full_system_replay.py
 
-coherence_full_system_coverage: coherence_full_system_build
+coherence_full_system_replay_closure: coherence_full_system_build
+	@source $(ENV_SCRIPT); \
+	  FULL_SYSTEM_REPLAY_CLOSURE_OUTPUT=reports/full_system/replay_closure/controlled_checker_failure.json \
+	  FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/replay_closure/full_system_coverage.json \
+	  FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/replay_closure/full_system_trace.jsonl \
+	  PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -sv tests/full_system/test_replay_closure.py
+
+coherence_full_system_checker_tests:
 	@source $(ENV_SCRIPT); PYTHONPATH=.tooling:.:./dv:./tests \
+	  python3 -m pytest -q tests/checkers tests/unit/test_full_system_evidence_gate.py
+
+coherence_full_system_coverage: coherence_full_system_build coherence_full_system_checker_tests
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/full_system_coverage.json \
+	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/full_system_trace.jsonl \
+	 PYTHONPATH=.tooling:.:./dv:./tests \
 	  python3 -m pytest -sv tests/full_system
 	@PYTHONPATH=.:./dv python3 -m dv.coverage.full_system_closure
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.full_system_evidence_gate
+
+coherence_full_system_evidence_gate:
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.full_system_evidence_gate
 
 coherence_full_system_verify:
 	$(MAKE) COHERENCE_JOBS=$(COHERENCE_JOBS) coherence_verify
@@ -452,8 +503,24 @@ coherence_python_coverage_close:
 # Collect isolated native coverage for the AXI subsystem and key blocks. Each
 # dataset stays separate because these tops elaborate different hierarchy and
 # run different testcases; never sum their percentages into the subsystem run.
-coherence_coverage_audit:
+coherence_coverage_audit: coherence_regression
 	@bash scripts/run_coherence_coverage_audit.sh $(COHERENCE_JOBS)
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.coherence_gap_review
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.coverage_raw_runs
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_coverage_closure
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_coverage_dataset_manifest
+
+# Exact required release regression set. A source fingerprint and per-command
+# log/status are recorded so results cannot silently be reused after edits.
+coherence_release_regression:
+	@source $(ENV_SCRIPT); PYTHONPATH=.:./dv python3 scripts/run_rtl_release_regressions.py 2
+
+# Raw hits are machine-attested against their exact source/dataset/test/checker
+# contract. Zero-count points still need an individual current review decision;
+# this target stays nonzero while any required zero point remains OPEN/BLOCKED.
+coherence_release_gate:
+	@PYTHONPATH=.:./dv python3 -m pytest -q tests/unit/test_rtl_release_gate.py tests/unit/test_coverage_manifest_and_gate.py
+	@PYTHONPATH=.:./dv python3 -m dv.coverage.rtl_release_gate --check
 
 coherence_multisnoop: coherence_build
 	@reports/coherence/obj_dir/VCoherentCacheSubsystem_tb +l2_multisnoop_only

@@ -1,0 +1,56 @@
+[
+  {
+    "risk": "Context 2/3",
+    "rtl_condition": "First-free slot2/3 needs at least3/4 concurrent live requests; ownership same-set guard, Put bypass exception",
+    "stimulus_or_proof": "Bidirectional replacement/GetS timing offsets0..9; existing dual misses/resource conflict; standalone 4-context cover",
+    "dut_event": "Main observed peak2, ctx2/3 cycles0; no integrated upper-bound proof",
+    "checker": "CPU data/reference MESI/Directory; MSHR bounded allocate/retire",
+    "coverage_point": "Exact Main DirectoryController instance2/3 FSM IDs in review_matrix",
+    "evidence": "coherence_verify.log.gz; coherence_coverage_audit.log.gz; phase4 reachability study",
+    "status": "OPEN",
+    "minimum_task": "Compose two actual L1 controllers, request arbiter and MSHR; prove capacity or cover slot2/3 including Put bypass; then check retirement"
+  },
+  {
+    "risk": "Grant Read x L2 Busy",
+    "rtl_condition": "Accepted data grant while l2_line_rd_ready=0 enters ENGINE_GRANT_READ",
+    "stimulus_or_proof": "freeze_read_port.sby k-induction PASS",
+    "dut_event": "Actual engine cannot enter state10 in modeled Main read-port composition; runtime accepted grants always see ready",
+    "checker": "Asserted busy ownership/beat lemmas; independent runtime port assertion",
+    "coverage_point": "Main SharedLineEngine line207/208/348/349 etc exact IDs in review matrix",
+    "evidence": "formal/freeze_read_port_scope.md; final_freeze/formal/freeze_read_port.log.gz",
+    "status": "PROOF_CANDIDATE_PENDING_CORRESPONDENCE_REVIEW",
+    "minimum_task": "Independent review of modeled recurrence/routing vs actual Main/L2 RTL, or full-elaboration proof"
+  },
+  {
+    "risk": "Dirty Victim BRESP / Producer Safety",
+    "rtl_condition": "Write response error enters fail-stop; internal write ID/beat/last must match engine/L2",
+    "stimulus_or_proof": "Enhanced existing AXI BRESP error test; 8-cycle fail-stop, reset, core1 recovery; continuous Main write producer assertions",
+    "dut_event": "B error observed; no CPU success; fatal persists; reset epoch advances; checked recovery read",
+    "checker": "Independent AXI memory/CPU reference, APB status, reset monitor; runtime producer assertions",
+    "coverage_point": "Main error lines already hit; exact newly hit toggle IDs in freeze_baseline_point_diff; remaining error branches retained",
+    "evidence": "final_freeze/bresp_boundary.log.gz; test_full_system_signoff.py; freeze_protocol_observer.svh",
+    "status": "ERROR_CASE_PASS_PRODUCER_PROOF_OPEN",
+    "minimum_task": "Prove internal refill/snoop/grant and AXI adapter ID/beat/last invariants across all producers; runtime observations are not universal proof"
+  },
+  {
+    "risk": "Owner-missing Retry direction/timing",
+    "rtl_condition": "Owner replacement retires before no-data snoop response, authoritative L2 retry",
+    "stimulus_or_proof": "Both owner cores, offsets0..9, real CPU interfaces",
+    "dut_event": "2 retry responses per direction in directed run",
+    "checker": "Data readback, both completed operation predictions, independent MESI/Directory model",
+    "coverage_point": "Existing Main retry/tag-miss lines remain hit;8new Toggle,0newLine/Branch/FSM",
+    "evidence": "coherence_verify.log.gz; phase4_replacement_race.svh",
+    "status": "PASS_WITHIN_FIXED_SWEEP"
+  },
+  {
+    "risk": "Reset/Fatal/Resource FSM arcs",
+    "rtl_condition": "Reach actual transient state before reset, fail-stop on errors, conflict serializes",
+    "stimulus_or_proof": "Reset scan states1,3,4,5,6,7,8 incl FINISH; existing active snoop/writeback reset, BRESP fatal recovery; unconstrained encoding proof",
+    "dut_event": "Seven observed states reset and checked recovery; no stale transaction; Context2/3 source states unobserved",
+    "checker": "Reset epoch/stale response assertions, reference data; bounded transaction reset properties",
+    "coverage_point": "No added native FSM Arc hits; unexplored instance/source-state arcs OPEN; do not invent extraction explanation",
+    "evidence": "risk_reset_states.svh; coherence_verify.log.gz; formal evidence",
+    "status": "PARTIAL_OPEN",
+    "minimum_task": "Resolve reachability per source state/instance, then reset at those states; prove or independently review tool extraction only where supported"
+  }
+]

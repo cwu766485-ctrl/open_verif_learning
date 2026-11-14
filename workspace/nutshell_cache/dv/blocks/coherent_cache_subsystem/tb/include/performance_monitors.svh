@@ -89,6 +89,9 @@
   integer benchmark_model_accept_miss_count = 0;
   integer benchmark_rtl_hit_count = 0;
   integer benchmark_rtl_miss_count = 0;
+  // Coverage-only sequences can exercise legal overlap without contaminating
+  // the directed latency summary that uses one accepted request per core.
+  logic benchmark_measure_enable = 1'b1;
   integer benchmark_snoop_count = 0;
   integer benchmark_snoop_cycles = 0;
   logic [1:0] stalled_cpu_req_q;

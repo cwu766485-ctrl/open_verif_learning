@@ -1,0 +1,10 @@
+{
+  "status": "OPEN",
+  "make_exit": 2,
+  "raw_hit_attested": 45365,
+  "zero_points": 29466,
+  "log": {
+    "archive": "reports/final/release_review/release_gate.log.gz",
+    "sha256": "8284227099930507b09fc9eb832b3bae9aa14afbd1831cb4ff111cc12c690f65"
+  }
+}

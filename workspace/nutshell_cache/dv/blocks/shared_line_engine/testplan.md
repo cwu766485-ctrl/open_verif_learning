@@ -19,7 +19,7 @@
 
 | Feature | Testpoint / testcase | Independent checker | Coverage obligation |
 | --- | --- | --- | --- |
-| Grant read accepted after L2 backpressure | `test_grant_read_backpressure` | Checks latched aligned address, transaction ID and destination; state hold; data stream final-beat retirement | Grant wait and delayed hit behavior |
+| Grant read accepted after L2 backpressure | `test_grant_read_backpressure` | Checks latched aligned address, transaction ID and destination; state hold; eight accepted stream cycles with `last` only on beat 7; retires exactly on the final handshake | Grant wait and delayed hit behavior |
 | Grant and L2 hit accepted in the same cycle | `test_grant_immediate_l2_hit` | Checks immediate stream entry, non-final beat hold, and final-beat retirement | Immediate grant/read handshake arm |
 | Grant followed by L2 miss | `test_grant_immediate_l2_miss_fault`, `test_grant_read_miss_fault` | Checks `ENGINE_ERROR` and sticky protocol error for immediate and delayed lookup paths | Both grant lookup miss guards |
 | L2 refill hit and cold miss | `test_refill_hit_and_cold_miss` | Checks aligned address, transfer completion on hit, and memory request on cold miss | Refill hit/no-victim arms |
@@ -48,6 +48,7 @@ The three missed executable LCOV lines are the `default` state-encoding guard in
 - Dirty-owner write request/data, mark-clean and invalidate backpressure are not comprehensively stalled in this bench. Active reset in every Engine state is also untested.
 - Refill ID/beat mismatch belongs to the external refill-MSHR/adapter boundary (`mem_mshr_r_match`/`mem_r_protocol_bad`); this block does not independently reconstruct the full AXI response protocol.
 - Interface-driven fault cases validate Engine fail-stop behavior, but do not establish that such malformed combinations can arise in the integrated subsystem.
+- This block's grant stream interface exposes only `valid/ready/last`, not the data payload or beat index. The eight-cycle check proves stream lifetime/final-beat handling; payload ordering and data correctness must be checked by the L2/L1 integration Scoreboard and are not claimed by this Engine test.
 - Required subsystem-wide closure remains governed by the full subsystem dataset and `reports/final/coverage_closure_matrix.csv`; Block hits are independent evidence only and do not erase subsystem raw misses.
 
 ## Execution

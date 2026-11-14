@@ -24,7 +24,7 @@ GetS/GetM/Upgrade selection; grant ID validation; refill streaming; E/M store; S
 | GetM miss/refill | GetM miss with grant/refill stalls | fatal check opcode, stale-ID rejection, beat stability and M commit | integrated only: `mesi.getm_remote_owner` |
 | SnoopInvalidate | invalidate M and S entries | fatal check M data stream, invalid metadata and InvAck | integrated only: `mesi.getm_remote_owner`, `mesi.getm_upgrade_s` |
 | Missing-line recovery | SnoopRead to absent line | fatal requires recoverable ACK | no direct bin |
-| Reset/error | reset stalled refill; inject malformed refill | fatal checks reset clears state and bad refill fails without success | integrated only: `reset.refill` |
+| Reset/error | reset stalled refill; inject out-of-order refill, beat-7/missing-Last refill, and beat-7/missing-Last Snoop data | fatal checks reset clears state, CPU enters `CPU_ERROR` without response, and malformed Snoop enters `SNP_ERROR` without a response | integrated only: `reset.refill`; malformed cases are separate block evidence |
 
 ## Coverage ownership and gaps
 

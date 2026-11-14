@@ -1,0 +1,16 @@
+[options]
+mode prove
+depth 8
+timeout 60
+[engines]
+smtbmc z3
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv LineMemoryAxi4Adapter.sv review_axi_ar_harness.sv
+prep -top ReviewAxiArFormal
+memory_map
+opt_clean
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/bus/axi/LineMemoryAxi4Adapter.sv
+formal/review_axi_ar_harness.sv

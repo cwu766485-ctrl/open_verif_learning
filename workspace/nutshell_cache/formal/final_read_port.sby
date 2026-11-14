@@ -1,0 +1,14 @@
+[options]
+mode prove
+depth 24
+[engines]
+smtbmc z3
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv SharedLineEngine.sv final_l2_read_control_extracted.sv final_read_port_harness.sv
+prep -top FinalReadPortFormal
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/coherence/SharedLineEngine.sv
+formal/final_read_port_harness.sv
+formal/final_l2_read_control_extracted.sv

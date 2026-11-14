@@ -1,0 +1,5 @@
+Required command: source scripts/env.sh && make COHERENCE_JOBS=2 coherence_full_system_stress
+Execution result observed from the completed Make invocation: exit_code=0.
+Pytest result: 280 passed in 2684.90s (0:44:44).
+Generated stress artifacts: reports/full_system/stress_seed_summary.csv (280 seeds), reports/full_system/stress_campaign_summary.md.
+Provenance note: This is the concise completion record from the successful interactive command result. The full per-test stdout from that rerun was not persisted to this file; the earlier runner log contains the per-test PASSED lines but did not contain the completion summary.

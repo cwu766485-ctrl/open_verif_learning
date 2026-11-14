@@ -1,0 +1,18 @@
+{
+  "status": "OPEN",
+  "scope": "Behavior candidates; exact reachability unresolved, not certified legal reachable points",
+  "behaviors": [
+    {
+      "behavior": "Integrated Context2/3 allocation and retirement",
+      "precondition": "3/4 live contexts; ownership requests plus Put bypass from two blocking L1s",
+      "proof_needed": "Actual L1/arbiter/MSHR composition or legal CPU counterexample"
+    },
+    {
+      "behavior": "Remaining per-instance transient reset arcs",
+      "precondition": "Actual source state reached before reset",
+      "proof_needed": "Per-instance reachability then checked reset; no force"
+    }
+  ],
+  "point_worklist": "review_matrix.csv.gz",
+  "no_unhit_point_auto_excluded": true
+}

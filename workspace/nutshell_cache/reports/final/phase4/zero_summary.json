@@ -1,0 +1,18 @@
+{
+  "remaining_by_metric": {
+    "branch": 268,
+    "fsm_arc": 113,
+    "fsm_state": 57,
+    "line": 469,
+    "toggle": 28660
+  },
+  "toggle_review_queues": {
+    "UNCLASSIFIED": 3283,
+    "ADDRESS_TAG": 20648,
+    "DATA": 3717,
+    "TRANSACTION_CONTEXT_ID": 736,
+    "BYTE_MASK": 176,
+    "FSM_ENCODING": 100
+  },
+  "policy": "Queues only; no constant/unreachable/waiver finding or exclusion."
+}

@@ -3,12 +3,14 @@
   // valid/ready pulse that the DUT has already advanced past.
   always @(posedge clock) begin : state_model_protocol_monitor
     if (!reset) begin
-      benchmark_observe_cpu_handshakes();
-      for (integer core = 0; core < 2; core = core + 1) begin
-        if (perf_hit_event[core])
-          benchmark_rtl_hit_count = benchmark_rtl_hit_count + 1;
-        if (perf_miss_event[core])
-          benchmark_rtl_miss_count = benchmark_rtl_miss_count + 1;
+      if (benchmark_measure_enable) begin
+        benchmark_observe_cpu_handshakes();
+        for (integer core = 0; core < 2; core = core + 1) begin
+          if (perf_hit_event[core])
+            benchmark_rtl_hit_count = benchmark_rtl_hit_count + 1;
+          if (perf_miss_event[core])
+            benchmark_rtl_miss_count = benchmark_rtl_miss_count + 1;
+        end
       end
       state_model_observe_protocol();
     end else begin

@@ -1,0 +1,17 @@
+[options]
+mode prove
+depth 16
+
+[engines]
+smtbmc z3
+
+[script]
+plugin -i slang
+read_slang -D FORMAL CoherenceProtocol.sv MesiL1SnoopArbiter.sv MesiL1Controller.sv freeze_l1_producer_harness.sv
+prep -top FreezeL1ProducerFormal
+
+[files]
+rtl/common/CoherenceProtocol.sv
+rtl/l1/MesiL1SnoopArbiter.sv
+rtl/l1/MesiL1Controller.sv
+formal/freeze_l1_producer_harness.sv

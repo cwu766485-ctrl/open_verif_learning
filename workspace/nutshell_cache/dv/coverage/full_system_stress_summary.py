@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW = ROOT / "reports/full_system/full_system_coverage.json"
+RAW = ROOT / "reports/full_system/stress/full_system_coverage.json"
 CSV_OUT = ROOT / "reports/full_system/stress_seed_summary.csv"
 MD_OUT = ROOT / "reports/full_system/stress_campaign_summary.md"
 
@@ -189,8 +189,8 @@ def render() -> tuple[list[dict[str, object]], str]:
         "",
         "- The CSV stores the exact test ID, seed, configuration, and a one-seed command for each run.",
         "- AXI error campaign counts are deliberate injected SLVERR events; each seed passes only after the DUT suppresses successful data, resets, and returns the independently expected data on retry. The final-fatal column is sampled after recovery.",
-        "- For future failures, `conftest.py` captures the generated operation prefix and failure context in `full_system_coverage.json` and cycle/event data in `full_system_trace.jsonl`; the replay target accepts a saved trace/test ID. No trace minimizer is implemented yet.",
-        "- The raw JSON is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.",
+        "- No DUT failure occurred in this random campaign, so its replay count is zero. Separately, `make coherence_full_system_replay_closure` injects a checker expected-data mismatch, captures and replays it on RTL, then reduces the operation trace from five operations to two while retaining the legal owner-store prelude; see `reports/full_system/replay_closure/controlled_checker_failure.json`. This is operation-level reduction, not general cycle-by-cycle interleaving minimization.",
+        "- The stress raw JSON is separate from the sign-off coverage dataset. It is a generated scratch report and may be removed by `make clean`; regenerate it with `make COHERENCE_JOBS=2 coherence_full_system_stress`, which also refreshes this compact summary.",
         "",
     ]
     return rows, "\n".join(lines)

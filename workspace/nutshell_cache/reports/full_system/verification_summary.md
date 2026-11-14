@@ -1,63 +1,28 @@
 # Full-System Verification Summary
 
-Date: 2026-11-03 (Asia/Singapore)
-Branch: `codex/full-system-graybox-closure`
-Verification base: `fa7a9ef`; this report records the current local DV upgrade.
+Date: 2026-11-06 (Asia/Singapore)
+Tested RTL/DV source SHA: `14542f52bef5a42560cc615a5db104e3122dbd33`
+Working branch: `dv-closure-phase2`; base `cache_coherence` SHA: `9b281f3bd1d6b5dbdf9bb257313dd61a21d87252`
 
-## Scope
+## Results
 
-The Python/Toffee environment targets `CoherentCacheAxiSubsystem` through a
-verification-only wrapper. It coordinates dual CPU lanes, AXI backing memory,
-MMIO and APB agents; observes internal protocol events; checks CPU data,
-coherence transitions and transaction lifecycles; records checked functional
-coverage; and supports seeded random tests and JSONL replay. Product RTL
-behavior and interfaces are unchanged. This is UVM-style organization, not SV
-UVM.
+All six required local gates passed on the tested source SHA:
 
-## Regression results
+| Command | Result |
+| --- | --- |
+| `make COHERENCE_JOBS=2 coherence_verify` | PASS; component/Formal, Python coherence, AXI, stress, mutation, and benchmark dependencies completed. Python coherence 38 passed / 1 deselected; 49/49 bins; checker fault injection 9/9; RTL mutation 4/4. |
+| `make COHERENCE_JOBS=2 coherence_full_system_verify` | PASS; 57 passed, 1 optional saved-trace replay skipped. |
+| `make COHERENCE_JOBS=2 coherence_hit_under_miss` | PASS; 3 directed full-AXI-top tests. |
+| `make COHERENCE_JOBS=2 coherence_full_system_cross_closure` | PASS; checked CR01 owner transfer/refill/APB testcase. |
+| `make COHERENCE_JOBS=2 coherence_full_system_stress` | PASS; 260/260 seeded environments. |
+| `make COHERENCE_JOBS=2 coherence_coverage_audit` | PASS; primary subsystem, AXI, and independent Block raw coverage generated. |
 
-| Command / test | Result | Evidence |
-| --- | --- | --- |
-| `make coherence_full_system_coverage` | PASS, 35 passed / 1 skipped; 38/38 Required bins and 10/10 Required crosses | Current JSON/Markdown coverage reports |
-| `make coherence_full_system_stress` | PASS, 60 passed; 20 × 500 CPU operations, 20 × 10 mixed-agent rounds, 20 resource-aware seeds | Seeded stress regression |
-| `make COHERENCE_JOBS=2 coherence_directory_mshr_bank` | PASS; four contexts simultaneously active, response routing/reordering, blocked-context progress and reset cancellation | Directed block simulation output |
-| `make COHERENCE_JOBS=2 coherence_axi_python_test` | PASS, 3 passed; four outstanding reads/writes, out-of-order R/B, five-channel backpressure, errors/reset/ID reuse | Pytest output |
-| `source scripts/env.sh && make COHERENCE_JOBS=2 coherence_full_system_verify` | PASS, exit 0: bounded Formal jobs; block/AXI checks; Python coherence 36 passed / 1 deselected, 49/49 functional bins and 9/9 checker fault injections; AXI Python 3 passed; regular/dense stress 20/20 each; mutation 4/4; Benchmark v4 24 rows; full-system 35 passed / 1 replay skipped, 38/38 bins and 10/10 crosses | Current local regression output |
+Evidence consistency gate: PASS, 57 testcase records, 53/53 integrated required functional bins, and 29/29 required crosses. Separate Python coherence coverage: 49/49 bins and 19/19 crosses. Four-agent stress recorded real Snoop activity and checked CR01 coverage. No failing stress seed occurred.
 
-The default replay case is skipped when no trace path is supplied. The
-integrated closure covers only
-Required entries marked `implemented` in
-[`dv/coverage/full_system_coverage_plan.json`](../../dv/coverage/full_system_coverage_plan.json).
-Four-context MSHR occupancy is verified at the MSHR block; four concurrent
-CPU misses are not possible through the current two-lane blocking interface.
-Out-of-order B responses are verified at the AXI adapter; integrated cache
-writeback remains serialized by the line engine.
+## Closure status
 
-## Coverage separation
+**OPEN — the regression passing does not mean verification closure.** Primary raw RTL coverage remains 843/998 lines, 461/556 branches, 19980/27474 toggles, 30/54 FSM states, and 7/48 FSM arcs. There are 1,026 dataset-scoped zero-count records in the point matrix; all remain OPEN, with no approved waivers and no reviewed/eligible percentage computed. CR01 and CR07 have checked integrated overlap evidence; CR02–CR06 and CR08–CR10 remain OPEN.
 
-Python functional/cross coverage is not combined with RTL line, branch, toggle
-or FSM coverage. Raw RTL coverage remains the separately audited snapshot in
-[`rtl_coverage_summary.md`](rtl_coverage_summary.md); no RTL coverage closure
-or sign-off is claimed by this update.
+See [`docs/dv/closure_phase2_execution_2026-11-06.md`](../../docs/dv/closure_phase2_execution_2026-11-06.md) for phase-by-phase details, per-seed campaign results, exact scope limits, and the candidate sign-off decision. Raw RTL results are in [`reports/final/rtl_coverage_signoff.md`](../final/rtl_coverage_signoff.md); functional/cross artifacts are in this directory.
 
-## Reproduction
-
-Run from `workspace/nutshell_cache`:
-
-```bash
-source scripts/env.sh
-make COHERENCE_JOBS=2 coherence_full_system_verify
-make coherence_full_system_stress
-FULL_SYSTEM_RANDOM_SEED_COUNT=20 FULL_SYSTEM_RANDOM_OPERATIONS=500 \
-FULL_SYSTEM_RANDOM_BASE_SEED=0x57E55 \
-PYTHONPATH=.tooling:.:./dv:./tests python3 -m pytest -q \
-  tests/full_system/test_full_system_random.py
-```
-
-## Release boundary
-
-This local evidence is not GitHub Actions evidence. The integrated scenarios
-listed as Open or Partial in
-[`docs/dv/full_system_scenario_testplan.md`](../../docs/dv/full_system_scenario_testplan.md)
-remain outside the closed coverage slice. PPA, STA, physical SRAM macros,
-chip-level integration, and unbounded full-system formal proof are excluded.
+The remote Actions run [41962170929](https://github.com/cwu766485-ctrl/open_verif_learning/actions/runs/41962170929) passed on base SHA `9b281f3`; it is not candidate CI. Candidate CI is pending publishing the branch. PPA, STA, physical SRAM macro implementation, and unbounded full-system formal proof are excluded.

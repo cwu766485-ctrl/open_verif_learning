@@ -1,0 +1,194 @@
+[
+  {
+    "path": "reports/final/continued_freeze/coverage_comparison.json",
+    "sha256": "bda8145420ac9d89ecdb54179c34a2e4700fa3ffeb76d9fda1e3f6fad08faf76"
+  },
+  {
+    "path": "reports/final/continued_freeze/dataset_manifest.json",
+    "sha256": "e3982760863e6c2f4d7514ad0cf4c7cc01d09217040b5e4eb700767121c7daa1"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/coherence_directory_mshr_bank.log.gz",
+    "sha256": "7479e23df4a4a3879acd7fcf7a315ec4eb2bfb13439580b9b3efea3c1f748749"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/coherence_directory_transactions.log.gz",
+    "sha256": "153af077c9f1e1c0c16f9918813868911fe35bd747dd1bff7a9cc6869917dfc0"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/coherence_directory_unconstrained.log.gz",
+    "sha256": "078bf4f81da7dba96f4406dd39a08e6b76a6db4a553e44c9154fa2eca76fd77f"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/freeze_actual_l2_read_port.log.gz",
+    "sha256": "28afe2b7542059f6a6be3cb6434cac432c08d7cef8dfad03e93663458f289727"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/freeze_l1_producer.log.gz",
+    "sha256": "779b678ab4bcf385537f4c23378b20537812d8cb37956e1b7eee137206dbfaa5"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal/freeze_read_port.log.gz",
+    "sha256": "b23469c20c5b5654426a880060dc1e1cce6b085b662d17e7a39cdc944b3fce00"
+  },
+  {
+    "path": "reports/final/continued_freeze/formal_evidence.json",
+    "sha256": "14562b8121859b77657c17243aeca0556b2a333bcc6bad42d2885adeda5ee347"
+  },
+  {
+    "path": "reports/final/continued_freeze/l1_property_point_scope_mapping.json",
+    "sha256": "772c82c32bdaedd1b139e0880e188d3d17eb74baf49ed8da560b08ef56556379"
+  },
+  {
+    "path": "reports/final/continued_freeze/point_delta.json",
+    "sha256": "5e27a3ed618c519e5e8d9a08d229841a5bfadb5af7aaad3a3723d6d2274b2ce9"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/axi_subsystem.dat.gz",
+    "sha256": "f729d54f80a0fcf7b321ab6daec8f47766a5f29b742cdfea8281b3df0ae536b2"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/axi_subsystem.info.gz",
+    "sha256": "6a1185ab3753675d3b49e3a731fe3572f6448bc7c0911736381ab874d5b82431"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/axi_subsystem__verFiles.dat.gz",
+    "sha256": "e39ba292d0d534491f0afb41ce1838fa61359213a70dec59d2565bd6236b3cad"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/bus_blocks.dat.gz",
+    "sha256": "7d69117b06e4c491dfcd6cad76175a34f7ad5551908080acd32d80dc13a56ea7"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/bus_blocks.info.gz",
+    "sha256": "0789b1943c196be154a5926c95e1b87641ab33f7056cac3d5952056f75a9f46e"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/bus_blocks__verFiles.dat.gz",
+    "sha256": "bc4d26c9a8621c8afdf1dae4864135984dbd0335cc875f3f3aae193d50642a0e"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_controller.dat.gz",
+    "sha256": "2dad8c61c8a6b88c34ffcf5201a1ae109983942c8f32790b0898938b6ca171d4"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_controller.info.gz",
+    "sha256": "b254fbf0015503ec4e688d6e40baa551bef16cc72e43e64aa934bf3b89713250"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_controller__verFiles.dat.gz",
+    "sha256": "9567745dafa87acfb075595e5213feea60f2c93d0b33a92219b665db990e37e5"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_mshr_bank.dat.gz",
+    "sha256": "086e20d0dcf7a904e9874c404751ef1be66a59b0c1d6c6610e3ffcb1ec4cfe9f"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_mshr_bank.info.gz",
+    "sha256": "13e5d4614ea2dce18af349ce3bf894f9fac1c986773d82138fcf75a20b2525dc"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/directory_mshr_bank__verFiles.dat.gz",
+    "sha256": "8bb053c7d0de80239cfbdd66f14821958e6961fd1a1a7dccf650c3142adbf18c"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/main_subsystem.dat.gz",
+    "sha256": "b55124cf94d0bd07d49164da9ebecd7809e9af7e48421f59707938edb9c3c9c8"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/main_subsystem.info.gz",
+    "sha256": "096167c74e69a2f31a773f442f38e1ff58b06f4e7d354ca196e2213336de8787"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/main_subsystem__verFiles.dat.gz",
+    "sha256": "d32db5f082b329c40a57330fb7a015acd84c1e4bf42229d41e3a0739d1fdd713"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/mesi_l1_controller.dat.gz",
+    "sha256": "bdff19b2285012c099a7fc695419494cc0d9fa65c03177ee19e0dc4c8555a97c"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/mesi_l1_controller.info.gz",
+    "sha256": "89d8e0361240504f632d20a456586e39cd4987fc6790b238c22dc264c2613cc1"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/mesi_l1_controller__verFiles.dat.gz",
+    "sha256": "f77a36b4f273391340ec8e107420ae6063b777dffe7039e2b044b66c6ed988c9"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_l2_directory_array.dat.gz",
+    "sha256": "0243f2e1f1aedac545c35d6caa0a70c1375f62b8b5826f766ce07a3383348791"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_l2_directory_array.info.gz",
+    "sha256": "44cd080f385d7d3025ca9632a4334da007e87b95a3e32ff980e451a696557688"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_l2_directory_array__verFiles.dat.gz",
+    "sha256": "bd0679010b05292fadb59a6bf719f5a3784ae692ad84c0158a59874c76c08d3e"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_line_engine.dat.gz",
+    "sha256": "9d73eff3659dfa8365a996f94498b8ce047e058a3ee4f3af522ff9c6d0f3c34e"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_line_engine.info.gz",
+    "sha256": "c149157926dc0f991014a658008b1d5f0e2b588ce9cc9afe912c515d338428b1"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw/shared_line_engine__verFiles.dat.gz",
+    "sha256": "292668399c3c7f543a78d447ad6a1fbb5078cce45fc9d354ac6d85356985cad4"
+  },
+  {
+    "path": "reports/final/continued_freeze/raw_archive.json",
+    "sha256": "de57714b982476cedd90ff1f073a4c6b6b17da3fc99a010834257495797d470f"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_coverage_audit.log.gz",
+    "sha256": "8969eb65881fae0386a7d9c4873ff61c7f663f777eff6c98af24e1fefa471212"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_full_system_cross_closure.log.gz",
+    "sha256": "9618ffb59c024cba5d802ecaa9db46dfd3facc85656ce2366c6fe7f12a6af316"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_full_system_evidence_gate.log.gz",
+    "sha256": "fbd036b4176b18a79e45142596cdb5078d493249b962f0723b42a1c72684e694"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_full_system_replay_closure.log.gz",
+    "sha256": "9e2387575ce6eaa6fd4984feaddbd72afb4db787217239b8c492950f5ebbfd0f"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_full_system_stress.log.gz",
+    "sha256": "481865eeb7646f3b980de0e3bcd639cc4a6790d8d07925c6ea872bacc5daed71"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_full_system_verify.log.gz",
+    "sha256": "fbcd7c789f26ea2f1be3f3a87bb7a1e28ab054d6eb84122a5365f4684df805fc"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_hit_under_miss.log.gz",
+    "sha256": "135a5f35c10929085ad0fd39ef2304857bc43721ef71601d09814dd1a938c800"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression/coherence_verify.log.gz",
+    "sha256": "9c9c345284f598f140847b17809469db6d8c8961339b165adfe40a114fbbc755"
+  },
+  {
+    "path": "reports/final/continued_freeze/regression_status.json",
+    "sha256": "119f3d83a36d7e5ef17e71df98f6ebbd87cb371055416c173c0855581b313645"
+  },
+  {
+    "path": "reports/final/continued_freeze/rtl_release_gate.log.gz",
+    "sha256": "88baba2604ea84fb775269e823b7149da1508547c31dc01aca9cdfb83252ea33"
+  },
+  {
+    "path": "reports/final/continued_freeze/rtl_release_gate_status.json",
+    "sha256": "24201404c9a56396ede0ec3ac50600d932241a1f7489c11c6ca28f9eb70625f0"
+  },
+  {
+    "path": "reports/final/continued_freeze/waiver_review_submission.json",
+    "sha256": "876469801af1b16ea7a8d912eecde241440d2694a87b2402998ca2a66480d395"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "source_sha": "0e852178ee2fedb5cdf414846cf3920b62a92139",
+  "source_fingerprint": "5f3c2f4f370989a29608f161504d076d6082523d0302e19ed3baac9ef1bf860a",
+  "point_count": 74831,
+  "raw_hits": 45365,
+  "zero_points": 29466,
+  "zero_by_metric": {
+    "branch": 265,
+    "fsm_arc": 113,
+    "fsm_state": 57,
+    "line": 434,
+    "toggle": 28597
+  },
+  "approved_exclusions": 0,
+  "scope": "Independent dataset obligations; no pooled cross-top percentage; raw denominator unchanged"
+}

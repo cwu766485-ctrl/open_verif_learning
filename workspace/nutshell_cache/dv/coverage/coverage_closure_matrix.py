@@ -87,7 +87,9 @@ EVIDENCE = {
     ),
     "rtl/cluster/DualL1MesiCluster.sv": (
         "dv/blocks/dual_l1_mesi_cluster/tb/DualL1MesiCluster_tb.sv; "
-        "subsystem two-core Scoreboard; no proof of all malformed replacement states."
+        "subsystem two-core Scoreboard; tests/full_system/test_hit_under_miss_axi.py "
+        "checks pending-miss hit response address/data/ID, wrap, stall, snoop and reset. "
+        "The Python/Toffee run is separate from raw SV-top RTL coverage."
     ),
     "rtl/interconnect/CpuMmioRouter.sv": (
         "Subsystem MMIO/cache routing scenarios and top monitor; "
@@ -106,7 +108,7 @@ def source_text(path: str) -> list[str]:
 def feature_for(source: str, line: int, point: str = "") -> str:
     if source.endswith("DirectoryController.sv"):
         if 353 <= line <= 365:
-            return "Stale Upgrade recovery: recover Upgrade at DIR_I using L2 refill/GetM semantics (cache.md MESI request/recovery rules)."
+            return "Protocol-inconsistent Upgrade presented with DIR_I metadata; the current RTL raises protocol_error but also starts a refill (cache.md stale Upgrade / fail-stop contract)."
         if 467 <= line <= 487:
             return "Owner disappears before Snoop response: retry from authoritative L2 and commit one grant (cache.md snoop/ownership rules)."
         if 374 <= line <= 435:
@@ -141,6 +143,8 @@ def feature_for(source: str, line: int, point: str = "") -> str:
     if source.endswith("MemoryRefillMshrBank.sv"):
         return "AXI read transaction ID to refill MSHR association and beat routing."
     if source.endswith("DualL1MesiCluster.sv"):
+        if 249 <= line <= 276 or 419 <= line <= 428:
+            return "Hit-under-Miss: a resident read hit bypasses the pre-refill wait window while preserving the pending miss response and unique transaction IDs."
         return "Replacement victim Put/replay and dual-core array arbitration."
     if source.endswith("CpuMmioRouter.sv"):
         return "Dual-core MMIO/cache request and response routing FSM."
@@ -155,6 +159,14 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
     This is an explicit source-range review map, not a token/keyword waiver.
     Unmapped points remain unreviewed and are not classified unreachable.
     """
+    if source.endswith("DualL1MesiCluster.sv") and (249 <= line <= 276 or 419 <= line <= 428):
+        return (
+            "Legal but deliberately constrained: only a resident read hit may bypass while the controller is sending a miss or waiting for its grant; writes, misses, active snoops, replacement, and refill cycles remain serialized.",
+            "No; this is a legal hit response path. Its transaction ID must remain distinct from the pending miss ID, including wraparound.",
+            "Not unreachable or redundant. The instrumented CoherentCacheSubsystem_tb now executes a legal resident-hit-under-pending-miss sequence. This point remains OPEN only when its count is zero in this particular raw dataset; a hit in another elaborated top is recorded separately.",
+            "Same-top raw stimulus is in dv/blocks/coherent_cache_subsystem/tb/include/hit_under_miss_coverage.svh and checks a pending cold miss, resident hit data/response, distinct transaction IDs, three-cycle response backpressure, and later miss completion. Full AXI Python tests separately cover ID wrap, remote snoop and reset. Keep each zero-count point OPEN until its exact LCOV/branch/FSM row is hit or independently dispositioned.",
+            "High",
+        )
     if source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379:
         return (
             "Legal and directed: valid output can be held while corresponding ready is low.",
@@ -165,10 +177,10 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
         )
     if source.endswith("DirectoryController.sv") and 353 <= line <= 365:
         return (
-            "Legal recovery for stale client metadata; requires a request accepted with DIR_I lookup.",
-            "Mixed: protocol_error marks stale Upgrade, while the controller recovers by issuing a data-bearing refill.",
-            "Not unreachable. Keep the recovery behavior and verify data/Directory/grant completion independently.",
-            "Run directed owner-self/stale Upgrade tests; assert refill source, final DIR_U owner, GetM data grant and one completion.",
+            "Not a legal MESI request under the current spec: Upgrade requires a valid S copy; DIR_I means the requester has no sharer copy. The stale-but-still-valid DIR_U case is a separate supported recovery path.",
+            "Yes. RTL sets protocol_error/code 4, but then proceeds to L2 refill and a data-bearing M grant instead of failing closed as docs/cache.md currently states.",
+            "Reachable only through an inconsistent requester/Directory interface condition. This source range exposes a spec/RTL behavior mismatch; it is neither approved legal recovery nor proven unreachable.",
+            "Keep OPEN. Resolve the frozen protocol contract and add a block fault-injection test that checks error, no successful grant/metadata commit, and reset recovery. Do not count this as normal functional coverage.",
             "High",
         )
     if source.endswith("DirectoryController.sv") and 467 <= line <= 487:
@@ -253,6 +265,9 @@ def has_explicit_source_range_review(source: str, line: int) -> bool:
     """
     return any((
         source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379,
+        source.endswith("DualL1MesiCluster.sv") and (
+            249 <= line <= 276 or 419 <= line <= 428
+        ),
         source.endswith("DirectoryController.sv") and 353 <= line <= 365,
         source.endswith("DirectoryController.sv") and 467 <= line <= 487,
         source.endswith("SharedLineEngine.sv") and 348 <= line <= 355,

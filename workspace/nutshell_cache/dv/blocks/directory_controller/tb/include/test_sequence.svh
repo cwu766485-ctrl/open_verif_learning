@@ -132,6 +132,133 @@
     finish_commit(DIR_U, 2'b00, 1'b1);
     finish_grant(4'h9, GRANT_DATA_E, 1, 1);
     if (protocol_error) $fatal(1, "GetS owner-miss recovery raised protocol error");
+
+    // Fault-inject an Upgrade without a directory-tracked shared copy. This
+    // is not the legal stale-U recovery above: DIR_I + Upgrade must fail-stop
+    // and must never issue a refill, metadata write, snoop, or successful Grant.
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_UPGRADE, 32'h3000_0060, 4'hE, DIR_I, 2'b00, 1'b0);
+    #1;
+    if (!protocol_error || protocol_error_code != 4'd4 ||
+        line_xfer_start_valid || dir_write_valid || snoop_req_valid ||
+        grant_valid)
+      $fatal(1, "DIR_I Upgrade did not fail-stop without side effects");
+    repeat (3) begin
+      tick(); #1;
+      if (!protocol_error || protocol_error_code != 4'd4 ||
+          line_xfer_start_valid || dir_write_valid || snoop_req_valid ||
+          grant_valid)
+        $fatal(1, "DIR_I Upgrade escaped fail-stop while error was held");
+    end
+    @(negedge clock); reset = 1; tick();
+    @(negedge clock); reset = 0; #1;
+    if (protocol_error || protocol_error_code != 4'd0 || !req_ready)
+      $fatal(1, "reset did not recover Directory after invalid Upgrade");
+    $display("PASS: DIR_I Upgrade reports protocol error and fail-stops without Grant/refill");
+    // Block-port negative tests: no internal state forcing. Each request
+    // must latch an error, emit no successful transaction, then reset cleanly.
+    for (integer fault_case = 0; fault_case < 9; fault_case++) begin
+      @(negedge clock); reset = 1; repeat (2) tick();
+      @(negedge clock); reset = 0;
+      case (fault_case)
+        0: issue_req(0, REQ_GETS, 32'h3000_0000, 4'h1, DIR_I, 2'b01, 0);
+        1: issue_req(0, REQ_GETS, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        2: issue_req(0, REQ_GETM, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        3: issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h1, directory_state_t'(3), 0, 0);
+        4: issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h1, DIR_S, 2'b10, 0);
+        5: issue_req(0, REQ_PUTS, 32'h3000_0000, 4'h1, DIR_U, 0, 0);
+        6: issue_req(0, REQ_PUTE, 32'h3000_0000, 4'h1, DIR_U, 0, 1);
+        7: issue_req(0, REQ_PUTM, 32'h3000_0000, 4'h1, DIR_S, 2'b01, 0);
+        8: issue_req(0, request_opcode_t'(7), 32'h3000_0000, 4'h1, DIR_I, 0, 0);
+      endcase
+      repeat (4) begin
+        tick();
+        if (!protocol_error || req_ready || grant_valid || dir_write_valid ||
+            line_xfer_start_valid || snoop_req_valid)
+          $fatal(1, "fault case %0d did not fail-stop without side effects", fault_case);
+        case (fault_case)
+          0: if (protocol_error_code != 1) $fatal(1, "metadata error code mismatch");
+          1,2,3,8: if (protocol_error_code != 2) $fatal(1, "encoding error code mismatch");
+          4: if (protocol_error_code != 3) $fatal(1, "upgrade error code mismatch");
+          5: if (protocol_error_code != 5) $fatal(1, "PutS error code mismatch");
+          6: if (protocol_error_code != 6) $fatal(1, "PutE error code mismatch");
+          7: if (protocol_error_code != 7) $fatal(1, "PutM error code mismatch");
+        endcase
+      end
+    end
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_GETS, 32'h3000_0000, 4'hF, DIR_I, 0, 0);
+    finish_xfer(4'hF, 32'h3000_0000, XFER_L2_REFILL);
+    finish_commit(DIR_U, 0, 0);
+    finish_grant(4'hF, GRANT_DATA_E, 1, 0);
+    if (protocol_error) $fatal(1, "post-fault legal transaction failed");
+    $display("PASS: nine interface faults fail-stop and reset recovers checked legal refill");
+    for (integer src = 0; src < 2; src++) begin
+      // Legal coherent metadata for each case, and an explicit expected result.
+      issue_req(src[0], REQ_GETS, 32'h3000_0000, 4'h1, DIR_S, 2'b11, 0);
+      finish_xfer(4'h1, 32'h3000_0000, XFER_L2_REFILL);
+      finish_commit(DIR_S, 2'b11, 0);
+      finish_grant(4'h1, GRANT_DATA_S, 1, src[0]);
+      issue_req(src[0], REQ_GETM, 32'h3000_0000, 4'h2, DIR_U, 0, src[0]);
+      finish_snoop(src[0], SNOOP_INVALIDATE, 4'h2, SNOOP_RSP_DATA, 1);
+      finish_xfer(4'h2, 32'h3000_0000, XFER_L2_REFILL);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h2, GRANT_DATA_M, 1, src[0]);
+      issue_req(src[0], REQ_UPGRADE, 32'h3000_0000, 4'h3, DIR_S,
+                src ? 2'b10 : 2'b01, 0);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h3, GRANT_M, 0, src[0]);
+      issue_req(src[0], REQ_PUTS, 32'h3000_0000, 4'h4, DIR_S,
+                src ? 2'b10 : 2'b01, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h4, GRANT_PUT_ACK, 0, src[0]);
+      issue_req(src[0], REQ_PUTE, 32'h3000_0000, 4'h5, DIR_I, 0, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h5, GRANT_PUT_ACK, 0, src[0]);
+      issue_req(src[0], REQ_PUTS, 32'h3000_0000, 4'h6, DIR_I, 0, 0);
+      finish_commit(DIR_I, 0, 0);
+      finish_grant(4'h6, GRANT_PUT_ACK, 0, src[0]);
+    end
+    if (protocol_error) $fatal(1, "legal permission matrix raised protocol error");
+    $display("PASS: both requesters legal shared/unique/last-sharer/stale-Put permission matrix");
+    // Legal stale Upgrade recovery: current unique owner grants M directly.
+    for (integer src = 0; src < 2; src++) begin
+      issue_req(src[0], REQ_UPGRADE, 32'h3000_0000, 4'h7, DIR_U, 0, src[0]);
+      finish_commit(DIR_U, 0, src[0]);
+      finish_grant(4'h7, GRANT_M, 0, src[0]);
+    end
+    // A PutS from a non-owner cannot discard a unique owner's data.
+    @(negedge clock); reset = 1; repeat (2) tick();
+    @(negedge clock); reset = 0;
+    issue_req(0, REQ_PUTS, 32'h3000_0000, 4'h8, DIR_U, 0, 1);
+    repeat (4) begin
+      tick();
+      if (!protocol_error || protocol_error_code != 5 || grant_valid || dir_write_valid)
+        $fatal(1, "non-owner PutS did not fail-stop");
+    end
+    // Reserved response encoding is injectable at the external Snoop port.
+    // READ, required-data INVALIDATE, and ACK-only INVALIDATE have distinct errors.
+    for (integer fault = 0; fault < 3; fault++) begin
+      @(negedge clock); reset = 1; repeat (2) tick();
+      @(negedge clock); reset = 0;
+      if (fault == 0)
+        issue_req(0, REQ_GETS, 32'h3000_0000, 4'h9, DIR_U, 0, 1);
+      else if (fault == 1)
+        issue_req(0, REQ_GETM, 32'h3000_0000, 4'h9, DIR_U, 0, 1);
+      else
+        issue_req(0, REQ_UPGRADE, 32'h3000_0000, 4'h9, DIR_S, 2'b11, 0);
+      finish_snoop(1, fault == 0 ? SNOOP_READ : SNOOP_INVALIDATE,
+                   4'h9, snoop_response_t'(3), fault != 2);
+      repeat (4) begin
+        tick();
+        if (!protocol_error || protocol_error_code != (fault == 0 ? 8 : fault == 1 ? 10 : 11) ||
+            grant_valid || dir_write_valid || line_xfer_start_valid)
+          $fatal(1, "reserved snoop response did not fail-stop fault=%0d", fault);
+      end
+    end
+    $display("PASS: unique Upgrade and non-owner Put/reserved Snoop response checks");
     $display("PASS DirectoryController_tb");
     $finish;
   end

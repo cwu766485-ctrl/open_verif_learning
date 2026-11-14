@@ -1,0 +1,99 @@
+{
+  "completed_utc": "2026-11-10T14:24:54.847015+00:00",
+  "required_gates": [
+    "coherence_verify",
+    "coherence_full_system_verify",
+    "coherence_hit_under_miss",
+    "coherence_full_system_cross_closure",
+    "coherence_full_system_stress",
+    "coherence_coverage_audit",
+    "coherence_full_system_evidence_gate",
+    "coherence_full_system_replay_closure"
+  ],
+  "runs": {
+    "coherence_coverage_audit": {
+      "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
+      "completed_utc": "2026-11-10T14:21:31.307395+00:00",
+      "log": "reports/closure/release_runs/coherence_coverage_audit.log",
+      "log_sha256": "dad3f216002607ceac960f62268e1d547638896ae819cdd7469648fe6cadcd48",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_full_system_cross_closure": {
+      "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
+      "completed_utc": "2026-11-10T13:32:23.167219+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
+      "log_sha256": "5ef5bebb9d2e4c9ca62bb10655fda130b382d2c25d6664503ec4682a4efa7808",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_full_system_evidence_gate": {
+      "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
+      "completed_utc": "2026-11-10T14:21:34.237713+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
+      "log_sha256": "73c7baba54077cd87f7115028a53865605883f7240d3b74a6df9f65aa10229de",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_full_system_replay_closure": {
+      "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
+      "completed_utc": "2026-11-10T14:24:54.845972+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
+      "log_sha256": "974f86e39581a8388ff59a275368f3f84e8e2884bc6337cc7dbfac19e692abc1",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_full_system_stress": {
+      "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
+      "completed_utc": "2026-11-10T14:13:52.785757+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_stress.log",
+      "log_sha256": "c8edcca35987e54b38820ba157975daf882c7e90611adfac7ef0b59908bfa353",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_full_system_verify": {
+      "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
+      "completed_utc": "2026-11-10T13:22:37.361768+00:00",
+      "log": "reports/closure/release_runs/coherence_full_system_verify.log",
+      "log_sha256": "9852285d39a7169fdcdff931689ae495170cd30c7acf0ea62db263f289025da3",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_hit_under_miss": {
+      "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
+      "completed_utc": "2026-11-10T13:28:40.503960+00:00",
+      "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
+      "log_sha256": "ac51ffc30f368d2fc957facf7b6f3bf6e9915253214f33948671af411784a776",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    },
+    "coherence_verify": {
+      "command": "make COHERENCE_JOBS=2 coherence_verify",
+      "completed_utc": "2026-11-10T12:55:30.666348+00:00",
+      "log": "reports/closure/release_runs/coherence_verify.log",
+      "log_sha256": "6845e7d1c2ee4c855a158b86682bb4892fd70ded65082859006d66c04cacb406",
+      "result": "PASS",
+      "returncode": 0,
+      "source_fingerprint_after": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+      "source_fingerprint_before": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2"
+    }
+  },
+  "schema_version": 1,
+  "source_fingerprint": "4914ae36cc57ff951c606e183ffb0f646b78bad4d94c3b28c3f8c69fe4ef7bb2",
+  "started_utc": "2026-11-10T12:34:10.395654+00:00",
+  "updated_utc": "2026-11-10T14:24:54.846148+00:00"
+}

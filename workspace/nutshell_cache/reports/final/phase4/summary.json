@@ -1,0 +1,428 @@
+{
+  "source_sha": "69f9fb4615717b9d9b096d9e11262438522cd960",
+  "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+  "baseline_source_sha": "3526950e59ff042973ccb822414d6a7361c682da",
+  "metrics": {
+    "axi_subsystem": {
+      "line": {
+        "before": [
+          901,
+          1068
+        ],
+        "after": [
+          901,
+          1068
+        ]
+      },
+      "branch": {
+        "before": [
+          509,
+          632
+        ],
+        "after": [
+          509,
+          632
+        ]
+      },
+      "toggle": {
+        "before": [
+          15623,
+          32332
+        ],
+        "after": [
+          15623,
+          32332
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          30,
+          54
+        ],
+        "after": [
+          30,
+          54
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          4,
+          48
+        ],
+        "after": [
+          4,
+          48
+        ]
+      }
+    },
+    "bus_blocks": {
+      "line": {
+        "before": [
+          67,
+          68
+        ],
+        "after": [
+          67,
+          68
+        ]
+      },
+      "branch": {
+        "before": [
+          70,
+          76
+        ],
+        "after": [
+          70,
+          76
+        ]
+      },
+      "toggle": {
+        "before": [
+          1100,
+          2450
+        ],
+        "after": [
+          1100,
+          2450
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      }
+    },
+    "directory_controller": {
+      "line": {
+        "before": [
+          149,
+          182
+        ],
+        "after": [
+          160,
+          182
+        ]
+      },
+      "branch": {
+        "before": [
+          33,
+          42
+        ],
+        "after": [
+          36,
+          42
+        ]
+      },
+      "toggle": {
+        "before": [
+          255,
+          612
+        ],
+        "after": [
+          258,
+          612
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          10,
+          10
+        ],
+        "after": [
+          10,
+          10
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          3,
+          9
+        ],
+        "after": [
+          3,
+          9
+        ]
+      }
+    },
+    "directory_mshr_bank": {
+      "line": {
+        "before": [
+          167,
+          286
+        ],
+        "after": [
+          167,
+          286
+        ]
+      },
+      "branch": {
+        "before": [
+          100,
+          128
+        ],
+        "after": [
+          100,
+          128
+        ]
+      },
+      "toggle": {
+        "before": [
+          1189,
+          2904
+        ],
+        "after": [
+          1249,
+          2904
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          31,
+          40
+        ],
+        "after": [
+          31,
+          40
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          11,
+          36
+        ],
+        "after": [
+          11,
+          36
+        ]
+      }
+    },
+    "main_subsystem": {
+      "line": {
+        "before": [
+          850,
+          992
+        ],
+        "after": [
+          864,
+          992
+        ]
+      },
+      "branch": {
+        "before": [
+          468,
+          556
+        ],
+        "after": [
+          473,
+          556
+        ]
+      },
+      "toggle": {
+        "before": [
+          21887,
+          27474
+        ],
+        "after": [
+          21923,
+          27474
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          30,
+          54
+        ],
+        "after": [
+          30,
+          54
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          13,
+          48
+        ],
+        "after": [
+          13,
+          48
+        ]
+      }
+    },
+    "mesi_l1_controller": {
+      "line": {
+        "before": [
+          107,
+          132
+        ],
+        "after": [
+          107,
+          132
+        ]
+      },
+      "branch": {
+        "before": [
+          41,
+          46
+        ],
+        "after": [
+          41,
+          46
+        ]
+      },
+      "toggle": {
+        "before": [
+          688,
+          1804
+        ],
+        "after": [
+          688,
+          1804
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          7,
+          7
+        ],
+        "after": [
+          7,
+          7
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          3,
+          6
+        ],
+        "after": [
+          3,
+          6
+        ]
+      }
+    },
+    "shared_l2_directory_array": {
+      "line": {
+        "before": [
+          75,
+          79
+        ],
+        "after": [
+          75,
+          79
+        ]
+      },
+      "branch": {
+        "before": [
+          65,
+          74
+        ],
+        "after": [
+          65,
+          74
+        ]
+      },
+      "toggle": {
+        "before": [
+          197,
+          1778
+        ],
+        "after": [
+          197,
+          1778
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      }
+    },
+    "shared_line_engine": {
+      "line": {
+        "before": [
+          101,
+          104
+        ],
+        "after": [
+          101,
+          104
+        ]
+      },
+      "branch": {
+        "before": [
+          44,
+          52
+        ],
+        "after": [
+          44,
+          52
+        ]
+      },
+      "toggle": {
+        "before": [
+          304,
+          648
+        ],
+        "after": [
+          304,
+          648
+        ]
+      },
+      "fsm_state": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      },
+      "fsm_arc": {
+        "before": [
+          0,
+          0
+        ],
+        "after": [
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "point_transitions": {
+    "UNCHANGED_STATUS": 74699,
+    "NEW_RAW_HIT": 132
+  },
+  "policy": "Exact same dataset/top/point identity only. No exclusions or cross-top credit."
+}

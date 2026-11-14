@@ -1,0 +1,8 @@
+{
+  "tested_source_sha": "b383383abea773decff022c149b7e767fb2df827",
+  "verification_source_origin": "b383383abea773decff022c149b7e767fb2df827",
+  "source_fingerprint": "819b8656e469947612ac43bbe740800ce09b1014cb9529e82eddb14c1ff2ae47",
+  "product_rtl_fingerprint": "15798323c27cd473bf3d70a70b66b7cb39620c5abd2682a39e22512ac6794d6a",
+  "report_sha": "Resolve the Git commit containing this report; report-only changes do not alter tested source",
+  "pr": "https://github.com/cwu766485-ctrl/open_verif_learning/pull/1"
+}
