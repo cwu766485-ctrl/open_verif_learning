@@ -1557,7 +1557,7 @@
       "required": true,
       "legal_preconditions": "A legal M owner is resident in a full L2 set; a replacement miss selects its line, back-invalidates the owner and writes its newest data to AXI.",
       "stimulus_strategy": "Seeded owner-core, line offset, payload, memory latency and AXI write-stall cadence; fill the target set through CPU requests, then sample the APB Snoop counter after the real victim Snoop handshake.",
-      "checker": "Independent coherence reference/data checker, owner invalidation checker, exact eight-beat AXI writeback/ID/B checker, APB counter checker, and trace-bound cycle-overlap checker.",
+      "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
       "status": "implemented",
       "testcases": [
         "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
@@ -1612,6 +1612,73 @@
       "scenario_id": "CR10",
       "checker_testcases": [
         "tests/full_system/test_cross_agent_directed.py::test_ownership_pingpong_overlaps_mmio_and_apb"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
+    },
+    {
+      "id": "FS.CROSS.MASK_OWNER_EVICT",
+      "feature": "CR11 complementary byte masks x ownership transfer x dirty L2 eviction",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Both cores issue legal nonzero complementary 0xAA/0x55 masks to one word; one actual M-to-M ownership transfer occurs before the line is selected as a dirty inclusive L2 victim.",
+      "stimulus_strategy": "Extend CR04 dirty victim scenario with opposite owner directions, Word0/Word7, and L1/L2 set indices 0/last; refill the evicted line and read all eight words.",
+      "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
+      "status": "implemented",
+      "testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "required_monitor_event": "CPU mask writes, GetM/Snoop ownership transfer, full-line owner writeback, AXI refill and CPU readback.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "directory.request_accept",
+        "snoop.accept",
+        "snoop.response",
+        "l1.metadata_commit",
+        "coherence.owner_data_beat",
+        "l2_victim.select",
+        "axi.write_address",
+        "axi.write_beat",
+        "axi.write_response",
+        "axi.read_address",
+        "axi.read_beat",
+        "cpu.response_complete",
+        "axi.read_address",
+        "axi.read_beat"
+      ],
+      "scenario_id": "CR11",
+      "checker_testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "evidence_contract": "checked_cross_v1",
+      "requires_cycle_overlap": true
+    },
+    {
+      "id": "FS.CROSS.AXI_R_BEAT_INTERLEAVE",
+      "feature": "CR12 two outstanding AXI IDs with beat-level R interleaving",
+      "classification": "required_legal",
+      "required": true,
+      "legal_preconditions": "Two independent cold lines allocate separate refill MSHRs and receive distinct accepted AXI IDs before either eight-beat R burst retires.",
+      "stimulus_strategy": "Use two complete line signatures and force reverse completion eligibility; observe alternating RID beats before the first RLAST.",
+      "checker": "paired cold-miss CPU/reference + per-ID eight-beat signature and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB",
+      "status": "implemented",
+      "testcases": [
+        "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses"
+      ],
+      "required_monitor_event": "Two outstanding AXI IDs interleave R beats before RLAST and complete correlated MSHR/L2/CPU lifecycles.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "mshr.allocate",
+        "axi.read_address",
+        "axi.read_beat",
+        "l2.line_write_beat",
+        "directory.grant_accept",
+        "cpu.response_complete",
+        "mshr.retire"
+      ],
+      "scenario_id": "CR12",
+      "checker_testcases": [
+        "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses"
       ],
       "evidence_contract": "checked_cross_v1",
       "requires_cycle_overlap": true

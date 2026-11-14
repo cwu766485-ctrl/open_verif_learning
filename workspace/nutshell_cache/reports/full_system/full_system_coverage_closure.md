@@ -1,10 +1,10 @@
 # Full-System Functional Coverage Closure
 
-- Tested source SHA: `0e852178ee2fedb5cdf414846cf3920b62a92139`
+- Tested source SHA: `3a4c720ef11ba9f6be126c97f725a78d276f8a82`
 - DUT: `CoherentCacheAxiSubsystem`
 - Scope: implemented Required bins in the integrated-top sign-off slice
 - Required bins: 53/53
-- Required cross bins: 35/35
+- Required cross bins: 37/37
 
 This report covers only entries marked implemented in the plan. Planned full-system features remain open and are not counted as hits.
 

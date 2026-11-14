@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "0e852178ee2fedb5cdf414846cf3920b62a92139",
+  "git_sha": "3a4c720ef11ba9f6be126c97f725a78d276f8a82",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
@@ -102,12 +102,14 @@
     "FS.CROSS.STRESS_AXI_ERROR_RECOVERY": 4,
     "FS.CROSS.CR03_DIRTY_L1_VICTIM_AXI_WRITEBACK_STALL": 2,
     "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB": 2,
-    "FS.CROSS.CR10_OWNERSHIP_PINGPONG_MMIO_APB": 2
+    "FS.CROSS.CR10_OWNERSHIP_PINGPONG_MMIO_APB": 2,
+    "FS.CROSS.MASK_OWNER_EVICT": 2,
+    "FS.CROSS.AXI_R_BEAT_INTERLEAVE": 1
   },
   "required_bins_passed": 53,
   "required_bins_total": 53,
-  "required_cross_bins_passed": 35,
-  "required_cross_bins_total": 35,
+  "required_cross_bins_passed": 37,
+  "required_cross_bins_total": 37,
   "missing_bins": [],
   "missing_cross_bins": [],
   "bin_evidence": [
@@ -15084,55 +15086,56 @@
           "checked_cross_evidence": [],
           "monitor": {
             "event_counts": {
-              "cpu.request_accept": 10,
-              "directory.request_accept": 14,
+              "cpu.request_accept": 18,
+              "directory.request_accept": 15,
               "l2.lookup": 10,
-              "directory_context.allocate": 14,
-              "directory.same_set_conflict": 344,
+              "directory_context.allocate": 15,
+              "directory.same_set_conflict": 357,
               "mshr.allocate": 10,
               "axi.read_address": 10,
-              "axi.read_valid_gap": 152,
+              "axi.read_valid_gap": 162,
               "axi.read_beat": 80,
               "l2.refill_start": 10,
-              "l2.line_write_beat": 96,
+              "l2.line_write_beat": 104,
               "l2.refill_end": 10,
-              "directory.metadata_commit": 16,
+              "directory.metadata_commit": 17,
               "mshr.retire": 10,
-              "directory.grant_accept": 14,
-              "l1.metadata_commit": 16,
-              "cpu.response_complete": 10,
-              "directory_context.retire": 14,
+              "directory.grant_accept": 15,
+              "l1.metadata_commit": 18,
+              "cpu.response_complete": 18,
+              "directory_context.retire": 15,
+              "axi.stall": 21,
+              "snoop.accept": 3,
+              "directory.snoop_offer": 1,
+              "coherence.owner_data_beat": 24,
+              "snoop.response": 3,
               "apb.access_complete": 2,
               "l2_victim.select": 2,
-              "snoop.accept": 2,
               "l2_victim.snoop_accept": 2,
-              "coherence.owner_data_beat": 16,
-              "snoop.response": 2,
               "axi.write_address": 2,
-              "axi.stall": 19,
               "axi.write_beat": 16,
               "axi.write_response": 2
             },
             "stall_cycles": {
-              "AW": 2,
+              "AR": 4,
               "W": 16,
-              "AR": 1
+              "AW": 1
             },
             "mshr_occupancy_histogram": {
-              "0": 323,
-              "1": 344
+              "0": 380,
+              "1": 357
             },
             "directory_context_histogram": {
-              "0": 57,
-              "1": 610
+              "0": 89,
+              "1": 648
             },
             "max_mshr_occupancy": 1,
             "max_directory_contexts": 1,
             "reset_epoch": 0,
             "axi_peak_reads": 1,
             "axi_peak_writes": 1,
-            "cpu_request_accepts": 10,
-            "cpu_response_completions": 10,
+            "cpu_request_accepts": 18,
+            "cpu_response_completions": 18,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -21742,7 +21745,7 @@
           ],
           "checked_cross_evidence": [
             {
-              "checker": "paired cold-miss CPU/reference + MSHR lifecycle + AXI ID/beat + APB checker",
+              "checker": "paired cold-miss CPU/reference + per-ID eight-beat signature and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB",
               "checker_pass": true,
               "overlap": {
                 "start_cycle": 10,
@@ -21870,6 +21873,38 @@
                   "event_ref_ids": [
                     "apb_sample"
                   ]
+                },
+                {
+                  "role": "axi_r_line_0",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 4194304,
+                  "event_ref_ids": [
+                    "axi_interleaved_beat_1",
+                    "axi_interleaved_beat_3",
+                    "axi_interleaved_beat_5",
+                    "axi_interleaved_beat_7",
+                    "axi_interleaved_beat_9",
+                    "axi_interleaved_beat_11",
+                    "axi_interleaved_beat_13",
+                    "axi_interleaved_beat_15"
+                  ]
+                },
+                {
+                  "role": "axi_r_line_1",
+                  "protocol": "AXI4-R",
+                  "txn_id": 1,
+                  "address": 4198464,
+                  "event_ref_ids": [
+                    "axi_interleaved_beat_0",
+                    "axi_interleaved_beat_2",
+                    "axi_interleaved_beat_4",
+                    "axi_interleaved_beat_6",
+                    "axi_interleaved_beat_8",
+                    "axi_interleaved_beat_10",
+                    "axi_interleaved_beat_12",
+                    "axi_interleaved_beat_14"
+                  ]
                 }
               ],
               "state_transitions": [
@@ -21920,7 +21955,7 @@
                   "core": 0,
                   "address": 4194312,
                   "write": 0,
-                  "data": 11574711341044573863,
+                  "data": 11529496521049374728,
                   "txn_id": 0,
                   "ref_id": "cpu0_response",
                   "role": "cpu0_miss"
@@ -21948,7 +21983,7 @@
                   "core": 1,
                   "address": 4198472,
                   "write": 0,
-                  "data": 12732154106453800631,
+                  "data": 12682418025656225864,
                   "txn_id": 0,
                   "ref_id": "cpu1_response",
                   "role": "cpu1_miss"
@@ -21989,7 +22024,7 @@
                   "cycle": 87,
                   "reset_epoch": 0,
                   "address": 4194360,
-                  "data": 0,
+                  "data": 11531185370909638712,
                   "txn_id": 0,
                   "beat": 7,
                   "last": 1,
@@ -22003,7 +22038,7 @@
                   "cycle": 85,
                   "reset_epoch": 0,
                   "address": 4198520,
-                  "data": 0,
+                  "data": 12684106875516489848,
                   "txn_id": 1,
                   "beat": 7,
                   "last": 1,
@@ -22314,7 +22349,7 @@
                   "cycle": 57,
                   "reset_epoch": 0,
                   "address": 4198464,
-                  "data": 0,
+                  "data": 12682136550679515200,
                   "txn_id": 1,
                   "beat": 0,
                   "last": 0,
@@ -22328,7 +22363,7 @@
                   "cycle": 59,
                   "reset_epoch": 0,
                   "address": 4194304,
-                  "data": 0,
+                  "data": 11529215046072664064,
                   "txn_id": 0,
                   "beat": 0,
                   "last": 0,
@@ -22342,7 +22377,7 @@
                   "cycle": 61,
                   "reset_epoch": 0,
                   "address": 4198472,
-                  "data": 12732154106453800631,
+                  "data": 12682418025656225864,
                   "txn_id": 1,
                   "beat": 1,
                   "last": 0,
@@ -22356,7 +22391,7 @@
                   "cycle": 63,
                   "reset_epoch": 0,
                   "address": 4194312,
-                  "data": 11574711341044573863,
+                  "data": 11529496521049374728,
                   "txn_id": 0,
                   "beat": 1,
                   "last": 0,
@@ -22370,7 +22405,7 @@
                   "cycle": 65,
                   "reset_epoch": 0,
                   "address": 4198480,
-                  "data": 0,
+                  "data": 12682699500632936528,
                   "txn_id": 1,
                   "beat": 2,
                   "last": 0,
@@ -22384,7 +22419,7 @@
                   "cycle": 67,
                   "reset_epoch": 0,
                   "address": 4194320,
-                  "data": 0,
+                  "data": 11529777996026085392,
                   "txn_id": 0,
                   "beat": 2,
                   "last": 0,
@@ -22398,7 +22433,7 @@
                   "cycle": 69,
                   "reset_epoch": 0,
                   "address": 4198488,
-                  "data": 0,
+                  "data": 12682980975609647192,
                   "txn_id": 1,
                   "beat": 3,
                   "last": 0,
@@ -22412,7 +22447,7 @@
                   "cycle": 71,
                   "reset_epoch": 0,
                   "address": 4194328,
-                  "data": 0,
+                  "data": 11530059471002796056,
                   "txn_id": 0,
                   "beat": 3,
                   "last": 0,
@@ -22426,7 +22461,7 @@
                   "cycle": 73,
                   "reset_epoch": 0,
                   "address": 4198496,
-                  "data": 0,
+                  "data": 12683262450586357856,
                   "txn_id": 1,
                   "beat": 4,
                   "last": 0,
@@ -22440,7 +22475,7 @@
                   "cycle": 75,
                   "reset_epoch": 0,
                   "address": 4194336,
-                  "data": 0,
+                  "data": 11530340945979506720,
                   "txn_id": 0,
                   "beat": 4,
                   "last": 0,
@@ -22454,7 +22489,7 @@
                   "cycle": 77,
                   "reset_epoch": 0,
                   "address": 4198504,
-                  "data": 0,
+                  "data": 12683543925563068520,
                   "txn_id": 1,
                   "beat": 5,
                   "last": 0,
@@ -22468,7 +22503,7 @@
                   "cycle": 79,
                   "reset_epoch": 0,
                   "address": 4194344,
-                  "data": 0,
+                  "data": 11530622420956217384,
                   "txn_id": 0,
                   "beat": 5,
                   "last": 0,
@@ -22482,7 +22517,7 @@
                   "cycle": 81,
                   "reset_epoch": 0,
                   "address": 4198512,
-                  "data": 0,
+                  "data": 12683825400539779184,
                   "txn_id": 1,
                   "beat": 6,
                   "last": 0,
@@ -22496,7 +22531,7 @@
                   "cycle": 83,
                   "reset_epoch": 0,
                   "address": 4194352,
-                  "data": 0,
+                  "data": 11530903895932928048,
                   "txn_id": 0,
                   "beat": 6,
                   "last": 0,
@@ -22510,7 +22545,7 @@
                   "cycle": 85,
                   "reset_epoch": 0,
                   "address": 4198520,
-                  "data": 0,
+                  "data": 12684106875516489848,
                   "txn_id": 1,
                   "beat": 7,
                   "last": 1,
@@ -22524,15 +22559,291 @@
                   "cycle": 87,
                   "reset_epoch": 0,
                   "address": 4194360,
-                  "data": 0,
+                  "data": 11531185370909638712,
                   "txn_id": 0,
                   "beat": 7,
                   "last": 1,
                   "response": 0,
                   "ref_id": "axi_read_beat_175",
                   "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "data": 12682136550679515200,
+                  "txn_id": 1,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_0",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 59,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "data": 11529215046072664064,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_1",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 61,
+                  "reset_epoch": 0,
+                  "address": 4198472,
+                  "data": 12682418025656225864,
+                  "txn_id": 1,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_2",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 63,
+                  "reset_epoch": 0,
+                  "address": 4194312,
+                  "data": 11529496521049374728,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_3",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 65,
+                  "reset_epoch": 0,
+                  "address": 4198480,
+                  "data": 12682699500632936528,
+                  "txn_id": 1,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_4",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 67,
+                  "reset_epoch": 0,
+                  "address": 4194320,
+                  "data": 11529777996026085392,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_5",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 69,
+                  "reset_epoch": 0,
+                  "address": 4198488,
+                  "data": 12682980975609647192,
+                  "txn_id": 1,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_6",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 71,
+                  "reset_epoch": 0,
+                  "address": 4194328,
+                  "data": 11530059471002796056,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_7",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 73,
+                  "reset_epoch": 0,
+                  "address": 4198496,
+                  "data": 12683262450586357856,
+                  "txn_id": 1,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_8",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 75,
+                  "reset_epoch": 0,
+                  "address": 4194336,
+                  "data": 11530340945979506720,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_9",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 77,
+                  "reset_epoch": 0,
+                  "address": 4198504,
+                  "data": 12683543925563068520,
+                  "txn_id": 1,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_10",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 79,
+                  "reset_epoch": 0,
+                  "address": 4194344,
+                  "data": 11530622420956217384,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_11",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 81,
+                  "reset_epoch": 0,
+                  "address": 4198512,
+                  "data": 12683825400539779184,
+                  "txn_id": 1,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_12",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 83,
+                  "reset_epoch": 0,
+                  "address": 4194352,
+                  "data": 11530903895932928048,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_13",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 85,
+                  "reset_epoch": 0,
+                  "address": 4198520,
+                  "data": 12684106875516489848,
+                  "txn_id": 1,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_14",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_15",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "data": 12682136550679515200,
+                  "txn_id": 1,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_r_first",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_r_last",
+                  "role": "axi_r_interleave"
                 }
-              ]
+              ],
+              "axi_interleaving": {
+                "rid_switch_cycle": 59,
+                "switch_to_id": 0,
+                "first_rlast_cycle": 85,
+                "switch_preceded_rlast": true,
+                "beat_ids": [
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0
+                ]
+              }
             }
           ],
           "monitor": {
@@ -25264,7 +25575,7 @@
       "checker_testcases": [
         "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
       ],
-      "checker": "Independent coherence reference/data checker, owner invalidation checker, exact eight-beat AXI writeback/ID/B checker, APB counter checker, and trace-bound cycle-overlap checker.",
+      "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
       "requires_cycle_overlap": true,
       "hit_count": 2,
       "pass": true,
@@ -25279,27 +25590,27 @@
           ],
           "checked_cross_evidence": [
             {
-              "checker": "independent coherence scoreboard + dirty-victim data/AXI checker + APB Snoop-counter checker",
+              "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
               "checker_pass": true,
               "overlap": {
-                "start_cycle": 443,
-                "end_cycle": 443,
+                "start_cycle": 483,
+                "end_cycle": 483,
                 "roles": {
                   "victim": {
-                    "start_cycle": 440,
-                    "end_cycle": 497,
+                    "start_cycle": 480,
+                    "end_cycle": 538,
                     "start_event_ref": "victim_select",
                     "end_event_ref": "victim_write_response"
                   },
                   "snoop": {
-                    "start_cycle": 441,
-                    "end_cycle": 452,
+                    "start_cycle": 481,
+                    "end_cycle": 492,
                     "start_event_ref": "snoop_accept",
                     "end_event_ref": "snoop_response"
                   },
                   "apb": {
-                    "start_cycle": 443,
-                    "end_cycle": 443,
+                    "start_cycle": 483,
+                    "end_cycle": 483,
                     "start_event_ref": "apb_sample",
                     "end_event_ref": "apb_sample"
                   }
@@ -25309,8 +25620,8 @@
                 {
                   "role": "dirty_l2_victim_writeback",
                   "protocol": "AXI4-W",
-                  "txn_id": 7,
-                  "address": 34603968,
+                  "txn_id": 0,
+                  "address": 34603008,
                   "event_ref_ids": [
                     "victim_write_address",
                     "victim_write_beat_0",
@@ -25327,8 +25638,8 @@
                 {
                   "role": "owner_snoop",
                   "protocol": "MESI-Snoop",
-                  "txn_id": 7,
-                  "address": 34603968,
+                  "txn_id": 0,
+                  "address": 34603008,
                   "event_ref_ids": [
                     "snoop_accept",
                     "snoop_response",
@@ -25347,11 +25658,57 @@
                 {
                   "role": "replacement_miss",
                   "protocol": "CPU",
-                  "txn_id": 7,
-                  "address": 34866112,
+                  "txn_id": 0,
+                  "address": 34865152,
                   "event_ref_ids": [
                     "eviction_request",
                     "eviction_response"
+                  ]
+                },
+                {
+                  "role": "complementary_mask_owner_transfer",
+                  "protocol": "CPU/MESI",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "byte_masks": [
+                    170,
+                    85
+                  ],
+                  "final_word": 7667277966984761345,
+                  "event_ref_ids": [
+                    "mask_owner_first_request",
+                    "mask_owner_second_request",
+                    "mask_owner_getm",
+                    "mask_owner_snoop",
+                    "mask_owner_snoop_response",
+                    "mask_owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "masked_line_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "event_ref_ids": [
+                    "masked_line_refill_ar",
+                    "masked_line_refill_beat_0",
+                    "masked_line_refill_beat_1",
+                    "masked_line_refill_beat_2",
+                    "masked_line_refill_beat_3",
+                    "masked_line_refill_beat_4",
+                    "masked_line_refill_beat_5",
+                    "masked_line_refill_beat_6",
+                    "masked_line_refill_beat_7"
+                  ],
+                  "expected_words": [
+                    7667277966984761345,
+                    17253424851909786983,
+                    4436055582614806689,
+                    14995659475198759343,
+                    10630953826654567626,
+                    4936917342381294623,
+                    12768987156969065622,
+                    18318924648535926455
                   ]
                 }
               ],
@@ -25360,15 +25717,20 @@
                   "event_ref_id": "owner_invalidate",
                   "old_state": 3,
                   "new_state": 0
+                },
+                {
+                  "event_ref_id": "mask_owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
                 }
               ],
               "event_refs": [
                 {
                   "source": "l2_victim",
                   "event_type": "select",
-                  "cycle": 440,
+                  "cycle": 480,
                   "reset_epoch": 0,
-                  "address": 34603968,
+                  "address": 34603008,
                   "sharers": 0,
                   "owner": 0,
                   "ref_id": "victim_select",
@@ -25377,20 +25739,20 @@
                 {
                   "source": "l2_victim",
                   "event_type": "snoop_accept",
-                  "cycle": 441,
+                  "cycle": 481,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
+                  "address": 34603008,
                   "ref_id": "victim_snoop",
                   "role": "victim"
                 },
                 {
                   "source": "axi",
                   "event_type": "write_address",
-                  "cycle": 457,
+                  "cycle": 496,
                   "reset_epoch": 0,
-                  "address": 34603968,
-                  "txn_id": 7,
+                  "address": 34603008,
+                  "txn_id": 0,
                   "length": 7,
                   "payload": {
                     "size": 3,
@@ -25402,10 +25764,10 @@
                 {
                   "source": "axi",
                   "event_type": "write_response",
-                  "cycle": 497,
+                  "cycle": 538,
                   "reset_epoch": 0,
-                  "address": 34603968,
-                  "txn_id": 7,
+                  "address": 34603008,
+                  "txn_id": 0,
                   "response": 0,
                   "ref_id": "victim_write_response",
                   "role": "victim"
@@ -25413,11 +25775,11 @@
                 {
                   "source": "snoop",
                   "event_type": "accept",
-                  "cycle": 441,
+                  "cycle": 481,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "txn_id": 7,
+                  "address": 34603008,
+                  "txn_id": 0,
                   "opcode": 1,
                   "ref_id": "snoop_accept",
                   "role": "snoop"
@@ -25425,10 +25787,10 @@
                 {
                   "source": "snoop",
                   "event_type": "response",
-                  "cycle": 452,
+                  "cycle": 492,
                   "reset_epoch": 0,
                   "core": 0,
-                  "txn_id": 7,
+                  "txn_id": 0,
                   "opcode": 2,
                   "ref_id": "snoop_response",
                   "role": "snoop"
@@ -25436,10 +25798,10 @@
                 {
                   "source": "l1",
                   "event_type": "metadata_commit",
-                  "cycle": 451,
+                  "cycle": 491,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
+                  "address": 34603008,
                   "old_state": 3,
                   "new_state": 0,
                   "cause": "snoop",
@@ -25450,12 +25812,12 @@
                 {
                   "source": "apb",
                   "event_type": "access_complete",
-                  "cycle": 443,
+                  "cycle": 483,
                   "reset_epoch": 0,
                   "address": 8,
                   "payload": {
                     "write": 0,
-                    "read_data": 1,
+                    "read_data": 2,
                     "slverr": 0
                   },
                   "outcome": "ok",
@@ -25465,10 +25827,10 @@
                 {
                   "source": "cpu",
                   "event_type": "request_accept",
-                  "cycle": 431,
+                  "cycle": 471,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34866112,
+                  "address": 34865152,
                   "write": 0,
                   "payload": {
                     "write_data": 0,
@@ -25480,24 +25842,24 @@
                 {
                   "source": "cpu",
                   "event_type": "response_complete",
-                  "cycle": 556,
+                  "cycle": 597,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34866112,
+                  "address": 34865152,
                   "write": 0,
-                  "data": 13595999700304380511,
-                  "txn_id": 7,
+                  "data": 14093555426789530028,
+                  "txn_id": 0,
                   "ref_id": "eviction_response",
                   "role": "cpu"
                 },
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 443,
+                  "cycle": 483,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 5311739492312798260,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
                   "beat": 0,
                   "last": 0,
                   "ref_id": "owner_data_0",
@@ -25506,11 +25868,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 444,
+                  "cycle": 484,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 10630953826654567626,
+                  "address": 34603008,
+                  "data": 17253424851909786983,
                   "beat": 1,
                   "last": 0,
                   "ref_id": "owner_data_1",
@@ -25519,11 +25881,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 445,
+                  "cycle": 485,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 4936917342381294623,
+                  "address": 34603008,
+                  "data": 4436055582614806689,
                   "beat": 2,
                   "last": 0,
                   "ref_id": "owner_data_2",
@@ -25532,11 +25894,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 446,
+                  "cycle": 486,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 12768987156969065622,
+                  "address": 34603008,
+                  "data": 14995659475198759343,
                   "beat": 3,
                   "last": 0,
                   "ref_id": "owner_data_3",
@@ -25545,11 +25907,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 447,
+                  "cycle": 487,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 18318924648535926455,
+                  "address": 34603008,
+                  "data": 10630953826654567626,
                   "beat": 4,
                   "last": 0,
                   "ref_id": "owner_data_4",
@@ -25558,11 +25920,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 448,
+                  "cycle": 488,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 7658834048392712262,
+                  "address": 34603008,
+                  "data": 4936917342381294623,
                   "beat": 5,
                   "last": 0,
                   "ref_id": "owner_data_5",
@@ -25571,11 +25933,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 449,
+                  "cycle": 489,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 5289361973086919169,
+                  "address": 34603008,
+                  "data": 12768987156969065622,
                   "beat": 6,
                   "last": 0,
                   "ref_id": "owner_data_6",
@@ -25584,11 +25946,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 450,
+                  "cycle": 490,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34603968,
-                  "data": 14093555426789530028,
+                  "address": 34603008,
+                  "data": 18318924648535926455,
                   "beat": 7,
                   "last": 1,
                   "ref_id": "owner_data_7",
@@ -25597,11 +25959,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 465,
+                  "cycle": 505,
                   "reset_epoch": 0,
-                  "address": 34603968,
-                  "data": 5311739492312798260,
-                  "txn_id": 7,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
+                  "txn_id": 0,
                   "beat": 0,
                   "last": 0,
                   "ref_id": "victim_write_beat_0",
@@ -25610,11 +25972,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 467,
+                  "cycle": 507,
                   "reset_epoch": 0,
-                  "address": 34603976,
-                  "data": 10630953826654567626,
-                  "txn_id": 7,
+                  "address": 34603016,
+                  "data": 17253424851909786983,
+                  "txn_id": 0,
                   "beat": 1,
                   "last": 0,
                   "ref_id": "victim_write_beat_1",
@@ -25623,11 +25985,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 469,
+                  "cycle": 509,
                   "reset_epoch": 0,
-                  "address": 34603984,
-                  "data": 4936917342381294623,
-                  "txn_id": 7,
+                  "address": 34603024,
+                  "data": 4436055582614806689,
+                  "txn_id": 0,
                   "beat": 2,
                   "last": 0,
                   "ref_id": "victim_write_beat_2",
@@ -25636,11 +25998,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 471,
+                  "cycle": 511,
                   "reset_epoch": 0,
-                  "address": 34603992,
-                  "data": 12768987156969065622,
-                  "txn_id": 7,
+                  "address": 34603032,
+                  "data": 14995659475198759343,
+                  "txn_id": 0,
                   "beat": 3,
                   "last": 0,
                   "ref_id": "victim_write_beat_3",
@@ -25649,11 +26011,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 473,
+                  "cycle": 513,
                   "reset_epoch": 0,
-                  "address": 34604000,
-                  "data": 18318924648535926455,
-                  "txn_id": 7,
+                  "address": 34603040,
+                  "data": 10630953826654567626,
+                  "txn_id": 0,
                   "beat": 4,
                   "last": 0,
                   "ref_id": "victim_write_beat_4",
@@ -25662,11 +26024,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 475,
+                  "cycle": 515,
                   "reset_epoch": 0,
-                  "address": 34604008,
-                  "data": 7658834048392712262,
-                  "txn_id": 7,
+                  "address": 34603048,
+                  "data": 4936917342381294623,
+                  "txn_id": 0,
                   "beat": 5,
                   "last": 0,
                   "ref_id": "victim_write_beat_5",
@@ -25675,11 +26037,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 477,
+                  "cycle": 517,
                   "reset_epoch": 0,
-                  "address": 34604016,
-                  "data": 5289361973086919169,
-                  "txn_id": 7,
+                  "address": 34603056,
+                  "data": 12768987156969065622,
+                  "txn_id": 0,
                   "beat": 6,
                   "last": 0,
                   "ref_id": "victim_write_beat_6",
@@ -25688,70 +26050,276 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 479,
+                  "cycle": 519,
                   "reset_epoch": 0,
-                  "address": 34604024,
-                  "data": 14093555426789530028,
-                  "txn_id": 7,
+                  "address": 34603064,
+                  "data": 18318924648535926455,
+                  "txn_id": 0,
                   "beat": 7,
                   "last": 1,
                   "ref_id": "victim_write_beat_7",
                   "role": "victim"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 339,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "write": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "mask_owner_first_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 395,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "write": 1,
+                  "payload": {
+                    "write_data": 5289361973086919169,
+                    "write_mask": 85
+                  },
+                  "ref_id": "mask_owner_second_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 398,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "source_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_getm",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 399,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_snoop",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 410,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "mask_owner_snoop_response",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 409,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "mask_owner_invalidate",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 658,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "masked_line_refill_ar",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 677,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_0",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 678,
+                  "reset_epoch": 0,
+                  "address": 34603016,
+                  "data": 17253424851909786983,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_1",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 679,
+                  "reset_epoch": 0,
+                  "address": 34603024,
+                  "data": 4436055582614806689,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_2",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 680,
+                  "reset_epoch": 0,
+                  "address": 34603032,
+                  "data": 14995659475198759343,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_3",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 681,
+                  "reset_epoch": 0,
+                  "address": 34603040,
+                  "data": 10630953826654567626,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_4",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 682,
+                  "reset_epoch": 0,
+                  "address": 34603048,
+                  "data": 4936917342381294623,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_5",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 683,
+                  "reset_epoch": 0,
+                  "address": 34603056,
+                  "data": 12768987156969065622,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_6",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 684,
+                  "reset_epoch": 0,
+                  "address": 34603064,
+                  "data": 18318924648535926455,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_7",
+                  "role": "masked_refill"
                 }
               ]
             }
           ],
           "monitor": {
             "event_counts": {
-              "cpu.request_accept": 10,
-              "directory.request_accept": 14,
+              "cpu.request_accept": 18,
+              "directory.request_accept": 15,
               "l2.lookup": 10,
-              "directory_context.allocate": 14,
-              "directory.same_set_conflict": 344,
+              "directory_context.allocate": 15,
+              "directory.same_set_conflict": 357,
               "mshr.allocate": 10,
               "axi.read_address": 10,
-              "axi.read_valid_gap": 152,
+              "axi.read_valid_gap": 162,
               "axi.read_beat": 80,
               "l2.refill_start": 10,
-              "l2.line_write_beat": 96,
+              "l2.line_write_beat": 104,
               "l2.refill_end": 10,
-              "directory.metadata_commit": 16,
+              "directory.metadata_commit": 17,
               "mshr.retire": 10,
-              "directory.grant_accept": 14,
-              "l1.metadata_commit": 16,
-              "cpu.response_complete": 10,
-              "directory_context.retire": 14,
+              "directory.grant_accept": 15,
+              "l1.metadata_commit": 18,
+              "cpu.response_complete": 18,
+              "directory_context.retire": 15,
+              "axi.stall": 21,
+              "snoop.accept": 3,
+              "directory.snoop_offer": 1,
+              "coherence.owner_data_beat": 24,
+              "snoop.response": 3,
               "apb.access_complete": 2,
               "l2_victim.select": 2,
-              "snoop.accept": 2,
               "l2_victim.snoop_accept": 2,
-              "coherence.owner_data_beat": 16,
-              "snoop.response": 2,
               "axi.write_address": 2,
-              "axi.stall": 19,
               "axi.write_beat": 16,
               "axi.write_response": 2
             },
             "stall_cycles": {
-              "AW": 2,
+              "AR": 4,
               "W": 16,
-              "AR": 1
+              "AW": 1
             },
             "mshr_occupancy_histogram": {
-              "0": 323,
-              "1": 344
+              "0": 380,
+              "1": 357
             },
             "directory_context_histogram": {
-              "0": 57,
-              "1": 610
+              "0": 89,
+              "1": 648
             },
             "max_mshr_occupancy": 1,
             "max_directory_contexts": 1,
             "reset_epoch": 0,
             "axi_peak_reads": 1,
             "axi_peak_writes": 1,
-            "cpu_request_accepts": 10,
-            "cpu_response_completions": 10,
+            "cpu_request_accepts": 18,
+            "cpu_response_completions": 18,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -25768,27 +26336,27 @@
           ],
           "checked_cross_evidence": [
             {
-              "checker": "independent coherence scoreboard + dirty-victim data/AXI checker + APB Snoop-counter checker",
+              "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
               "checker_pass": true,
               "overlap": {
-                "start_cycle": 454,
-                "end_cycle": 454,
+                "start_cycle": 493,
+                "end_cycle": 493,
                 "roles": {
                   "victim": {
-                    "start_cycle": 451,
-                    "end_cycle": 508,
+                    "start_cycle": 490,
+                    "end_cycle": 544,
                     "start_event_ref": "victim_select",
                     "end_event_ref": "victim_write_response"
                   },
                   "snoop": {
-                    "start_cycle": 452,
-                    "end_cycle": 463,
+                    "start_cycle": 491,
+                    "end_cycle": 502,
                     "start_event_ref": "snoop_accept",
                     "end_event_ref": "snoop_response"
                   },
                   "apb": {
-                    "start_cycle": 454,
-                    "end_cycle": 454,
+                    "start_cycle": 493,
+                    "end_cycle": 493,
                     "start_event_ref": "apb_sample",
                     "end_event_ref": "apb_sample"
                   }
@@ -25798,8 +26366,8 @@
                 {
                   "role": "dirty_l2_victim_writeback",
                   "protocol": "AXI4-W",
-                  "txn_id": 7,
-                  "address": 34603456,
+                  "txn_id": 0,
+                  "address": 34635712,
                   "event_ref_ids": [
                     "victim_write_address",
                     "victim_write_beat_0",
@@ -25816,8 +26384,8 @@
                 {
                   "role": "owner_snoop",
                   "protocol": "MESI-Snoop",
-                  "txn_id": 7,
-                  "address": 34603456,
+                  "txn_id": 0,
+                  "address": 34635712,
                   "event_ref_ids": [
                     "snoop_accept",
                     "snoop_response",
@@ -25836,11 +26404,57 @@
                 {
                   "role": "replacement_miss",
                   "protocol": "CPU",
-                  "txn_id": 7,
-                  "address": 34865600,
+                  "txn_id": 0,
+                  "address": 34897856,
                   "event_ref_ids": [
                     "eviction_request",
                     "eviction_response"
+                  ]
+                },
+                {
+                  "role": "complementary_mask_owner_transfer",
+                  "protocol": "CPU/MESI",
+                  "txn_id": 0,
+                  "address": 34635768,
+                  "byte_masks": [
+                    170,
+                    85
+                  ],
+                  "final_word": 16666304917732625099,
+                  "event_ref_ids": [
+                    "mask_owner_first_request",
+                    "mask_owner_second_request",
+                    "mask_owner_getm",
+                    "mask_owner_snoop",
+                    "mask_owner_snoop_response",
+                    "mask_owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "masked_line_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 34635712,
+                  "event_ref_ids": [
+                    "masked_line_refill_ar",
+                    "masked_line_refill_beat_0",
+                    "masked_line_refill_beat_1",
+                    "masked_line_refill_beat_2",
+                    "masked_line_refill_beat_3",
+                    "masked_line_refill_beat_4",
+                    "masked_line_refill_beat_5",
+                    "masked_line_refill_beat_6",
+                    "masked_line_refill_beat_7"
+                  ],
+                  "expected_words": [
+                    5565436082150478880,
+                    9135328586890658904,
+                    3935788550704778658,
+                    8076413061017671345,
+                    9625637813240524457,
+                    2929454614368120314,
+                    571716866370309976,
+                    16666304917732625099
                   ]
                 }
               ],
@@ -25849,15 +26463,20 @@
                   "event_ref_id": "owner_invalidate",
                   "old_state": 3,
                   "new_state": 0
+                },
+                {
+                  "event_ref_id": "mask_owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
                 }
               ],
               "event_refs": [
                 {
                   "source": "l2_victim",
                   "event_type": "select",
-                  "cycle": 451,
+                  "cycle": 490,
                   "reset_epoch": 0,
-                  "address": 34603456,
+                  "address": 34635712,
                   "sharers": 0,
                   "owner": 1,
                   "ref_id": "victim_select",
@@ -25866,20 +26485,20 @@
                 {
                   "source": "l2_victim",
                   "event_type": "snoop_accept",
-                  "cycle": 452,
+                  "cycle": 491,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
+                  "address": 34635712,
                   "ref_id": "victim_snoop",
                   "role": "victim"
                 },
                 {
                   "source": "axi",
                   "event_type": "write_address",
-                  "cycle": 467,
+                  "cycle": 507,
                   "reset_epoch": 0,
-                  "address": 34603456,
-                  "txn_id": 7,
+                  "address": 34635712,
+                  "txn_id": 0,
                   "length": 7,
                   "payload": {
                     "size": 3,
@@ -25891,10 +26510,10 @@
                 {
                   "source": "axi",
                   "event_type": "write_response",
-                  "cycle": 508,
+                  "cycle": 544,
                   "reset_epoch": 0,
-                  "address": 34603456,
-                  "txn_id": 7,
+                  "address": 34635712,
+                  "txn_id": 0,
                   "response": 0,
                   "ref_id": "victim_write_response",
                   "role": "victim"
@@ -25902,11 +26521,11 @@
                 {
                   "source": "snoop",
                   "event_type": "accept",
-                  "cycle": 452,
+                  "cycle": 491,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "txn_id": 7,
+                  "address": 34635712,
+                  "txn_id": 0,
                   "opcode": 1,
                   "ref_id": "snoop_accept",
                   "role": "snoop"
@@ -25914,10 +26533,10 @@
                 {
                   "source": "snoop",
                   "event_type": "response",
-                  "cycle": 463,
+                  "cycle": 502,
                   "reset_epoch": 0,
                   "core": 1,
-                  "txn_id": 7,
+                  "txn_id": 0,
                   "opcode": 2,
                   "ref_id": "snoop_response",
                   "role": "snoop"
@@ -25925,10 +26544,10 @@
                 {
                   "source": "l1",
                   "event_type": "metadata_commit",
-                  "cycle": 462,
+                  "cycle": 501,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
+                  "address": 34635712,
                   "old_state": 3,
                   "new_state": 0,
                   "cause": "snoop",
@@ -25939,12 +26558,12 @@
                 {
                   "source": "apb",
                   "event_type": "access_complete",
-                  "cycle": 454,
+                  "cycle": 493,
                   "reset_epoch": 0,
                   "address": 8,
                   "payload": {
                     "write": 0,
-                    "read_data": 1,
+                    "read_data": 2,
                     "slverr": 0
                   },
                   "outcome": "ok",
@@ -25954,10 +26573,10 @@
                 {
                   "source": "cpu",
                   "event_type": "request_accept",
-                  "cycle": 442,
+                  "cycle": 481,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34865600,
+                  "address": 34897856,
                   "write": 0,
                   "payload": {
                     "write_data": 0,
@@ -25969,24 +26588,24 @@
                 {
                   "source": "cpu",
                   "event_type": "response_complete",
-                  "cycle": 567,
+                  "cycle": 604,
                   "reset_epoch": 0,
                   "core": 0,
-                  "address": 34865600,
+                  "address": 34897856,
                   "write": 0,
-                  "data": 7858635981067328323,
-                  "txn_id": 7,
+                  "data": 14746133048889353375,
+                  "txn_id": 0,
                   "ref_id": "eviction_response",
                   "role": "cpu"
                 },
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 454,
+                  "cycle": 493,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 4087179529086852174,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
                   "beat": 0,
                   "last": 0,
                   "ref_id": "owner_data_0",
@@ -25995,11 +26614,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 455,
+                  "cycle": 494,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 9625637813240524457,
+                  "address": 34635712,
+                  "data": 9135328586890658904,
                   "beat": 1,
                   "last": 0,
                   "ref_id": "owner_data_1",
@@ -26008,11 +26627,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 456,
+                  "cycle": 495,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 2929454614368120314,
+                  "address": 34635712,
+                  "data": 3935788550704778658,
                   "beat": 2,
                   "last": 0,
                   "ref_id": "owner_data_2",
@@ -26021,11 +26640,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 457,
+                  "cycle": 496,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 571716866370309976,
+                  "address": 34635712,
+                  "data": 8076413061017671345,
                   "beat": 3,
                   "last": 0,
                   "ref_id": "owner_data_3",
@@ -26034,11 +26653,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 458,
+                  "cycle": 497,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 12856676571562938425,
+                  "address": 34635712,
+                  "data": 9625637813240524457,
                   "beat": 4,
                   "last": 0,
                   "ref_id": "owner_data_4",
@@ -26047,11 +26666,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 459,
+                  "cycle": 498,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 16671934911179164208,
+                  "address": 34635712,
+                  "data": 2929454614368120314,
                   "beat": 5,
                   "last": 0,
                   "ref_id": "owner_data_5",
@@ -26060,11 +26679,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 460,
+                  "cycle": 499,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 12054685969950739659,
+                  "address": 34635712,
+                  "data": 571716866370309976,
                   "beat": 6,
                   "last": 0,
                   "ref_id": "owner_data_6",
@@ -26073,11 +26692,11 @@
                 {
                   "source": "coherence",
                   "event_type": "owner_data_beat",
-                  "cycle": 461,
+                  "cycle": 500,
                   "reset_epoch": 0,
                   "core": 1,
-                  "address": 34603456,
-                  "data": 14746133048889353375,
+                  "address": 34635712,
+                  "data": 16666304917732625099,
                   "beat": 7,
                   "last": 1,
                   "ref_id": "owner_data_7",
@@ -26086,11 +26705,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 475,
+                  "cycle": 514,
                   "reset_epoch": 0,
-                  "address": 34603456,
-                  "data": 4087179529086852174,
-                  "txn_id": 7,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
+                  "txn_id": 0,
                   "beat": 0,
                   "last": 0,
                   "ref_id": "victim_write_beat_0",
@@ -26099,11 +26718,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 477,
+                  "cycle": 515,
                   "reset_epoch": 0,
-                  "address": 34603464,
-                  "data": 9625637813240524457,
-                  "txn_id": 7,
+                  "address": 34635720,
+                  "data": 9135328586890658904,
+                  "txn_id": 0,
                   "beat": 1,
                   "last": 0,
                   "ref_id": "victim_write_beat_1",
@@ -26112,11 +26731,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 479,
+                  "cycle": 517,
                   "reset_epoch": 0,
-                  "address": 34603472,
-                  "data": 2929454614368120314,
-                  "txn_id": 7,
+                  "address": 34635728,
+                  "data": 3935788550704778658,
+                  "txn_id": 0,
                   "beat": 2,
                   "last": 0,
                   "ref_id": "victim_write_beat_2",
@@ -26125,11 +26744,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 481,
+                  "cycle": 518,
                   "reset_epoch": 0,
-                  "address": 34603480,
-                  "data": 571716866370309976,
-                  "txn_id": 7,
+                  "address": 34635736,
+                  "data": 8076413061017671345,
+                  "txn_id": 0,
                   "beat": 3,
                   "last": 0,
                   "ref_id": "victim_write_beat_3",
@@ -26138,11 +26757,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 483,
+                  "cycle": 520,
                   "reset_epoch": 0,
-                  "address": 34603488,
-                  "data": 12856676571562938425,
-                  "txn_id": 7,
+                  "address": 34635744,
+                  "data": 9625637813240524457,
+                  "txn_id": 0,
                   "beat": 4,
                   "last": 0,
                   "ref_id": "victim_write_beat_4",
@@ -26151,11 +26770,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 485,
+                  "cycle": 521,
                   "reset_epoch": 0,
-                  "address": 34603496,
-                  "data": 16671934911179164208,
-                  "txn_id": 7,
+                  "address": 34635752,
+                  "data": 2929454614368120314,
+                  "txn_id": 0,
                   "beat": 5,
                   "last": 0,
                   "ref_id": "victim_write_beat_5",
@@ -26164,11 +26783,11 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 487,
+                  "cycle": 523,
                   "reset_epoch": 0,
-                  "address": 34603504,
-                  "data": 12054685969950739659,
-                  "txn_id": 7,
+                  "address": 34635760,
+                  "data": 571716866370309976,
+                  "txn_id": 0,
                   "beat": 6,
                   "last": 0,
                   "ref_id": "victim_write_beat_6",
@@ -26177,70 +26796,276 @@
                 {
                   "source": "axi",
                   "event_type": "write_beat",
-                  "cycle": 489,
+                  "cycle": 524,
                   "reset_epoch": 0,
-                  "address": 34603512,
-                  "data": 14746133048889353375,
-                  "txn_id": 7,
+                  "address": 34635768,
+                  "data": 16666304917732625099,
+                  "txn_id": 0,
                   "beat": 7,
                   "last": 1,
                   "ref_id": "victim_write_beat_7",
                   "role": "victim"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 348,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635768,
+                  "write": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "mask_owner_first_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 405,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635768,
+                  "write": 1,
+                  "payload": {
+                    "write_data": 12054685969950739659,
+                    "write_mask": 85
+                  },
+                  "ref_id": "mask_owner_second_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 408,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "source_id": 1,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_getm",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 409,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_snoop",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 420,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "mask_owner_snoop_response",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 419,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635712,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "mask_owner_invalidate",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 664,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "masked_line_refill_ar",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 684,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_0",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 685,
+                  "reset_epoch": 0,
+                  "address": 34635720,
+                  "data": 9135328586890658904,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_1",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 686,
+                  "reset_epoch": 0,
+                  "address": 34635728,
+                  "data": 3935788550704778658,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_2",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 687,
+                  "reset_epoch": 0,
+                  "address": 34635736,
+                  "data": 8076413061017671345,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_3",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 688,
+                  "reset_epoch": 0,
+                  "address": 34635744,
+                  "data": 9625637813240524457,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_4",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 689,
+                  "reset_epoch": 0,
+                  "address": 34635752,
+                  "data": 2929454614368120314,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_5",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 690,
+                  "reset_epoch": 0,
+                  "address": 34635760,
+                  "data": 571716866370309976,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_6",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 691,
+                  "reset_epoch": 0,
+                  "address": 34635768,
+                  "data": 16666304917732625099,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_7",
+                  "role": "masked_refill"
                 }
               ]
             }
           ],
           "monitor": {
             "event_counts": {
-              "cpu.request_accept": 10,
-              "directory.request_accept": 14,
+              "cpu.request_accept": 18,
+              "directory.request_accept": 15,
               "l2.lookup": 10,
-              "directory_context.allocate": 14,
-              "directory.same_set_conflict": 356,
+              "directory_context.allocate": 15,
+              "directory.same_set_conflict": 370,
               "mshr.allocate": 10,
               "axi.read_address": 10,
-              "axi.read_valid_gap": 162,
+              "axi.read_valid_gap": 172,
               "axi.read_beat": 80,
               "l2.refill_start": 10,
-              "l2.line_write_beat": 96,
+              "l2.line_write_beat": 104,
               "l2.refill_end": 10,
-              "directory.metadata_commit": 16,
+              "directory.metadata_commit": 17,
               "mshr.retire": 10,
-              "directory.grant_accept": 14,
-              "l1.metadata_commit": 16,
-              "cpu.response_complete": 10,
-              "directory_context.retire": 14,
-              "axi.stall": 23,
+              "directory.grant_accept": 15,
+              "l1.metadata_commit": 18,
+              "cpu.response_complete": 18,
+              "directory_context.retire": 15,
+              "snoop.accept": 3,
+              "directory.snoop_offer": 1,
+              "coherence.owner_data_beat": 24,
+              "snoop.response": 3,
               "apb.access_complete": 2,
               "l2_victim.select": 2,
-              "snoop.accept": 2,
               "l2_victim.snoop_accept": 2,
-              "coherence.owner_data_beat": 16,
-              "snoop.response": 2,
               "axi.write_address": 2,
+              "axi.stall": 11,
               "axi.write_beat": 16,
               "axi.write_response": 2
             },
             "stall_cycles": {
-              "AR": 5,
               "AW": 2,
-              "W": 16
+              "W": 8,
+              "AR": 1
             },
             "mshr_occupancy_histogram": {
-              "0": 323,
-              "1": 356
+              "0": 374,
+              "1": 370
             },
             "directory_context_histogram": {
-              "0": 57,
-              "1": 622
+              "0": 89,
+              "1": 655
             },
             "max_mshr_occupancy": 1,
             "max_directory_contexts": 1,
             "reset_epoch": 0,
             "axi_peak_reads": 1,
             "axi_peak_writes": 1,
-            "cpu_request_accepts": 10,
-            "cpu_response_completions": 10,
+            "cpu_request_accepts": 18,
+            "cpu_response_completions": 18,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -27119,6 +27944,2725 @@
             "axi_peak_writes": 0,
             "cpu_request_accepts": 5,
             "cpu_response_completions": 5,
+            "replay_records": 0,
+            "protocol_error": 0,
+            "fatal_error": 0,
+            "axi_error_count": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.MASK_OWNER_EVICT",
+      "evidence_contract": "checked_cross_v1",
+      "classification": "required_legal",
+      "legal_preconditions": "Both cores issue legal nonzero complementary 0xAA/0x55 masks to one word; one actual M-to-M ownership transfer occurs before the line is selected as a dirty inclusive L2 victim.",
+      "stimulus_strategy": "Extend CR04 dirty victim scenario with opposite owner directions, Word0/Word7, and L1/L2 set indices 0/last; refill the evicted line and read all eight words.",
+      "required_monitor_event": "CPU mask writes, GetM/Snoop ownership transfer, full-line owner writeback, AXI refill and CPU readback.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "directory.request_accept",
+        "snoop.accept",
+        "snoop.response",
+        "l1.metadata_commit",
+        "coherence.owner_data_beat",
+        "l2_victim.select",
+        "axi.write_address",
+        "axi.write_beat",
+        "axi.write_response",
+        "axi.read_address",
+        "axi.read_beat",
+        "cpu.response_complete",
+        "axi.read_address",
+        "axi.read_beat"
+      ],
+      "testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "checker_testcases": [
+        "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner"
+      ],
+      "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
+      "requires_cycle_overlap": true,
+      "hit_count": 2,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner[49156]",
+          "seed": 49156,
+          "count": 1,
+          "test_status": "passed",
+          "sample_testcases": [
+            "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner[49156]"
+          ],
+          "checked_cross_evidence": [
+            {
+              "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
+              "checker_pass": true,
+              "overlap": {
+                "start_cycle": 483,
+                "end_cycle": 483,
+                "roles": {
+                  "victim": {
+                    "start_cycle": 480,
+                    "end_cycle": 538,
+                    "start_event_ref": "victim_select",
+                    "end_event_ref": "victim_write_response"
+                  },
+                  "snoop": {
+                    "start_cycle": 481,
+                    "end_cycle": 492,
+                    "start_event_ref": "snoop_accept",
+                    "end_event_ref": "snoop_response"
+                  },
+                  "apb": {
+                    "start_cycle": 483,
+                    "end_cycle": 483,
+                    "start_event_ref": "apb_sample",
+                    "end_event_ref": "apb_sample"
+                  }
+                }
+              },
+              "transactions": [
+                {
+                  "role": "dirty_l2_victim_writeback",
+                  "protocol": "AXI4-W",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "event_ref_ids": [
+                    "victim_write_address",
+                    "victim_write_beat_0",
+                    "victim_write_beat_1",
+                    "victim_write_beat_2",
+                    "victim_write_beat_3",
+                    "victim_write_beat_4",
+                    "victim_write_beat_5",
+                    "victim_write_beat_6",
+                    "victim_write_beat_7",
+                    "victim_write_response"
+                  ]
+                },
+                {
+                  "role": "owner_snoop",
+                  "protocol": "MESI-Snoop",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "event_ref_ids": [
+                    "snoop_accept",
+                    "snoop_response",
+                    "victim_snoop",
+                    "owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "apb_snoop_counter",
+                  "protocol": "APB3",
+                  "address": 8,
+                  "event_ref_ids": [
+                    "apb_sample"
+                  ]
+                },
+                {
+                  "role": "replacement_miss",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 34865152,
+                  "event_ref_ids": [
+                    "eviction_request",
+                    "eviction_response"
+                  ]
+                },
+                {
+                  "role": "complementary_mask_owner_transfer",
+                  "protocol": "CPU/MESI",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "byte_masks": [
+                    170,
+                    85
+                  ],
+                  "final_word": 7667277966984761345,
+                  "event_ref_ids": [
+                    "mask_owner_first_request",
+                    "mask_owner_second_request",
+                    "mask_owner_getm",
+                    "mask_owner_snoop",
+                    "mask_owner_snoop_response",
+                    "mask_owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "masked_line_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 34603008,
+                  "event_ref_ids": [
+                    "masked_line_refill_ar",
+                    "masked_line_refill_beat_0",
+                    "masked_line_refill_beat_1",
+                    "masked_line_refill_beat_2",
+                    "masked_line_refill_beat_3",
+                    "masked_line_refill_beat_4",
+                    "masked_line_refill_beat_5",
+                    "masked_line_refill_beat_6",
+                    "masked_line_refill_beat_7"
+                  ],
+                  "expected_words": [
+                    7667277966984761345,
+                    17253424851909786983,
+                    4436055582614806689,
+                    14995659475198759343,
+                    10630953826654567626,
+                    4936917342381294623,
+                    12768987156969065622,
+                    18318924648535926455
+                  ]
+                }
+              ],
+              "state_transitions": [
+                {
+                  "event_ref_id": "owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
+                },
+                {
+                  "event_ref_id": "mask_owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
+                }
+              ],
+              "event_refs": [
+                {
+                  "source": "l2_victim",
+                  "event_type": "select",
+                  "cycle": 480,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "sharers": 0,
+                  "owner": 0,
+                  "ref_id": "victim_select",
+                  "role": "victim"
+                },
+                {
+                  "source": "l2_victim",
+                  "event_type": "snoop_accept",
+                  "cycle": 481,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "ref_id": "victim_snoop",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_address",
+                  "cycle": 496,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "victim_write_address",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_response",
+                  "cycle": 538,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "response": 0,
+                  "ref_id": "victim_write_response",
+                  "role": "victim"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 481,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "snoop_accept",
+                  "role": "snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 492,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "snoop_response",
+                  "role": "snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 491,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "owner_invalidate",
+                  "role": "state"
+                },
+                {
+                  "source": "apb",
+                  "event_type": "access_complete",
+                  "cycle": 483,
+                  "reset_epoch": 0,
+                  "address": 8,
+                  "payload": {
+                    "write": 0,
+                    "read_data": 2,
+                    "slverr": 0
+                  },
+                  "outcome": "ok",
+                  "ref_id": "apb_sample",
+                  "role": "apb"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 471,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34865152,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "eviction_request",
+                  "role": "cpu"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 597,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34865152,
+                  "write": 0,
+                  "data": 14093555426789530028,
+                  "txn_id": 0,
+                  "ref_id": "eviction_response",
+                  "role": "cpu"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 483,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "owner_data_0",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 484,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 17253424851909786983,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "owner_data_1",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 485,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 4436055582614806689,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "owner_data_2",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 486,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 14995659475198759343,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "owner_data_3",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 487,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 10630953826654567626,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "owner_data_4",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 488,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 4936917342381294623,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "owner_data_5",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 489,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 12768987156969065622,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "owner_data_6",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 490,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "data": 18318924648535926455,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "owner_data_7",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 505,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_0",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 507,
+                  "reset_epoch": 0,
+                  "address": 34603016,
+                  "data": 17253424851909786983,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_1",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 509,
+                  "reset_epoch": 0,
+                  "address": 34603024,
+                  "data": 4436055582614806689,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_2",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 511,
+                  "reset_epoch": 0,
+                  "address": 34603032,
+                  "data": 14995659475198759343,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_3",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 513,
+                  "reset_epoch": 0,
+                  "address": 34603040,
+                  "data": 10630953826654567626,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_4",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 515,
+                  "reset_epoch": 0,
+                  "address": 34603048,
+                  "data": 4936917342381294623,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_5",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 517,
+                  "reset_epoch": 0,
+                  "address": 34603056,
+                  "data": 12768987156969065622,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_6",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 519,
+                  "reset_epoch": 0,
+                  "address": 34603064,
+                  "data": 18318924648535926455,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "victim_write_beat_7",
+                  "role": "victim"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 339,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "write": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "mask_owner_first_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 395,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34603008,
+                  "write": 1,
+                  "payload": {
+                    "write_data": 5289361973086919169,
+                    "write_mask": 85
+                  },
+                  "ref_id": "mask_owner_second_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 398,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "source_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_getm",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 399,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_snoop",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 410,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "mask_owner_snoop_response",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 409,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34603008,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "mask_owner_invalidate",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 658,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "masked_line_refill_ar",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 677,
+                  "reset_epoch": 0,
+                  "address": 34603008,
+                  "data": 7667277966984761345,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_0",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 678,
+                  "reset_epoch": 0,
+                  "address": 34603016,
+                  "data": 17253424851909786983,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_1",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 679,
+                  "reset_epoch": 0,
+                  "address": 34603024,
+                  "data": 4436055582614806689,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_2",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 680,
+                  "reset_epoch": 0,
+                  "address": 34603032,
+                  "data": 14995659475198759343,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_3",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 681,
+                  "reset_epoch": 0,
+                  "address": 34603040,
+                  "data": 10630953826654567626,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_4",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 682,
+                  "reset_epoch": 0,
+                  "address": 34603048,
+                  "data": 4936917342381294623,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_5",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 683,
+                  "reset_epoch": 0,
+                  "address": 34603056,
+                  "data": 12768987156969065622,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_6",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 684,
+                  "reset_epoch": 0,
+                  "address": 34603064,
+                  "data": 18318924648535926455,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_7",
+                  "role": "masked_refill"
+                }
+              ]
+            }
+          ],
+          "monitor": {
+            "event_counts": {
+              "cpu.request_accept": 18,
+              "directory.request_accept": 15,
+              "l2.lookup": 10,
+              "directory_context.allocate": 15,
+              "directory.same_set_conflict": 357,
+              "mshr.allocate": 10,
+              "axi.read_address": 10,
+              "axi.read_valid_gap": 162,
+              "axi.read_beat": 80,
+              "l2.refill_start": 10,
+              "l2.line_write_beat": 104,
+              "l2.refill_end": 10,
+              "directory.metadata_commit": 17,
+              "mshr.retire": 10,
+              "directory.grant_accept": 15,
+              "l1.metadata_commit": 18,
+              "cpu.response_complete": 18,
+              "directory_context.retire": 15,
+              "axi.stall": 21,
+              "snoop.accept": 3,
+              "directory.snoop_offer": 1,
+              "coherence.owner_data_beat": 24,
+              "snoop.response": 3,
+              "apb.access_complete": 2,
+              "l2_victim.select": 2,
+              "l2_victim.snoop_accept": 2,
+              "axi.write_address": 2,
+              "axi.write_beat": 16,
+              "axi.write_response": 2
+            },
+            "stall_cycles": {
+              "AR": 4,
+              "W": 16,
+              "AW": 1
+            },
+            "mshr_occupancy_histogram": {
+              "0": 380,
+              "1": 357
+            },
+            "directory_context_histogram": {
+              "0": 89,
+              "1": 648
+            },
+            "max_mshr_occupancy": 1,
+            "max_directory_contexts": 1,
+            "reset_epoch": 0,
+            "axi_peak_reads": 1,
+            "axi_peak_writes": 1,
+            "cpu_request_accepts": 18,
+            "cpu_response_completions": 18,
+            "replay_records": 0,
+            "protocol_error": 0,
+            "fatal_error": 0,
+            "axi_error_count": 0
+          }
+        },
+        {
+          "test_id": "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner[49412]",
+          "seed": 49412,
+          "count": 1,
+          "test_status": "passed",
+          "sample_testcases": [
+            "tests/full_system/test_full_system_signoff.py::test_dirty_l2_victim_snoops_live_modified_owner[49412]"
+          ],
+          "checked_cross_evidence": [
+            {
+              "checker": "independent byte-mask/MESI model + observed M-to-M Snoop transfer + full-line dirty-victim AXI checker + APB counter",
+              "checker_pass": true,
+              "overlap": {
+                "start_cycle": 493,
+                "end_cycle": 493,
+                "roles": {
+                  "victim": {
+                    "start_cycle": 490,
+                    "end_cycle": 544,
+                    "start_event_ref": "victim_select",
+                    "end_event_ref": "victim_write_response"
+                  },
+                  "snoop": {
+                    "start_cycle": 491,
+                    "end_cycle": 502,
+                    "start_event_ref": "snoop_accept",
+                    "end_event_ref": "snoop_response"
+                  },
+                  "apb": {
+                    "start_cycle": 493,
+                    "end_cycle": 493,
+                    "start_event_ref": "apb_sample",
+                    "end_event_ref": "apb_sample"
+                  }
+                }
+              },
+              "transactions": [
+                {
+                  "role": "dirty_l2_victim_writeback",
+                  "protocol": "AXI4-W",
+                  "txn_id": 0,
+                  "address": 34635712,
+                  "event_ref_ids": [
+                    "victim_write_address",
+                    "victim_write_beat_0",
+                    "victim_write_beat_1",
+                    "victim_write_beat_2",
+                    "victim_write_beat_3",
+                    "victim_write_beat_4",
+                    "victim_write_beat_5",
+                    "victim_write_beat_6",
+                    "victim_write_beat_7",
+                    "victim_write_response"
+                  ]
+                },
+                {
+                  "role": "owner_snoop",
+                  "protocol": "MESI-Snoop",
+                  "txn_id": 0,
+                  "address": 34635712,
+                  "event_ref_ids": [
+                    "snoop_accept",
+                    "snoop_response",
+                    "victim_snoop",
+                    "owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "apb_snoop_counter",
+                  "protocol": "APB3",
+                  "address": 8,
+                  "event_ref_ids": [
+                    "apb_sample"
+                  ]
+                },
+                {
+                  "role": "replacement_miss",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 34897856,
+                  "event_ref_ids": [
+                    "eviction_request",
+                    "eviction_response"
+                  ]
+                },
+                {
+                  "role": "complementary_mask_owner_transfer",
+                  "protocol": "CPU/MESI",
+                  "txn_id": 0,
+                  "address": 34635768,
+                  "byte_masks": [
+                    170,
+                    85
+                  ],
+                  "final_word": 16666304917732625099,
+                  "event_ref_ids": [
+                    "mask_owner_first_request",
+                    "mask_owner_second_request",
+                    "mask_owner_getm",
+                    "mask_owner_snoop",
+                    "mask_owner_snoop_response",
+                    "mask_owner_invalidate"
+                  ]
+                },
+                {
+                  "role": "masked_line_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 34635712,
+                  "event_ref_ids": [
+                    "masked_line_refill_ar",
+                    "masked_line_refill_beat_0",
+                    "masked_line_refill_beat_1",
+                    "masked_line_refill_beat_2",
+                    "masked_line_refill_beat_3",
+                    "masked_line_refill_beat_4",
+                    "masked_line_refill_beat_5",
+                    "masked_line_refill_beat_6",
+                    "masked_line_refill_beat_7"
+                  ],
+                  "expected_words": [
+                    5565436082150478880,
+                    9135328586890658904,
+                    3935788550704778658,
+                    8076413061017671345,
+                    9625637813240524457,
+                    2929454614368120314,
+                    571716866370309976,
+                    16666304917732625099
+                  ]
+                }
+              ],
+              "state_transitions": [
+                {
+                  "event_ref_id": "owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
+                },
+                {
+                  "event_ref_id": "mask_owner_invalidate",
+                  "old_state": 3,
+                  "new_state": 0
+                }
+              ],
+              "event_refs": [
+                {
+                  "source": "l2_victim",
+                  "event_type": "select",
+                  "cycle": 490,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "sharers": 0,
+                  "owner": 1,
+                  "ref_id": "victim_select",
+                  "role": "victim"
+                },
+                {
+                  "source": "l2_victim",
+                  "event_type": "snoop_accept",
+                  "cycle": 491,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "ref_id": "victim_snoop",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_address",
+                  "cycle": 507,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "victim_write_address",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_response",
+                  "cycle": 544,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "response": 0,
+                  "ref_id": "victim_write_response",
+                  "role": "victim"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 491,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "snoop_accept",
+                  "role": "snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 502,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "snoop_response",
+                  "role": "snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 501,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "owner_invalidate",
+                  "role": "state"
+                },
+                {
+                  "source": "apb",
+                  "event_type": "access_complete",
+                  "cycle": 493,
+                  "reset_epoch": 0,
+                  "address": 8,
+                  "payload": {
+                    "write": 0,
+                    "read_data": 2,
+                    "slverr": 0
+                  },
+                  "outcome": "ok",
+                  "ref_id": "apb_sample",
+                  "role": "apb"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 481,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34897856,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "eviction_request",
+                  "role": "cpu"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 604,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34897856,
+                  "write": 0,
+                  "data": 14746133048889353375,
+                  "txn_id": 0,
+                  "ref_id": "eviction_response",
+                  "role": "cpu"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 493,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "owner_data_0",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 494,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 9135328586890658904,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "owner_data_1",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 495,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 3935788550704778658,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "owner_data_2",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 496,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 8076413061017671345,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "owner_data_3",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 497,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 9625637813240524457,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "owner_data_4",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 498,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 2929454614368120314,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "owner_data_5",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 499,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 571716866370309976,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "owner_data_6",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 500,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635712,
+                  "data": 16666304917732625099,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "owner_data_7",
+                  "role": "owner_data"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 514,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_0",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 515,
+                  "reset_epoch": 0,
+                  "address": 34635720,
+                  "data": 9135328586890658904,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_1",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 517,
+                  "reset_epoch": 0,
+                  "address": 34635728,
+                  "data": 3935788550704778658,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_2",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 518,
+                  "reset_epoch": 0,
+                  "address": 34635736,
+                  "data": 8076413061017671345,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_3",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 520,
+                  "reset_epoch": 0,
+                  "address": 34635744,
+                  "data": 9625637813240524457,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_4",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 521,
+                  "reset_epoch": 0,
+                  "address": 34635752,
+                  "data": 2929454614368120314,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_5",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 523,
+                  "reset_epoch": 0,
+                  "address": 34635760,
+                  "data": 571716866370309976,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "victim_write_beat_6",
+                  "role": "victim"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "write_beat",
+                  "cycle": 524,
+                  "reset_epoch": 0,
+                  "address": 34635768,
+                  "data": 16666304917732625099,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "victim_write_beat_7",
+                  "role": "victim"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 348,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635768,
+                  "write": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "mask_owner_first_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 405,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 34635768,
+                  "write": 1,
+                  "payload": {
+                    "write_data": 12054685969950739659,
+                    "write_mask": 85
+                  },
+                  "ref_id": "mask_owner_second_request",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 408,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "source_id": 1,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_getm",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 409,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "ref_id": "mask_owner_snoop",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 420,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "mask_owner_snoop_response",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 419,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 34635712,
+                  "old_state": 3,
+                  "new_state": 0,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "mask_owner_invalidate",
+                  "role": "mask_owner"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 664,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "masked_line_refill_ar",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 684,
+                  "reset_epoch": 0,
+                  "address": 34635712,
+                  "data": 5565436082150478880,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_0",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 685,
+                  "reset_epoch": 0,
+                  "address": 34635720,
+                  "data": 9135328586890658904,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_1",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 686,
+                  "reset_epoch": 0,
+                  "address": 34635728,
+                  "data": 3935788550704778658,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_2",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 687,
+                  "reset_epoch": 0,
+                  "address": 34635736,
+                  "data": 8076413061017671345,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_3",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 688,
+                  "reset_epoch": 0,
+                  "address": 34635744,
+                  "data": 9625637813240524457,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_4",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 689,
+                  "reset_epoch": 0,
+                  "address": 34635752,
+                  "data": 2929454614368120314,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_5",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 690,
+                  "reset_epoch": 0,
+                  "address": 34635760,
+                  "data": 571716866370309976,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_6",
+                  "role": "masked_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 691,
+                  "reset_epoch": 0,
+                  "address": 34635768,
+                  "data": 16666304917732625099,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "masked_line_refill_beat_7",
+                  "role": "masked_refill"
+                }
+              ]
+            }
+          ],
+          "monitor": {
+            "event_counts": {
+              "cpu.request_accept": 18,
+              "directory.request_accept": 15,
+              "l2.lookup": 10,
+              "directory_context.allocate": 15,
+              "directory.same_set_conflict": 370,
+              "mshr.allocate": 10,
+              "axi.read_address": 10,
+              "axi.read_valid_gap": 172,
+              "axi.read_beat": 80,
+              "l2.refill_start": 10,
+              "l2.line_write_beat": 104,
+              "l2.refill_end": 10,
+              "directory.metadata_commit": 17,
+              "mshr.retire": 10,
+              "directory.grant_accept": 15,
+              "l1.metadata_commit": 18,
+              "cpu.response_complete": 18,
+              "directory_context.retire": 15,
+              "snoop.accept": 3,
+              "directory.snoop_offer": 1,
+              "coherence.owner_data_beat": 24,
+              "snoop.response": 3,
+              "apb.access_complete": 2,
+              "l2_victim.select": 2,
+              "l2_victim.snoop_accept": 2,
+              "axi.write_address": 2,
+              "axi.stall": 11,
+              "axi.write_beat": 16,
+              "axi.write_response": 2
+            },
+            "stall_cycles": {
+              "AW": 2,
+              "W": 8,
+              "AR": 1
+            },
+            "mshr_occupancy_histogram": {
+              "0": 374,
+              "1": 370
+            },
+            "directory_context_histogram": {
+              "0": 89,
+              "1": 655
+            },
+            "max_mshr_occupancy": 1,
+            "max_directory_contexts": 1,
+            "reset_epoch": 0,
+            "axi_peak_reads": 1,
+            "axi_peak_writes": 1,
+            "cpu_request_accepts": 18,
+            "cpu_response_completions": 18,
+            "replay_records": 0,
+            "protocol_error": 0,
+            "fatal_error": 0,
+            "axi_error_count": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "FS.CROSS.AXI_R_BEAT_INTERLEAVE",
+      "evidence_contract": "checked_cross_v1",
+      "classification": "required_legal",
+      "legal_preconditions": "Two independent cold lines allocate separate refill MSHRs and receive distinct accepted AXI IDs before either eight-beat R burst retires.",
+      "stimulus_strategy": "Use two complete line signatures and force reverse completion eligibility; observe alternating RID beats before the first RLAST.",
+      "required_monitor_event": "Two outstanding AXI IDs interleave R beats before RLAST and complete correlated MSHR/L2/CPU lifecycles.",
+      "required_monitor_events": [
+        "cpu.request_accept",
+        "mshr.allocate",
+        "axi.read_address",
+        "axi.read_beat",
+        "l2.line_write_beat",
+        "directory.grant_accept",
+        "cpu.response_complete",
+        "mshr.retire"
+      ],
+      "testcases": [
+        "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses"
+      ],
+      "checker_testcases": [
+        "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses"
+      ],
+      "checker": "paired cold-miss CPU/reference + per-ID eight-beat signature and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB",
+      "requires_cycle_overlap": true,
+      "hit_count": 1,
+      "pass": true,
+      "evidence": [
+        {
+          "test_id": "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses",
+          "seed": 49158,
+          "count": 1,
+          "test_status": "passed",
+          "sample_testcases": [
+            "tests/full_system/test_full_system_coherence.py::test_dual_cold_misses_overlap_and_route_axi_responses"
+          ],
+          "checked_cross_evidence": [
+            {
+              "checker": "paired cold-miss CPU/reference + per-ID eight-beat signature and RLAST + observed pre-RLAST RID switch + MSHR/L2 lifecycle + APB",
+              "checker_pass": true,
+              "overlap": {
+                "start_cycle": 10,
+                "end_cycle": 10,
+                "roles": {
+                  "cpu0_miss": {
+                    "start_cycle": 1,
+                    "end_cycle": 117,
+                    "start_event_ref": "cpu0_request",
+                    "end_event_ref": "cpu0_response"
+                  },
+                  "cpu1_miss": {
+                    "start_cycle": 1,
+                    "end_cycle": 108,
+                    "start_event_ref": "cpu1_request",
+                    "end_event_ref": "cpu1_response"
+                  },
+                  "axi0_refill": {
+                    "start_cycle": 6,
+                    "end_cycle": 87,
+                    "start_event_ref": "axi0_ar",
+                    "end_event_ref": "axi0_rlast"
+                  },
+                  "axi1_refill": {
+                    "start_cycle": 8,
+                    "end_cycle": 85,
+                    "start_event_ref": "axi1_ar",
+                    "end_event_ref": "axi1_rlast"
+                  },
+                  "mshr0": {
+                    "start_cycle": 6,
+                    "end_cycle": 105,
+                    "start_event_ref": "mshr_allocate_0",
+                    "end_event_ref": "mshr_retire_0"
+                  },
+                  "mshr1": {
+                    "start_cycle": 8,
+                    "end_cycle": 96,
+                    "start_event_ref": "mshr_allocate_1",
+                    "end_event_ref": "mshr_retire_1"
+                  },
+                  "apb_sample": {
+                    "start_cycle": 10,
+                    "end_cycle": 10,
+                    "start_event_ref": "apb_sample",
+                    "end_event_ref": "apb_sample"
+                  }
+                }
+              },
+              "transactions": [
+                {
+                  "role": "cpu0_miss",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 4194312,
+                  "event_ref_ids": [
+                    "cpu0_request",
+                    "cpu0_response"
+                  ]
+                },
+                {
+                  "role": "cpu1_miss",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 4198472,
+                  "event_ref_ids": [
+                    "cpu1_request",
+                    "cpu1_response"
+                  ]
+                },
+                {
+                  "role": "axi0_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 4194304,
+                  "event_ref_ids": [
+                    "axi0_ar",
+                    "axi0_rlast"
+                  ]
+                },
+                {
+                  "role": "axi1_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 1,
+                  "address": 4198464,
+                  "event_ref_ids": [
+                    "axi1_ar",
+                    "axi1_rlast"
+                  ]
+                },
+                {
+                  "role": "mshr0",
+                  "protocol": "refill_mshr",
+                  "event_ref_ids": [
+                    "mshr_allocate_0",
+                    "mshr_retire_0"
+                  ]
+                },
+                {
+                  "role": "mshr1",
+                  "protocol": "refill_mshr",
+                  "event_ref_ids": [
+                    "mshr_allocate_1",
+                    "mshr_retire_1"
+                  ]
+                },
+                {
+                  "role": "directory_grant0",
+                  "protocol": "MESI",
+                  "event_ref_ids": [
+                    "directory_grant_0"
+                  ]
+                },
+                {
+                  "role": "directory_grant1",
+                  "protocol": "MESI",
+                  "event_ref_ids": [
+                    "directory_grant_1"
+                  ]
+                },
+                {
+                  "role": "apb_sample",
+                  "protocol": "APB",
+                  "address": 20,
+                  "event_ref_ids": [
+                    "apb_sample"
+                  ]
+                },
+                {
+                  "role": "axi_r_line_0",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 4194304,
+                  "event_ref_ids": [
+                    "axi_interleaved_beat_1",
+                    "axi_interleaved_beat_3",
+                    "axi_interleaved_beat_5",
+                    "axi_interleaved_beat_7",
+                    "axi_interleaved_beat_9",
+                    "axi_interleaved_beat_11",
+                    "axi_interleaved_beat_13",
+                    "axi_interleaved_beat_15"
+                  ]
+                },
+                {
+                  "role": "axi_r_line_1",
+                  "protocol": "AXI4-R",
+                  "txn_id": 1,
+                  "address": 4198464,
+                  "event_ref_ids": [
+                    "axi_interleaved_beat_0",
+                    "axi_interleaved_beat_2",
+                    "axi_interleaved_beat_4",
+                    "axi_interleaved_beat_6",
+                    "axi_interleaved_beat_8",
+                    "axi_interleaved_beat_10",
+                    "axi_interleaved_beat_12",
+                    "axi_interleaved_beat_14"
+                  ]
+                }
+              ],
+              "state_transitions": [
+                {
+                  "event_ref_id": "l1_commit_core0",
+                  "old_state": 0,
+                  "new_state": 2
+                },
+                {
+                  "event_ref_id": "l1_commit_core1",
+                  "old_state": 0,
+                  "new_state": 2
+                },
+                {
+                  "event_ref_id": "directory_commit_0",
+                  "state": 2,
+                  "owner": 1,
+                  "sharers": 0
+                },
+                {
+                  "event_ref_id": "directory_commit_1",
+                  "state": 2,
+                  "owner": 0,
+                  "sharers": 0
+                }
+              ],
+              "event_refs": [
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 1,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 4194312,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "cpu0_request",
+                  "role": "cpu0_miss"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 117,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 4194312,
+                  "write": 0,
+                  "data": 11529496521049374728,
+                  "txn_id": 0,
+                  "ref_id": "cpu0_response",
+                  "role": "cpu0_miss"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 1,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 4198472,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "cpu1_request",
+                  "role": "cpu1_miss"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 108,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 4198472,
+                  "write": 0,
+                  "data": 12682418025656225864,
+                  "txn_id": 0,
+                  "ref_id": "cpu1_response",
+                  "role": "cpu1_miss"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 6,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "axi0_ar",
+                  "role": "axi0_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 8,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "txn_id": 1,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "axi1_ar",
+                  "role": "axi1_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi0_rlast",
+                  "role": "axi0_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 85,
+                  "reset_epoch": 0,
+                  "address": 4198520,
+                  "data": 12684106875516489848,
+                  "txn_id": 1,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi1_rlast",
+                  "role": "axi1_refill"
+                },
+                {
+                  "source": "apb",
+                  "event_type": "access_complete",
+                  "cycle": 10,
+                  "reset_epoch": 0,
+                  "address": 20,
+                  "payload": {
+                    "write": 0,
+                    "read_data": 18,
+                    "slverr": 0
+                  },
+                  "outcome": "ok",
+                  "ref_id": "apb_sample",
+                  "role": "apb_sample"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 115,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 4194304,
+                  "old_state": 0,
+                  "new_state": 2,
+                  "cause": "non_snoop",
+                  "is_snoop": 0,
+                  "ref_id": "l1_commit_core0",
+                  "role": "mesi_commit"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 106,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 4198464,
+                  "old_state": 0,
+                  "new_state": 2,
+                  "cause": "non_snoop",
+                  "is_snoop": 0,
+                  "ref_id": "l1_commit_core1",
+                  "role": "mesi_commit"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "metadata_commit",
+                  "cycle": 96,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "old_state": 0,
+                  "old_sharers": 0,
+                  "old_owner": 0,
+                  "state": 2,
+                  "sharers": 0,
+                  "owner": 1,
+                  "ref_id": "directory_commit_0",
+                  "role": "directory_commit"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "metadata_commit",
+                  "cycle": 105,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "old_state": 0,
+                  "old_sharers": 0,
+                  "old_owner": 0,
+                  "state": 2,
+                  "sharers": 0,
+                  "owner": 0,
+                  "ref_id": "directory_commit_1",
+                  "role": "directory_commit"
+                },
+                {
+                  "source": "mshr",
+                  "event_type": "allocate",
+                  "cycle": 6,
+                  "reset_epoch": 0,
+                  "slot": 0,
+                  "occupancy": 1,
+                  "ref_id": "mshr_allocate_0",
+                  "role": "mshr0"
+                },
+                {
+                  "source": "mshr",
+                  "event_type": "retire",
+                  "cycle": 105,
+                  "reset_epoch": 0,
+                  "slot": 0,
+                  "occupancy": 0,
+                  "ref_id": "mshr_retire_0",
+                  "role": "mshr0"
+                },
+                {
+                  "source": "mshr",
+                  "event_type": "allocate",
+                  "cycle": 8,
+                  "reset_epoch": 0,
+                  "slot": 1,
+                  "occupancy": 2,
+                  "ref_id": "mshr_allocate_1",
+                  "role": "mshr1"
+                },
+                {
+                  "source": "mshr",
+                  "event_type": "retire",
+                  "cycle": 96,
+                  "reset_epoch": 0,
+                  "slot": 1,
+                  "occupancy": 1,
+                  "ref_id": "mshr_retire_1",
+                  "role": "mshr1"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 0,
+                  "ref_id": "l2_fill_beat_0",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 88,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 1,
+                  "ref_id": "l2_fill_beat_1",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 89,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 2,
+                  "ref_id": "l2_fill_beat_2",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 90,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 3,
+                  "ref_id": "l2_fill_beat_3",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 91,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 4,
+                  "ref_id": "l2_fill_beat_4",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 92,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 5,
+                  "ref_id": "l2_fill_beat_5",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 93,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 6,
+                  "ref_id": "l2_fill_beat_6",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 94,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "beat": 7,
+                  "ref_id": "l2_fill_beat_7",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 96,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 0,
+                  "ref_id": "l2_fill_beat_8",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 97,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 1,
+                  "ref_id": "l2_fill_beat_9",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 98,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 2,
+                  "ref_id": "l2_fill_beat_10",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 99,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 3,
+                  "ref_id": "l2_fill_beat_11",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 100,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 4,
+                  "ref_id": "l2_fill_beat_12",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 101,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 5,
+                  "ref_id": "l2_fill_beat_13",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 102,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 6,
+                  "ref_id": "l2_fill_beat_14",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "l2",
+                  "event_type": "line_write_beat",
+                  "cycle": 103,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "beat": 7,
+                  "ref_id": "l2_fill_beat_15",
+                  "role": "l2_fill"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "grant_accept",
+                  "cycle": 97,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "destination": 1,
+                  "ref_id": "directory_grant_0",
+                  "role": "directory_grant"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "grant_accept",
+                  "cycle": 106,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "txn_id": 0,
+                  "opcode": 1,
+                  "destination": 0,
+                  "ref_id": "directory_grant_1",
+                  "role": "directory_grant"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "data": 12682136550679515200,
+                  "txn_id": 1,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_115",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 59,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "data": 11529215046072664064,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_119",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 61,
+                  "reset_epoch": 0,
+                  "address": 4198472,
+                  "data": 12682418025656225864,
+                  "txn_id": 1,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_123",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 63,
+                  "reset_epoch": 0,
+                  "address": 4194312,
+                  "data": 11529496521049374728,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_127",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 65,
+                  "reset_epoch": 0,
+                  "address": 4198480,
+                  "data": 12682699500632936528,
+                  "txn_id": 1,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_131",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 67,
+                  "reset_epoch": 0,
+                  "address": 4194320,
+                  "data": 11529777996026085392,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_135",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 69,
+                  "reset_epoch": 0,
+                  "address": 4198488,
+                  "data": 12682980975609647192,
+                  "txn_id": 1,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_139",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 71,
+                  "reset_epoch": 0,
+                  "address": 4194328,
+                  "data": 11530059471002796056,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_143",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 73,
+                  "reset_epoch": 0,
+                  "address": 4198496,
+                  "data": 12683262450586357856,
+                  "txn_id": 1,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_147",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 75,
+                  "reset_epoch": 0,
+                  "address": 4194336,
+                  "data": 11530340945979506720,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_151",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 77,
+                  "reset_epoch": 0,
+                  "address": 4198504,
+                  "data": 12683543925563068520,
+                  "txn_id": 1,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_155",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 79,
+                  "reset_epoch": 0,
+                  "address": 4194344,
+                  "data": 11530622420956217384,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_159",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 81,
+                  "reset_epoch": 0,
+                  "address": 4198512,
+                  "data": 12683825400539779184,
+                  "txn_id": 1,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_163",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 83,
+                  "reset_epoch": 0,
+                  "address": 4194352,
+                  "data": 11530903895932928048,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_167",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 85,
+                  "reset_epoch": 0,
+                  "address": 4198520,
+                  "data": 12684106875516489848,
+                  "txn_id": 1,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_171",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_read_beat_175",
+                  "role": "axi_beat"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "data": 12682136550679515200,
+                  "txn_id": 1,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_0",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 59,
+                  "reset_epoch": 0,
+                  "address": 4194304,
+                  "data": 11529215046072664064,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_1",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 61,
+                  "reset_epoch": 0,
+                  "address": 4198472,
+                  "data": 12682418025656225864,
+                  "txn_id": 1,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_2",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 63,
+                  "reset_epoch": 0,
+                  "address": 4194312,
+                  "data": 11529496521049374728,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_3",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 65,
+                  "reset_epoch": 0,
+                  "address": 4198480,
+                  "data": 12682699500632936528,
+                  "txn_id": 1,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_4",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 67,
+                  "reset_epoch": 0,
+                  "address": 4194320,
+                  "data": 11529777996026085392,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_5",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 69,
+                  "reset_epoch": 0,
+                  "address": 4198488,
+                  "data": 12682980975609647192,
+                  "txn_id": 1,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_6",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 71,
+                  "reset_epoch": 0,
+                  "address": 4194328,
+                  "data": 11530059471002796056,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_7",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 73,
+                  "reset_epoch": 0,
+                  "address": 4198496,
+                  "data": 12683262450586357856,
+                  "txn_id": 1,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_8",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 75,
+                  "reset_epoch": 0,
+                  "address": 4194336,
+                  "data": 11530340945979506720,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_9",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 77,
+                  "reset_epoch": 0,
+                  "address": 4198504,
+                  "data": 12683543925563068520,
+                  "txn_id": 1,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_10",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 79,
+                  "reset_epoch": 0,
+                  "address": 4194344,
+                  "data": 11530622420956217384,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_11",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 81,
+                  "reset_epoch": 0,
+                  "address": 4198512,
+                  "data": 12683825400539779184,
+                  "txn_id": 1,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_12",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 83,
+                  "reset_epoch": 0,
+                  "address": 4194352,
+                  "data": 11530903895932928048,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_13",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 85,
+                  "reset_epoch": 0,
+                  "address": 4198520,
+                  "data": 12684106875516489848,
+                  "txn_id": 1,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_14",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_interleaved_beat_15",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "address": 4198464,
+                  "data": 12682136550679515200,
+                  "txn_id": 1,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "axi_r_first",
+                  "role": "axi_r_interleave"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 87,
+                  "reset_epoch": 0,
+                  "address": 4194360,
+                  "data": 11531185370909638712,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "axi_r_last",
+                  "role": "axi_r_interleave"
+                }
+              ],
+              "axi_interleaving": {
+                "rid_switch_cycle": 59,
+                "switch_to_id": 0,
+                "first_rlast_cycle": 85,
+                "switch_preceded_rlast": true,
+                "beat_ids": [
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0,
+                  1,
+                  0
+                ]
+              }
+            }
+          ],
+          "monitor": {
+            "event_counts": {
+              "cpu.request_accept": 2,
+              "directory.request_accept": 2,
+              "directory.request_stall": 1,
+              "l2.lookup": 2,
+              "directory_context.allocate": 2,
+              "axi.read_address": 2,
+              "directory.same_set_conflict": 99,
+              "mshr.allocate": 2,
+              "axi.read_valid_gap": 65,
+              "apb.access_complete": 1,
+              "axi.read_beat": 16,
+              "l2.refill_start": 2,
+              "l2.line_write_beat": 16,
+              "l2.refill_end": 2,
+              "directory.metadata_commit": 2,
+              "mshr.retire": 2,
+              "directory.grant_accept": 2,
+              "l1.metadata_commit": 2,
+              "cpu.response_complete": 2,
+              "directory_context.retire": 2
+            },
+            "stall_cycles": {
+              "directory_request": 1
+            },
+            "mshr_occupancy_histogram": {
+              "0": 20,
+              "1": 11,
+              "2": 88
+            },
+            "directory_context_histogram": {
+              "0": 6,
+              "1": 11,
+              "2": 102
+            },
+            "max_mshr_occupancy": 2,
+            "max_directory_contexts": 2,
+            "reset_epoch": 0,
+            "axi_peak_reads": 2,
+            "axi_peak_writes": 0,
+            "cpu_request_accepts": 2,
+            "cpu_response_completions": 2,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,

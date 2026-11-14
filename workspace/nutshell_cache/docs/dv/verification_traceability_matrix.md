@@ -9,7 +9,7 @@ local regression snapshot 2026-11-08. The report-only candidate commit and its
 GitHub Actions status are recorded separately in
 [`final_verification_report.md`](final_verification_report.md).
 
-## CR01–CR10 checked scenario instances
+## CR01–CR12 checked scenario instances
 
 | ID | Scenario | Checked evidence | Status and remaining scope |
 | --- | --- | --- | --- |
@@ -23,6 +23,10 @@ GitHub Actions status are recorded separately in
 | CR08 | Reset × Directory/Snoop pending | Seeds 59248–59251 and stress seeds 59248–59267 exercise pending Directory/Snoop reset epoch and recovery. | **Verified instances**; all reset phases and interface combinations are not exhaustive. |
 | CR09 | AXI error × fail-stop × reset | Seeds 59248–59251 and stress seeds 59248–59267 inject read error beats, check no false success, reset and retry. | **Verified instances**; write-channel and all error-beat positions are not exhaustive. |
 | CR10 | Ownership ping-pong × MMIO/APB | Seeds 49168 and 49424; ownership transitions and MMIO/APB activity checked by the independent model. | **Verified instances**; broader ping-pong depth and timing open. |
+| CR11 | Complementary Byte Mask × ownership × dirty L2 eviction | Seeds 49156/49412; Core0/Word0/Set0 and Core1/Word7/Set511; 0xAA/0x55 reference merge, observed GetM/Snoop/M-to-I, dirty victim owner beats, AXI writeback and complete 8-word refill readback. | **Verified instances**; exact directed edge configurations checked, not a Cartesian address sweep. Extends CR04 with an independent required Cross checker. |
+| CR12 | AXI R beat interleaving × MSHR/L2/CPU lifecycle | Seed 49158; two distinct AXI IDs, sixteen beat records, per-ID Beat0–7/address signatures/RLAST and a sampled RID switch before first RLAST; lifecycle checker correlates allocate, AR/R, L2 fill, grants, responses and retirement. | **Verified instance**; no claim of all 8! response permutations. Extends CR06. |
+
+Candidate Cross deduplication: `MASK_OWNER_EVICT` and `AXI_R_BEAT_INTERLEAVE` lacked their required independent checker contracts and were added by extending CR04/CR06. `PUTM_GETM_WSTALL` is not credited: CR03 checks PutM × AW stall and CR05 checks GetM × AR stall, but no trace demonstrates all three as a legal overlapping event; the current serialized line-write path makes a simultaneous AXI writeback overlap structurally unavailable while a conflicting GetM owns the line. `HUM_SNOOP_RESPSTALL` remains outside required coverage because CR07 proves hit-under-miss × Snoop while response backpressure is separately checked; no existing trace proves the three-way overlap, and the CPU lane response hold is not an independent cache transaction. `DIR_OFFERLOCK_CONFLICT` is covered by Directory block tests/formal stability checks, but no integrated independent cross checker was found; candidate is deferred because no demonstrated legal integrated conflict trace is present. `MMIO_SAME_ADDR_ARB` remains optional: the contract only promises dual-lane distinct-address arbitration and the CPU request interface serializes the packed lanes; it is not a required same-address concurrency behavior.
 
 These statuses close the named checked instances, not the Cartesian product of
 all Core, address, response-order, stall, error and reset combinations.

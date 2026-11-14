@@ -475,12 +475,14 @@ async def test_live_l2_victim_back_invalidates_resident_l1(full_system_env):
 @pytest.mark.parametrize("seed", [0xC004, 0xC104])
 @case
 async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed):
-    """A dirty inclusive victim collects its live M owner before writeback."""
+    """Complementary masked ownership transfers survive a dirty L2 eviction."""
     rng = random.Random(seed)
     owner_core = (seed >> 8) & 1
     filler_core = 1 - owner_core
-    target = 0x0210_0000 + rng.randrange(16) * 64
-    owner_value = rng.getrandbits(64)
+    target_set = 0 if owner_core == 0 else 511
+    target = 0x0210_0000 + target_set * 64
+    word_index = 0 if owner_core == 0 else 7
+    target_word = target + word_index * 8
     memory_latency = 6 + rng.randrange(3)
     aw_stall_period = 2 + rng.randrange(2)
     w_stall_period = 2 + rng.randrange(2)
@@ -495,6 +497,11 @@ async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed)
         "owner_core": owner_core,
         "filler_core": filler_core,
         "target_line": target,
+        "target_word": target_word,
+        "target_word_index": word_index,
+        "l2_set_index": target_set,
+        "l1_set_index": target_set % 128,
+        "complementary_masks": [0xAA, 0x55],
         "l2_set_stride": L2_SET_STRIDE,
         "memory_latency_cycles": memory_latency,
         "aw_stall_period": aw_stall_period,
@@ -521,9 +528,26 @@ async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed)
                           0x7200_0000_0000_0000 | (index << 8) | beat)
         assert await env.cpu_access(filler_core, address) == env.axi.read_word(address)
 
-    await env.cpu_access(owner_core, target, write=True,
-                         data=owner_value, mask=0xFF)
-    expected_words[0] = owner_value
+    initial_word = expected_words[word_index]
+    first_data = rng.getrandbits(64)
+    second_data = rng.getrandbits(64)
+
+    def merge_bytes(old, new, mask):
+        for lane in range(8):
+            if mask & (1 << lane):
+                lane_mask = 0xFF << (lane * 8)
+                old = (old & ~lane_mask) | (new & lane_mask)
+        return old
+
+    ownership_start = len(env.monitor.events)
+    assert await env.cpu_access(filler_core, target_word, write=True,
+                                data=first_data, mask=0xAA) == initial_word
+    first_word = merge_bytes(initial_word, first_data, 0xAA)
+    assert await env.cpu_access(owner_core, target_word, write=True,
+                                data=second_data, mask=0x55) == first_word
+    expected_words[word_index] = merge_bytes(first_word, second_data, 0x55)
+    assert env.reference.states[target][owner_core] == "M"
+    assert env.reference.states[target][filler_core] == "I"
 
     for index in range(7, 8):
         address = target + index * L2_SET_STRIDE
@@ -612,7 +636,13 @@ async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed)
                for beat in range(8)), "AXI backing memory lost owner data"
 
     # The victim must no longer hit in the owner's inclusive L1 after invalidation.
-    assert await env.cpu.access(owner_core, target) == owner_value
+    refill_event_start = len(env.monitor.events)
+    refill_words = [await env.cpu.access(owner_core, target + beat * 8)
+                    for beat in range(8)]
+    assert refill_words == expected_words, (
+        "refilled line did not preserve the complementary masked word and peers"
+    )
+    refill_events = env.monitor.events[refill_event_start:]
     assert any(address & ~0x3F == target
                for _txn_id, address, _cycle in env.axi.read_addresses[ar_start:]), (
         "Core0 did not refill the evicted target line from backing memory"
@@ -688,9 +718,58 @@ async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed)
         event_reference(f"victim_write_beat_{event['beat']}", "victim", event)
         for event in victim_write_beats
     )
+    ownership_events = env.monitor.events[ownership_start:event_start]
+    first_mask_request = next(event for event in ownership_events
+                              if event["source"] == "cpu" and
+                              event["event_type"] == "request_accept" and
+                              event["core"] == filler_core and
+                              event["address"] == target_word)
+    second_mask_request = next(event for event in ownership_events
+                               if event["source"] == "cpu" and
+                               event["event_type"] == "request_accept" and
+                               event["core"] == owner_core and
+                               event["address"] == target_word)
+    mask_getm = next(event for event in ownership_events
+                     if event["source"] == "directory" and
+                     event["event_type"] == "request_accept" and
+                     event["address"] & ~0x3F == target and
+                     event["source_id"] == owner_core and
+                     event["opcode"] == 0b001)
+    mask_snoop = next(event for event in ownership_events
+                      if event["source"] == "snoop" and
+                      event["event_type"] == "accept" and
+                      event["address"] & ~0x3F == target and
+                      event["core"] == filler_core)
+    mask_snoop_response = next(event for event in ownership_events
+                               if event["source"] == "snoop" and
+                               event["event_type"] == "response" and
+                               event["txn_id"] == mask_snoop["txn_id"])
+    mask_transfer_commit = next(event for event in ownership_events
+                                if event["source"] == "l1" and
+                                event["event_type"] == "metadata_commit" and
+                                event["core"] == filler_core and
+                                event["address"] & ~0x3F == target and
+                                event["old_state"] == 3 and
+                                event["new_state"] == 0 and event["is_snoop"])
+    assert first_mask_request["cycle"] < second_mask_request["cycle"]
+    assert second_mask_request["cycle"] <= mask_getm["cycle"]
+    assert mask_getm["cycle"] <= mask_snoop["cycle"] <= mask_snoop_response["cycle"]
+    assert mask_transfer_commit["cycle"] <= mask_snoop_response["cycle"]
+    event_refs.extend([
+        event_reference("mask_owner_first_request", "mask_owner",
+                        first_mask_request),
+        event_reference("mask_owner_second_request", "mask_owner",
+                        second_mask_request),
+        event_reference("mask_owner_getm", "mask_owner", mask_getm),
+        event_reference("mask_owner_snoop", "mask_owner", mask_snoop),
+        event_reference("mask_owner_snoop_response", "mask_owner",
+                        mask_snoop_response),
+        event_reference("mask_owner_invalidate", "mask_owner",
+                        mask_transfer_commit),
+    ])
     proof = checked_overlap_proof(
-        checker=("independent coherence scoreboard + dirty-victim data/AXI "
-                 "checker + APB Snoop-counter checker"),
+        checker=("independent byte-mask/MESI model + observed M-to-M Snoop "
+                 "transfer + full-line dirty-victim AXI checker + APB counter"),
         checker_pass=True,
         role_endpoints={
             "victim": ("victim_select", "victim_write_response"),
@@ -714,16 +793,53 @@ async def test_dirty_l2_victim_snoops_live_modified_owner(full_system_env, seed)
             {"role": "replacement_miss", "protocol": "CPU",
              "txn_id": eviction_response["txn_id"], "address": ninth,
              "event_ref_ids": ["eviction_request", "eviction_response"]},
+            {"role": "complementary_mask_owner_transfer",
+             "protocol": "CPU/MESI", "txn_id": mask_snoop["txn_id"],
+             "address": target_word, "byte_masks": [0xAA, 0x55],
+             "final_word": expected_words[word_index],
+             "event_ref_ids": ["mask_owner_first_request",
+                               "mask_owner_second_request", "mask_owner_getm",
+                               "mask_owner_snoop", "mask_owner_snoop_response",
+                               "mask_owner_invalidate"]},
         ],
         state_transitions=[
             {"event_ref_id": "owner_invalidate", "old_state": 3, "new_state": 0},
+            {"event_ref_id": "mask_owner_invalidate", "old_state": 3,
+             "new_state": 0},
         ],
     )
+    refill_ar = next(event for event in refill_events
+                     if event["source"] == "axi" and
+                     event["event_type"] == "read_address" and
+                     event["address"] == target)
+    refill_beats = [event for event in refill_events
+                    if event["source"] == "axi" and
+                    event["event_type"] == "read_beat" and
+                    event["address"] & ~0x3F == target]
+    proof["event_refs"].append(
+        event_reference("masked_line_refill_ar", "masked_refill", refill_ar)
+    )
+    proof["event_refs"].extend(
+        event_reference(f"masked_line_refill_beat_{event['beat']}",
+                        "masked_refill", event)
+        for event in refill_beats
+    )
+    proof["transactions"].append({
+        "role": "masked_line_refill", "protocol": "AXI4-R",
+        "txn_id": refill_ar["txn_id"], "address": target,
+        "event_ref_ids": ["masked_line_refill_ar"] + [
+            f"masked_line_refill_beat_{beat}" for beat in range(8)
+        ],
+        "expected_words": expected_words,
+    })
     env.coverage.sample_checked_event("FS.L2.DIRTY_OWNER_LIVE_VICTIM",
                                       checked=True)
     env.coverage.sample_checked_cross(
         "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB", checked=True,
         evidence=proof,
+    )
+    env.coverage.sample_checked_cross(
+        "FS.CROSS.MASK_OWNER_EVICT", checked=True, evidence=proof,
     )
 
 
