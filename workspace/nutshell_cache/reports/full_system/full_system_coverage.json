@@ -35480,48 +35480,50 @@
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 9,
-          "directory.request_accept": 14,
-          "l2.lookup": 9,
-          "directory_context.allocate": 14,
-          "axi.read_address": 8,
-          "directory.same_set_conflict": 986,
-          "mshr.allocate": 8,
-          "axi.read_valid_gap": 832,
-          "axi.read_beat": 64,
-          "l2.refill_start": 8,
-          "l2.line_write_beat": 104,
-          "l2.refill_end": 8,
-          "directory.metadata_commit": 13,
-          "mshr.retire": 8,
-          "directory.grant_accept": 13,
-          "l1.metadata_commit": 13,
-          "cpu.response_complete": 8,
-          "directory_context.retire": 13,
-          "axi.stall": 1,
+          "cpu.request_accept": 17,
+          "directory.request_accept": 15,
+          "l2.lookup": 10,
+          "directory_context.allocate": 15,
+          "axi.read_address": 9,
+          "directory.same_set_conflict": 1118,
+          "mshr.allocate": 9,
+          "axi.read_valid_gap": 945,
+          "axi.read_beat": 72,
+          "l2.refill_start": 9,
+          "l2.line_write_beat": 112,
+          "l2.refill_end": 9,
+          "directory.metadata_commit": 14,
+          "mshr.retire": 9,
+          "directory.grant_accept": 14,
+          "l1.metadata_commit": 14,
+          "cpu.response_complete": 16,
+          "directory_context.retire": 14,
+          "axi.stall": 5,
           "l2_victim.select": 1,
           "axi.write_address": 1,
+          "axi.write_beat": 8,
           "system.reset_assert": 1,
           "system.reset_cancel": 1
         },
         "stall_cycles": {
-          "AR": 1
+          "AR": 1,
+          "W": 4
         },
         "mshr_occupancy_histogram": {
-          "0": 249,
-          "1": 986
+          "0": 314,
+          "1": 1118
         },
         "directory_context_histogram": {
-          "0": 61,
-          "1": 1174
+          "0": 93,
+          "1": 1339
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
         "axi_peak_writes": 1,
-        "cpu_request_accepts": 9,
-        "cpu_response_completions": 8,
+        "cpu_request_accepts": 17,
+        "cpu_response_completions": 16,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -36016,24 +36018,24 @@
           "l1.metadata_commit": 13,
           "cpu.response_complete": 8,
           "directory_context.retire": 13,
-          "axi.stall": 2,
+          "axi.stall": 5,
           "l2_victim.select": 1,
           "axi.write_address": 1,
-          "axi.write_beat": 1,
+          "axi.write_beat": 4,
           "system.reset_assert": 1,
           "system.reset_cancel": 1
         },
         "stall_cycles": {
           "AR": 1,
-          "W": 1
+          "W": 4
         },
         "mshr_occupancy_histogram": {
-          "0": 256,
+          "0": 262,
           "1": 312
         },
         "directory_context_histogram": {
           "0": 61,
-          "1": 507
+          "1": 513
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
@@ -46017,7 +46019,7 @@
       }
     }
   ],
-  "git_sha": "3a4c720ef11ba9f6be126c97f725a78d276f8a82",
+  "git_sha": "416bb5e833328ced94166f1ef272b0860c579044",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
