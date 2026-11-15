@@ -1,6 +1,6 @@
-.................                                                        [100%]
-17 passed in 0.06s
-RTL release gate: OPEN; raw zero points=31757; findings=31757
+...................                                                      [100%]
+19 passed in 0.10s
+RTL release gate: OPEN; raw zero points=29466; findings=29466
 OPEN: RCP-BRANCH-20FC8EE28A803ABB11C7: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-C5E2C5A3763B1F9B8551: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-C141735F66BF64864BA5: zero-count point has no review record; OPEN
@@ -21,4 +21,4 @@ OPEN: RCP-BRANCH-24439201F6CBE7218640: zero-count point has no review record; OP
 OPEN: RCP-BRANCH-BEE4766CBA694EE28685: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-E1FBF288BD48DA642D74: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-31B4E87E8F404D631F8F: zero-count point has no review record; OPEN
-make: *** [Makefile:515: coherence_release_gate] Error 1
+make: *** [Makefile:523: coherence_release_gate] Error 1
