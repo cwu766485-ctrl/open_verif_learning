@@ -264,8 +264,8 @@
     {
       "id": "litmus.generation_100",
       "feature": "litmus_generation_counter_100",
-      "testpoint": "100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data",
-      "checker": "Independent scoreboard, generation sequence checker, and Directory monitor"
+      "testpoint": "100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data, including paired CPU requests with real in-flight overlap",
+      "checker": "Independent byte-accurate scoreboard, ordered generation checker, CPU accept/response cycle trace, Directory/Snoop monitors, and response-overlap assertion"
     },
     {
       "id": "litmus.generation_backpressure",
@@ -368,8 +368,8 @@
     {
       "id": "cross.generation_counter",
       "key": "interleaving:data_ready_ack_100_generations",
-      "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure",
-      "checker": "CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks"
+      "testpoint": "100 monotonic generations cross producer/consumer with legal backpressure and distinct in-flight CPU request overlap",
+      "checker": "CoherenceScoreboard data/MESI checks, exact generation order, at least 800 unique accepted/completed transactions, READY-before-DATA consumer order, cycle overlap, Directory/Snoop evidence, and response backpressure"
     },
     {
       "id": "cross.mshr_two_context_memory_backpressure",

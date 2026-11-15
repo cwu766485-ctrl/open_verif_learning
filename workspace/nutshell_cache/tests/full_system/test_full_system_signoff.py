@@ -105,7 +105,7 @@ async def test_same_line_dual_core_store_ordering_and_data(full_system_env):
 
 @case
 async def test_same_address_dual_core_store_serialization(full_system_env):
-    """The final value of conflicting writes follows observed acceptance order."""
+    """Accept either legal writer order and check the full transaction history."""
     env = await full_system_env(axi_options={"latency": 10})
     address = 0x0060_3008
     initial = 0x1111_2222_3333_4444
@@ -131,28 +131,259 @@ async def test_same_address_dual_core_store_serialization(full_system_env):
     events = [event for event in env.monitor.events[start:]
               if event.get("address") is not None and
               event["address"] & ~0x3F == line]
-    accepted = []
-    for event in events:
-        if (event["source"] == "directory" and
-                event["event_type"] == "request_accept" and
-                event["opcode"] in (0b001, 0b010) and
-                event["source_id"] not in accepted):
-            accepted.append(event["source_id"])
-    assert accepted == [0, 1] or accepted == [1, 0], (
-        f"expected both same-address stores to serialize at Directory: {accepted}"
-    )
+    transactions_by_core = {item["core"]: item for item in transactions}
+    cpu_accepts = [event for event in events
+                   if event["source"] == "cpu" and
+                   event["event_type"] == "request_accept" and
+                   event["address"] == address and event["write"] == 1]
+    cpu_responses = [event for event in events
+                     if event["source"] == "cpu" and
+                     event["event_type"] == "response_complete" and
+                     event["address"] == address and event["write"] == 1]
+    assert {event["core"] for event in cpu_accepts} == {0, 1}
+    assert {event["core"] for event in cpu_responses} == {0, 1}
 
-    # This is an explicit ordering oracle: advance the reference model in the
-    # order the DUT accepted the two conflicting ownership requests.
+    directory_requests = [event for event in events
+                          if event["source"] == "directory" and
+                          event["event_type"] == "request_accept" and
+                          event["address"] & ~0x3F == line and
+                          event["source_id"] in (0, 1) and
+                          event["opcode"] in (0b001, 0b010)]
+    directory_grants = [event for event in events
+                        if event["source"] == "directory" and
+                        event["event_type"] == "grant_accept" and
+                        event["address"] & ~0x3F == line]
+    accepted = []
+    for event in sorted(directory_requests, key=lambda item: item["cycle"]):
+        if event["source_id"] not in accepted:
+            accepted.append(event["source_id"])
+    assert len(accepted) == 2 and set(accepted) == {0, 1}, (
+        f"expected both stores to reach Directory: {directory_requests}"
+    )
+    assert len(directory_grants) == 2, (
+        f"each ownership request must receive exactly one grant: {directory_grants}"
+    )
+    request_by_txn = {(event["source_id"], event["txn_id"]): event
+                      for event in directory_requests}
+    grant_by_txn = {(event["destination"], event["txn_id"]): event
+                    for event in directory_grants}
+    assert set(request_by_txn) == set(grant_by_txn), (
+        f"request/grant txn mismatch: {request_by_txn} vs {grant_by_txn}"
+    )
+    l1_commits = [event for event in events
+                  if event["source"] == "l1" and
+                  event["event_type"] == "metadata_commit" and
+                  event["address"] & ~0x3F == line]
+    for core in (0, 1):
+        request = next(event for event in directory_requests
+                       if event["source_id"] == core)
+        grant = grant_by_txn[(core, request["txn_id"])]
+        transaction = transactions_by_core[core]
+        response = next(event for event in cpu_responses
+                        if event["core"] == core)
+        modified = [event for event in l1_commits
+                    if event["core"] == core and event["new_state"] == 3]
+        assert request["cycle"] <= grant["cycle"] <= transaction["response_cycle"]
+        assert transaction["accepted_cycle"] < response["cycle"]
+        assert abs(response["cycle"] - transaction["response_cycle"]) <= 1, (
+            "driver and passive monitor should identify the same response edge"
+        )
+        assert response["txn_id"] == grant["txn_id"], (
+            f"core{core} CPU response ID does not match ownership grant"
+        )
+        assert any(request["cycle"] <= event["cycle"] <= response["cycle"]
+                   for event in modified), (
+            f"core{core} received no Modified commit for its ownership grant"
+        )
+
+    # Either cross-core serialization is legal for one full-word store per
+    # core. The follow-up loads are the architectural oracle, independent of
+    # which Directory request happened to win.
+    legal_orders = ((0, 1), (1, 0))
+    final_value = await env.cpu.access(0, address)
+    assert any(values[order[-1]] == final_value for order in legal_orders), (
+        f"final Load returned value outside legal histories: {final_value:#018x}"
+    )
+    assert await env.cpu.access(1, address) == final_value
+
+    # Keep the stateful reference synchronized only after history validation;
+    # observed Directory order is not used as the correctness oracle.
     for core in accepted:
         env.reference.observe(core, address, write=True,
                               write_data=values[core], write_mask=0xFF)
-    expected = values[accepted[-1]]
-    assert await env.cpu_access(0, address) == expected
     assert int(env.dut.protocol_error.value) == 0
     env.coverage.sample_checked_event(
         "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE", checked=True
     )
+
+
+@case
+async def test_sustained_same_l2_set_contention_progress(full_system_env):
+    """Bounded same-set competition preserves data and completes both lanes."""
+    env = await full_system_env(axi_options={"latency": 6})
+    line_a = 0x0070_0000
+    line_b = line_a + L2_SET_STRIDE
+    same_address = line_a + 8
+    for beat in range(8):
+        env.seed_word(line_a + 8 * beat, 0xA000_0000_0000_0000 | beat)
+        env.seed_word(line_b + 8 * beat, 0xB000_0000_0000_0000 | beat)
+    start = len(env.monitor.events)
+    accepted_before = len(env.cpu.transactions)
+    max_request_wait = 0
+    max_response_latency = 0
+    expected_a = 0xA000_0000_0000_0000
+    expected_b = 0xB000_0000_0000_0000
+
+    for iteration in range(24):
+        issue_cycle = env.cpu.cycle
+        _, read_b = await env.cpu_access_pair(
+            CpuRequest(line_a, write=True,
+                       data=0xA100_0000_0000_0000 | iteration),
+            CpuRequest(line_b),
+            request_delay_cycles={1: 1}, response_stall_cycles=1,
+        )
+        assert read_b == expected_b
+        expected_a = 0xA100_0000_0000_0000 | iteration
+        transactions = env.cpu.transactions[-2:]
+        max_request_wait = max(
+            max_request_wait,
+            *(item["accepted_cycle"] - issue_cycle for item in transactions),
+        )
+        max_response_latency = max(
+            max_response_latency,
+            *(item["response_cycle"] - item["accepted_cycle"]
+              for item in transactions),
+        )
+
+        # Reverse the lanes on the next distinct-line round. This preserves
+        # independent per-core ordering while keeping both requests live.
+        issue_cycle = env.cpu.cycle
+        read_a, _ = await env.cpu_access_pair(
+            CpuRequest(line_a),
+            CpuRequest(line_b, write=True,
+                       data=0xB100_0000_0000_0000 | iteration),
+            request_delay_cycles={0: 1}, response_stall_cycles=1,
+        )
+        assert read_a == expected_a
+        transactions = env.cpu.transactions[-2:]
+        max_request_wait = max(
+            max_request_wait,
+            *(item["accepted_cycle"] - issue_cycle for item in transactions),
+        )
+        max_response_latency = max(
+            max_response_latency,
+            *(item["response_cycle"] - item["accepted_cycle"]
+              for item in transactions),
+        )
+        expected_b = 0xB100_0000_0000_0000 | iteration
+
+        for core, prefix in ((0, 0xC000_0000_0000_0000),
+                             (1, 0xD000_0000_0000_0000)):
+            issue_cycle = env.cpu.cycle
+            await env.cpu_access(core, same_address, write=True,
+                                 data=prefix | iteration)
+            transaction = env.cpu.transactions[-1]
+            max_request_wait = max(
+                max_request_wait, transaction["accepted_cycle"] - issue_cycle
+            )
+            max_response_latency = max(
+                max_response_latency, transaction["latency_cycles"]
+            )
+
+    observed_a = await env.cpu.access(0, line_a)
+    observed_b = await env.cpu.access(1, line_b)
+    observed_same = await env.cpu.access(0, same_address)
+    assert observed_a == expected_a
+    assert observed_b == expected_b
+    assert observed_same == 0xD000_0000_0000_0000 | 23
+
+    events = env.monitor.events[start:]
+    accepted_cpu = [event for event in events
+                    if event["source"] == "cpu" and
+                    event["event_type"] == "request_accept"]
+    completed_cpu = [event for event in events
+                     if event["source"] == "cpu" and
+                     event["event_type"] == "response_complete"]
+    context_events = [event for event in events
+                      if event["source"] == "directory_context"]
+    grants = [event for event in events
+              if event["source"] == "directory" and
+              event["event_type"] == "grant_accept"]
+    snoops = [event for event in events
+              if event["source"] == "snoop" and
+              event["event_type"] == "accept"]
+    assert len(env.cpu.transactions) - accepted_before == 147
+    assert len(accepted_cpu) == len(completed_cpu) == 147
+    assert {core: sum(event["core"] == core for event in accepted_cpu)
+            for core in (0, 1)} == {0: 74, 1: 73}
+    assert {core: sum(event["core"] == core for event in completed_cpu)
+            for core in (0, 1)} == {0: 74, 1: 73}
+    assert max_request_wait <= 16
+    assert max_response_latency <= 1000
+    assert sum(event["event_type"] == "allocate" for event in context_events) == \
+        sum(event["event_type"] == "retire" for event in context_events)
+    assert grants and snoops
+    assert int(env.dut.protocol_error.value) == 0
+
+
+@case
+async def test_mmio_range_edges_and_adjacent_cache_words(full_system_env):
+    """Check both MMIO range edges and the adjacent cacheable words."""
+    env = await full_system_env(axi_options={"latency": 5})
+    lower_cache = 0x2FFF_FFF8
+    lower_mmio = 0x3000_0000
+    upper_mmio = 0x7FFF_FFF8
+    upper_cache = 0x8000_0000
+    expected_cache = {
+        lower_cache: 0x2C2C_0000_0000_0001,
+        upper_cache: 0x8C8C_0000_0000_0002,
+    }
+    expected_mmio = {
+        lower_mmio: 0x3030_0000_0000_0003,
+        upper_mmio: 0x7F7F_0000_0000_0004,
+    }
+    for address, value in expected_cache.items():
+        env.seed_word(address, value)
+    for address, value in expected_mmio.items():
+        env.mmio.words[address] = value
+
+    mmio_request_start = len(env.mmio.requests)
+    axi_read_start = len(env.axi.read_addresses)
+    assert await env.cpu_access(0, lower_cache) == expected_cache[lower_cache]
+    assert await env.cpu.access(0, lower_mmio) == expected_mmio[lower_mmio]
+    assert await env.cpu.access(1, upper_mmio) == expected_mmio[upper_mmio]
+    upper_prediction = env.reference.predict(1, upper_cache)[0]
+    upper_observed = await env.cpu.access(1, upper_cache)
+    assert upper_observed == expected_cache[upper_cache] == upper_prediction
+    env.reference.observe(1, upper_cache, response_data=upper_observed)
+
+    low_write = 0xFFFFFFFFFFFFFFFF
+    high_write = 0x0123456789ABCDEF
+    assert await env.cpu.access(0, lower_mmio, write=True,
+                                data=low_write, mask=0x01) == 0
+    assert await env.cpu.access(1, upper_mmio, write=True,
+                                data=high_write, mask=0x80) == 0
+    expected_mmio[lower_mmio] = (expected_mmio[lower_mmio] & ~0xFF) | (low_write & 0xFF)
+    expected_mmio[upper_mmio] = ((expected_mmio[upper_mmio] &
+                                  ~(0xFF << 56)) |
+                                 (high_write & (0xFF << 56)))
+    assert await env.cpu.access(0, lower_mmio) == expected_mmio[lower_mmio]
+    assert await env.cpu.access(1, upper_mmio) == expected_mmio[upper_mmio]
+
+    new_mmio_requests = env.mmio.requests[mmio_request_start:]
+    assert [item["addr"] for item in new_mmio_requests] == [
+        lower_mmio, upper_mmio, lower_mmio, upper_mmio,
+        lower_mmio, upper_mmio,
+    ]
+    assert all(item["size"] == 3 for item in new_mmio_requests)
+    assert [item["mask"] for item in new_mmio_requests if item["write"]] == [
+        0x01, 0x80,
+    ]
+    axi_lines = {item[1] for item in env.axi.read_addresses[axi_read_start:]}
+    assert {lower_cache & ~0x3F, upper_cache & ~0x3F} <= axi_lines
+    assert not ({lower_mmio & ~0x3F, upper_mmio & ~0x3F} & axi_lines)
+    assert int(env.dut.protocol_error.value) == 0
+    env.coverage.sample_checked_event("FS.MMIO.RANGE_BOUNDARY", checked=True)
 
 
 @case
