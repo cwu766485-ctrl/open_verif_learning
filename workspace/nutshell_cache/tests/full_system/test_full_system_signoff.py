@@ -1033,7 +1033,7 @@ async def test_axi_bresp_error_fails_stop_on_dirty_victim_writeback(full_system_
 
 @case
 async def test_reset_cancels_integrated_axi_writeback_before_b(full_system_env):
-    """Reset while a dirty victim write is in flight drops its B completion."""
+    """Reset after WLAST but before B cancels completion and keeps committed data."""
     env = await full_system_env(axi_options={"latency": 96, "w_stall_period": 3})
     await _dirty_l2_set(env, 8, base=0x01C0_2000)
     ninth = 0x01C0_2000 + 8 * L2_SET_STRIDE
@@ -1045,7 +1045,22 @@ async def test_reset_cancels_integrated_axi_writeback_before_b(full_system_env):
     try:
         await _wait_until(env.dut, lambda: bool(env.axi.write_addresses),
                           message="dirty victim AXI AW before reset")
-        accepted_writes = len(env.axi.write_addresses)
+        txn_id, victim_line, _aw_cycle = env.axi.write_addresses[-1]
+        await _wait_until(
+            env.dut,
+            lambda: sum(beat[0] == txn_id for beat in env.axi.write_beats) == 8,
+            message="all eight dirty victim W beats before reset",
+        )
+        accepted_beats = [beat for beat in env.axi.write_beats
+                          if beat[0] == txn_id]
+        assert [beat[1] for beat in accepted_beats] == list(range(8))
+        assert accepted_beats[-1][4] > accepted_beats[0][4]
+        assert not any(item[0] == txn_id
+                       for item in env.axi.write_completions), (
+            "B response completed before the reset-at-WLAST observation"
+        )
+        committed_words = [env.axi.read_word(victim_line + beat * 8)
+                           for beat in range(8)]
         old_epoch = env.monitor.reset_epoch
         pending.cancel()
         await asyncio.gather(pending, return_exceptions=True)
@@ -1054,8 +1069,18 @@ async def test_reset_cancels_integrated_axi_writeback_before_b(full_system_env):
         assert env.axi.reset_cancelled["writes"] >= 1
         await ClockCycles(env.dut, 8)
         assert int(env.dut.cpu_resp_valid.value) == 0
-        assert len(env.axi.write_completions) < accepted_writes
+        assert not any(item[0] == txn_id
+                       for item in env.axi.write_completions)
         assert int(env.dut.fatal_error.value) == 0
+        # Reset clears cache metadata. Refill from the shared memory model and
+        # check the data that its accepted W handshakes actually committed;
+        # the test does not assume burst atomicity across reset.
+        for beat, expected in enumerate(committed_words):
+            actual = await env.cpu.access(0, victim_line + beat * 8)
+            assert actual == expected, (
+                f"post-reset memory mismatch at W beat {beat}: "
+                f"got {actual:#018x}, expected committed {expected:#018x}"
+            )
         env.coverage.sample_checked_event("FS.AXI.WRITE_RESET_CANCEL",
                                           checked=True)
     finally:
@@ -1181,7 +1206,7 @@ async def test_reset_during_axi_aw_backpressure(full_system_env):
 
 @case
 async def test_reset_during_axi_w_backpressure(full_system_env):
-    """Reset cancels an accepted dirty write while WREADY is low."""
+    """Reset cancels a partially accepted dirty burst at W backpressure."""
     env = await full_system_env(axi_options={"latency": 12,
                                               "w_stall_period": 2})
     await _dirty_l2_set(env, 8, base=0x01E0_6000)
@@ -1192,11 +1217,21 @@ async def test_reset_during_axi_w_backpressure(full_system_env):
                        data=0xA11C_E006_0000_0006, mask=0xFF)
     )
     try:
+        await _wait_until(env.dut, lambda: bool(env.axi.write_addresses),
+                          message="dirty victim AXI AW before W stall")
+        txn_id = env.axi.write_addresses[-1][0]
         await _wait_until(
             env.dut,
-            lambda: int(env.dut.axi_wvalid.value) and
-                    not int(env.dut.axi_wready.value),
-            message="AXI WVALID held by WREADY backpressure",
+            lambda: (sum(beat[0] == txn_id for beat in env.axi.write_beats) >= 3
+                     and int(env.dut.axi_wvalid.value)
+                     and not int(env.dut.axi_wready.value)),
+            message="AXI WREADY stall after three accepted beats",
+        )
+        accepted_beats = [beat for beat in env.axi.write_beats
+                          if beat[0] == txn_id]
+        assert 3 <= len(accepted_beats) < 8
+        assert [beat[1] for beat in accepted_beats] == list(
+            range(len(accepted_beats))
         )
         old_epoch = env.monitor.reset_epoch
         pending.cancel()
