@@ -1,6 +1,6 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-15 12:11 +08.
+Generated from the full regression artifacts on 2026-11-15 18:05 +08.
 
 ## Scope and source accounting
 
@@ -267,7 +267,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | `false_sharing.same_line` | `false_sharing_same_line` | Two cores repeatedly write different words in one 64-byte line | Independent data scoreboard, snoop/request monitor, and final word readback |
 | `false_sharing.separate_lines` | `false_sharing_separate_lines` | Matched two-core write workload on distinct 64-byte lines | Independent data scoreboard and final word readback |
 | `false_sharing.final_data` | `false_sharing_data_checked` | A/B cases preserve both final word values | Independent architectural data scoreboard |
-| `litmus.generation_100` | `litmus_generation_counter_100` | 100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data | Independent scoreboard, generation sequence checker, and Directory monitor |
+| `litmus.generation_100` | `litmus_generation_counter_100` | 100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data, including paired CPU requests with real in-flight overlap | Independent byte-accurate scoreboard, ordered generation checker, CPU accept/response cycle trace, Directory/Snoop monitors, and response-overlap assertion |
 | `litmus.generation_backpressure` | `litmus_generation_backpressure` | Generation handshake remains correct with memory request/response gaps and CPU response stalls | Ready/valid driver checks, memory agent stall counters, and scoreboard |
 | `cpu.seeded_random` | `randomized_seeded_regression` | Four reproducible mixed read/write seeds pass the independent model | Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output |
 | `cpu.random_dual_lane` | `random_dual_lane_pairs` | Seeded regression issues independent requests on both packed CPU lanes | Single dual-core driver and per-core response matching |
@@ -284,7 +284,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | `cross.dirty_owner_waits_for_fill_port` | Cross: `interleaving:dirty_owner_waits_for_l2_fill_port` | Dirty owner writeback waits until the refill releases the shared L2 array port | CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks |
 | `cross.message_passing` | Cross: `interleaving:message_passing_distinct_lines` | Ordered producer DATA/READY stores are observed by the consumer on separate lines | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
 | `cross.false_sharing` | Cross: `interleaving:false_sharing_same_line_ping_pong` | Same-line different-word stores create ownership traffic absent from matched separate-line stores | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
-| `cross.generation_counter` | Cross: `interleaving:data_ready_ack_100_generations` | 100 monotonic generations cross producer/consumer with legal backpressure | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
+| `cross.generation_counter` | Cross: `interleaving:data_ready_ack_100_generations` | 100 monotonic generations cross producer/consumer with legal backpressure and distinct in-flight CPU request overlap | CoherenceScoreboard data/MESI checks, exact generation order, at least 800 unique accepted/completed transactions, READY-before-DATA consumer order, cycle overlap, Directory/Snoop evidence, and response backpressure |
 | `cross.mshr_two_context_memory_backpressure` | Cross: `interleaving:distinct_set_contexts_read_stalled` | Two different-set contexts remain allocated while memory request and response channels are stalled | Directory MSHR bank checker for context lifecycle, request/response ID routing, stable payloads, and progress under the stated fairness assumptions |
 | `cross.replacement_put_s_snoop_core0` | Cross: `interleaving:put_s_snoop_core0` | Core0 PutS overlaps Core1 same-line GetM and reaches the replacement replay path | Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks |
 | `cross.replacement_put_s_snoop_core1` | Cross: `interleaving:put_s_snoop_core1` | Core1 PutS overlaps Core0 same-line GetM and reaches the replacement replay path | Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks |

@@ -5761,5 +5761,5 @@
   "scenario": "M Owner remote read with injected checker expected-data bit flip",
   "schema_version": 2,
   "seed": 61857,
-  "source_sha": "416bb5e833328ced94166f1ef272b0860c579044"
+  "source_sha": "a246f2cce3d4b706b3c0bdd60dded625ad121133"
 }

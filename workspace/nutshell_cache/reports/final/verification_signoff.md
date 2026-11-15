@@ -3,7 +3,7 @@
 **Status: OPEN — not a release sign-off.** This file is the current coverage-closure status view; consult the per-run raw reports and CI for test results.
 
 Python/Toffee coherence closure: functional 49/49 required bins (49 total records); cross 19/19 required bins (19 total records).
-Full-system checked closure artifact: functional 53/53; cross 37/37; source SHA `416bb5e833328ced94166f1ef272b0860c579044`.
+Full-system checked closure artifact: functional 53/53; cross 37/37; source SHA `a246f2cce3d4b706b3c0bdd60dded625ad121133`.
 Dataset-scoped zero-count RTL points: 869.
 Approved coverage waivers: 0.
 Reviewed/eligible RTL coverage: not computed; point-by-checker review is incomplete.

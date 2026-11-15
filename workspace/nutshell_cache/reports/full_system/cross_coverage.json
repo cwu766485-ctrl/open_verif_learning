@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "416bb5e833328ced94166f1ef272b0860c579044",
+  "git_sha": "a246f2cce3d4b706b3c0bdd60dded625ad121133",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
@@ -12,10 +12,10 @@
   "cross_bins": {
     "FS.CROSS.APB_WITH_AXI_TRAFFIC": 25,
     "FS.CROSS.AXI_R_BEAT_INTERLEAVE": 1,
-    "FS.CROSS.CORE0.READ": 465,
-    "FS.CROSS.CORE0.WRITE": 336,
-    "FS.CROSS.CORE1.READ": 468,
-    "FS.CROSS.CORE1.WRITE": 298,
+    "FS.CROSS.CORE0.READ": 489,
+    "FS.CROSS.CORE0.WRITE": 384,
+    "FS.CROSS.CORE1.READ": 492,
+    "FS.CROSS.CORE1.WRITE": 346,
     "FS.CROSS.CR03_DIRTY_L1_VICTIM_AXI_WRITEBACK_STALL": 2,
     "FS.CROSS.CR04_DIRTY_L2_VICTIM_SNOOP_APB": 2,
     "FS.CROSS.CR10_OWNERSHIP_PINGPONG_MMIO_APB": 2,
