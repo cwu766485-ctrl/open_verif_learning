@@ -1,6 +1,6 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-15 18:05 +08.
+Generated from the full regression artifacts on 2026-11-16 12:08 +08.
 
 ## Scope and source accounting
 

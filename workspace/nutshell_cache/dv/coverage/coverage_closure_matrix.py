@@ -108,7 +108,10 @@ def source_text(path: str) -> list[str]:
 def feature_for(source: str, line: int, point: str = "") -> str:
     if source.endswith("DirectoryController.sv"):
         if 353 <= line <= 365:
-            return "Protocol-inconsistent Upgrade presented with DIR_I metadata; the current RTL raises protocol_error but also starts a refill (cache.md stale Upgrade / fail-stop contract)."
+            return "Protocol-inconsistent Upgrade presented with DIR_I metadata; current RTL raises protocol_error and enters DIR_ERROR without refill, metadata commit, or Grant (cache.md fail-stop contract)."
+        if line == 397 or line == 410:
+            opcode = "PutS" if line == 397 else "PutE"
+            return f"Idempotent stale {opcode} acknowledgement when Directory state is already DIR_I; commit remains DIR_I with no owner/sharer/data mutation."
         if 467 <= line <= 487:
             return "Owner disappears before Snoop response: retry from authoritative L2 and commit one grant (cache.md snoop/ownership rules)."
         if 374 <= line <= 435:
@@ -119,6 +122,12 @@ def feature_for(source: str, line: int, point: str = "") -> str:
             return "Directory transaction FSM: allocate, transfer/snoop, metadata commit, grant, retirement, reset/error."
         return "Directory request opcode and MESI state transition (cache.md Directory protocol table)."
     if source.endswith("DirectoryMshrBank.sv"):
+        if 339 <= line <= 346:
+            return "Directory metadata-write Offer Lock: hold selected context and payload while dir_write_valid && !dir_write_ready."
+        if 362 <= line <= 370:
+            return "Line-transfer-start Offer Lock: hold selected context and payload while line_xfer_start_valid && !line_xfer_start_ready."
+        if 372 <= line <= 379:
+            return "Grant Offer Lock: hold selected context and payload while grant_valid && !grant_ready."
         return "Four-context selection, same-set serialization, output offer lock and ready/valid stability (cache.md concurrency/backpressure rules)."
     if source.endswith("SharedLineEngine.sv"):
         if 133 <= line <= 143 or 225 <= line <= 255:
@@ -169,19 +178,28 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
         )
     if source.endswith("DirectoryMshrBank.sv") and 339 <= line <= 379:
         return (
-            "Legal and directed: valid output can be held while corresponding ready is low.",
+            "Legal ready/valid backpressure. The block tests stall metadata writes, line-transfer starts, and grants; this Main Top point is a separate observation.",
             "No; this is ordinary ready/valid flow control.",
-            "Not unreachable/redundant. Validate each output channel's payload hold and one-time acceptance.",
-            "Add/retain directed write, transfer-start, and grant backpressure tests; collect this block's own raw coverage.",
+            "Reachable at the DirectoryMshrBank boundary and exercised in its standalone test. The Main Top zero count is not proven unreachable; integration-level resource overlap has not been shown for every offer type.",
+            "DirectoryMshrBank block tests exercise all three offers: accept_directory_writes holds address/state/sharers/owner while Ready=0; xfer_start_backpressure holds address/TxnID/context/source/kind for five cycles; accept_grants holds address/TxnID/destination before single acceptance. Block raw lines 339, 362, and 372 are hit in their own dataset. Do not transfer those hits to Main Top; keep each Main Top zero point OPEN until hit or separately dispositioned.",
             "Medium",
         )
     if source.endswith("DirectoryController.sv") and 353 <= line <= 365:
         return (
             "Not a legal MESI request under the current spec: Upgrade requires a valid S copy; DIR_I means the requester has no sharer copy. The stale-but-still-valid DIR_U case is a separate supported recovery path.",
-            "Yes. RTL sets protocol_error/code 4, but then proceeds to L2 refill and a data-bearing M grant instead of failing closed as docs/cache.md currently states.",
-            "Reachable only through an inconsistent requester/Directory interface condition. This source range exposes a spec/RTL behavior mismatch; it is neither approved legal recovery nor proven unreachable.",
-            "Keep OPEN. Resolve the frozen protocol contract and add a block fault-injection test that checks error, no successful grant/metadata commit, and reset recovery. Do not count this as normal functional coverage.",
+            "Yes. RTL sets protocol_error/code 4 and enters DIR_ERROR; it does not start a refill, commit metadata, or issue a successful Grant.",
+            "Reachable at the Directory block boundary by injecting inconsistent DIR_I + Upgrade metadata. The integrated inclusive-cache transaction path should not produce this pair, but no proof is claimed that the environment invariant is unbreakable.",
+            "DirectoryController block test injects DIR_I + Upgrade, checks sticky code 4, no Grant/metadata write while held, then reset recovery (test_sequence.svh:136-158). Its block raw hit is separate; the main-top raw point remains OPEN.",
             "High",
+        )
+    if source.endswith("DirectoryController.sv") and line in (397, 410):
+        opcode = "PutS" if line == 397 else "PutE"
+        return (
+            f"Legal idempotent stale {opcode} retirement at the block interface when lookup state is DIR_I; DIR_I is preserved and the request receives PutAck.",
+            "No; this branch does not set protocol_error and does not mutate sharers, owner, or line data.",
+            "The standalone DirectoryController TB reaches this response path for both requesters. In the integrated inclusive-cache flow, a valid L1 copy paired with an invalid L2 Directory entry is not a normal state; this is not claimed formally unreachable.",
+            f"DirectoryController block permission-matrix test at test_sequence.svh:217-222 checks DIR_I PUTE/PUTS commits and matching PutAck. Block LCOV records both lines; the main-top zero count stays dataset-scoped and OPEN.",
+            "Medium",
         )
     if source.endswith("DirectoryController.sv") and 467 <= line <= 487:
         return (
@@ -194,9 +212,9 @@ def exact_review(source: str, line: int, code: str, point: str) -> tuple[str, st
     if source.endswith("SharedLineEngine.sv") and 348 <= line <= 355:
         return (
             "Legal; grant and L2 read acceptance may occur on different cycles under L2 port contention.",
-            "The hit=false branch is a protocol/invariant error guard; the wait-then-hit branch is legal.",
-            "Not unreachable as a whole. Separate the legal waiting arm from the invalid L2-miss guard.",
-            "Add a directed grant-read backpressure test; separately inject/force invalid lookup result and check protocol error if interface permits.",
+            "The hit=false arm is a protocol/invariant error guard; delayed acceptance followed by an L2 hit is legal. The SharedLineEngine block TB checks both the legal data stream and fail-stop when an accepted data grant reads an L2 miss.",
+            "Both legal and error arms are exercised at the standalone block boundary. The Main Top observation is still zero in its independent dataset; no integration-level proof or Main Top hit is claimed.",
+            "SharedLineEngine block tests `test_grant_read_backpressure`, `test_grant_immediate_l2_hit`, and `test_grant_immediate_l2_miss_fault` check state progression, full line stream, and fail-stop. The block raw line is hit; keep the Main Top point OPEN until its same-top coverage is observed or independently dispositioned.",
             "High",
         )
     if source.endswith("MesiL1Controller.sv") and 365 <= line <= 368:
@@ -268,6 +286,7 @@ def has_explicit_source_range_review(source: str, line: int) -> bool:
         source.endswith("DualL1MesiCluster.sv") and (
             249 <= line <= 276 or 419 <= line <= 428
         ),
+        source.endswith("DirectoryController.sv") and line in (397, 410),
         source.endswith("DirectoryController.sv") and 353 <= line <= 365,
         source.endswith("DirectoryController.sv") and 467 <= line <= 487,
         source.endswith("SharedLineEngine.sv") and 348 <= line <= 355,
