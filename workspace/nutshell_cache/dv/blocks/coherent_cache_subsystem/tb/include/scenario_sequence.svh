@@ -160,4 +160,6 @@
 
 `include "include/random_and_reset_cases.svh"
 
+`include "include/mshr_xfer_offer_lock.svh"
+
 `include "include/error_and_summary_cases.svh"

@@ -10,28 +10,28 @@ Main subsystem smoke, multisnoop and five seeded regressions, all from one commo
 
 | Metric | Hit / total | Miss |
 | --- | ---: | ---: |
-| line | 864/992 | 128 |
-| branch | 473/556 | 83 |
-| toggle | 21931/27474 | 5543 |
+| line | 868/992 | 124 |
+| branch | 475/556 | 81 |
+| toggle | 21971/27474 | 5503 |
 | fsm_state | 30/54 | 24 |
 | fsm_arc | 13/48 | 35 |
 
 | Product RTL source | Line | Branch | Toggle | FSM state | FSM arc |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 445/738 | N/A | N/A |
+| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 32/34 | 451/738 | N/A | N/A |
 | `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 73/82 | 5846/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 36/52 | 509/648 | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 125/182 | 30/42 | 521/612 | 18/40 | 9/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 73/86 | 929/2292 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 125/182 | 31/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 98/104 | 74/86 | 955/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | N/A | 350/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 4/4 | 222/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 18/20 | 1608/1872 | N/A | N/A |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 4/4 | 1274/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1449/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 54/62 | 1451/2054 | N/A | N/A |
 | `rtl/l1/MesiL1Controller.sv` | 106/126 | 32/46 | 1400/1532 | 12/14 | 4/12 |
 | `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | N/A | 230/272 | N/A | N/A |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 67/74 | 1096/1324 | N/A | N/A |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 6052/7286 | N/A | N/A |
+| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 50/50 | 6058/7286 | N/A | N/A |
 
 No Product RTL points emitted in this run:
 

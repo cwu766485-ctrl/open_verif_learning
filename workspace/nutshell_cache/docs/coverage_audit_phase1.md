@@ -1,13 +1,13 @@
 # Phase 1 Coverage Infrastructure Audit and Baseline Freeze
 
-Generated from the full regression artifacts on 2026-11-13 16:12 +08.
+Generated from the full regression artifacts on 2026-11-17 10:43 +08.
 
 ## Scope and source accounting
 
 No RTL behavior, interface, testcase sequence, Functional Coverage Bin ID, or waiver was changed. Product RTL classification uses exact normalized path membership in rtl/Coherence.files.f.
 
 - RTL Source Manifest: **18 files**; Verilator __verFiles.dat RTL source set: **18 files**; exact match: **PASS**.
-- LCOV source records: **35**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
+- LCOV source records: **36**; product RTL manifest files with executable line points: **14**; files with no line points in this selected top/run: **4**.
 - A manifest source with no executable LCOV line points is reported as N/A, not as 0% coverage. Such files can still be parsed/compiled but may be packages, unelaborated top wrappers, or blocks outside this simulation top.
 
 ### LCOV line reconciliation
@@ -16,10 +16,10 @@ Each normalized (source, line) record is counted once. Hit + missed must equal t
 
 | Category | Hit | Total | Missed | Reconciliation |
 | --- | ---: | ---: | ---: | --- |
-| Product RTL | 864 | 992 | 128 | 864 + 128 = 992 |
-| Testbench | 833 | 845 | 12 | 833 + 12 = 845 |
+| Product RTL | 868 | 992 | 124 | 868 + 124 = 992 |
+| Testbench | 848 | 860 | 12 | 848 + 12 = 860 |
 | Generated/Other | 0 | 0 | 0 | 0 + 0 = 0 |
-| **All source records** | **1697** | **1837** | **140** | **1697 + 140 = 1837** |
+| **All source records** | **1716** | **1852** | **136** | **1716 + 136 = 1852** |
 
 ## Native Verilator coverage by source category
 
@@ -27,8 +27,8 @@ Native point totals are parsed from merged coverage.dat by point type; point hit
 
 | Category | Branch hit/total | Toggle hit/total | FSM state hit/total | FSM arc hit/total |
 | --- | ---: | ---: | ---: | ---: |
-| Product RTL | 473/556 | 21931/27474 | 30/54 | 13/48 |
-| Testbench | 258/298 | 4532/6632 | N/A (0 points) | N/A (0 points) |
+| Product RTL | 475/556 | 21971/27474 | 30/54 | 13/48 |
+| Testbench | 265/306 | 4538/6632 | N/A (0 points) | N/A (0 points) |
 | Generated/Other | N/A (0 points) | N/A (0 points) | N/A (0 points) | N/A (0 points) |
 
 ## Product RTL module raw coverage
@@ -39,24 +39,24 @@ Line columns use unique LCOV source-line records. Native columns use point recor
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `rtl/bus/apb/CachePerformanceCsr.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
 | `rtl/bus/axi/LineMemoryAxi4Adapter.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 445/738 | N/A | N/A |
+| `rtl/bus/axi/MemoryRefillMshrBank.sv` | 37/37 | 0 | 32/34 | 451/738 | N/A | N/A |
 | `rtl/cluster/DualL1MesiCluster.sv` | 51/54 | 3 | 73/82 | 5846/6796 | N/A | N/A |
 | `rtl/coherence/SharedLineEngine.sv` | 73/104 | 31 | 36/52 | 509/648 | N/A | N/A |
 | `rtl/common/CoherenceProtocol.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/directory/DirectoryController.sv` | 125/182 | 57 | 30/42 | 521/612 | 18/40 | 9/36 |
-| `rtl/directory/DirectoryMshrBank.sv` | 94/104 | 10 | 73/86 | 929/2292 | N/A | N/A |
+| `rtl/directory/DirectoryController.sv` | 125/182 | 57 | 31/42 | 521/612 | 18/40 | 9/36 |
+| `rtl/directory/DirectoryMshrBank.sv` | 98/104 | 6 | 74/86 | 955/2292 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiter.sv` | 5/5 | 0 | N/A | 350/414 | N/A | N/A |
 | `rtl/interconnect/CoherenceRequestArbiterCore.sv` | 22/22 | 0 | 4/4 | 222/260 | N/A | N/A |
 | `rtl/interconnect/CpuMmioRouter.sv` | 31/34 | 3 | 18/20 | 1608/1872 | N/A | N/A |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | 50/50 | 0 | 4/4 | 1274/1374 | N/A | N/A |
-| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1449/2054 | N/A | N/A |
+| `rtl/l1/MesiL1Array.sv` | 67/67 | 0 | 54/62 | 1451/2054 | N/A | N/A |
 | `rtl/l1/MesiL1Controller.sv` | 106/126 | 20 | 32/46 | 1400/1532 | 12/14 | 4/12 |
 | `rtl/l1/MesiL1SnoopArbiter.sv` | 6/6 | 0 | N/A | 230/272 | N/A | N/A |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 75/79 | 4 | 67/74 | 1096/1324 | N/A | N/A |
 | `rtl/top/CoherentCacheAxiSubsystem.sv` | N/A | N/A | N/A | N/A | N/A | N/A |
-| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 6052/7286 | N/A | N/A |
+| `rtl/top/CoherentCacheSubsystem.sv` | 122/122 | 0 | 50/50 | 6058/7286 | N/A | N/A |
 
-## Every uncovered Product RTL line (128 lines)
+## Every uncovered Product RTL line (124 lines)
 
 Each missed executable source line is linked to its original RTL path and line. Categories are source-context review labels: the default/FSM label is only an unreachability candidate, never a proof; error labels identify checks/actions, and legal/recovery labels identify paths for which directed stimulus is appropriate. No category automatically waives a line.
 
@@ -69,7 +69,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | Refill beat/last 异常：CPU fail-stop 错误路径 | 2 |
 | Snoop beat/last 异常：Snoop fail-stop 错误路径 | 2 |
 | 合法 Grant Read / L2 Hit 等待路径（独立 Block 有命中） | 1 |
-| 合法 ready/valid Offer Lock（独立 Block 有命中） | 10 |
+| 合法 ready/valid Offer Lock（独立 Block 有命中） | 6 |
 | 合法路径未命中 | 6 |
 | 非法协议检测 / 错误处理 | 88 |
 
@@ -169,10 +169,6 @@ Each missed executable source line is linked to its original RTL path and line. 
 | [`rtl/directory/DirectoryMshrBank.sv:339`](../rtl/directory/DirectoryMshrBank.sv#L339) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (dir_write_valid && !dir_write_ready && !write_offer_lock_q) begin` |
 | [`rtl/directory/DirectoryMshrBank.sv:340`](../rtl/directory/DirectoryMshrBank.sv#L340) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `write_offer_lock_q <= 1'b1;` |
 | [`rtl/directory/DirectoryMshrBank.sv:341`](../rtl/directory/DirectoryMshrBank.sv#L341) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `write_offer_idx_q <= write_sel;` |
-| [`rtl/directory/DirectoryMshrBank.sv:362`](../rtl/directory/DirectoryMshrBank.sv#L362) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (line_xfer_start_valid && !line_xfer_start_ready &&` |
-| [`rtl/directory/DirectoryMshrBank.sv:363`](../rtl/directory/DirectoryMshrBank.sv#L363) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `!xfer_offer_lock_q) begin` |
-| [`rtl/directory/DirectoryMshrBank.sv:364`](../rtl/directory/DirectoryMshrBank.sv#L364) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `xfer_offer_lock_q <= 1'b1;` |
-| [`rtl/directory/DirectoryMshrBank.sv:365`](../rtl/directory/DirectoryMshrBank.sv#L365) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `xfer_offer_idx_q <= xfer_sel;` |
 | [`rtl/directory/DirectoryMshrBank.sv:372`](../rtl/directory/DirectoryMshrBank.sv#L372) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `if (grant_valid && !grant_ready && !grant_offer_lock_q) begin` |
 | [`rtl/directory/DirectoryMshrBank.sv:373`](../rtl/directory/DirectoryMshrBank.sv#L373) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `grant_offer_lock_q <= 1'b1;` |
 | [`rtl/directory/DirectoryMshrBank.sv:374`](../rtl/directory/DirectoryMshrBank.sv#L374) | 合法 ready/valid Offer Lock（独立 Block 有命中） | `grant_offer_idx_q <= grant_sel;` |
@@ -211,7 +207,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | `rtl/cluster/DualL1MesiCluster.sv` | 3 (472–474) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/coherence/SharedLineEngine.sv` | 31 (133–135, 141–143, 182–184, 191–193, 232–235, 246–248, 276, 278–280, 331–334, 348, 366–368) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/directory/DirectoryController.sv` | 57 (238–241, 299–302, 353, 358–360, 362–365, 384–385, 388–397, 409–414, 434–437, 484–489, 491–494, 497–500, 525, 527–530) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
-| `rtl/directory/DirectoryMshrBank.sv` | 10 (339–341, 362–365, 372–374) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
+| `rtl/directory/DirectoryMshrBank.sv` | 6 (339–341, 372–374) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/interconnect/CpuMmioRouter.sv` | 3 (162–164) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/l1/MesiL1Controller.sv` | 20 (254–256, 287–289, 317–318, 345, 347–349, 394–395, 439–440, 454, 456–458) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
 | `rtl/l2/SharedL2DirectoryArray.sv` | 4 (313–314, 326–327) | Target unhit defensive/error paths with a source-specific checker; classify results before considering any waiver. |
@@ -267,7 +263,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | `false_sharing.same_line` | `false_sharing_same_line` | Two cores repeatedly write different words in one 64-byte line | Independent data scoreboard, snoop/request monitor, and final word readback |
 | `false_sharing.separate_lines` | `false_sharing_separate_lines` | Matched two-core write workload on distinct 64-byte lines | Independent data scoreboard and final word readback |
 | `false_sharing.final_data` | `false_sharing_data_checked` | A/B cases preserve both final word values | Independent architectural data scoreboard |
-| `litmus.generation_100` | `litmus_generation_counter_100` | 100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data | Independent scoreboard, generation sequence checker, and Directory monitor |
+| `litmus.generation_100` | `litmus_generation_counter_100` | 100 distinct DATA/READY/ACK generations complete without skip, duplicate consumption, or stale data, including paired CPU requests with real in-flight overlap | Independent byte-accurate scoreboard, ordered generation checker, CPU accept/response cycle trace, Directory/Snoop monitors, and response-overlap assertion |
 | `litmus.generation_backpressure` | `litmus_generation_backpressure` | Generation handshake remains correct with memory request/response gaps and CPU response stalls | Ready/valid driver checks, memory agent stall counters, and scoreboard |
 | `cpu.seeded_random` | `randomized_seeded_regression` | Four reproducible mixed read/write seeds pass the independent model | Seeded Python sequence, byte-accurate MESI/data scoreboard and protocol error output |
 | `cpu.random_dual_lane` | `random_dual_lane_pairs` | Seeded regression issues independent requests on both packed CPU lanes | Single dual-core driver and per-core response matching |
@@ -284,7 +280,7 @@ Each missed executable source line is linked to its original RTL path and line. 
 | `cross.dirty_owner_waits_for_fill_port` | Cross: `interleaving:dirty_owner_waits_for_l2_fill_port` | Dirty owner writeback waits until the refill releases the shared L2 array port | CoherenceScoreboard MESI/data/Directory checks plus accepted request, snoop-beat, and Directory-commit monitor checks |
 | `cross.message_passing` | Cross: `interleaving:message_passing_distinct_lines` | Ordered producer DATA/READY stores are observed by the consumer on separate lines | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
 | `cross.false_sharing` | Cross: `interleaving:false_sharing_same_line_ping_pong` | Same-line different-word stores create ownership traffic absent from matched separate-line stores | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
-| `cross.generation_counter` | Cross: `interleaving:data_ready_ack_100_generations` | 100 monotonic generations cross producer/consumer with legal backpressure | CoherenceScoreboard byte-accurate data/MESI checks, plus test-specific READY/ACK, address separation, and accepted transaction checks |
+| `cross.generation_counter` | Cross: `interleaving:data_ready_ack_100_generations` | 100 monotonic generations cross producer/consumer with legal backpressure and distinct in-flight CPU request overlap | CoherenceScoreboard data/MESI checks, exact generation order, at least 800 unique accepted/completed transactions, READY-before-DATA consumer order, cycle overlap, Directory/Snoop evidence, and response backpressure |
 | `cross.mshr_two_context_memory_backpressure` | Cross: `interleaving:distinct_set_contexts_read_stalled` | Two different-set contexts remain allocated while memory request and response channels are stalled | Directory MSHR bank checker for context lifecycle, request/response ID routing, stable payloads, and progress under the stated fairness assumptions |
 | `cross.replacement_put_s_snoop_core0` | Cross: `interleaving:put_s_snoop_core0` | Core0 PutS overlaps Core1 same-line GetM and reaches the replacement replay path | Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks |
 | `cross.replacement_put_s_snoop_core1` | Cross: `interleaving:put_s_snoop_core1` | Core1 PutS overlaps Core0 same-line GetM and reaches the replacement replay path | Independent replacement victim model, accepted Put/Snoop transaction monitor, and final MESI/data/Directory checks |

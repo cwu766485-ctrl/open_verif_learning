@@ -2,12 +2,12 @@
 
 **Decision: OPEN**
 
-- Repository HEAD: `3a4c720ef11ba9f6be126c97f725a78d276f8a82`
-- Verification source fingerprint: `d25006778cded048cf4f9a4e638c3725a606460537df96d7a36f239a6cce4e01`
-- Raw points inventoried: 74831; zero-count points requiring review: 29466
-- Raw-hit execution attestations: 45365/45365; unattested hits: 0
-- Zero-point decisions recorded: 0 (COVERED=0, PROVEN_UNREACHABLE=0, REVIEWED_WAIVER=0, OPEN=0, BLOCKED=0); zero OPEN/BLOCKED: 29466
-- Archived stale historical decisions: 19; unreviewed zero-count rows: 29466
+- Repository HEAD: `4c83f12d1a5302a5146c4816608ed330fd71458f`
+- Verification source fingerprint: `764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5`
+- Raw points inventoried: 74831; zero-count points requiring review: 29420
+- Raw-hit execution attestations: 45411/45411; unattested hits: 0
+- Zero-point decisions recorded: 0 (COVERED=0, PROVEN_UNREACHABLE=0, REVIEWED_WAIVER=0, OPEN=0, BLOCKED=0); zero OPEN/BLOCKED: 29420
+- Archived stale historical decisions: 19; unreviewed zero-count rows: 29420
 - Reviewed waivers accepted: 0
 
 Coverage remains separated by elaborated top and metric; these tables are not summed across datasets.
@@ -33,11 +33,11 @@ RAW_COVERED means only that a nonzero point was observed in the exact hashed dat
 | directory_mshr_bank | fsm_state | 31/40 | 31/40 | 9 |
 | directory_mshr_bank | line | 167/286 | 167/286 | 119 |
 | directory_mshr_bank | toggle | 1249/2904 | 1249/2904 | 1655 |
-| main_subsystem | branch | 473/556 | 473/556 | 83 |
+| main_subsystem | branch | 475/556 | 475/556 | 81 |
 | main_subsystem | fsm_arc | 13/48 | 13/48 | 35 |
 | main_subsystem | fsm_state | 30/54 | 30/54 | 24 |
-| main_subsystem | line | 864/992 | 864/992 | 128 |
-| main_subsystem | toggle | 21931/27474 | 21931/27474 | 5543 |
+| main_subsystem | line | 868/992 | 868/992 | 124 |
+| main_subsystem | toggle | 21971/27474 | 21971/27474 | 5503 |
 | mesi_l1_controller | branch | 43/46 | 43/46 | 3 |
 | mesi_l1_controller | fsm_arc | 3/6 | 3/6 | 3 |
 | mesi_l1_controller | fsm_state | 7/7 | 7/7 | 0 |
@@ -69,11 +69,11 @@ RAW_COVERED means only that a nonzero point was observed in the exact hashed dat
 - directory_mshr_bank / fsm_state: 9 unresolved finding(s)
 - directory_mshr_bank / line: 119 unresolved finding(s)
 - directory_mshr_bank / toggle: 1655 unresolved finding(s)
-- main_subsystem / branch: 83 unresolved finding(s)
+- main_subsystem / branch: 81 unresolved finding(s)
 - main_subsystem / fsm_arc: 35 unresolved finding(s)
 - main_subsystem / fsm_state: 24 unresolved finding(s)
-- main_subsystem / line: 128 unresolved finding(s)
-- main_subsystem / toggle: 5543 unresolved finding(s)
+- main_subsystem / line: 124 unresolved finding(s)
+- main_subsystem / toggle: 5503 unresolved finding(s)
 - mesi_l1_controller / branch: 3 unresolved finding(s)
 - mesi_l1_controller / fsm_arc: 3 unresolved finding(s)
 - mesi_l1_controller / line: 8 unresolved finding(s)
@@ -84,6 +84,6 @@ RAW_COVERED means only that a nonzero point was observed in the exact hashed dat
 - shared_line_engine / branch: 8 unresolved finding(s)
 - shared_line_engine / line: 3 unresolved finding(s)
 - shared_line_engine / toggle: 344 unresolved finding(s)
-- 29466 total point-level/infrastructure finding(s); see the machine-readable gate JSON and point matrix for stable IDs and details.
+- 29420 total point-level/infrastructure finding(s); see the machine-readable gate JSON and point matrix for stable IDs and details.
 
 A PASS requires current source and dataset fingerprints, hashed regression logs for all required gates, valid Test/Checker source contracts, and an individual accepted disposition for every zero-count point. A zero-count point cannot be marked COVERED; it must first be observed in this exact dataset. PROVEN_UNREACHABLE and REVIEWED_WAIVER require evidence and independent approval. Raw hits are never transferred across elaborated Tops, and no disposition changes Raw Coverage.

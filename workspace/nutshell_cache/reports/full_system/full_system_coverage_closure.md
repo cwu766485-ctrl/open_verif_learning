@@ -1,6 +1,6 @@
 # Full-System Functional Coverage Closure
 
-- Tested source SHA: `3a4c720ef11ba9f6be126c97f725a78d276f8a82`
+- Tested source SHA: `4c83f12d1a5302a5146c4816608ed330fd71458f`
 - DUT: `CoherentCacheAxiSubsystem`
 - Scope: implemented Required bins in the integrated-top sign-off slice
 - Required bins: 53/53

@@ -1,6 +1,6 @@
 {
-  "source_sha": "69f9fb4615717b9d9b096d9e11262438522cd960",
-  "source_fingerprint": "22bae2a9261d49cc599c0bde9fefc35778e7f0c2a0486cc4507480ae05b7889c",
+  "source_sha": "416bb5e833328ced94166f1ef272b0860c579044",
+  "source_fingerprint": "979e5081910aa003546e1fa6ee23acb6b7e9d9d0944464f69fc106c19bbb5645",
   "baseline_source_sha": "3526950e59ff042973ccb822414d6a7361c682da",
   "metrics": {
     "axi_subsystem": {
@@ -114,7 +114,7 @@
           182
         ],
         "after": [
-          160,
+          178,
           182
         ]
       },
@@ -124,7 +124,7 @@
           42
         ],
         "after": [
-          36,
+          37,
           42
         ]
       },
@@ -134,7 +134,7 @@
           612
         ],
         "after": [
-          258,
+          260,
           612
         ]
       },
@@ -238,7 +238,7 @@
           27474
         ],
         "after": [
-          21923,
+          21931,
           27474
         ]
       },
@@ -270,7 +270,7 @@
           132
         ],
         "after": [
-          107,
+          124,
           132
         ]
       },
@@ -280,7 +280,7 @@
           46
         ],
         "after": [
-          41,
+          43,
           46
         ]
       },
@@ -290,7 +290,7 @@
           1804
         ],
         "after": [
-          688,
+          741,
           1804
         ]
       },
@@ -421,8 +421,8 @@
     }
   },
   "point_transitions": {
-    "UNCHANGED_STATUS": 74699,
-    "NEW_RAW_HIT": 132
+    "UNCHANGED_STATUS": 74598,
+    "NEW_RAW_HIT": 233
   },
   "policy": "Exact same dataset/top/point identity only. No exclusions or cross-top credit."
 }

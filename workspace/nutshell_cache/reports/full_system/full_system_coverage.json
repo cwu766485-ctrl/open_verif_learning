@@ -2,7 +2,7 @@
   "schema_version": 1,
   "dut": "CoherentCacheAxiSubsystem",
   "pytest_exit_status": 0,
-  "test_environment_count": 69,
+  "test_environment_count": 71,
   "runs": [
     {
       "test_id": "tests/full_system/test_cross_agent_directed.py::test_mmio_read_cache_miss_and_apb_miss_counter_overlap",
@@ -26722,73 +26722,37 @@
       },
       "coverage": {
         "bins": {
-          "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1,
-          "FS.CPU.READ.CORE0": 1,
-          "FS.MESI.I_TO_S": 1,
-          "FS.MESI.M_TO_S": 1
+          "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1
         },
-        "cross_bins": {
-          "FS.CROSS.CORE0.READ": 1
-        },
+        "cross_bins": {},
         "sample_testcases": {
           "bins": {
             "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": [
               "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.CPU.READ.CORE0": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.MESI.I_TO_S": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.MESI.M_TO_S": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
             ]
           },
-          "cross_bins": {
-            "FS.CROSS.CORE0.READ": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ]
-          }
+          "cross_bins": {}
         },
         "checked_cross_evidence": {}
       },
       "coverage_delta": {
         "bins": {
-          "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1,
-          "FS.CPU.READ.CORE0": 1,
-          "FS.MESI.I_TO_S": 1,
-          "FS.MESI.M_TO_S": 1
+          "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": 1
         },
-        "cross_bins": {
-          "FS.CROSS.CORE0.READ": 1
-        },
+        "cross_bins": {},
         "sample_testcases": {
           "bins": {
             "FS.CONCURRENCY.SAME_ADDRESS_DUAL_WRITE": [
               "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.CPU.READ.CORE0": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.MESI.I_TO_S": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ],
-            "FS.MESI.M_TO_S": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
             ]
           },
-          "cross_bins": {
-            "FS.CROSS.CORE0.READ": [
-              "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-            ]
-          }
+          "cross_bins": {}
         },
         "checked_cross_evidence": {}
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 3,
+          "cpu.request_accept": 4,
           "directory.request_accept": 3,
           "directory.request_stall": 61,
           "l2.lookup": 1,
@@ -26805,7 +26769,7 @@
           "mshr.retire": 1,
           "directory.grant_accept": 3,
           "l1.metadata_commit": 5,
-          "cpu.response_complete": 3,
+          "cpu.response_complete": 4,
           "directory_context.retire": 3,
           "snoop.accept": 2,
           "directory.snoop_offer": 2,
@@ -26816,11 +26780,11 @@
           "directory_request": 61
         },
         "mshr_occupancy_histogram": {
-          "0": 74,
+          "0": 78,
           "1": 46
         },
         "directory_context_histogram": {
-          "0": 12,
+          "0": 16,
           "1": 108
         },
         "max_mshr_occupancy": 1,
@@ -26828,8 +26792,337 @@
         "reset_epoch": 0,
         "axi_peak_reads": 1,
         "axi_peak_writes": 0,
-        "cpu_request_accepts": 3,
-        "cpu_response_completions": 3,
+        "cpu_request_accepts": 4,
+        "cpu_response_completions": 4,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress",
+      "scenario_id": "test_sustained_same_l2_set_contention_progress",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 6
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00700000": "0xa000000000000000",
+        "0x00700008": "0xa000000000000001",
+        "0x00700010": "0xa000000000000002",
+        "0x00700018": "0xa000000000000003",
+        "0x00700020": "0xa000000000000004",
+        "0x00700028": "0xa000000000000005",
+        "0x00700030": "0xa000000000000006",
+        "0x00700038": "0xa000000000000007",
+        "0x00708000": "0xb000000000000000",
+        "0x00708008": "0xb000000000000001",
+        "0x00708010": "0xb000000000000002",
+        "0x00708018": "0xb000000000000003",
+        "0x00708020": "0xb000000000000004",
+        "0x00708028": "0xb000000000000005",
+        "0x00708030": "0xb000000000000006",
+        "0x00708038": "0xb000000000000007"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 24,
+          "FS.CPU.READ.CORE1": 24,
+          "FS.CPU.WRITE.CORE0": 48,
+          "FS.CPU.WRITE.CORE1": 48,
+          "FS.MESI.E_TO_M": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 48,
+          "FS.MESI.M_TO_I": 47
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 24,
+          "FS.CROSS.CORE0.WRITE": 48,
+          "FS.CROSS.CORE1.READ": 24,
+          "FS.CROSS.CORE1.WRITE": 48
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.E_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.M_TO_I": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE0.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 24,
+          "FS.CPU.READ.CORE1": 24,
+          "FS.CPU.WRITE.CORE0": 48,
+          "FS.CPU.WRITE.CORE1": 48,
+          "FS.MESI.E_TO_M": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MESI.I_TO_M": 48,
+          "FS.MESI.M_TO_I": 47
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 24,
+          "FS.CROSS.CORE0.WRITE": 48,
+          "FS.CROSS.CORE1.READ": 24,
+          "FS.CROSS.CORE1.WRITE": 48
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.E_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.MESI.M_TO_I": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE0.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_sustained_same_l2_set_contention_progress"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 147,
+          "directory.request_accept": 50,
+          "directory.request_stall": 57,
+          "l2.lookup": 2,
+          "directory_context.allocate": 50,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 78,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 40,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 400,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 50,
+          "mshr.retire": 2,
+          "directory.grant_accept": 50,
+          "l1.metadata_commit": 99,
+          "cpu.response_complete": 147,
+          "directory_context.retire": 50,
+          "axi.stall": 1,
+          "snoop.accept": 48,
+          "directory.snoop_offer": 48,
+          "coherence.owner_data_beat": 384,
+          "snoop.response": 48
+        },
+        "stall_cycles": {
+          "directory_request": 57,
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 1604,
+          "1": 78
+        },
+        "directory_context_histogram": {
+          "0": 424,
+          "1": 1258
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 147,
+        "cpu_response_completions": 147,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words",
+      "scenario_id": "test_mmio_range_edges_and_adjacent_cache_words",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 5
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x2ffffff8": "0x2c2c000000000001",
+        "0x80000000": "0x8c8c000000000002"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MMIO.RANGE_BOUNDARY": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ],
+            "FS.MMIO.RANGE_BOUNDARY": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1,
+          "FS.MMIO.RANGE_BOUNDARY": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ],
+            "FS.MMIO.RANGE_BOUNDARY": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_mmio_range_edges_and_adjacent_cache_words"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 8,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "directory.same_set_conflict": 77,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 38,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 8,
+          "directory_context.retire": 2,
+          "mmio.request_accept": 6,
+          "mmio.response_complete": 6
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 69,
+          "1": 77
+        },
+        "directory_context_histogram": {
+          "0": 41,
+          "1": 105
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 8,
+        "cpu_response_completions": 8,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -35480,48 +35773,50 @@
       },
       "monitor": {
         "event_counts": {
-          "cpu.request_accept": 9,
-          "directory.request_accept": 14,
-          "l2.lookup": 9,
-          "directory_context.allocate": 14,
-          "axi.read_address": 8,
-          "directory.same_set_conflict": 986,
-          "mshr.allocate": 8,
-          "axi.read_valid_gap": 832,
-          "axi.read_beat": 64,
-          "l2.refill_start": 8,
-          "l2.line_write_beat": 104,
-          "l2.refill_end": 8,
-          "directory.metadata_commit": 13,
-          "mshr.retire": 8,
-          "directory.grant_accept": 13,
-          "l1.metadata_commit": 13,
-          "cpu.response_complete": 8,
-          "directory_context.retire": 13,
-          "axi.stall": 1,
+          "cpu.request_accept": 17,
+          "directory.request_accept": 15,
+          "l2.lookup": 10,
+          "directory_context.allocate": 15,
+          "axi.read_address": 9,
+          "directory.same_set_conflict": 1118,
+          "mshr.allocate": 9,
+          "axi.read_valid_gap": 945,
+          "axi.read_beat": 72,
+          "l2.refill_start": 9,
+          "l2.line_write_beat": 112,
+          "l2.refill_end": 9,
+          "directory.metadata_commit": 14,
+          "mshr.retire": 9,
+          "directory.grant_accept": 14,
+          "l1.metadata_commit": 14,
+          "cpu.response_complete": 16,
+          "directory_context.retire": 14,
+          "axi.stall": 5,
           "l2_victim.select": 1,
           "axi.write_address": 1,
+          "axi.write_beat": 8,
           "system.reset_assert": 1,
           "system.reset_cancel": 1
         },
         "stall_cycles": {
-          "AR": 1
+          "AR": 1,
+          "W": 4
         },
         "mshr_occupancy_histogram": {
-          "0": 249,
-          "1": 986
+          "0": 314,
+          "1": 1118
         },
         "directory_context_histogram": {
-          "0": 61,
-          "1": 1174
+          "0": 93,
+          "1": 1339
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
         "reset_epoch": 1,
         "axi_peak_reads": 1,
         "axi_peak_writes": 1,
-        "cpu_request_accepts": 9,
-        "cpu_response_completions": 8,
+        "cpu_request_accepts": 17,
+        "cpu_response_completions": 16,
         "replay_records": 0,
         "protocol_error": 0,
         "fatal_error": 0,
@@ -36016,24 +36311,24 @@
           "l1.metadata_commit": 13,
           "cpu.response_complete": 8,
           "directory_context.retire": 13,
-          "axi.stall": 2,
+          "axi.stall": 5,
           "l2_victim.select": 1,
           "axi.write_address": 1,
-          "axi.write_beat": 1,
+          "axi.write_beat": 4,
           "system.reset_assert": 1,
           "system.reset_cancel": 1
         },
         "stall_cycles": {
           "AR": 1,
-          "W": 1
+          "W": 4
         },
         "mshr_occupancy_histogram": {
-          "0": 256,
+          "0": 262,
           "1": 312
         },
         "directory_context_histogram": {
           "0": 61,
-          "1": 507
+          "1": 513
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
@@ -46017,7 +46312,7 @@
       }
     }
   ],
-  "git_sha": "3a4c720ef11ba9f6be126c97f725a78d276f8a82",
+  "git_sha": "4c83f12d1a5302a5146c4816608ed330fd71458f",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",

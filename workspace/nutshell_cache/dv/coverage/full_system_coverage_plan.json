@@ -494,7 +494,7 @@
       "legal_preconditions": "Both CPU lanes offer legal full-word stores to the exact same cacheable address at the same time.",
       "stimulus_strategy": "Paired same-address stores with distinct values, then read back the address.",
       "required_monitor_event": "Both ownership requests accepted by the Directory and both CPU request lifecycles complete.",
-      "checker": "Independent reference model applies both stores in observed Directory acceptance order; final CPU read must equal the last accepted writer's value.",
+      "checker": "Independent transaction-history checker accepts either legal cross-core store serialization, correlates each Directory request/grant transaction and L1 Modified commit to its CPU response, then requires both cores' later Loads to observe one legal final writer value. Directory order only resynchronizes the stateful scoreboard after correctness checks.",
       "testcases": [
         "test_same_address_dual_core_store_serialization"
       ],

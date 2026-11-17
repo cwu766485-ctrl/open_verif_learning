@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "git_sha": "3a4c720ef11ba9f6be126c97f725a78d276f8a82",
+  "git_sha": "4c83f12d1a5302a5146c4816608ed330fd71458f",
   "tool_versions": {
     "python": "3.12.3",
     "pytest": "9.1.1",
@@ -68,7 +68,7 @@
     "FS.STRESS.AXI_R_ERROR_BEAT_INJECTION": 4
   },
   "required_cross_bins": {
-    "FS.CROSS.CORE0.READ": 445,
+    "FS.CROSS.CORE0.READ": 444,
     "FS.CROSS.CORE1.READ": 454,
     "FS.CROSS.CORE1.WRITE": 283,
     "FS.CROSS.MMIO_WITH_CACHE_TRAFFIC": 1,
@@ -8942,48 +8942,50 @@
           ],
           "monitor": {
             "event_counts": {
-              "cpu.request_accept": 9,
-              "directory.request_accept": 14,
-              "l2.lookup": 9,
-              "directory_context.allocate": 14,
-              "axi.read_address": 8,
-              "directory.same_set_conflict": 986,
-              "mshr.allocate": 8,
-              "axi.read_valid_gap": 832,
-              "axi.read_beat": 64,
-              "l2.refill_start": 8,
-              "l2.line_write_beat": 104,
-              "l2.refill_end": 8,
-              "directory.metadata_commit": 13,
-              "mshr.retire": 8,
-              "directory.grant_accept": 13,
-              "l1.metadata_commit": 13,
-              "cpu.response_complete": 8,
-              "directory_context.retire": 13,
-              "axi.stall": 1,
+              "cpu.request_accept": 17,
+              "directory.request_accept": 15,
+              "l2.lookup": 10,
+              "directory_context.allocate": 15,
+              "axi.read_address": 9,
+              "directory.same_set_conflict": 1118,
+              "mshr.allocate": 9,
+              "axi.read_valid_gap": 945,
+              "axi.read_beat": 72,
+              "l2.refill_start": 9,
+              "l2.line_write_beat": 112,
+              "l2.refill_end": 9,
+              "directory.metadata_commit": 14,
+              "mshr.retire": 9,
+              "directory.grant_accept": 14,
+              "l1.metadata_commit": 14,
+              "cpu.response_complete": 16,
+              "directory_context.retire": 14,
+              "axi.stall": 5,
               "l2_victim.select": 1,
               "axi.write_address": 1,
+              "axi.write_beat": 8,
               "system.reset_assert": 1,
               "system.reset_cancel": 1
             },
             "stall_cycles": {
-              "AR": 1
+              "AR": 1,
+              "W": 4
             },
             "mshr_occupancy_histogram": {
-              "0": 249,
-              "1": 986
+              "0": 314,
+              "1": 1118
             },
             "directory_context_histogram": {
-              "0": 61,
-              "1": 1174
+              "0": 93,
+              "1": 1339
             },
             "max_mshr_occupancy": 1,
             "max_directory_contexts": 1,
             "reset_epoch": 1,
             "axi_peak_reads": 1,
             "axi_peak_writes": 1,
-            "cpu_request_accepts": 9,
-            "cpu_response_completions": 8,
+            "cpu_request_accepts": 17,
+            "cpu_response_completions": 16,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -9005,7 +9007,7 @@
         "test_same_address_dual_core_store_serialization"
       ],
       "checker_testcases": [],
-      "checker": "Independent reference model applies both stores in observed Directory acceptance order; final CPU read must equal the last accepted writer's value.",
+      "checker": "Independent transaction-history checker accepts either legal cross-core store serialization, correlates each Directory request/grant transaction and L1 Modified commit to its CPU response, then requires both cores' later Loads to observe one legal final writer value. Directory order only resynchronizes the stateful scoreboard after correctness checks.",
       "hit_count": 1,
       "pass": true,
       "evidence": [
@@ -9019,7 +9021,7 @@
           ],
           "monitor": {
             "event_counts": {
-              "cpu.request_accept": 3,
+              "cpu.request_accept": 4,
               "directory.request_accept": 3,
               "directory.request_stall": 61,
               "l2.lookup": 1,
@@ -9036,7 +9038,7 @@
               "mshr.retire": 1,
               "directory.grant_accept": 3,
               "l1.metadata_commit": 5,
-              "cpu.response_complete": 3,
+              "cpu.response_complete": 4,
               "directory_context.retire": 3,
               "snoop.accept": 2,
               "directory.snoop_offer": 2,
@@ -9047,11 +9049,11 @@
               "directory_request": 61
             },
             "mshr_occupancy_histogram": {
-              "0": 74,
+              "0": 78,
               "1": 46
             },
             "directory_context_histogram": {
-              "0": 12,
+              "0": 16,
               "1": 108
             },
             "max_mshr_occupancy": 1,
@@ -9059,8 +9061,8 @@
             "reset_epoch": 0,
             "axi_peak_reads": 1,
             "axi_peak_writes": 0,
-            "cpu_request_accepts": 3,
-            "cpu_response_completions": 3,
+            "cpu_request_accepts": 4,
+            "cpu_response_completions": 4,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -11578,7 +11580,7 @@
       "checker_testcases": [],
       "checker": "CPU handshake lifecycle and independent read-data model.",
       "requires_cycle_overlap": false,
-      "hit_count": 445,
+      "hit_count": 444,
       "pass": true,
       "evidence": [
         {
@@ -12498,65 +12500,6 @@
             "axi_peak_writes": 0,
             "cpu_request_accepts": 4,
             "cpu_response_completions": 4,
-            "replay_records": 0,
-            "protocol_error": 0,
-            "fatal_error": 0,
-            "axi_error_count": 0
-          }
-        },
-        {
-          "test_id": "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization",
-          "seed": null,
-          "count": 1,
-          "test_status": "passed",
-          "sample_testcases": [
-            "tests/full_system/test_full_system_signoff.py::test_same_address_dual_core_store_serialization"
-          ],
-          "checked_cross_evidence": [],
-          "monitor": {
-            "event_counts": {
-              "cpu.request_accept": 3,
-              "directory.request_accept": 3,
-              "directory.request_stall": 61,
-              "l2.lookup": 1,
-              "directory_context.allocate": 3,
-              "axi.read_address": 1,
-              "directory.same_set_conflict": 46,
-              "mshr.allocate": 1,
-              "axi.read_valid_gap": 27,
-              "axi.read_beat": 8,
-              "l2.refill_start": 1,
-              "l2.line_write_beat": 24,
-              "l2.refill_end": 1,
-              "directory.metadata_commit": 3,
-              "mshr.retire": 1,
-              "directory.grant_accept": 3,
-              "l1.metadata_commit": 5,
-              "cpu.response_complete": 3,
-              "directory_context.retire": 3,
-              "snoop.accept": 2,
-              "directory.snoop_offer": 2,
-              "coherence.owner_data_beat": 16,
-              "snoop.response": 2
-            },
-            "stall_cycles": {
-              "directory_request": 61
-            },
-            "mshr_occupancy_histogram": {
-              "0": 74,
-              "1": 46
-            },
-            "directory_context_histogram": {
-              "0": 12,
-              "1": 108
-            },
-            "max_mshr_occupancy": 1,
-            "max_directory_contexts": 1,
-            "reset_epoch": 0,
-            "axi_peak_reads": 1,
-            "axi_peak_writes": 0,
-            "cpu_request_accepts": 3,
-            "cpu_response_completions": 3,
             "replay_records": 0,
             "protocol_error": 0,
             "fatal_error": 0,
@@ -20479,24 +20422,24 @@
               "l1.metadata_commit": 13,
               "cpu.response_complete": 8,
               "directory_context.retire": 13,
-              "axi.stall": 2,
+              "axi.stall": 5,
               "l2_victim.select": 1,
               "axi.write_address": 1,
-              "axi.write_beat": 1,
+              "axi.write_beat": 4,
               "system.reset_assert": 1,
               "system.reset_cancel": 1
             },
             "stall_cycles": {
               "AR": 1,
-              "W": 1
+              "W": 4
             },
             "mshr_occupancy_histogram": {
-              "0": 256,
+              "0": 262,
               "1": 312
             },
             "directory_context_histogram": {
               "0": 61,
-              "1": 507
+              "1": 513
             },
             "max_mshr_occupancy": 1,
             "max_directory_contexts": 1,

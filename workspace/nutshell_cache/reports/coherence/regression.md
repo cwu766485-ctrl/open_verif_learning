@@ -1,9 +1,9 @@
 # Dual-L1 MESI Regression Report
 
 - **Status:** PASS
-- **PASS markers:** 219
+- **PASS markers:** 225
 - **Functional coverage:** 38/38 (100.0%)
-- **Code line coverage:** 1697/1837 (92.4%)
+- **Code line coverage:** 1716/1852 (92.7%)
 - **Documented waivers:** 0
 
 Functional bins close only from structured `COV_EVENT` records emitted after the corresponding checker completes; PASS text is informational.
@@ -77,11 +77,11 @@ Logs:
 ## Performance and storage baseline
 
 - L1 hit: 2 average cycles (67 samples)
-- L1 miss: 20 average cycles (3012 samples; 18 cycle penalty vs. hit)
+- L1 miss: 20 average cycles (3014 samples; 18 cycle penalty vs. hit)
 - Read hit: 2 average cycles (50 samples)
 - Write hit (E/M): 3 average cycles (17 samples)
 - S-to-M upgrade: 9 average cycles (1354 samples)
-- Cold L1 miss: 29 average cycles (1658 samples)
+- Cold L1 miss: 29 average cycles (1660 samples)
 - CPU request-ready stalled cycles: 0
 - Remote snoop: 14 average cycles (2756 samples)
 - Configured data capacity: 320 KiB (two 32 KiB L1s plus 256 KiB shared L2)
