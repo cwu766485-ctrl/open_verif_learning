@@ -1,6 +1,6 @@
 ...................                                                      [100%]
-19 passed in 0.10s
-RTL release gate: OPEN; raw zero points=29466; findings=29466
+19 passed in 0.13s
+RTL release gate: OPEN; raw zero points=29420; findings=29420
 OPEN: RCP-BRANCH-20FC8EE28A803ABB11C7: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-C5E2C5A3763B1F9B8551: zero-count point has no review record; OPEN
 OPEN: RCP-BRANCH-C141735F66BF64864BA5: zero-count point has no review record; OPEN

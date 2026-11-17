@@ -1,9 +1,9 @@
 {
   "code_coverage": {
     "lcov": "reports/coherence/coverage.info",
-    "line_hit": 1697,
-    "line_total": 1837,
-    "percent": 92.37887860642351
+    "line_hit": 1716,
+    "line_total": 1852,
+    "percent": 92.65658747300216
   },
   "coverage_event_errors": [],
   "functional_coverage": {
@@ -748,11 +748,11 @@
   "performance_proxy": {
     "cpu_req_ready_stall_cycles": 0,
     "l1_cold_miss_avg_cycles": 29,
-    "l1_cold_miss_count": 1658,
+    "l1_cold_miss_count": 1660,
     "l1_hit_avg_cycles": 2,
     "l1_hit_count": 67,
     "l1_miss_avg_cycles": 20,
-    "l1_miss_count": 3012,
+    "l1_miss_count": 3014,
     "l1_miss_penalty_cycles": 18,
     "read_hit_avg_cycles": 2,
     "read_hit_count": 50,
@@ -788,7 +788,7 @@
     "mmio_resp": 5
   },
   "status": "PASS",
-  "test_pass_markers": 219,
+  "test_pass_markers": 225,
   "waivers": {
     "count": 0,
     "file": "dv/coverage/coherence_waivers.json"

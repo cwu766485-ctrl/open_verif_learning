@@ -1,5 +1,6 @@
 {
-  "completed_utc": "2026-11-15T10:08:20.588098+00:00",
+  "completed_utc": "2026-11-17T02:53:42.918459+00:00",
+  "completion_mode": "all required gates completed; initial runner interruption recovered with individual invocations",
   "required_gates": [
     "coherence_verify",
     "coherence_full_system_verify",
@@ -13,87 +14,95 @@
   "runs": {
     "coherence_coverage_audit": {
       "command": "make COHERENCE_JOBS=2 coherence_coverage_audit",
-      "completed_utc": "2026-11-15T10:06:03.863668+00:00",
+      "completed_utc": "2026-11-17T02:44:46.028557+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_coverage_audit.log",
-      "log_sha256": "9a822695490ebda3af2fe52e1f99074814a040355fc1543cc0a0d9ef9960a513",
+      "log_sha256": "fd70839a91c1ed3d9f6bb7fc437597f81bde15a8074502fd09bd19b247e7dafa",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_full_system_cross_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_cross_closure",
-      "completed_utc": "2026-11-15T09:29:17.928668+00:00",
+      "completed_utc": "2026-11-16T16:55:01.622433+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_full_system_cross_closure.log",
-      "log_sha256": "0cdb9b3b2ff2f89f6255ad678cfc8c17717411d9f77f61502232d883295a66de",
+      "log_sha256": "7402200fa363b0387bec1d2ff712845b19842355ab74eed1e9ada5482812ff92",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_full_system_evidence_gate": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_evidence_gate",
-      "completed_utc": "2026-11-15T10:06:07.977564+00:00",
+      "completed_utc": "2026-11-17T02:45:10.168577+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_full_system_evidence_gate.log",
-      "log_sha256": "39e94da7f7939e50248d95aabe8654d4d47d618d240aefcdb5accc729c4b2aa7",
+      "log_sha256": "49e3d6da1a7fbc109c278b720e7e4273fc2e5a0d22a41422c9db0bf2e0c5e4f8",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_full_system_replay_closure": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_replay_closure",
-      "completed_utc": "2026-11-15T10:08:20.587237+00:00",
+      "completed_utc": "2026-11-17T02:50:28.716507+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_full_system_replay_closure.log",
-      "log_sha256": "c8967cc6879160d88001b1aca42802c4648f36e9e386c419b0ff00c2c17d5774",
+      "log_sha256": "28033ca3d484024caef54a8fe9beb3a0fc7fe9c193b2e2c3b71cb2eaf99a2351",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_full_system_stress": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_stress",
-      "completed_utc": "2026-11-15T09:59:47.350334+00:00",
+      "completed_utc": "2026-11-16T17:28:36.002562+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_full_system_stress.log",
-      "log_sha256": "97733772ed306bda0bde8c25aab080db3974b8bcce1e853f403014cec9be748a",
+      "log_sha256": "ead42e3ba2db47b74d231ff36f7f5f64f7a9d13a67dc63d6e7e743ae94a85d2d",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_full_system_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_full_system_verify",
-      "completed_utc": "2026-11-15T09:22:59.965172+00:00",
+      "completed_utc": "2026-11-16T16:47:30.275981+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_full_system_verify.log",
-      "log_sha256": "22fcf2ef5e021f2c831f63e864be20475edbae87afaf0bff16dafc03db4e38f0",
+      "log_sha256": "2b9a278ca68e8993b17b666a0c513e22638cf2e65f28d6330e6245b4ed79e6e9",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_hit_under_miss": {
       "command": "make COHERENCE_JOBS=2 coherence_hit_under_miss",
-      "completed_utc": "2026-11-15T09:27:01.362609+00:00",
+      "completed_utc": "2026-11-16T16:52:27.960172+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_hit_under_miss.log",
-      "log_sha256": "1eca858fb75322384688991edf0d261f4d7ddbdafde370058cb1423e4846c9c9",
+      "log_sha256": "4a506bcbf6bffa1c389fc00d954122a6da71701613d291bf37ef5664b84b06bb",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     },
     "coherence_verify": {
       "command": "make COHERENCE_JOBS=2 coherence_verify",
-      "completed_utc": "2026-11-15T09:03:24.511097+00:00",
+      "completed_utc": "2026-11-16T16:21:20.055532+00:00",
+      "execution_record": "individually completed; orchestration runner was interrupted after stress",
       "log": "reports/closure/release_runs/coherence_verify.log",
-      "log_sha256": "a6edd4f992a64e8608bf1ceba47d5004b4522398a8c328a79a3815136e32781c",
+      "log_sha256": "557cf1dc4ec976109e325b27324b2d60463b244f21982cd311fe2ffff59b4908",
       "result": "PASS",
       "returncode": 0,
-      "source_fingerprint_after": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-      "source_fingerprint_before": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb"
+      "source_fingerprint_after": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+      "source_fingerprint_before": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5"
     }
   },
   "schema_version": 1,
-  "source_fingerprint": "e86c8380271a1531a44cbd21caac37182e5441023b4c3d6264b09436bc27a8eb",
-  "started_utc": "2026-11-15T08:46:16.791913+00:00",
-  "updated_utc": "2026-11-15T10:08:20.587254+00:00"
+  "source_fingerprint": "764db6959c66632e8f882699d2bda2973e69268f910e968bb4a28c6fa9eeb5f5",
+  "started_utc": "2026-11-16T15:56:16.209006+00:00",
+  "updated_utc": "2026-11-17T02:53:42.918459+00:00"
 }

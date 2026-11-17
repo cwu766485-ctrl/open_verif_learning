@@ -1,3 +1,1 @@
-make[1]: Entering directory '/home/preston/workspace/open_verif_learning_c9/workspace/nutshell_cache'
-Full-system evidence gate PASS: SHA=a246f2cce3d4b706b3c0bdd60dded625ad121133 runs=71 bins=53 crosses=37
-make[1]: Leaving directory '/home/preston/workspace/open_verif_learning_c9/workspace/nutshell_cache'
+Full-system evidence gate PASS: SHA=4c83f12d1a5302a5146c4816608ed330fd71458f runs=71 bins=53 crosses=37
