@@ -349,9 +349,24 @@ class FullSystemMonitor:
                         txn_id=_bits(d.monitor_dir_req_accept_txn_id))
         if (_bits(d.monitor_dir_req_live_valid) and
                 not _bits(d.monitor_dir_req_live_ready)):
+            incoming_addr = _bits(d.monitor_dir_req_live_addr)
+            active_addr = _bits(d.monitor_engine_addr)
             self.stall_cycles["directory_request"] += 1
-            self._event("directory", "request_stall",
-                        address=_bits(d.monitor_dir_req_live_addr))
+            active_refills = _bits(d.monitor_mem_mshr_valid).bit_count()
+            incoming_set = (incoming_addr >> 6) & 0x1FF
+            active_set = (active_addr >> 6) & 0x1FF
+            self._event("directory", "request_stall", address=incoming_addr)
+            # A same-set Directory lookup can be held off before its Snoop
+            # becomes valid. During the memory wait, SharedLineEngine is
+            # idle while the refill MSHR retains the active line address.
+            # Looking only at dir_snoop_valid && snoop_set_conflict misses
+            # this admission conflict because no Snoop is offered yet.
+            if (active_refills and incoming_set == active_set):
+                self._event(
+                    "directory", "same_set_conflict",
+                    address=incoming_addr, active_address=active_addr,
+                    set_index=incoming_set, conflict_source="refill_lookup",
+                    active_mshr_count=active_refills)
         if (_bits(d.monitor_dir_xfer_live_valid) and
                 not _bits(d.monitor_dir_xfer_live_ready)):
             self.stall_cycles["directory_transfer"] += 1
@@ -415,13 +430,12 @@ class FullSystemMonitor:
         if _bits(d.monitor_dir_snoop_valid):
             self._event("directory", "snoop_offer",
                         data_to_l2=_bits(d.monitor_dir_snoop_data_to_l2))
-        # The L2 exposes a combinational set-conflict indication even when
-        # the directory is not presenting a Snoop. Count it as a protocol
-        # conflict only during an actual Snoop offer; otherwise idle address
-        # decode can create a false coverage event.
+        # Preserve observability of a Snoop blocked by an active refill. This
+        # differs from a Directory lookup conflict, where the request is held
+        # before any Snoop offer exists.
         if (_bits(d.monitor_dir_snoop_valid) and
                 _bits(d.monitor_snoop_set_conflict)):
-            self._event("directory", "same_set_conflict")
+            self._event("directory", "snoop_set_conflict")
 
         mshr = _bits(d.monitor_mem_mshr_valid).bit_count()
         contexts = _bits(d.monitor_directory_active_contexts).bit_count()

@@ -333,7 +333,8 @@ async def test_same_set_directory_conflict_overlaps_axi_ar_stall(full_system_env
     owner_line = owner_addr & ~0x3F
     conflicts = [event for event in events
                  if event["source"] == "directory" and
-                 event["event_type"] == "same_set_conflict"]
+                 event["event_type"] == "same_set_conflict" and
+                 event.get("conflict_source") == "refill_lookup"]
     ar_stalls = [event for event in events
                  if event["source"] == "axi" and
                  event["event_type"] == "stall" and
@@ -362,6 +363,12 @@ async def test_same_set_directory_conflict_overlaps_axi_ar_stall(full_system_env
     assert [event["last"] for event in r_beats] == [0] * 7 + [1]
     assert ar_stalls, "configured AXI AR backpressure was not observed"
     assert conflicts, "Directory same-set interlock was not observed"
+    assert all(event["address"] == owner_line and
+               event["active_address"] == refill_line and
+               event["set_index"] == ((owner_line >> 6) & 0x1FF)
+               for event in conflicts), (
+        "same-set lookup interlock did not identify the incoming and active lines"
+    )
     overlap_conflict, overlap_stall = next(
         ((conflict, stall) for conflict in conflicts for stall in ar_stalls
          if conflict["cycle"] == stall["cycle"]), (None, None)

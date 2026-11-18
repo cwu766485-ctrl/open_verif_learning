@@ -934,12 +934,12 @@
       "required": true,
       "legal_preconditions": "A legal M owner exists on a line and a different cold refill maps to the same L2 set; the peer owner request waits behind the same-set interlock while AXI AR is stalled.",
       "stimulus_strategy": "Seeded random owner core, line offset, data, AR stall cadence and Snoop request delay; paired refill and peer GetS use normal CPU interfaces.",
-      "checker": "Independent CPU/reference model; AXI ID and eight-beat/RLAST checker; MSHR lifecycle; owner Snoop/data and metadata checks; exact-cycle same-set-conflict/AR-stall overlap checker.",
+      "checker": "Independent CPU/reference model; AXI ID and eight-beat/RLAST checker; MSHR lifecycle; owner Snoop/data and metadata checks; exact-cycle blocked Directory lookup on the active refill L2 set overlapping AR stall, with both addresses checked.",
       "status": "implemented",
       "testcases": [
         "tests/full_system/test_cross_agent_directed.py::test_same_set_directory_conflict_overlaps_axi_ar_stall"
       ],
-      "required_monitor_event": "Directory same-set conflict coincident with AXI AR stall during an active refill MSHR, plus CPU, Snoop, L1 and Directory outcomes.",
+      "required_monitor_event": "A live Directory request is blocked before Snoop issue because the active refill owns the shared lookup path; incoming and refill lines have the same L2 set and the block coincides with AXI AR stall, plus CPU, Snoop, L1 and Directory outcomes.",
       "required_monitor_events": [
         "cpu.request_accept",
         "cpu.response_complete",
