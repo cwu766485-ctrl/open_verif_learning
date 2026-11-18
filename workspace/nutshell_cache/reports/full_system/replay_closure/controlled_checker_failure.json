@@ -6,7 +6,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 110,
-        "event_index": 164,
+        "event_index": 104,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 1
@@ -33,7 +33,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 110,
-        "event_index": 164,
+        "event_index": 104,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 1
@@ -60,7 +60,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 110,
-        "event_index": 164,
+        "event_index": 104,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 1
@@ -96,7 +96,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 110,
-        "event_index": 164,
+        "event_index": 104,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 1
@@ -121,7 +121,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 60,
-        "event_index": 89,
+        "event_index": 57,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 0
@@ -152,7 +152,7 @@
         "address": 16787520,
         "core": 0,
         "cycle": 60,
-        "event_index": 89,
+        "event_index": 57,
         "event_type": "accept",
         "source": "snoop",
         "txn_id": 0
@@ -182,7 +182,7 @@
     "address": 16787520,
     "core": 0,
     "cycle": 110,
-    "event_index": 164,
+    "event_index": 104,
     "event_type": "accept",
     "source": "snoop",
     "txn_id": 1
@@ -208,7 +208,7 @@
     "address": 16787520,
     "core": 0,
     "cycle": 60,
-    "event_index": 89,
+    "event_index": 57,
     "event_type": "accept",
     "source": "snoop",
     "txn_id": 0
@@ -266,6 +266,39 @@
       "request_group": 0,
       "reset_epoch": 0,
       "source": "cpu_driver",
+      "txn_id": 0
+    },
+    {
+      "active": true,
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 1,
+      "cycle": 2,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "cycle": 2,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
       "txn_id": 0
     },
     {
@@ -343,18 +376,6 @@
       "context_id": null,
       "core": null,
       "cycle": 6,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 6,
       "event_type": "allocate",
       "occupancy": 1,
       "outcome": "observed",
@@ -381,18 +402,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 7,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 8,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -400,18 +409,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 8,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -431,18 +428,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 9,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 10,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -450,18 +435,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 10,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -481,18 +454,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 11,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 12,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -500,18 +461,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 12,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -531,18 +480,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 13,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 14,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -550,18 +487,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 14,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -581,18 +506,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 15,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 16,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -600,18 +513,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 16,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -631,18 +532,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 17,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 18,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -650,18 +539,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 18,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -681,18 +558,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 19,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 20,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -700,18 +565,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 20,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -731,18 +584,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 21,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 22,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -750,18 +591,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 22,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -781,18 +610,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 23,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 24,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -800,30 +617,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 24,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 25,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -843,18 +636,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 26,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787528,
       "beat": 1,
       "context_id": null,
@@ -869,18 +650,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 27,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787536,
@@ -899,18 +668,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 28,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787544,
       "beat": 3,
       "context_id": null,
@@ -925,18 +682,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 29,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787552,
@@ -955,18 +700,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 30,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787560,
       "beat": 5,
       "context_id": null,
@@ -981,18 +714,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 31,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787568,
@@ -1011,18 +732,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 32,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787576,
       "beat": 7,
       "context_id": null,
@@ -1037,42 +746,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 33,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 34,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 35,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787520,
@@ -1101,18 +774,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 36,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 1,
       "context_id": null,
@@ -1124,18 +785,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 37,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -1153,18 +802,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 38,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 3,
       "context_id": null,
@@ -1176,18 +813,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 39,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -1205,18 +830,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 40,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 5,
       "context_id": null,
@@ -1228,18 +841,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 41,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -1257,18 +858,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 42,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 7,
       "context_id": null,
@@ -1280,18 +869,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 43,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -1376,7 +953,9 @@
       "data": 1161981756646129953,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 0,
@@ -1432,6 +1011,72 @@
       "reset_epoch": 0,
       "source": "directory_context",
       "txn_id": null
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "cycle": 57,
+      "entry": 0,
+      "event_type": "deactivate",
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": false,
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 0,
+      "cycle": 57,
+      "entry": 0,
+      "event_type": "retire",
+      "issued": false,
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": true,
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "core_occupancy": 1,
+      "cycle": 58,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "cycle": 58,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
     },
     {
       "address": 16787520,
@@ -1804,7 +1449,9 @@
       "data": 11651590505119605850,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 0,
@@ -1887,6 +1534,39 @@
       "txn_id": 0
     },
     {
+      "active": true,
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 1,
+      "cycle": 2,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "cycle": 2,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
       "address": 16787520,
       "context_id": null,
       "core": null,
@@ -1961,18 +1641,6 @@
       "context_id": null,
       "core": null,
       "cycle": 6,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 6,
       "event_type": "allocate",
       "occupancy": 1,
       "outcome": "observed",
@@ -1999,18 +1667,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 7,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 8,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2018,18 +1674,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 8,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2049,18 +1693,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 9,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 10,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2068,18 +1700,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 10,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2099,18 +1719,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 11,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 12,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2118,18 +1726,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 12,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2149,18 +1745,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 13,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 14,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2168,18 +1752,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 14,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2199,18 +1771,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 15,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 16,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2218,18 +1778,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 16,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2249,18 +1797,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 17,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 18,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2268,18 +1804,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 18,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2299,18 +1823,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 19,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 20,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2318,18 +1830,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 20,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2349,18 +1849,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 21,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 22,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2368,18 +1856,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 22,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2399,18 +1875,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 23,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 24,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -2418,30 +1882,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 24,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 25,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2461,18 +1901,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 26,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787528,
       "beat": 1,
       "context_id": null,
@@ -2487,18 +1915,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 27,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787536,
@@ -2517,18 +1933,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 28,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787544,
       "beat": 3,
       "context_id": null,
@@ -2543,18 +1947,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 29,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787552,
@@ -2573,18 +1965,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 30,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787560,
       "beat": 5,
       "context_id": null,
@@ -2599,18 +1979,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 31,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787568,
@@ -2629,18 +1997,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 32,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787576,
       "beat": 7,
       "context_id": null,
@@ -2655,42 +2011,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 33,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 34,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 35,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16787520,
@@ -2719,18 +2039,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 36,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 1,
       "context_id": null,
@@ -2742,18 +2050,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 37,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2771,18 +2067,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 38,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 3,
       "context_id": null,
@@ -2794,18 +2078,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 39,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2823,18 +2095,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 40,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 5,
       "context_id": null,
@@ -2846,18 +2106,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 41,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2875,18 +2123,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 42,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16787520,
       "beat": 7,
       "context_id": null,
@@ -2898,18 +2134,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 43,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -2994,7 +2218,9 @@
       "data": 1161981756646129953,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 0,
@@ -3050,6 +2276,72 @@
       "reset_epoch": 0,
       "source": "directory_context",
       "txn_id": null
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "cycle": 57,
+      "entry": 0,
+      "event_type": "deactivate",
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": false,
+      "address": 16787528,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 0,
+      "cycle": 57,
+      "entry": 0,
+      "event_type": "retire",
+      "issued": false,
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": true,
+      "address": 16791616,
+      "context_id": null,
+      "core": 1,
+      "core_occupancy": 1,
+      "cycle": 58,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16791616,
+      "context_id": null,
+      "core": 1,
+      "cycle": 58,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
     },
     {
       "address": 16791616,
@@ -3126,18 +2418,6 @@
       "context_id": null,
       "core": null,
       "cycle": 62,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 62,
       "event_type": "allocate",
       "occupancy": 1,
       "outcome": "observed",
@@ -3164,18 +2444,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 63,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 64,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3183,18 +2451,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 64,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3214,18 +2470,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 65,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 66,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3233,18 +2477,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 66,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3264,18 +2496,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 67,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 68,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3283,18 +2503,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 68,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3314,18 +2522,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 69,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 70,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3333,18 +2529,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 70,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3364,18 +2548,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 71,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 72,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3383,18 +2555,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 72,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3414,18 +2574,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 73,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 74,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -3433,30 +2581,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 74,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 75,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3476,18 +2600,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 76,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791624,
       "beat": 1,
       "context_id": null,
@@ -3502,18 +2614,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 77,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16791632,
@@ -3532,18 +2632,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 78,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791640,
       "beat": 3,
       "context_id": null,
@@ -3558,18 +2646,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 79,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16791648,
@@ -3588,18 +2664,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 80,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791656,
       "beat": 5,
       "context_id": null,
@@ -3614,18 +2678,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 81,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16791664,
@@ -3644,18 +2696,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 82,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791672,
       "beat": 7,
       "context_id": null,
@@ -3670,42 +2710,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 83,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 84,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 85,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16791616,
@@ -3734,18 +2738,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 86,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791616,
       "beat": 1,
       "context_id": null,
@@ -3757,18 +2749,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 87,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3786,18 +2766,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 88,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791616,
       "beat": 3,
       "context_id": null,
@@ -3809,18 +2777,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 89,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3838,18 +2794,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 90,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791616,
       "beat": 5,
       "context_id": null,
@@ -3861,18 +2805,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 91,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -3890,18 +2822,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 92,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16791616,
       "beat": 7,
       "context_id": null,
@@ -3913,18 +2833,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 93,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -4009,7 +2917,9 @@
       "data": 1161981756646151307,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 0,
@@ -4066,6 +2976,72 @@
       "txn_id": null
     },
     {
+      "address": 16791616,
+      "context_id": null,
+      "core": 1,
+      "cycle": 107,
+      "entry": 0,
+      "event_type": "deactivate",
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": false,
+      "address": 16791616,
+      "context_id": null,
+      "core": 1,
+      "core_occupancy": 0,
+      "cycle": 107,
+      "entry": 0,
+      "event_type": "retire",
+      "issued": false,
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "active": true,
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "core_occupancy": 1,
+      "cycle": 108,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "cycle": 108,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
       "address": 16787520,
       "context_id": null,
       "core": null,
@@ -4105,6 +3081,20 @@
       "reset_epoch": 0,
       "source": "directory_context",
       "txn_id": null
+    },
+    {
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "cycle": 110,
+      "entry": 0,
+      "event_type": "txn_assign",
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 1
     },
     {
       "address": 16787520,
@@ -4436,7 +3426,9 @@
       "data": 11651590505119605850,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 1,
@@ -4494,6 +3486,72 @@
       "txn_id": null
     },
     {
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "cycle": 135,
+      "entry": 0,
+      "event_type": "deactivate",
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 1
+    },
+    {
+      "active": false,
+      "address": 16787528,
+      "context_id": null,
+      "core": 1,
+      "core_occupancy": 0,
+      "cycle": 135,
+      "entry": 0,
+      "event_type": "retire",
+      "issued": false,
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 2,
+      "source": "l1_mshr",
+      "txn_id": 1
+    },
+    {
+      "active": true,
+      "address": 16795712,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 1,
+      "cycle": 136,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16795712,
+      "context_id": null,
+      "core": 0,
+      "cycle": 136,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
       "address": 16795712,
       "context_id": null,
       "core": null,
@@ -4524,6 +3582,20 @@
     {
       "address": 16795712,
       "context_id": null,
+      "core": 0,
+      "cycle": 138,
+      "entry": 0,
+      "event_type": "txn_assign",
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 1
+    },
+    {
+      "address": 16795712,
+      "context_id": null,
       "core": null,
       "cycle": 138,
       "event_type": "lookup",
@@ -4532,18 +3604,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 140,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -4593,18 +3653,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 141,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 142,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -4612,18 +3660,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 142,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -4643,18 +3679,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 143,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 144,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -4662,18 +3686,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 144,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -4693,18 +3705,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 145,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 146,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -4718,18 +3718,6 @@
       "address": null,
       "context_id": null,
       "core": null,
-      "cycle": 146,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
       "cycle": 147,
       "event_type": "read_valid_gap",
       "outcome": "observed",
@@ -4737,30 +3725,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "axi",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 147,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 148,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -4780,18 +3744,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 149,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795720,
       "beat": 1,
       "context_id": null,
@@ -4806,18 +3758,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 150,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16795728,
@@ -4836,18 +3776,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 151,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795736,
       "beat": 3,
       "context_id": null,
@@ -4862,18 +3790,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 152,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16795744,
@@ -4892,18 +3808,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 153,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795752,
       "beat": 5,
       "context_id": null,
@@ -4918,18 +3822,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 154,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16795760,
@@ -4948,18 +3840,6 @@
       "txn_id": 0
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 155,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795768,
       "beat": 7,
       "context_id": null,
@@ -4974,42 +3854,6 @@
       "response": 0,
       "source": "axi",
       "txn_id": 0
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 156,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 157,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 158,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
     },
     {
       "address": 16795712,
@@ -5038,18 +3882,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 159,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795712,
       "beat": 1,
       "context_id": null,
@@ -5061,18 +3893,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 160,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -5090,18 +3910,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 161,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795712,
       "beat": 3,
       "context_id": null,
@@ -5113,18 +3921,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 162,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -5142,18 +3938,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 163,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795712,
       "beat": 5,
       "context_id": null,
@@ -5165,18 +3949,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 164,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -5194,18 +3966,6 @@
       "txn_id": null
     },
     {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 165,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
-      "txn_id": null
-    },
-    {
       "address": 16795712,
       "beat": 7,
       "context_id": null,
@@ -5217,18 +3977,6 @@
       "payload": null,
       "reset_epoch": 0,
       "source": "l2",
-      "txn_id": null
-    },
-    {
-      "address": null,
-      "context_id": null,
-      "core": null,
-      "cycle": 166,
-      "event_type": "same_set_conflict",
-      "outcome": "observed",
-      "payload": null,
-      "reset_epoch": 0,
-      "source": "directory",
       "txn_id": null
     },
     {
@@ -5313,7 +4061,9 @@
       "data": 1161981756646108020,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 1,
@@ -5370,6 +4120,86 @@
       "txn_id": null
     },
     {
+      "address": 16795712,
+      "context_id": null,
+      "core": 0,
+      "cycle": 180,
+      "entry": 0,
+      "event_type": "deactivate",
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 1
+    },
+    {
+      "active": false,
+      "address": 16795712,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 0,
+      "cycle": 180,
+      "entry": 0,
+      "event_type": "retire",
+      "issued": false,
+      "occupancy": 0,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 1
+    },
+    {
+      "active": true,
+      "address": 16791616,
+      "context_id": null,
+      "core": 0,
+      "core_occupancy": 1,
+      "cycle": 181,
+      "entry": 0,
+      "event_type": "allocate",
+      "issued": true,
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16791616,
+      "context_id": null,
+      "core": 0,
+      "cycle": 181,
+      "entry": 0,
+      "event_type": "dispatch",
+      "occupancy": 1,
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
+      "address": 16791616,
+      "context_id": null,
+      "core": 0,
+      "cycle": 181,
+      "entry": 0,
+      "event_type": "txn_assign",
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 0
+    },
+    {
       "address": 16791616,
       "context_id": null,
       "core": null,
@@ -5409,6 +4239,20 @@
       "reset_epoch": 0,
       "source": "directory_context",
       "txn_id": null
+    },
+    {
+      "address": 16791616,
+      "context_id": null,
+      "core": 0,
+      "cycle": 183,
+      "entry": 0,
+      "event_type": "txn_assign",
+      "outcome": "observed",
+      "payload": null,
+      "reset_epoch": 0,
+      "slot": 0,
+      "source": "l1_mshr",
+      "txn_id": 2
     },
     {
       "address": 16791616,
@@ -5740,7 +4584,9 @@
       "data": 1161981756646151307,
       "event_type": "response_complete",
       "outcome": "observed",
-      "payload": null,
+      "payload": {
+        "observed_by": "cpu_driver"
+      },
       "reset_epoch": 0,
       "source": "cpu",
       "txn_id": 2,
@@ -5752,7 +4598,7 @@
     "address": 16787520,
     "core": 0,
     "cycle": 110,
-    "event_index": 164,
+    "event_index": 104,
     "event_type": "accept",
     "source": "snoop",
     "txn_id": 1
@@ -5761,5 +4607,5 @@
   "scenario": "M Owner remote read with injected checker expected-data bit flip",
   "schema_version": 2,
   "seed": 61857,
-  "source_sha": "3a4c720ef11ba9f6be126c97f725a78d276f8a82"
+  "source_sha": "a2473e0b4a460f96803b5c8dfc0c64e292e0637d"
 }
