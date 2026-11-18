@@ -2,6 +2,11 @@
 
 所有记录按时间倒序，简要说明变更、发现的问题和修复思路。
 
+## 2026-11-18
+
+- **复核 v1.3 两入口 MSHR 的真实并发边界。** 在 `codex/v1.3-nonblocking-l1`、源码基线 `06572c0f` 重跑 `coherence_nonblocking_l1_mshr`（5/5 PASS）和 `coherence_hit_under_miss`（Python 2/2、AXI Top 3/3 PASS）。四个 L1 tracking entry 可在首个 CPU 响应前同时有效 381 个采样周期，但 issued L1 controller、Directory Context、Refill MSHR、AXI R outstanding 峰值分别只有 2/2/2/2。根因是每核仍只有一个 `MesiL1Controller`，第二个 entry 要等第一个 miss 响应退休后再派发；所以槽位容量不能当成同核 Miss-under-Miss 或四笔下游并发的证据。
+- **冻结 v1.3 Phase 2 Miss-under-Miss 设计契约。** 新增 `docs/l1_miss_under_miss_v1_3_phase2_contract.md`，明确保持 CPU 接口、同核 miss 响应按接受顺序、将本地顺序号与 Directory/Grant/Refill 使用的事务 ID 分开、双槽满时反压、同地址暂不合并、同 Set 初始串行，并列出 L1 阵列端口仲裁、Snoop/Replacement/Reset 冲突和逐资源 Checker。主 Spec、Testplan、DV 记录已链接该契约；目标场景仍标 OPEN，没有增加/伪造 Coverage Bin，也没有改 RTL。
+
 ## 2026-11-04
 
 - **闭环配对 Miss 顺序、同 Set 重复替换和 refill MSHR 生命周期。** 新增独立 `MshrLifecycleChecker`，仅使用 handshake Monitor 事件和 CPU 返回值关联 MSHR slot/AXI ID、Line 地址、8 拍 R burst、8 拍 L2 refill、Directory grant 和最终 CPU 响应；新增同 Set 的反序配对冷 Miss 和两轮配对替换场景。首轮测试发现同 Set interlock 会串行执行两笔 Miss，并在 burst 完成后复用相同 AXI ID；Checker 原先只按 ID 聚合，错误把两条 Line 的 16 个 R beat 当作一次 burst。改为按 `ID + Line` 区分 burst，并检查从 Directory 接收到 CPU 返回的时序。完整 `make coherence_full_system_coverage` 通过：45 passed、1 条条件性 Trace Replay 跳过；Required Functional 42/42、Cross 20/20。仅为 DV/文档/覆盖报告变更，RTL 功能和接口未改。

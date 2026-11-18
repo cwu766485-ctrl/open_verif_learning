@@ -58,3 +58,15 @@ address/data/order checker.
 
 Architecture details and lifecycle rules are in
 [`l1_2entry_mshr_v2_proposal.md`](l1_2entry_mshr_v2_proposal.md).
+
+## Next increment: true same-L1 Miss-under-Miss (OPEN)
+
+The current v1.3 implementation is a two-entry acceptance tracker with one
+issued miss per L1. The proposed next increment is defined separately in
+[`l1_miss_under_miss_v1_3_phase2_contract.md`](l1_miss_under_miss_v1_3_phase2_contract.md).
+That contract keeps the CPU interface unchanged, retains FIFO ordering among
+miss responses from the same core, and requires separate local order sequence
+and live coherence transaction ID association. It also requires explicit
+single-port L1 array arbitration and per-resource concurrency evidence. Until
+the directed tests in that contract pass on the modified RTL, same-L1
+Miss-under-Miss and four simultaneous downstream requests remain unsupported.

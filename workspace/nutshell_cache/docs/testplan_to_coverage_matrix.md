@@ -172,6 +172,26 @@ Do not infer four downstream transactions from four valid L1 entries. The
 current per-core MESI controller dispatches one miss at a time. Directory,
 refill-MSHR and AXI peaks are separate measurements, not coverage substitutes.
 
+### v1.3 Phase 2 target: same-L1 Miss-under-Miss (not implemented)
+
+The proposed acceptance/issue/response and array arbitration contract is in
+[`l1_miss_under_miss_v1_3_phase2_contract.md`](l1_miss_under_miss_v1_3_phase2_contract.md).
+These rows are planned obligations only. They do not add or close existing
+Functional/Cross bin IDs.
+
+| Feature | Testpoint | Required observation | Checker / status |
+|---|---|---|---|
+| Same-L1 concurrency | Two independent different-set misses accepted by one core before first CPU response | Two distinct live MSHRs are both Directory-accepted; response order remains FIFO | Independent MSHR/Directory/data checker; OPEN |
+| Four-miss overlap | CPU0 A/B and CPU1 C/D cold misses | Four issued L1 MSHRs before first response; report Directory, refill and AXI peaks independently | Full-system monitor + independent checker; OPEN |
+| Refill association | Same-core refill IDs return out of issue order | Beat/line/ID association correct; CPU miss responses remain in acceptance order | MSHR lifecycle scoreboard; OPEN |
+| Array arbitration | Hit, refill, store, snoop and replacement target shared ports | No stale read, duplicate victim, partial-line observation or lost write | Array protocol checker; OPEN |
+| Resource boundary | Two MSHRs full, third request held | Stable request payload and exactly one acceptance after retirement | CPU handshake + MSHR lifecycle checker; OPEN |
+| Conflicts and recovery | Same-line, same-set, live snoop, PutM replacement, reset with two misses | Defined retry/serialization, no stale response, and forward progress | Independent MESI/data checker; OPEN |
+
+Until these checks pass, the existing measured limits remain one issued miss per
+L1 and a peak of two issued misses across the two-core subsystem in the
+four-entry occupancy test.
+
 **Stale Upgrade recovery:** `test_python_stale_upgrade_recovers_after_peer_invalidation`
 starts from an independently established S/S line, queues two competing
 Upgrade requests, and checks that the second request is serviced as a
