@@ -137,6 +137,11 @@ module CoherentCacheAxiPythonWrapper (
   output logic [5:0] monitor_l1_snoop_state,
   output logic [63:0] monitor_cpu_active_addr,
   output logic [7:0] monitor_l1_replace_state,
+  output logic [3:0] monitor_l1_mshr_valid,
+  output logic [3:0] monitor_l1_mshr_active,
+  output logic [3:0] monitor_l1_mshr_issued,
+  output logic [127:0] monitor_l1_mshr_addr,
+  output logic [11:0] monitor_l1_mshr_txn_id,
   output logic [1:0] monitor_l2_victim_valid,
   output logic [31:0] monitor_l2_victim_addr,
   output logic [1:0] monitor_l2_victim_dir_state,
@@ -300,6 +305,11 @@ module CoherentCacheAxiPythonWrapper (
   assign monitor_l1_snoop_state = dut.cache_core.monitor_l1_snoop_state;
   assign monitor_cpu_active_addr = dut.cache_core.monitor_cpu_active_addr;
   assign monitor_l1_replace_state = dut.cache_core.monitor_l1_replace_state;
+  assign monitor_l1_mshr_valid = dut.cache_core.monitor_l1_mshr_valid;
+  assign monitor_l1_mshr_active = dut.cache_core.monitor_l1_mshr_active;
+  assign monitor_l1_mshr_issued = dut.cache_core.monitor_l1_mshr_issued;
+  assign monitor_l1_mshr_addr = dut.cache_core.monitor_l1_mshr_addr;
+  assign monitor_l1_mshr_txn_id = dut.cache_core.monitor_l1_mshr_txn_id;
   assign monitor_l2_victim_valid = dut.cache_core.l2_victim_valid;
   assign monitor_l2_victim_addr = dut.cache_core.l2_victim_addr;
   assign monitor_l2_victim_dir_state = dut.cache_core.l2_victim_dir_state;

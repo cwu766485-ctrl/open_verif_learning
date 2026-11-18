@@ -94,6 +94,11 @@ module CoherentCachePythonWrapper (
   output logic [5:0] monitor_l1_snoop_state,
   output logic [63:0] monitor_cpu_active_addr,
   output logic [7:0] monitor_l1_replace_state,
+  output logic [3:0] monitor_l1_mshr_valid,
+  output logic [3:0] monitor_l1_mshr_active,
+  output logic [3:0] monitor_l1_mshr_issued,
+  output logic [127:0] monitor_l1_mshr_addr,
+  output logic [11:0] monitor_l1_mshr_txn_id,
 
   output logic mem_rd_req_valid,
   input  logic mem_rd_req_ready,
@@ -327,7 +332,12 @@ module CoherentCachePythonWrapper (
     .monitor_cpu_state(monitor_cpu_state),
     .monitor_l1_snoop_state(monitor_l1_snoop_state),
     .monitor_cpu_active_addr(monitor_cpu_active_addr),
-    .monitor_l1_replace_state(monitor_l1_replace_state)
+    .monitor_l1_replace_state(monitor_l1_replace_state),
+    .monitor_l1_mshr_valid(monitor_l1_mshr_valid),
+    .monitor_l1_mshr_active(monitor_l1_mshr_active),
+    .monitor_l1_mshr_issued(monitor_l1_mshr_issued),
+    .monitor_l1_mshr_addr(monitor_l1_mshr_addr),
+    .monitor_l1_mshr_txn_id(monitor_l1_mshr_txn_id)
   );
 
   assign monitor_dir_grant_accept_txn_id = monitor_dir_grant_accept_txn_id_u;

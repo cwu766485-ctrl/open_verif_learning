@@ -2,6 +2,7 @@
 
 import json
 import importlib.metadata
+import hashlib
 import os
 import platform
 import shutil
@@ -55,6 +56,47 @@ def _tool_versions():
     return versions
 
 
+def _source_snapshot(repo):
+    """Fingerprint tracked and untracked source edits against the Git HEAD.
+
+    Regression JSON is often produced from a deliberately dirty working tree.
+    Recording only ``git rev-parse HEAD`` would incorrectly attribute that
+    result to the committed source. Keep generated reports/build products out
+    of the fingerprint, but include all code, test, build and documentation
+    paths used by the regression.
+    """
+    diff = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--binary", "HEAD", "--",
+         "Makefile", "docs", "dv", "rtl", "tests"],
+        check=True, capture_output=True,
+    ).stdout
+    untracked = subprocess.run(
+        ["git", "-C", str(repo), "ls-files", "--others", "--exclude-standard",
+         "--", "Makefile", "docs", "dv", "rtl", "tests"],
+        check=True, capture_output=True, text=True,
+    ).stdout.splitlines()
+    untracked_hash = hashlib.sha256()
+    for relative in sorted(untracked):
+        path = repo / relative
+        if not path.is_file():
+            continue
+        untracked_hash.update(relative.encode("utf-8"))
+        untracked_hash.update(b"\0")
+        untracked_hash.update(path.read_bytes())
+        untracked_hash.update(b"\0")
+    dirty = subprocess.run(
+        ["git", "-C", str(repo), "status", "--porcelain", "--",
+         "Makefile", "docs", "dv", "rtl", "tests"],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    return {
+        "working_tree_dirty": bool(dirty),
+        "source_diff_sha256": hashlib.sha256(diff).hexdigest(),
+        "untracked_source_files": sorted(untracked),
+        "untracked_source_sha256": untracked_hash.hexdigest(),
+    }
+
+
 def pytest_configure(config):
     config._full_system_envs = []
 
@@ -98,8 +140,29 @@ def pytest_sessionfinish(session, exitstatus):
                 "directory_context_histogram": dict(
                     env.monitor.directory_context_histogram
                 ),
+                "l1_mshr_occupancy_histogram": dict(
+                    env.monitor.l1_mshr_occupancy_histogram
+                ),
+                "l1_mshr_active_histogram": dict(
+                    env.monitor.l1_mshr_active_histogram
+                ),
+                "l1_mshr_issued_histogram": dict(
+                    env.monitor.l1_mshr_issued_histogram
+                ),
+                "l1_mshr_per_core_histogram": {
+                    str(core): dict(histogram)
+                    for core, histogram in
+                    env.monitor.l1_mshr_per_core_histogram.items()
+                },
                 "max_mshr_occupancy": env.monitor.max_mshr_occupancy,
                 "max_directory_contexts": env.monitor.max_directory_contexts,
+                "max_l1_mshr_occupancy": env.monitor.max_l1_mshr_occupancy,
+                "max_l1_mshr_active": env.monitor.max_l1_mshr_active,
+                "max_l1_mshr_issued": env.monitor.max_l1_mshr_issued,
+                "max_l1_mshr_per_core": {
+                    str(core): occupancy for core, occupancy in
+                    env.monitor.max_l1_mshr_per_core.items()
+                },
                 "reset_epoch": env.monitor.reset_epoch,
                 "axi_peak_reads": env.axi.peak_reads,
                 "axi_peak_writes": env.axi.peak_writes,
@@ -123,13 +186,19 @@ def pytest_sessionfinish(session, exitstatus):
             },
         } for env in envs],
     }
-    repo = Path(__file__).resolve().parents[3]
+    # conftest.py lives at <project>/tests/full_system/conftest.py.  Keep the
+    # fingerprint rooted at the project directory so the relative pathspecs
+    # below include this checkout's source edits (the Git worktree may itself
+    # be nested inside a larger monorepo).
+    repo = Path(__file__).resolve().parents[2]
     revision = subprocess.run(
         ["git", "-C", str(repo), "rev-parse", "HEAD"],
         check=False, capture_output=True, text=True,
     ).stdout.strip() or "unknown"
+    source_snapshot = _source_snapshot(repo)
     versions = _tool_versions()
     payload["git_sha"] = revision
+    payload["source_snapshot"] = source_snapshot
     payload["tool_versions"] = versions
     output.write_text(json.dumps(_json_safe(payload), indent=2) + "\n",
                       encoding="utf-8")
@@ -141,6 +210,7 @@ def pytest_sessionfinish(session, exitstatus):
         for env in envs:
             metadata = {
                 "record_type": "run", "git_sha": revision,
+                "source_snapshot": source_snapshot,
                 "tool_versions": versions,
                 "test_id": env.trace_test_id,
                 "scenario_id": env.trace_scenario_id,
@@ -169,6 +239,7 @@ def pytest_sessionfinish(session, exitstatus):
             for event in env.trace_records():
                 record = {"record_type": "event", **event,
                           "git_sha": revision, "test_id": env.trace_test_id,
+                          "source_snapshot": source_snapshot,
                           "scenario_id": env.trace_scenario_id,
                           "seed": env.trace_seed}
                 stream.write(json.dumps(_json_safe(record), sort_keys=True) + "\n")

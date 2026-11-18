@@ -22,11 +22,30 @@ class FullSystemMonitor:
         self.stall_cycles = Counter()
         self.mshr_occupancy_histogram = Counter()
         self.directory_context_histogram = Counter()
+        # The L1 CPU miss queue is a different resource from the downstream
+        # refill MSHR bank and the Directory transaction contexts. Keep each
+        # population separate so queued CPU misses are not reported as AXI
+        # requests that have already been issued.
+        self.l1_mshr_occupancy_histogram = Counter()
+        self.l1_mshr_active_histogram = Counter()
+        self.l1_mshr_issued_histogram = Counter()
+        self.l1_mshr_per_core_histogram = {
+            0: Counter(), 1: Counter(),
+        }
         self.max_mshr_occupancy = 0
         self.max_directory_contexts = 0
+        self.max_l1_mshr_occupancy = 0
+        self.max_l1_mshr_active = 0
+        self.max_l1_mshr_issued = 0
+        self.max_l1_mshr_per_core = {0: 0, 1: 0}
         self._axi_reads = {}
         self._axi_writes = {}
         self._axi_write_order = deque()
+        # CPU drivers sample ready/valid from active coroutines.  The passive
+        # pin sampler may observe the same edge one scheduler tick later, so
+        # use driver observations as the handshake authority and reconcile
+        # nearby passive samples by full response identity.
+        self._cpu_driver_responses = deque(maxlen=16)
         self._mmio_requests = deque()
         self._reset_active = False
         self._fatal_active = False
@@ -37,6 +56,11 @@ class FullSystemMonitor:
         self._directory_committed_state = {}
         self._last_mshr_bitmap = 0
         self._last_directory_bitmap = 0
+        self._last_l1_mshr_bitmap = 0
+        self._last_l1_mshr_active_bitmap = 0
+        self._last_l1_mshr_issued_bitmap = 0
+        self._last_l1_mshr_addr = [0] * 4
+        self._last_l1_mshr_txn_id = [0] * 4
         self._last_l2_fill_active = 0
         self._last_victim_valid = 0
 
@@ -103,7 +127,13 @@ class FullSystemMonitor:
 
     def record_cpu_response_complete(self, core, address, write, data, txn_id,
                                      *, cycle=None):
-        """Record a CPU driver's sampled response ready/valid handshake."""
+        """Record a CPU driver's sampled response ready/valid handshake.
+
+        The passive sampler can run on either side of the same Toffee edge.
+        Remove an already-seen matching pin sample, and suppress a matching
+        late pin sample for the next two monitor cycles. Distinct driver
+        handshakes are never merged, even when their payloads are identical.
+        """
         completed_cycle = self.cycle if cycle is None else int(cycle)
         fields = {
             "core": int(core),
@@ -112,14 +142,40 @@ class FullSystemMonitor:
             "data": int(data) & ((1 << 64) - 1),
             "txn_id": int(txn_id) & 0x7,
         }
-        if any(event.get("source") == "cpu" and
-               event.get("event_type") == "response_complete" and
-               event.get("cycle") == completed_cycle and
-               all(event.get(key) == value for key, value in fields.items())
-               for event in self.events):
-            return
+        self._cpu_driver_responses.append((completed_cycle, fields.copy()))
+        retained = []
+        removed = Counter()
+        for event in self.events:
+            payload = event.get("payload", {})
+            same_response = (
+                event.get("source") == "cpu" and
+                event.get("event_type") == "response_complete" and
+                payload.get("observed_by") == "passive_pin" and
+                abs(int(event.get("cycle", -1000)) - completed_cycle) <= 2 and
+                all(event.get(key) == value for key, value in fields.items())
+            )
+            if same_response:
+                removed[f"{event['source']}.{event['event_type']}"] += 1
+            else:
+                retained.append(event)
+        if removed:
+            self.events = retained
+            self.counts.subtract(removed)
+            self.counts += Counter()  # discard zero/negative bookkeeping keys
         self._event("cpu", "response_complete", cycle=completed_cycle,
                     **fields, payload={"observed_by": "cpu_driver"})
+
+    def _cpu_response_has_driver_observation(self, fields, cycle):
+        """Return whether an active driver already recorded this handshake."""
+        while (self._cpu_driver_responses and
+               self._cpu_driver_responses[0][0] < cycle - 2):
+            self._cpu_driver_responses.popleft()
+        return any(
+            abs(int(driver_cycle) - int(cycle)) <= 2 and
+            all(driver_fields.get(key) == value
+                for key, value in fields.items())
+            for driver_cycle, driver_fields in self._cpu_driver_responses
+        )
 
     def record_axi_event(self, event_type, transaction):
         """Record AXI handshakes sampled by the protocol-checking memory agent.
@@ -188,6 +244,7 @@ class FullSystemMonitor:
                     "axi_reads": len(self._axi_reads),
                     "axi_writes": len(self._axi_writes),
                     "mmio_requests": len(self._mmio_requests),
+                    "l1_mshr_entries": self._last_l1_mshr_bitmap.bit_count(),
                 }
                 # Keep reset as an explicit, traceable lifecycle event even
                 # when the failing AXI beat was the last beat and no bus
@@ -204,6 +261,11 @@ class FullSystemMonitor:
                 self._directory_committed_state.clear()
                 self._last_mshr_bitmap = 0
                 self._last_directory_bitmap = 0
+                self._last_l1_mshr_bitmap = 0
+                self._last_l1_mshr_active_bitmap = 0
+                self._last_l1_mshr_issued_bitmap = 0
+                self._last_l1_mshr_addr = [0] * 4
+                self._last_l1_mshr_txn_id = [0] * 4
                 self._last_l2_fill_active = 0
                 self._last_victim_valid = 0
                 self._fatal_active = False
@@ -236,11 +298,18 @@ class FullSystemMonitor:
                                      ((1 << 64) - 1),
                                      "write_mask": (req_wmask >> (8 * core)) & 0xFF})
             if resp_valid & resp_ready & bit:
-                self._event("cpu", "response_complete", core=core,
-                            address=(resp_addr >> (32 * core)) & 0xFFFF_FFFF,
-                            write=(resp_write >> core) & 1,
-                            data=(resp_data >> (64 * core)) & ((1 << 64) - 1),
-                            txn_id=(resp_id >> (3 * core)) & 0x7)
+                response_fields = {
+                    "core": core,
+                    "address": (resp_addr >> (32 * core)) & 0xFFFF_FFFF,
+                    "write": (resp_write >> core) & 1,
+                    "data": (resp_data >> (64 * core)) & ((1 << 64) - 1),
+                    "txn_id": (resp_id >> (3 * core)) & 0x7,
+                }
+                if not self._cpu_response_has_driver_observation(
+                        response_fields, self.cycle):
+                    self._event("cpu", "response_complete",
+                                payload={"observed_by": "passive_pin"},
+                                **response_fields)
 
             if (_bits(d.monitor_l1_commit_valid) >> core) & 1:
                 address = ((_bits(d.monitor_l1_commit_addr) >> (32 * core))
@@ -346,7 +415,12 @@ class FullSystemMonitor:
         if _bits(d.monitor_dir_snoop_valid):
             self._event("directory", "snoop_offer",
                         data_to_l2=_bits(d.monitor_dir_snoop_data_to_l2))
-        if _bits(d.monitor_snoop_set_conflict):
+        # The L2 exposes a combinational set-conflict indication even when
+        # the directory is not presenting a Snoop. Count it as a protocol
+        # conflict only during an actual Snoop offer; otherwise idle address
+        # decode can create a false coverage event.
+        if (_bits(d.monitor_dir_snoop_valid) and
+                _bits(d.monitor_snoop_set_conflict)):
             self._event("directory", "same_set_conflict")
 
         mshr = _bits(d.monitor_mem_mshr_valid).bit_count()
@@ -368,6 +442,102 @@ class FullSystemMonitor:
         self.directory_context_histogram[contexts] += 1
         self.max_mshr_occupancy = max(self.max_mshr_occupancy, mshr)
         self.max_directory_contexts = max(self.max_directory_contexts, contexts)
+
+        l1_mshr_bitmap = _bits(d.monitor_l1_mshr_valid)
+        l1_mshr_active_bitmap = _bits(d.monitor_l1_mshr_active)
+        l1_mshr_issued_bitmap = _bits(d.monitor_l1_mshr_issued)
+        l1_mshr_occupancy = l1_mshr_bitmap.bit_count()
+        l1_mshr_active = (l1_mshr_bitmap & l1_mshr_active_bitmap).bit_count()
+        l1_mshr_issued = (l1_mshr_bitmap & l1_mshr_issued_bitmap).bit_count()
+        packed_l1_mshr_addr = _bits(d.monitor_l1_mshr_addr)
+        packed_l1_mshr_txn_id = _bits(d.monitor_l1_mshr_txn_id)
+        per_core_occupancy = {}
+        for core in range(2):
+            core_bitmap = (l1_mshr_bitmap >> (2 * core)) & 0x3
+            core_active = (l1_mshr_active_bitmap >> (2 * core)) & 0x3
+            core_issued = (l1_mshr_issued_bitmap >> (2 * core)) & 0x3
+            occupancy = core_bitmap.bit_count()
+            active = (core_bitmap & core_active).bit_count()
+            issued = (core_bitmap & core_issued).bit_count()
+            per_core_occupancy[core] = occupancy
+            self.l1_mshr_per_core_histogram[core][occupancy] += 1
+            self.max_l1_mshr_per_core[core] = max(
+                self.max_l1_mshr_per_core[core], occupancy
+            )
+            for entry in range(2):
+                slot = core * 2 + entry
+                bit = 1 << slot
+                address = (packed_l1_mshr_addr >> (32 * slot)) & 0xFFFF_FFFF
+                txn_id = (packed_l1_mshr_txn_id >> (3 * slot)) & 0x7
+                slot_valid_changed = bool(
+                    (l1_mshr_bitmap ^ self._last_l1_mshr_bitmap) & bit
+                )
+                slot_identity_changed = bool(
+                    (l1_mshr_bitmap & bit) and
+                    (self._last_l1_mshr_bitmap & bit) and
+                    address != self._last_l1_mshr_addr[slot]
+                )
+                if slot_valid_changed:
+                    kind = "allocate" if l1_mshr_bitmap & bit else "retire"
+                    self._event(
+                        "l1_mshr", kind, core=core, entry=entry, slot=slot,
+                        address=address if kind == "allocate" else
+                        self._last_l1_mshr_addr[slot],
+                        txn_id=txn_id if kind == "allocate" else
+                        self._last_l1_mshr_txn_id[slot],
+                        active=bool(l1_mshr_active_bitmap & bit),
+                        issued=bool(l1_mshr_issued_bitmap & bit),
+                        occupancy=l1_mshr_occupancy,
+                        core_occupancy=occupancy,
+                    )
+                elif slot_identity_changed:
+                    # A response can retire an entry on the same edge that a
+                    # queued CPU miss reuses its slot. The valid bitmap then
+                    # stays high, so track an address change as two ordered
+                    # lifecycle events. Txn ID can be assigned after allocation
+                    # and is not part of slot identity.
+                    self._event(
+                        "l1_mshr", "retire", core=core, entry=entry, slot=slot,
+                        address=self._last_l1_mshr_addr[slot],
+                        txn_id=self._last_l1_mshr_txn_id[slot],
+                        active=False, issued=False,
+                        occupancy=l1_mshr_occupancy,
+                        core_occupancy=occupancy,
+                    )
+                    self._event(
+                        "l1_mshr", "allocate", core=core, entry=entry, slot=slot,
+                        address=address, txn_id=txn_id,
+                        active=bool(l1_mshr_active_bitmap & bit),
+                        issued=bool(l1_mshr_issued_bitmap & bit),
+                        occupancy=l1_mshr_occupancy,
+                        core_occupancy=occupancy,
+                    )
+                if (l1_mshr_issued_bitmap ^
+                        self._last_l1_mshr_issued_bitmap) & bit:
+                    self._event(
+                        "l1_mshr",
+                        "dispatch" if l1_mshr_issued_bitmap & bit else "deactivate",
+                        core=core, entry=entry, slot=slot, address=address,
+                        txn_id=txn_id, occupancy=l1_mshr_issued,
+                    )
+                if (l1_mshr_bitmap & bit and
+                        txn_id != self._last_l1_mshr_txn_id[slot]):
+                    self._event("l1_mshr", "txn_assign", core=core,
+                                entry=entry, slot=slot, address=address,
+                                txn_id=txn_id)
+                self._last_l1_mshr_addr[slot] = address
+                self._last_l1_mshr_txn_id[slot] = txn_id
+        self._last_l1_mshr_bitmap = l1_mshr_bitmap
+        self._last_l1_mshr_active_bitmap = l1_mshr_active_bitmap
+        self._last_l1_mshr_issued_bitmap = l1_mshr_issued_bitmap
+        self.l1_mshr_occupancy_histogram[l1_mshr_occupancy] += 1
+        self.l1_mshr_active_histogram[l1_mshr_active] += 1
+        self.l1_mshr_issued_histogram[l1_mshr_issued] += 1
+        self.max_l1_mshr_occupancy = max(
+            self.max_l1_mshr_occupancy, l1_mshr_occupancy
+        )
+        self.max_l1_mshr_active = max(self.max_l1_mshr_active, l1_mshr_active)
+        self.max_l1_mshr_issued = max(self.max_l1_mshr_issued, l1_mshr_issued)
         for channel, valid_name, ready_name, payload_names, outstanding in (
             ("AR", "axi_arvalid", "axi_arready",
              ("axi_arid", "axi_araddr", "axi_arlen"), len(self._axi_reads)),

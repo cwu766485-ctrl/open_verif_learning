@@ -25,6 +25,13 @@
   logic [5:0] monitor_cpu_state, monitor_snoop_state;
   logic [63:0] monitor_cpu_active_addr;
   logic [7:0] monitor_replace_state;
+  // Added as passive pins for the v1.3 MSHR implementation. This legacy
+  // block test does not consume them, but .* must connect every DUT port.
+  logic [3:0] monitor_l1_mshr_valid;
+  logic [3:0] monitor_l1_mshr_active;
+  logic [3:0] monitor_l1_mshr_issued;
+  logic [127:0] monitor_l1_mshr_addr;
+  logic [(4*TXN_ID_WIDTH)-1:0] monitor_l1_mshr_txn_id;
 
   logic [1:0] dir_req_ready;
   logic dir_req_valid;

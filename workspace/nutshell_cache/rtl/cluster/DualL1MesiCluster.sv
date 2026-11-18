@@ -85,7 +85,12 @@ module DualL1MesiCluster #(
   output logic [5:0] monitor_cpu_state,
   output logic [5:0] monitor_snoop_state,
   output logic [63:0] monitor_cpu_active_addr,
-  output logic [7:0] monitor_replace_state
+  output logic [7:0] monitor_replace_state,
+  output logic [3:0] monitor_l1_mshr_valid,
+  output logic [3:0] monitor_l1_mshr_active,
+  output logic [3:0] monitor_l1_mshr_issued,
+  output logic [127:0] monitor_l1_mshr_addr,
+  output logic [(4*TXN_ID_WIDTH)-1:0] monitor_l1_mshr_txn_id
 );
   import coherence_protocol_pkg::*;
 
@@ -119,6 +124,7 @@ module DualL1MesiCluster #(
     // Hit-under-miss is intentionally limited to the pre-refill wait window.
     localparam logic [2:0] CPU_SEND_REQ_STATE = 3'd1;
     localparam logic [2:0] CPU_WAIT_GRANT_STATE = 3'd2;
+    localparam logic [2:0] CPU_IDLE_STATE = 3'd0;
     logic [31:0] lookup_addr;
     logic ctrl_cpu_req_valid;
     logic ctrl_cpu_req_ready;
@@ -137,11 +143,42 @@ module DualL1MesiCluster #(
     logic [2:0] controller_cpu_state;
     logic [2:0] controller_snoop_state;
     logic [31:0] controller_cpu_active_addr;
+    logic [1:0] l1_mshr_valid_q;
+    logic [1:0] l1_mshr_active_q;
+    logic [31:0] l1_mshr_addr_q [0:1];
+    logic l1_mshr_write_q [0:1];
+    logic [7:0] l1_mshr_wmask_q [0:1];
+    logic [63:0] l1_mshr_wdata_q [0:1];
+    logic [TXN_ID_WIDTH-1:0] l1_mshr_txn_id_q [0:1];
+    logic [1:0] l1_mshr_occupancy;
+    logic l1_mshr_same_line;
+    logic l1_mshr_needs_coherence;
+    logic l1_mshr_free_found;
+    logic l1_mshr_free_idx;
+    logic l1_mshr_active_found;
+    logic l1_mshr_active_idx;
+    logic l1_mshr_queued_found;
+    logic l1_mshr_queued_idx;
+    logic mshr_direct_ready;
+    logic mshr_queue_ready;
+    logic mshr_queue_accept;
+    logic mshr_dispatch;
 
     assign monitor_cpu_state[core*3 +: 3] = controller_cpu_state;
     assign monitor_snoop_state[core*3 +: 3] = controller_snoop_state;
     assign monitor_cpu_active_addr[core*32 +: 32] =
       controller_cpu_active_addr;
+    assign monitor_l1_mshr_valid[core*2 +: 2] = l1_mshr_valid_q;
+    // Active means an allocated CPU miss awaiting its response. Issued is a
+    // separate observation of the single MESI-controller transaction slot.
+    assign monitor_l1_mshr_active[core*2 +: 2] = l1_mshr_valid_q;
+    assign monitor_l1_mshr_issued[core*2 +: 2] = l1_mshr_active_q;
+    for (genvar entry = 0; entry < 2; entry = entry + 1) begin : gen_mshr_monitor
+      assign monitor_l1_mshr_addr[(core*2+entry)*32 +: 32] =
+        l1_mshr_addr_q[entry];
+      assign monitor_l1_mshr_txn_id[(core*2+entry)*TXN_ID_WIDTH +: TXN_ID_WIDTH] =
+        l1_mshr_txn_id_q[entry];
+    end
 
     logic ctrl_resp_valid;
     logic ctrl_resp_ready;
@@ -264,10 +301,61 @@ module DualL1MesiCluster #(
     assign hit_next_txn_id = hit_alloc_txn_id_safe + TXN_ID_WIDTH'(1);
     assign hit_next_txn_id_safe = (hit_next_txn_id == ctrl_resp_txn_id) ?
       hit_next_txn_id + TXN_ID_WIDTH'(1) : hit_next_txn_id;
-    assign cpu_req_ready[core] =
-      ((replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
-       !(snoop_valid[core] && snoop_ready[core]) && ctrl_cpu_req_ready) ||
-      hit_under_miss_ready;
+    always_comb begin
+      l1_mshr_occupancy = {1'b0, l1_mshr_valid_q[0]} +
+                          {1'b0, l1_mshr_valid_q[1]};
+      l1_mshr_same_line = 1'b0;
+      l1_mshr_free_found = 1'b0;
+      l1_mshr_free_idx = 1'b0;
+      l1_mshr_active_found = 1'b0;
+      l1_mshr_active_idx = 1'b0;
+      l1_mshr_queued_found = 1'b0;
+      l1_mshr_queued_idx = 1'b0;
+      for (int entry = 0; entry < 2; entry = entry + 1) begin
+        if (l1_mshr_valid_q[entry]) begin
+          if (line_align(l1_mshr_addr_q[entry]) ==
+              line_align(cpu_req_addr[core]))
+            l1_mshr_same_line = 1'b1;
+          if (l1_mshr_active_q[entry] && !l1_mshr_active_found) begin
+            l1_mshr_active_found = 1'b1;
+            l1_mshr_active_idx = 1'(entry);
+          end
+          if (!l1_mshr_active_q[entry] && !l1_mshr_queued_found) begin
+            l1_mshr_queued_found = 1'b1;
+            l1_mshr_queued_idx = 1'(entry);
+          end
+        end else if (!l1_mshr_free_found) begin
+          l1_mshr_free_found = 1'b1;
+          l1_mshr_free_idx = 1'(entry);
+        end
+      end
+    end
+
+    // A read miss or Shared-state store needs a coherence transaction. A
+    // resident E/M write remains on the legacy serialized hit path.
+    assign l1_mshr_needs_coherence = !lookup_hit ||
+      (cpu_req_write[core] && (lookup_state == MESI_S));
+    assign mshr_direct_ready = (l1_mshr_occupancy == 0) &&
+      (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
+      !(snoop_valid[core] && snoop_ready[core]) && ctrl_cpu_req_ready;
+    // Queue allocation only captures the second distinct miss. It does not
+    // touch the L1 array or pause the active controller/replacement FSM.
+    assign mshr_queue_ready = (l1_mshr_occupancy == 1) &&
+      l1_mshr_active_found && l1_mshr_free_found &&
+      ((controller_cpu_state == CPU_SEND_REQ_STATE) ||
+       (controller_cpu_state == CPU_WAIT_GRANT_STATE)) &&
+      (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
+      !snoop_valid[core] && l1_mshr_needs_coherence &&
+      !l1_mshr_same_line;
+    assign cpu_req_ready[core] = mshr_direct_ready ||
+                                 hit_under_miss_ready ||
+                                 mshr_queue_ready;
+    assign mshr_queue_accept = cpu_req_valid[core] && mshr_queue_ready;
+    assign mshr_dispatch = (l1_mshr_occupancy == 1) &&
+      !l1_mshr_active_found && l1_mshr_queued_found &&
+      (controller_cpu_state == CPU_IDLE_STATE) &&
+      (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
+      !snoop_valid[core] && !ctrl_resp_valid && !hit_resp_valid_q;
     // A read hit needs an existing MESI copy. A write hit is silent only in
     // E/M; an S-state store requires a Directory Upgrade and counts as a miss.
     assign cpu_hit_event[core] = !reset && cpu_req_valid[core] &&
@@ -403,6 +491,15 @@ module DualL1MesiCluster #(
         replace_line_addr_q <= '0;
         pending_cpu_addr_q <= '0;
         pending_cpu_write_q <= 1'b0;
+        l1_mshr_valid_q <= '0;
+        l1_mshr_active_q <= '0;
+        for (int entry = 0; entry < 2; entry = entry + 1) begin
+          l1_mshr_addr_q[entry] <= '0;
+          l1_mshr_write_q[entry] <= 1'b0;
+          l1_mshr_wmask_q[entry] <= '0;
+          l1_mshr_wdata_q[entry] <= '0;
+          l1_mshr_txn_id_q[entry] <= '0;
+        end
         replace_txn_q <= '0;
         replace_txn_counter_q <= '0;
         replace_protocol_error_q <= 1'b0;
@@ -416,6 +513,33 @@ module DualL1MesiCluster #(
         hit_bypass_started_q <= 1'b0;
         hit_next_txn_id_q <= '0;
       end else begin
+        // Accept a second, different-line coherence miss into the inactive
+        // entry without disturbing the first miss's controller/replacement
+        // registers. The entry remains valid until its own CPU response.
+        if (mshr_queue_accept) begin
+          l1_mshr_valid_q[l1_mshr_free_idx] <= 1'b1;
+          l1_mshr_active_q[l1_mshr_free_idx] <= 1'b0;
+          l1_mshr_addr_q[l1_mshr_free_idx] <= cpu_req_addr[core];
+          l1_mshr_write_q[l1_mshr_free_idx] <= cpu_req_write[core];
+          l1_mshr_wmask_q[l1_mshr_free_idx] <= cpu_req_wmask[core];
+          l1_mshr_wdata_q[l1_mshr_free_idx] <= cpu_req_wdata[core];
+          l1_mshr_txn_id_q[l1_mshr_free_idx] <= '0;
+        end
+
+        // Retire only the MSHR associated with the controller response. A
+        // resident hit or hit-under-miss bypass has no MSHR to release.
+        if (ctrl_resp_valid && ctrl_resp_ready && l1_mshr_active_found) begin
+          l1_mshr_valid_q[l1_mshr_active_idx] <= 1'b0;
+          l1_mshr_active_q[l1_mshr_active_idx] <= 1'b0;
+        end
+
+        // The internal transaction ID is assigned by the legacy MESI
+        // controller when the Directory request is actually accepted.
+        if (controller_req_valid[core] && controller_req_ready[core] &&
+            l1_mshr_active_found)
+          l1_mshr_txn_id_q[l1_mshr_active_idx] <=
+            controller_req_txn_id[core];
+
         if (hit_under_miss_accept) begin
           hit_resp_valid_q <= 1'b1;
           hit_resp_addr_q <= cpu_req_addr[core];
@@ -430,12 +554,21 @@ module DualL1MesiCluster #(
         end
 
         if (cpu_req_valid[core] && cpu_req_ready[core] &&
-            !hit_under_miss_accept) begin
+            !hit_under_miss_accept && !mshr_queue_accept) begin
           hit_bypass_started_q <= 1'b0;
           pending_cpu_addr_q <= cpu_req_addr[core];
           pending_cpu_write_q <= cpu_req_write[core];
           store_wmask_q <= cpu_req_wmask[core];
           store_wdata_q <= cpu_req_wdata[core];
+          if (l1_mshr_needs_coherence) begin
+            l1_mshr_valid_q[l1_mshr_free_idx] <= 1'b1;
+            l1_mshr_active_q[l1_mshr_free_idx] <= 1'b1;
+            l1_mshr_addr_q[l1_mshr_free_idx] <= cpu_req_addr[core];
+            l1_mshr_write_q[l1_mshr_free_idx] <= cpu_req_write[core];
+            l1_mshr_wmask_q[l1_mshr_free_idx] <= cpu_req_wmask[core];
+            l1_mshr_wdata_q[l1_mshr_free_idx] <= cpu_req_wdata[core];
+            l1_mshr_txn_id_q[l1_mshr_free_idx] <= '0;
+          end
           if (request_needs_replace) begin
             replace_state_q <= REPLACE_CHECK;
           end else begin
@@ -445,7 +578,7 @@ module DualL1MesiCluster #(
             allocation_way_q <= replace_way_int;
             replace_state_q <= REPLACE_REPLAY;
           end
-        end else if (!hit_under_miss_accept) begin
+        end else if (!hit_under_miss_accept && !mshr_queue_accept) begin
           if (snoop_valid[core] && snoop_ready[core])
             snoop_active_q <= 1'b1;
           if (snoop_rsp_valid[core] && snoop_rsp_ready[core])
@@ -525,6 +658,20 @@ module DualL1MesiCluster #(
           end
           default: begin end
           endcase
+        end
+
+        // Once the current miss and its response have retired, replay the
+        // queued CPU operation through the existing lookup/replacement and
+        // MESI controller path. This deliberately serializes each L1's
+        // downstream coherence issue while allowing two CPU misses to remain
+        // outstanding at its interface.
+        if (mshr_dispatch) begin
+          pending_cpu_addr_q <= l1_mshr_addr_q[l1_mshr_queued_idx];
+          pending_cpu_write_q <= l1_mshr_write_q[l1_mshr_queued_idx];
+          store_wmask_q <= l1_mshr_wmask_q[l1_mshr_queued_idx];
+          store_wdata_q <= l1_mshr_wdata_q[l1_mshr_queued_idx];
+          l1_mshr_active_q[l1_mshr_queued_idx] <= 1'b1;
+          replace_state_q <= REPLACE_CHECK;
         end
       end
     end

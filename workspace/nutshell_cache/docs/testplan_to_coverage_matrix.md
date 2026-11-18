@@ -149,6 +149,29 @@ serializes new ownership requests sharing that set, while Put requests bypass
 the lock so L1 replacement can retire. Distinct sets can still use all four
 contexts. This does not imply four-way same-set miss parallelism.
 
+## v1.3 Two-entry L1 MSHR verification
+
+The v1.3 interface and lifecycle contract is specified in
+[`cache_v1.3_nonblocking_l1_spec.md`](cache_v1.3_nonblocking_l1_spec.md).
+This section adds verification obligations; it does not revise existing
+v1.1 functional bins or claim new coverage until the corresponding checker
+passes.
+
+| Feature | Testpoint | Required observation | Checker / status |
+|---|---|---|---|
+| Per-L1 two-entry occupancy | Two different cold misses accepted by each core before any response | Four L1 valid bits set at once; no CPU response has handshaken | `L1MshrLifecycleChecker`; L1 peak 4 (2/core), first response after all four allocations; PASS |
+| Resource separation | `test_four_l1_misses_occupy_two_entries_per_core` | L1 MSHR peak 4 (2/core); Directory Context peak 2; refill MSHR peak 2; AXI read outstanding peak 2 | FullSystemMonitor per-resource histograms and trace `resource_peaks`; PASS |
+| Refill association | Delayed and cross-core reordered AXI R responses | First two AXI reads return in reverse ID order; each of six lines has eight correctly routed beats; CPU responses match requests | `MshrLifecycleChecker` + `L1MshrLifecycleChecker`; 48/48 R beats and 48/48 L2 refill beats checked; PASS |
+| Full backpressure | `test_four_l1_misses_occupy_two_entries_per_core`; `test_cpu_response_backpressure_retains_active_and_queued_mshrs` | `ready=0` with both local entries full; stable request/response payload; later acceptance and ordered completion | CPU handshake checks, MSHR lifecycle checker and response hold checker; PASS |
+| Same-line conflict | `test_same_line_second_miss_waits_then_relooks_up_as_hit` | No duplicate MSHR or Directory transaction; held request re-looks up as a hit after retirement | Directory request count, address/data checker; PASS |
+| Snoop/replacement collision | `test_queued_store_relooks_up_after_remote_snoop`; existing `test_l1_replacement_putm_races_remote_snoop`, `test_dirty_l2_victim_snoops_live_modified_owner`, and `test_owner_snoop_overlaps_independent_memory_refill` | Queued store observes the intervening invalidation; existing replacement PutM and owner-data Snoop paths make progress under resource contention | Snoop/Directory commit checks, full-system data checker and six targeted regression cases; PASS |
+| Reset cancellation | `test_reset_cancels_active_and_queued_l1_mshrs` | Both valid bits clear; reset epoch advances; no stale CPU response; post-reset request succeeds | Reset cancellation monitor and post-reset data check; PASS |
+| Legacy preservation | Existing hit-under-miss and MESI replacement paths | Existing results remain passing | `coherence_hit_under_miss` (2 Python tests + 3 AXI-top tests), fresh `coherence_cluster`, and six PutM/Owner-Snoop regression cases; PASS |
+
+Do not infer four downstream transactions from four valid L1 entries. The
+current per-core MESI controller dispatches one miss at a time. Directory,
+refill-MSHR and AXI peaks are separate measurements, not coverage substitutes.
+
 **Stale Upgrade recovery:** `test_python_stale_upgrade_recovers_after_peer_invalidation`
 starts from an independently established S/S line, queues two competing
 Upgrade requests, and checks that the second request is serviced as a

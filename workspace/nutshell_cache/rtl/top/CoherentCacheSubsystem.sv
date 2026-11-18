@@ -192,7 +192,15 @@ module CoherentCacheSubsystem #(
   output logic [5:0] monitor_cpu_state,
   output logic [5:0] monitor_l1_snoop_state,
   output logic [63:0] monitor_cpu_active_addr,
-  output logic [7:0] monitor_l1_replace_state
+  output logic [7:0] monitor_l1_replace_state,
+  // Per-core, two-entry L1 miss tracking. This is separate from Directory,
+  // refill, and AXI occupancy because each L1 still issues coherence misses
+  // through its existing single transaction controller.
+  output logic [3:0] monitor_l1_mshr_valid,
+  output logic [3:0] monitor_l1_mshr_active,
+  output logic [3:0] monitor_l1_mshr_issued,
+  output logic [127:0] monitor_l1_mshr_addr,
+  output logic [(4*TXN_ID_WIDTH)-1:0] monitor_l1_mshr_txn_id
 );
   import coherence_protocol_pkg::*;
 
@@ -912,7 +920,12 @@ module CoherentCacheSubsystem #(
     .monitor_cpu_state(monitor_cpu_state),
     .monitor_snoop_state(monitor_l1_snoop_state),
     .monitor_cpu_active_addr(monitor_cpu_active_addr),
-    .monitor_replace_state(monitor_l1_replace_state)
+    .monitor_replace_state(monitor_l1_replace_state),
+    .monitor_l1_mshr_valid(monitor_l1_mshr_valid),
+    .monitor_l1_mshr_active(monitor_l1_mshr_active),
+    .monitor_l1_mshr_issued(monitor_l1_mshr_issued),
+    .monitor_l1_mshr_addr(monitor_l1_mshr_addr),
+    .monitor_l1_mshr_txn_id(monitor_l1_mshr_txn_id)
   );
   /* verilator lint_on PINCONNECTEMPTY */
 
