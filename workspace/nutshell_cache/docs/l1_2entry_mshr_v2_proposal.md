@@ -1,8 +1,10 @@
 # L1 Two-Entry MSHR — v1.3 Design and Implementation Contract
 
-**Status:** v1.3 incremental RTL implementation in progress. This document
-replaces the earlier open-question proposal. It does not claim Miss-under-Miss
-or four simultaneous Directory/AXI transactions.
+**Status:** v1.3 incremental RTL implementation is present at
+`fb9db8b8ef20fa0091293b41726b5667eda3c015`; targeted lifecycle and four-entry
+occupancy tests pass. Full-system release regression and PPA are not signed
+off. This document replaces the earlier open-question proposal. It does not
+claim Miss-under-Miss or four simultaneous Directory/AXI transactions.
 
 ## Goal and scope
 

@@ -1,0 +1,845 @@
+{
+  "schema_version": 1,
+  "dut": "CoherentCacheAxiSubsystem",
+  "pytest_exit_status": 0,
+  "test_environment_count": 5,
+  "runs": [
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_four_l1_misses_occupy_two_entries_per_core",
+      "scenario_id": "V13_L1_MSHR_FOUR_CPU_MISSES",
+      "seed": 1246212,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 140,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 3
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "l1_mshr_total_entries": 4,
+        "memory_latency_cycles": 140,
+        "addresses_by_core": {
+          "0": [
+            4259848,
+            4259976
+          ],
+          "1": [
+            4260104,
+            4260232
+          ]
+        },
+        "axi_reorder": "reverse_first_two_read_ids",
+        "response_ready_during_allocation": 0
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "seed_four_distinct_lines",
+          "addresses_by_core": {
+            "0": [
+              4259848,
+              4259976
+            ],
+            "1": [
+              4260104,
+              4260232
+            ]
+          }
+        },
+        {
+          "kind": "stimulus",
+          "operation": "two_wave_paired_cold_reads",
+          "waves": [
+            [
+              4259848,
+              4260104
+            ],
+            [
+              4259976,
+              4260232
+            ]
+          ]
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 6,
+            "allocation_cycles": {
+              "core0:0x00410008": 2,
+              "core0:0x00410088": 11,
+              "core1:0x00410108": 2,
+              "core1:0x00410188": 11,
+              "core0:0x00412008": 211,
+              "core1:0x00412088": 202
+            },
+            "response_cycles": {
+              "core0:0x00410008": 205,
+              "core0:0x00410088": 407,
+              "core1:0x00410108": 196,
+              "core1:0x00410188": 398,
+              "core0:0x00412008": 615,
+              "core1:0x00412088": 606
+            },
+            "directory_txn_ids": {
+              "core0:0x00410008": 0,
+              "core0:0x00410088": 1,
+              "core1:0x00410108": 0,
+              "core1:0x00410188": 1,
+              "core0:0x00412008": 2,
+              "core1:0x00412088": 2
+            },
+            "axi_ids": {
+              "core0:0x00410008": 0,
+              "core0:0x00410088": 1,
+              "core1:0x00410108": 1,
+              "core1:0x00410188": 0,
+              "core0:0x00412008": 1,
+              "core1:0x00412088": 0
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              4259840,
+              4259968,
+              4260096,
+              4260224,
+              4268032,
+              4268160
+            ],
+            "mshr_allocations": 6,
+            "mshr_retirements": 6,
+            "axi_read_beats": 48,
+            "l2_refill_beats": 48
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_occupied": 4,
+          "l1_mshr_per_core": {
+            "0": 2,
+            "1": 2
+          },
+          "l1_controller_issued": 2,
+          "directory_contexts": 2,
+          "refill_mshrs": 2,
+          "axi_read_outstanding": 2
+        },
+        {
+          "kind": "replay",
+          "seed": 1246212,
+          "configuration": {
+            "agents": {
+              "axi": {
+                "latency": 140,
+                "r_valid_gap_period": 2,
+                "read_reorder_window": 3
+              },
+              "mmio": {}
+            },
+            "l1_mshr_entries_per_core": 2,
+            "l1_mshr_total_entries": 4,
+            "memory_latency_cycles": 140,
+            "addresses_by_core": {
+              "0": [
+                4259848,
+                4259976
+              ],
+              "1": [
+                4260104,
+                4260232
+              ]
+            },
+            "axi_reorder": "reverse_first_two_read_ids",
+            "response_ready_during_allocation": 0
+          },
+          "operations": [
+            {
+              "core": 0,
+              "address": 4259848,
+              "write": false
+            },
+            {
+              "core": 0,
+              "address": 4259976,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4260104,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4260232,
+              "write": false
+            },
+            {
+              "core": 0,
+              "address": 4268040,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4268168,
+              "write": false
+            }
+          ]
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00410000": "0xd000000000410000",
+        "0x00410008": "0xd000000000410008",
+        "0x00410010": "0xd000000000410010",
+        "0x00410018": "0xd000000000410018",
+        "0x00410020": "0xd000000000410020",
+        "0x00410028": "0xd000000000410028",
+        "0x00410030": "0xd000000000410030",
+        "0x00410038": "0xd000000000410038",
+        "0x00410080": "0xd000010000410080",
+        "0x00410088": "0xd000010000410088",
+        "0x00410090": "0xd000010000410090",
+        "0x00410098": "0xd000010000410098",
+        "0x004100a0": "0xd0000100004100a0",
+        "0x004100a8": "0xd0000100004100a8",
+        "0x004100b0": "0xd0000100004100b0",
+        "0x004100b8": "0xd0000100004100b8",
+        "0x00410100": "0xd001000000410100",
+        "0x00410108": "0xd001000000410108",
+        "0x00410110": "0xd001000000410110",
+        "0x00410118": "0xd001000000410118",
+        "0x00410120": "0xd001000000410120",
+        "0x00410128": "0xd001000000410128",
+        "0x00410130": "0xd001000000410130",
+        "0x00410138": "0xd001000000410138",
+        "0x00410180": "0xd001010000410180",
+        "0x00410188": "0xd001010000410188",
+        "0x00410190": "0xd001010000410190",
+        "0x00410198": "0xd001010000410198",
+        "0x004101a0": "0xd0010100004101a0",
+        "0x004101a8": "0xd0010100004101a8",
+        "0x004101b0": "0xd0010100004101b0",
+        "0x004101b8": "0xd0010100004101b8",
+        "0x00412000": "0xe000000000412000",
+        "0x00412008": "0xe000000000412008",
+        "0x00412010": "0xe000000000412010",
+        "0x00412018": "0xe000000000412018",
+        "0x00412020": "0xe000000000412020",
+        "0x00412028": "0xe000000000412028",
+        "0x00412030": "0xe000000000412030",
+        "0x00412038": "0xe000000000412038",
+        "0x00412080": "0xe001000000412080",
+        "0x00412088": "0xe001000000412088",
+        "0x00412090": "0xe001000000412090",
+        "0x00412098": "0xe001000000412098",
+        "0x004120a0": "0xe0010000004120a0",
+        "0x004120a8": "0xe0010000004120a8",
+        "0x004120b0": "0xe0010000004120b0",
+        "0x004120b8": "0xe0010000004120b8"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 6,
+          "l1_mshr.allocate": 6,
+          "l1_mshr.dispatch": 6,
+          "directory.request_accept": 6,
+          "directory.request_stall": 1,
+          "l2.lookup": 6,
+          "directory_context.allocate": 6,
+          "axi.read_address": 6,
+          "mshr.allocate": 6,
+          "axi.read_valid_gap": 479,
+          "axi.read_beat": 48,
+          "l2.refill_start": 6,
+          "l2.line_write_beat": 48,
+          "l2.refill_end": 6,
+          "directory.metadata_commit": 6,
+          "mshr.retire": 6,
+          "directory.grant_accept": 6,
+          "l1.metadata_commit": 6,
+          "cpu.response_complete": 6,
+          "directory_context.retire": 6,
+          "l1_mshr.retire": 6,
+          "l1_mshr.deactivate": 6,
+          "directory.transfer_stall": 6,
+          "l1_mshr.txn_assign": 4,
+          "axi.stall": 1
+        },
+        "stall_cycles": {
+          "directory_request": 1,
+          "directory_transfer": 6,
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 45,
+          "1": 41,
+          "2": 534
+        },
+        "directory_context_histogram": {
+          "0": 7,
+          "1": 27,
+          "2": 586
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "2": 208,
+          "4": 381,
+          "3": 17,
+          "1": 9
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "2": 208,
+          "4": 381,
+          "3": 17,
+          "1": 9
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 5,
+          "2": 602,
+          "1": 13
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 221,
+            "2": 394
+          },
+          "1": {
+            "0": 14,
+            "1": 221,
+            "2": 385
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 4,
+        "max_l1_mshr_active": 4,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 2
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 6,
+        "cpu_response_completions": 6,
+        "replay_records": 1,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_same_line_second_miss_waits_then_relooks_up_as_hit",
+      "scenario_id": "test_same_line_second_miss_waits_then_relooks_up_as_hit",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 32
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00524008": "0x51a61e0000000042"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 1,
+          "l1_mshr.dispatch": 1,
+          "directory.request_accept": 1,
+          "l2.lookup": 1,
+          "directory_context.allocate": 1,
+          "axi.read_address": 1,
+          "mshr.allocate": 1,
+          "axi.read_valid_gap": 49,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 2,
+          "directory_context.retire": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 22,
+          "1": 68
+        },
+        "directory_context_histogram": {
+          "0": 8,
+          "1": 82
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 6,
+          "1": 84
+        },
+        "l1_mshr_active_histogram": {
+          "0": 6,
+          "1": 84
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 6,
+          "1": 84
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 6,
+            "1": 84
+          },
+          "1": {
+            "0": 90
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_cpu_response_backpressure_retains_active_and_queued_mshrs",
+      "scenario_id": "test_cpu_response_backpressure_retains_active_and_queued_mshrs",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 36
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00528008": "0xbacc000000000001",
+        "0x00528088": "0xbacc000000000002"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 100,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "directory_context.retire": 2,
+          "cpu.response_complete": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2,
+          "l1_mshr.txn_assign": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 48,
+          "1": 139
+        },
+        "directory_context_histogram": {
+          "0": 20,
+          "1": 167
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "1": 92,
+          "2": 90
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "1": 92,
+          "2": 90
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 6,
+          "1": 181
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 92,
+            "2": 90
+          },
+          "1": {
+            "0": 187
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_reset_cancels_active_and_queued_l1_mshrs",
+      "scenario_id": "test_reset_cancels_active_and_queued_l1_mshrs",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 180
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00530008": "0xa110000000000001",
+        "0x00530088": "0xa110000000000002",
+        "0x00531008": "0xa110000000000003"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 3,
+          "l1_mshr.allocate": 3,
+          "l1_mshr.dispatch": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 195,
+          "system.reset_assert": 1,
+          "system.reset_cancel": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 1,
+          "directory_context.retire": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 35,
+          "1": 214
+        },
+        "directory_context_histogram": {
+          "0": 19,
+          "1": 230
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 14,
+          "1": 234,
+          "2": 1
+        },
+        "l1_mshr_active_histogram": {
+          "0": 14,
+          "1": 234,
+          "2": 1
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 14,
+          "1": 235
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 14,
+            "1": 234,
+            "2": 1
+          },
+          "1": {
+            "0": 249
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_queued_store_relooks_up_after_remote_snoop",
+      "scenario_id": "test_queued_store_relooks_up_after_remote_snoop",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 96
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00540008": "0xbbbb000000000001",
+        "0x00541088": "0xaaaa000000000004"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 7,
+          "l1_mshr.allocate": 6,
+          "l1_mshr.dispatch": 6,
+          "directory.request_accept": 6,
+          "l2.lookup": 2,
+          "directory_context.allocate": 6,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 220,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 40,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 6,
+          "mshr.retire": 2,
+          "directory.grant_accept": 6,
+          "l1.metadata_commit": 10,
+          "cpu.response_complete": 6,
+          "directory_context.retire": 6,
+          "l1_mshr.retire": 6,
+          "l1_mshr.deactivate": 6,
+          "snoop.accept": 4,
+          "directory.snoop_offer": 4,
+          "coherence.owner_data_beat": 24,
+          "snoop.response": 4,
+          "l1_mshr.txn_assign": 5,
+          "axi.stall": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 121,
+          "1": 258
+        },
+        "directory_context_histogram": {
+          "0": 21,
+          "1": 351,
+          "2": 7
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 6,
+          "1": 233,
+          "2": 130,
+          "3": 10
+        },
+        "l1_mshr_active_histogram": {
+          "0": 6,
+          "1": 233,
+          "2": 130,
+          "3": 10
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 7,
+          "1": 362,
+          "2": 10
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 60,
+            "1": 179,
+            "2": 140
+          },
+          "1": {
+            "0": 315,
+            "1": 64
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 3,
+        "max_l1_mshr_active": 3,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 7,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    }
+  ],
+  "git_sha": "fb9db8b8ef20fa0091293b41726b5667eda3c015",
+  "source_snapshot": {
+    "working_tree_dirty": false,
+    "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "untracked_source_files": [],
+    "untracked_source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tool_versions": {
+    "python": "3.12.3",
+    "pytest": "9.1.1",
+    "toffee": "not-installed-as-python-package",
+    "picker-py": "not-installed-as-python-package",
+    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
+    "picker": "Running as normal executable"
+  }
+}

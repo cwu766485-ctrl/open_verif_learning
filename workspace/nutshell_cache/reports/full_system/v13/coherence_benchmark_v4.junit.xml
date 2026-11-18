@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="293.273" timestamp="2026-11-18T16:36:01.265890+08:00" hostname="LAPTOP-KNBVGAN8"><testcase classname="tests.coherence.test_benchmark_v4" name="test_coherence_benchmark_v4" time="293.241" /></testsuite></testsuites>
