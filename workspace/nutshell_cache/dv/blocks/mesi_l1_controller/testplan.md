@@ -3,7 +3,7 @@
 ## DUT and RTL dependencies
 
 - DUT: `MesiL1Controller`.
-- RTL dependencies: `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1Controller.sv`.
+- RTL dependencies: `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1SnoopEngine.sv`, `rtl/l1/MesiL1Controller.sv`.
 - Existing bench: `tb/MesiL1Controller_tb.sv`; the SV test body is unchanged by this move.
 - Shared verification components stay in their existing `dv/agents`, `dv/models`, `dv/scoreboard`, `dv/checkers`, `dv/monitors` and `dv/coverage` locations.
 

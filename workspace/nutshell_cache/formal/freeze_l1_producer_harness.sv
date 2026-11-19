@@ -114,7 +114,7 @@ module FreezeL1ProducerFormal(
       assert(dut.txn_counter_q==next_cpu_id);
       assert(dut.cpu_txn_q==accepted_cpu_id);
       assert(dut.cpu_addr_q==accepted_cpu_addr);
-      assert(dut.snoop_txn_q==accepted_snoop_id);
+      assert(dut.snoop_engine.snoop_txn_q==accepted_snoop_id);
       assert(monitor_cpu_state<=6 && monitor_snoop_state<=5);
       if(dir_req_valid) begin
         assert(dir_req_txn_id==accepted_cpu_id);

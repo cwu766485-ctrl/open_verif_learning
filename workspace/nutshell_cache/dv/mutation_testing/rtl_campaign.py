@@ -27,6 +27,7 @@ def run_all() -> dict[str, object]:
         "total": len(mutations),
         "scope": [
             "rtl/l1/MesiL1Controller.sv",
+            "rtl/l1/MesiL1SnoopEngine.sv",
             "rtl/directory/DirectoryMshrBank.sv",
             "rtl/bus/axi/LineMemoryAxi4Adapter.sv",
         ],

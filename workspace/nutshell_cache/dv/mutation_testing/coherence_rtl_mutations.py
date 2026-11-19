@@ -1,4 +1,4 @@
-"""Mutate real MESI controller RTL and require its directed checker to fail.
+"""Mutate real MESI snoop-engine RTL and require its directed checker to fail.
 
 This complements ``dv.fault_injection`` which mutates checker expectations. The
 campaign changes isolated RTL expressions, rebuilds the actual controller with
@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-RTL = PROJECT_ROOT / "rtl" / "l1" / "MesiL1Controller.sv"
+RTL = PROJECT_ROOT / "rtl" / "l1" / "MesiL1SnoopEngine.sv"
 OUT = PROJECT_ROOT / "reports" / "coherence" / "mutations"
 TB = PROJECT_ROOT / "dv" / "blocks" / "mesi_l1_controller" / "tb" / "MesiL1Controller_tb.sv"
 TB_DIR = TB.parent
@@ -70,6 +70,7 @@ def _run_one(mutation: Mutation) -> dict[str, object]:
             str(PROJECT_ROOT / "rtl/common/CoherenceProtocol.sv"),
             str(PROJECT_ROOT / "rtl/l1/MesiL1SnoopArbiter.sv"),
             str(mutant_rtl), str(TB),
+            str(PROJECT_ROOT / "rtl/l1/MesiL1Controller.sv"),
         ]
         compiled = subprocess.run(
             compile_cmd, cwd=PROJECT_ROOT, capture_output=True, text=True,
@@ -117,7 +118,7 @@ def run_all() -> dict[str, object]:
         "status": "PASS" if caught == len(MUTATIONS) else "FAIL",
         "caught": caught,
         "total": len(MUTATIONS),
-        "scope": "real MesiL1Controller.sv; existing MesiL1Controller_tb.sv",
+        "scope": "real MesiL1SnoopEngine.sv integrated in MesiL1Controller; existing MesiL1Controller_tb.sv",
         "mutations": records,
     }
     (OUT / "rtl_mutation_summary.json").write_text(

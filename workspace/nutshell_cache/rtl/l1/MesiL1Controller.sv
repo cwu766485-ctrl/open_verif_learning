@@ -107,49 +107,36 @@ module MesiL1Controller #(
     CPU_ERROR
   } cpu_state_t;
 
-  typedef enum logic [2:0] {
-    SNP_IDLE,
-    SNP_SEND_RSP,
-    SNP_READ_LINE,
-    SNP_SEND_DATA,
-    SNP_META_WRITE,
-    SNP_ERROR
-  } snoop_state_t;
-
   cpu_state_t cpu_state_q;
-  snoop_state_t snoop_state_q;
   logic [TXN_ID_WIDTH-1:0] txn_counter_q;
   logic [TXN_ID_WIDTH-1:0] cpu_txn_q;
-  logic [TXN_ID_WIDTH-1:0] snoop_txn_q;
   grant_opcode_t grant_opcode_q;
   logic [31:0] cpu_addr_q;
-  logic [31:0] snoop_addr_q;
   logic [31:0] resp_addr_q;
   logic resp_write_q;
   logic req_snoop_cpu_ready;
   logic req_snoop_snoop_ready;
   logic cpu_snoop_lock;
+  logic snoop_accept;
+  logic snoop_idle;
+  logic [31:0] snoop_active_addr;
+  logic snoop_protocol_error;
+  logic cpu_protocol_error_q;
   request_opcode_t req_opcode_q;
   mesi_state_t cpu_meta_state_q;
-  mesi_state_t snoop_meta_state_q;
-  snoop_response_t snoop_rsp_opcode_q;
-  logic snoop_rsp_has_data_q;
   logic [2:0] refill_expected_beat_q;
-  logic [2:0] snoop_expected_beat_q;
   logic cpu_resp_pending_q;
   logic grant_commit_pending_q;
   logic cpu_meta_pending_q;
-  logic snoop_meta_pending_q;
-  logic snoop_state_change_q;
 
   MesiL1SnoopArbiter req_snoop_arbiter (
     .cpu_idle(cpu_state_q == CPU_IDLE),
     .cpu_snoop_lock(cpu_snoop_lock),
     .cpu_req_addr(cpu_req_addr), .cpu_req_valid(cpu_req_valid),
     .cpu_active_addr(cpu_addr_q),
-    .snoop_idle(snoop_state_q == SNP_IDLE),
+    .snoop_idle(snoop_idle),
     .snoop_req_addr(snoop_line_addr), .snoop_valid(snoop_valid),
-    .snoop_active_addr(snoop_addr_q),
+    .snoop_active_addr(snoop_active_addr),
     .cpu_req_ready(req_snoop_cpu_ready),
     .snoop_ready(req_snoop_snoop_ready)
   );
@@ -157,10 +144,49 @@ module MesiL1Controller #(
   assign cpu_snoop_lock = (cpu_state_q == CPU_REFILL) ||
                           (cpu_state_q == CPU_META_WRITE) ||
                           (cpu_state_q == CPU_RESP);
+  assign snoop_accept = snoop_valid && req_snoop_snoop_ready;
+  assign protocol_error = cpu_protocol_error_q || snoop_protocol_error;
+
+  MesiL1SnoopEngine #(.TXN_ID_WIDTH(TXN_ID_WIDTH)) snoop_engine (
+    .clock, .reset,
+    .snoop_accept,
+    .snoop_line_addr,
+    .snoop_opcode,
+    .snoop_txn_id,
+    .snoop_tag_hit,
+    .snoop_line_state,
+    .snoop_idle,
+    .snoop_active_addr,
+    .snoop_rsp_valid,
+    .snoop_rsp_ready,
+    .snoop_rsp_opcode,
+    .snoop_rsp_txn_id,
+    .snoop_rsp_has_data,
+    .snoop_line_rd_valid,
+    .snoop_line_rd_ready,
+    .snoop_line_rd_addr,
+    .snoop_line_rd_hit,
+    .snoop_array_data_valid,
+    .snoop_array_data_ready,
+    .snoop_array_beat_idx,
+    .snoop_array_data,
+    .snoop_array_last,
+    .snoop_data_valid,
+    .snoop_data_ready,
+    .snoop_data_txn_id,
+    .snoop_data_beat_idx,
+    .snoop_data,
+    .snoop_data_last,
+    .snoop_meta_write_valid,
+    .snoop_meta_write_ready,
+    .snoop_meta_write_line_addr,
+    .snoop_meta_write_state,
+    .protocol_error(snoop_protocol_error),
+    .monitor_snoop_state
+  );
 
   always_comb begin
     monitor_cpu_state = cpu_state_q;
-    monitor_snoop_state = snoop_state_q;
     monitor_cpu_active_addr = cpu_addr_q;
     cpu_req_ready = req_snoop_cpu_ready;
     cpu_resp_valid = (cpu_state_q == CPU_RESP) && cpu_resp_pending_q;
@@ -188,57 +214,29 @@ module MesiL1Controller #(
     grant_commit_txn_id = cpu_txn_q;
 
     snoop_ready = req_snoop_snoop_ready;
-    snoop_rsp_valid = (snoop_state_q == SNP_SEND_RSP);
-    snoop_rsp_opcode = snoop_rsp_opcode_q;
-    snoop_rsp_txn_id = snoop_txn_q;
-    snoop_rsp_has_data = snoop_rsp_has_data_q;
-
-    snoop_line_rd_valid = (snoop_state_q == SNP_READ_LINE);
-    snoop_line_rd_addr = snoop_addr_q;
-    snoop_array_data_ready = (snoop_state_q == SNP_SEND_DATA) &&
-                             snoop_data_ready;
-    snoop_data_valid = (snoop_state_q == SNP_SEND_DATA) &&
-                       snoop_array_data_valid;
-    snoop_data_txn_id = snoop_txn_q;
-    snoop_data_beat_idx = snoop_array_beat_idx;
-    snoop_data = snoop_array_data;
-    snoop_data_last = snoop_array_last;
 
     cpu_meta_write_valid = (cpu_state_q == CPU_META_WRITE) &&
                            cpu_meta_pending_q;
     cpu_meta_write_line_addr = line_align(cpu_addr_q);
     cpu_meta_write_state = cpu_meta_state_q;
-    snoop_meta_write_valid = (snoop_state_q == SNP_META_WRITE) &&
-                             snoop_meta_pending_q;
-    snoop_meta_write_line_addr = snoop_addr_q;
-    snoop_meta_write_state = snoop_meta_state_q;
   end
 
   always_ff @(posedge clock) begin
     if (reset) begin
       cpu_state_q <= CPU_IDLE;
-      snoop_state_q <= SNP_IDLE;
       txn_counter_q <= '0;
       cpu_txn_q <= '0;
-      snoop_txn_q <= '0;
       grant_opcode_q <= GRANT_DATA_S;
       cpu_addr_q <= '0;
-      snoop_addr_q <= '0;
       resp_addr_q <= '0;
       resp_write_q <= 1'b0;
       req_opcode_q <= REQ_GETS;
       cpu_meta_state_q <= MESI_I;
-      snoop_meta_state_q <= MESI_I;
-      snoop_rsp_opcode_q <= SNOOP_RSP_ACK;
-      snoop_rsp_has_data_q <= 1'b0;
       refill_expected_beat_q <= '0;
-      snoop_expected_beat_q <= '0;
       cpu_resp_pending_q <= 1'b0;
       grant_commit_pending_q <= 1'b0;
       cpu_meta_pending_q <= 1'b0;
-      snoop_meta_pending_q <= 1'b0;
-      snoop_state_change_q <= 1'b0;
-      protocol_error <= 1'b0;
+      cpu_protocol_error_q <= 1'b0;
     end else begin
       case (cpu_state_q)
         CPU_IDLE: begin
@@ -252,7 +250,7 @@ module MesiL1Controller #(
             txn_counter_q <= txn_counter_q + 1'b1;
 
             if (cpu_req_hit && (cpu_req_line_state == MESI_I)) begin
-              protocol_error <= 1'b1;
+              cpu_protocol_error_q <= 1'b1;
               cpu_state_q <= CPU_ERROR;
             end else if (cpu_req_hit && !cpu_req_write) begin
               cpu_resp_pending_q <= 1'b1;
@@ -285,7 +283,7 @@ module MesiL1Controller #(
         CPU_WAIT_GRANT: begin
           if (grant_valid && grant_ready) begin
             if (grant_opcode == GRANT_PUT_ACK) begin
-              protocol_error <= 1'b1;
+              cpu_protocol_error_q <= 1'b1;
               cpu_state_q <= CPU_ERROR;
             end else if (grant_contains_data(grant_opcode)) begin
               grant_opcode_q <= grant_opcode;
@@ -306,7 +304,7 @@ module MesiL1Controller #(
           if (grant_data_valid && grant_data_ready) begin
             if ((grant_data_beat_idx != refill_expected_beat_q) ||
                 (grant_data_last != (grant_data_beat_idx == 3'd7)))
-              protocol_error <= 1'b1;
+              cpu_protocol_error_q <= 1'b1;
 
             if ((grant_data_beat_idx == 3'd7) && grant_data_last) begin
               cpu_meta_state_q <= grant_to_mesi(grant_opcode_q);
@@ -346,118 +344,10 @@ module MesiL1Controller #(
 
         default: begin
           cpu_state_q <= CPU_IDLE;
-          protocol_error <= 1'b1;
+          cpu_protocol_error_q <= 1'b1;
         end
       endcase
 
-      case (snoop_state_q)
-        SNP_IDLE: begin
-          snoop_meta_pending_q <= 1'b0;
-          snoop_state_change_q <= 1'b0;
-          if (snoop_valid && snoop_ready) begin
-            snoop_addr_q <= line_align(snoop_line_addr);
-            snoop_txn_q <= snoop_txn_id;
-            snoop_expected_beat_q <= 3'd0;
-            snoop_rsp_has_data_q <= 1'b0;
-            snoop_state_change_q <= 1'b0;
-            snoop_meta_state_q <= snoop_line_state;
-
-            if (!snoop_tag_hit || (snoop_line_state == MESI_I)) begin
-              snoop_rsp_opcode_q <= (snoop_opcode == SNOOP_INVALIDATE) ?
-                                    SNOOP_RSP_INV_ACK : SNOOP_RSP_ACK;
-              snoop_state_q <= SNP_SEND_RSP;
-            end else if (snoop_opcode == SNOOP_READ) begin
-              if ((snoop_line_state == MESI_E) ||
-                  (snoop_line_state == MESI_M)) begin
-                snoop_rsp_opcode_q <= SNOOP_RSP_DATA;
-                snoop_rsp_has_data_q <= 1'b1;
-                snoop_meta_state_q <= MESI_S;
-                snoop_state_change_q <= 1'b1;
-                snoop_state_q <= SNP_READ_LINE;
-              end else begin
-                snoop_rsp_opcode_q <= SNOOP_RSP_ACK;
-                snoop_state_q <= SNP_SEND_RSP;
-              end
-            end else if (snoop_opcode == SNOOP_INVALIDATE) begin
-              if ((snoop_line_state == MESI_E) ||
-                  (snoop_line_state == MESI_M)) begin
-                snoop_rsp_opcode_q <= SNOOP_RSP_DATA;
-                snoop_rsp_has_data_q <= 1'b1;
-                snoop_state_q <= SNP_READ_LINE;
-              end else begin
-                snoop_rsp_opcode_q <= SNOOP_RSP_INV_ACK;
-                snoop_meta_pending_q <= 1'b1;
-                snoop_state_q <= SNP_META_WRITE;
-              end
-              snoop_meta_state_q <= MESI_I;
-              snoop_state_change_q <= 1'b1;
-            end else begin
-              protocol_error <= 1'b1;
-            end
-          end
-        end
-
-        SNP_SEND_RSP: begin
-          if (snoop_rsp_valid && snoop_rsp_ready)
-            snoop_state_q <= SNP_IDLE;
-        end
-
-        SNP_READ_LINE: begin
-          if (snoop_line_rd_valid && snoop_line_rd_ready) begin
-            if (snoop_line_rd_hit) begin
-              snoop_state_q <= SNP_SEND_DATA;
-            end else begin
-              // The tag/state lookup occurs when the Snoop is accepted, while
-              // the single-ported line array may not grant its read until a
-              // later cycle. A concurrent completed metadata update can remove
-              // the line in between. Report a no-data acknowledgement so the
-              // Directory retries from the now-authoritative L2 line.
-              snoop_rsp_opcode_q <= (snoop_meta_state_q == MESI_I) ?
-                                    SNOOP_RSP_INV_ACK : SNOOP_RSP_ACK;
-              snoop_rsp_has_data_q <= 1'b0;
-              snoop_state_change_q <= 1'b0;
-              snoop_meta_pending_q <= 1'b0;
-              snoop_state_q <= SNP_SEND_RSP;
-            end
-          end
-        end
-
-        SNP_SEND_DATA: begin
-          if (snoop_data_valid && snoop_data_ready) begin
-            if ((snoop_array_beat_idx != snoop_expected_beat_q) ||
-                (snoop_array_last != (snoop_array_beat_idx == 3'd7)))
-              protocol_error <= 1'b1;
-
-            if ((snoop_array_beat_idx == 3'd7) && snoop_array_last) begin
-              if (snoop_state_change_q) begin
-                snoop_meta_pending_q <= 1'b1;
-                snoop_state_q <= SNP_META_WRITE;
-              end else
-                snoop_state_q <= SNP_IDLE;
-            end else if (snoop_array_last ||
-                         (snoop_array_beat_idx != snoop_expected_beat_q) ||
-                         (snoop_array_beat_idx == 3'd7)) begin
-              snoop_state_q <= SNP_ERROR;
-            end else begin
-              snoop_expected_beat_q <= snoop_expected_beat_q + 1'b1;
-            end
-          end
-        end
-
-        SNP_META_WRITE: begin
-          if (snoop_meta_write_valid && snoop_meta_write_ready) begin
-            snoop_meta_pending_q <= 1'b0;
-            snoop_state_q <= SNP_SEND_RSP;
-          end
-        end
-
-        SNP_ERROR: snoop_state_q <= SNP_ERROR;
-
-        default: begin
-          snoop_state_q <= SNP_IDLE;
-          protocol_error <= 1'b1;
-        end
-      endcase
     end
   end
 endmodule

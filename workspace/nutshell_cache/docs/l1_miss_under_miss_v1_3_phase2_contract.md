@@ -116,10 +116,11 @@ diagram:
   core. Its two-entry tracker retains the second request, but only dispatches
   that entry after the current controller transaction and response retire.
 - `MesiL1Controller` owns one CPU transaction register set (`cpu_addr_q`,
-  `cpu_txn_q`, `cpu_state_q`) and a separate single-entry Snoop FSM. Grant,
-  refill, metadata-commit, and CPU-response handshakes are all qualified by
-  that single CPU transaction ID. Duplicating the whole controller per MSHR
-  would also duplicate Snoop acceptance/state and risks collisions between
+  `cpu_txn_q`, `cpu_state_q`). Its single-entry Snoop FSM is now structurally
+  isolated in `MesiL1SnoopEngine`, one instance per L1. Grant, refill,
+  metadata-commit, and CPU-response handshakes are still qualified by the
+  single active CPU transaction ID. Duplicating the whole controller per MSHR
+  would still duplicate Snoop acceptance/state and risks collisions between
   independently reset transaction-ID counters.
 - `DualL1MesiCluster` owns one per-core replacement transaction, one serialized
   line-read owner, and the CPU-versus-replacement request selection. The
@@ -138,6 +139,11 @@ diagram:
   than assumed away.
 
 ### First implementation slice
+
+The first structural step is complete: `MesiL1SnoopEngine` now owns the former
+Snoop FSM while preserving the controller's external interface. This prepares a
+single shared Snoop path for future per-MSHR CPU contexts; it does not add
+same-core concurrent Directory requests or change miss issue behavior.
 
 Keep the public CPU request/response interface unchanged. Use the existing
 per-core response transaction ID as the internal coherence tag, but change its

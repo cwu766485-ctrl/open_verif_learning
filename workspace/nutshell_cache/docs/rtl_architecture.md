@@ -13,6 +13,7 @@ behavior is assigned to the module that owns it.
 | `rtl/bus/axi/MemoryRefillMshrBank.sv` | Tracks memory refill IDs, collects eight response beats, schedules L2 fill streams, and retires completed Directory contexts. | Same slot selection, ID matching, beat/error checks, fill and completion round-robin order, and reset behavior. |
 | `rtl/interconnect/L2LineWriteArbiter.sv` | Selects the owner of the shared L2 line-write port among PutM, victim snoop data, refill data, and Directory owner data. | Same source priority and ready routing; the selected stream retains ownership through its existing beat handshakes. |
 | `rtl/coherence/SharedLineEngine.sv` | Runs the shared line FSM for refill, inclusive victim recovery, dirty writeback, PutM, grant, and snoop flows. | Original 16 state encodings, reset values, transition priorities, and handshake conditions. This is a structural extraction, not a protocol redesign. |
+| `rtl/l1/MesiL1SnoopEngine.sv` | Owns one per-L1 Snoop FSM, response/data streaming, and Snoop metadata update request. | Preserves the former Snoop states, transaction ID, beat checks, and handshakes; the CPU miss controller remains single-context. |
 
 The top keeps aliases such as `engine_state_q`, `mem_mshr_full_q`, and
 `l2_line_wr_*` for existing testbench diagnostics and monitor wiring. These are
@@ -26,12 +27,12 @@ blocks, `DualL1MesiCluster`, `DirectoryMshrBank`, and
 snoop routing, memory channel wiring, performance event wiring, and top-level
 assertions remain visible there because they span module boundaries.
 
-`DirectoryController`, `DirectoryMshrBank`, `MesiL1Controller`,
-`MesiL1Array`, `LineMemoryAxi4Adapter`, `CachePerformanceCsr`,
-`DualL1MesiCluster`, and `CoherentCacheAxiSubsystem` were not split in this
-refactor. In particular, the victim/PutM/refill/grant sequencing remains in a
-single `SharedLineEngine`; extracting smaller engines would change shared state
-ownership and needs a separate design review.
+`DirectoryController`, `DirectoryMshrBank`, the CPU transaction FSM in
+`MesiL1Controller`, `MesiL1Array`, `LineMemoryAxi4Adapter`,
+`CachePerformanceCsr`, `DualL1MesiCluster`, and `CoherentCacheAxiSubsystem`
+remain otherwise unchanged. In particular, the victim/PutM/refill/grant
+sequencing remains in a single `SharedLineEngine`; extracting smaller engines
+would change shared state ownership and needs a separate design review.
 
 ## Source lists
 

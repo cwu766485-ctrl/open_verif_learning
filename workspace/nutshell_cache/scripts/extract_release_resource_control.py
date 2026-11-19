@@ -16,6 +16,6 @@ def generate():
   body='\n'.join('  // Symbolic undriven output cutpoint: '+n for n in outputs)
   target=out/(name+'.sv');target.write_text(header+'\n'+body+'\nendmodule\n')
   manifest.append(dict(source=path,source_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),cut_outputs=outputs,artifact=str(target.relative_to(ROOT)),artifact_sha256=hashlib.sha256(target.read_bytes()).hexdigest()))
- retained=['rtl/cluster/DualL1MesiCluster.sv','rtl/l1/MesiL1Controller.sv','rtl/l1/MesiL1SnoopArbiter.sv','rtl/interconnect/CoherenceRequestArbiter.sv','rtl/interconnect/CoherenceRequestArbiterCore.sv','rtl/directory/DirectoryController.sv','rtl/directory/DirectoryMshrBank.sv','rtl/top/CoherentCacheSubsystem.sv']
+  retained=['rtl/cluster/DualL1MesiCluster.sv','rtl/l1/MesiL1Controller.sv','rtl/l1/MesiL1SnoopArbiter.sv','rtl/l1/MesiL1SnoopEngine.sv','rtl/interconnect/CoherenceRequestArbiter.sv','rtl/interconnect/CoherenceRequestArbiterCore.sv','rtl/directory/DirectoryController.sv','rtl/directory/DirectoryMshrBank.sv','rtl/top/CoherentCacheSubsystem.sv']
  return dict(array_cuts=manifest,retained=[dict(source=p,source_sha256=hashlib.sha256((ROOT/p).read_bytes()).hexdigest()) for p in retained],boundary='Overapproximate array outputs, including metadata/ready/streams; no occupancy cap; abstract witness is NOT legal integrated witness; unreachable result would need cutpoint soundness review',independent_approval=None)
 if __name__=='__main__':print(json.dumps(generate(),indent=2))

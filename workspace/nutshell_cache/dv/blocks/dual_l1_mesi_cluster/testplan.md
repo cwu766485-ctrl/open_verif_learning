@@ -3,7 +3,7 @@
 ## DUT and RTL dependencies
 
 - DUT: `DualL1MesiCluster`.
-- RTL dependencies: `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1Controller.sv`, `rtl/l1/MesiL1Array.sv`, `rtl/interconnect/CoherenceRequestArbiterCore.sv`, `rtl/interconnect/CoherenceRequestArbiter.sv`, `rtl/cluster/DualL1MesiCluster.sv`.
+- RTL dependencies: `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1SnoopEngine.sv`, `rtl/l1/MesiL1Controller.sv`, `rtl/l1/MesiL1Array.sv`, `rtl/interconnect/CoherenceRequestArbiterCore.sv`, `rtl/interconnect/CoherenceRequestArbiter.sv`, `rtl/cluster/DualL1MesiCluster.sv`.
 - Existing bench: `tb/DualL1MesiCluster_tb.sv`; the SV test body is unchanged by this move.
 - Shared verification components stay in their existing `dv/agents`, `dv/models`, `dv/scoreboard`, `dv/checkers`, `dv/monitors` and `dv/coverage` locations.
 
