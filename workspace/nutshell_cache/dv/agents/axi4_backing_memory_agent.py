@@ -64,6 +64,32 @@ class Axi4BackingMemoryAgent:
         self._write_order = 0
         self._held_master_payload = {}
         self._held_slave_payload = {}
+        self._armed_stalls = {}
+
+    def arm_stall(self, channel, cycles=1):
+        """Force the next valid transfer on an AXI address/data channel to stall.
+
+        Periodic READY patterns are useful for broad random traffic, but a
+        short directed transaction can land entirely on READY cycles. This
+        hook makes block-level backpressure tests deterministic without
+        changing the DUT or weakening the AXI stability checks.
+        """
+        channel = channel.upper()
+        if channel not in {"AR", "AW", "W"}:
+            raise ValueError(f"unsupported AXI master channel: {channel}")
+        if cycles < 1:
+            raise ValueError("an armed AXI stall must contain at least one cycle")
+        self._armed_stalls[channel] = cycles
+
+    def _ready(self, channel, valid):
+        remaining = self._armed_stalls.get(channel)
+        if remaining is not None and valid:
+            if remaining > 0:
+                self._armed_stalls[channel] = remaining - 1
+                return 0
+            del self._armed_stalls[channel]
+            return 1
+        return int(self.cycle % self.periods[channel] != 0)
 
     def force_next_reads_out_of_order(self, count=2):
         """Schedule the next accepted read group to complete in reverse order.
@@ -185,6 +211,7 @@ class Axi4BackingMemoryAgent:
                 self._forced_reorder_group.clear()
                 self._held_master_payload.clear()
                 self._held_slave_payload.clear()
+                self._armed_stalls.clear()
                 d.axi_arready.value = 0
                 d.axi_awready.value = 0
                 d.axi_wready.value = 0
@@ -193,9 +220,9 @@ class Axi4BackingMemoryAgent:
                 await ClockCycles(d, 1)
                 continue
 
-            ar_ready = int(self.cycle % self.periods["AR"] != 0)
-            aw_ready = int(self.cycle % self.periods["AW"] != 0)
-            w_ready = int(self.cycle % self.periods["W"] != 0)
+            ar_ready = self._ready("AR", int(d.axi_arvalid.value))
+            aw_ready = self._ready("AW", int(d.axi_awvalid.value))
+            w_ready = self._ready("W", int(d.axi_wvalid.value))
             d.axi_arready.value = ar_ready
             d.axi_awready.value = aw_ready
             d.axi_wready.value = w_ready

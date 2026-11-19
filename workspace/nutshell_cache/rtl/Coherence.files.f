@@ -2,6 +2,8 @@ common/CoherenceProtocol.sv
 coherence/SharedLineEngine.sv
 l1/MesiL1SnoopArbiter.sv
 l1/MesiL1SnoopEngine.sv
+l1/MesiL1MissContext.sv
+l1/MesiL1MissResponseOrder.sv
 l1/MesiL1Controller.sv
 directory/DirectoryController.sv
 directory/DirectoryMshrBank.sv

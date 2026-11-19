@@ -12,7 +12,11 @@
     integer beat;
     integer timeout;
     logic response_seen;
+    logic grant_commit_seen;
+    logic [TXN_ID_WIDTH-1:0] committed_txn_id;
     begin
+      grant_commit_seen = 1'b0;
+      committed_txn_id = '0;
       if (core_id == 1'b0) begin
         grant_opcode_drive[2:0] = GRANT_DATA_E;
         grant_txn_id_drive[TXN_ID_WIDTH-1:0] = txn_id;
@@ -64,6 +68,14 @@
 
       response_seen = 1'b0;
       for (timeout = 0; timeout < 8 && !response_seen; timeout = timeout + 1) begin
+        // Grant Commit and the CPU response are independent handshakes. The
+        // array may accept the commit while the response-data snapshot is
+        // being captured, so remember the transfer rather than sampling the
+        // pulse only after CPU response VALID appears.
+        if (grant_commit_valid[core_id] && grant_commit_ready[core_id]) begin
+          grant_commit_seen = 1'b1;
+          committed_txn_id = grant_commit_txn_id[core_id];
+        end
         if (cpu_resp_valid[core_id])
           response_seen = 1'b1;
         else
@@ -76,9 +88,9 @@
           cpu_resp_rdata[core_id] !=
             (line_seed + request_addr[5:3]))
         $fatal(1, "core %0d refill response address/data mismatch", core_id);
-      if (!grant_commit_valid[core_id] ||
-          grant_commit_txn_id[core_id] != txn_id)
-        $fatal(1, "core %0d did not commit the matching grant", core_id);
+      if (!grant_commit_seen || committed_txn_id != txn_id)
+        $fatal(1, "core %0d did not commit the matching grant: seen=%b commit_txn=%0d expected_txn=%0d",
+               core_id, grant_commit_seen, committed_txn_id, txn_id);
       tick();
     end
   endtask

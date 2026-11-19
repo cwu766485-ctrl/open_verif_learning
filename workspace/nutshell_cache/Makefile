@@ -26,7 +26,7 @@ gen_dut:
 		--sim $(SIM) \
 		-e -c
 
-.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_replay_closure coherence_full_system_coverage coherence_full_system_checker_tests coherence_full_system_verify coherence_full_system_cross_closure coherence_full_system_evidence_gate coherence_nonblocking_l1_mshr coherence_python_coverage_close coherence_coverage_audit coherence_release_regression coherence_release_gate coherence_shared_line_engine clean
+.PHONY: wave test test_slow mega_random benchmark coverage rtl_coverage functional_coverage formal fault_injection report gen_dut doctor coherence_build coherence_smoke coherence_random coherence_regression coherence_formal coherence_l1_array coherence_l2_array coherence_l1_controller coherence_l1_miss_context coherence_l1_miss_response_order coherence_directory coherence_directory_mshr_bank coherence_request_arbiter coherence_snoop_arbiter coherence_cluster coherence_bus_blocks coherence_axi_lint coherence_axi_build coherence_axi_e2e coherence_axi_backpressure coherence_multisnoop coherence_modules coherence_verify coherence_python_build coherence_python_test coherence_python_litmus coherence_benchmark_v2 coherence_benchmark_v3 coherence_benchmark_v4 coherence_hit_under_miss coherence_python_verify coherence_stress coherence_dense_set_stress coherence_rtl_mutation coherence_axi_python_build coherence_axi_python_test coherence_full_system_build coherence_full_system_smoke coherence_full_system_random coherence_full_system_mixed coherence_full_system_stress coherence_full_system_replay coherence_full_system_replay_trace coherence_full_system_replay_closure coherence_full_system_coverage coherence_full_system_checker_tests coherence_full_system_verify coherence_full_system_cross_closure coherence_full_system_evidence_gate coherence_nonblocking_l1_mshr coherence_python_coverage_close coherence_coverage_audit coherence_release_regression coherence_release_gate coherence_shared_line_engine clean
 
 wave:
 	@source $(ENV_SCRIPT); $(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
@@ -183,6 +183,20 @@ coherence_l1_controller:
 	  --top-module MesiL1Controller_tb --Mdir ../reports/coherence/l1_controller_obj \
 	  -f ../dv/blocks/mesi_l1_controller/filelist.f
 	@reports/coherence/l1_controller_obj/VMesiL1Controller_tb
+
+coherence_l1_miss_context:
+	@mkdir -p reports/coherence/l1_miss_context_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module MesiL1MissContext_tb --Mdir ../reports/coherence/l1_miss_context_obj \
+	  -f ../dv/blocks/mesi_l1_miss_context/filelist.f
+	@reports/coherence/l1_miss_context_obj/VMesiL1MissContext_tb
+
+coherence_l1_miss_response_order:
+	@mkdir -p reports/coherence/l1_miss_response_order_obj
+	@source $(ENV_SCRIPT); cd rtl && verilator --binary --timing --assert -j $(COHERENCE_JOBS) -Wall -Wno-fatal -Wno-BLKSEQ \
+	  --top-module MesiL1MissResponseOrder_tb --Mdir ../reports/coherence/l1_miss_response_order_obj \
+	  -f ../dv/blocks/mesi_l1_miss_response_order/filelist.f
+	@reports/coherence/l1_miss_response_order_obj/VMesiL1MissResponseOrder_tb
 
 coherence_directory:
 	@mkdir -p reports/coherence/directory_obj
@@ -378,10 +392,11 @@ coherence_full_system_build:
 # The dedicated trace keeps L1 slots, issued MESI transactions, Directory
 # contexts, refill MSHRs, and AXI outstanding counts separate.
 coherence_nonblocking_l1_mshr: coherence_full_system_build
-	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/v13/nonblocking_l1_coverage.json \
-	 FULL_SYSTEM_TRACE_OUTPUT=reports/full_system/v13/nonblocking_l1_trace.jsonl \
+	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT='$(or $(FULL_SYSTEM_COVERAGE_OUTPUT),reports/full_system/v13/nonblocking_l1_coverage.json)' \
+	 FULL_SYSTEM_TRACE_OUTPUT='$(or $(FULL_SYSTEM_TRACE_OUTPUT),reports/full_system/v13/nonblocking_l1_trace.jsonl)' \
 	 PYTHONPATH=.tooling:.:./dv:./tests \
-	  python3 -m pytest -sv tests/full_system/test_nonblocking_l1_mshr.py
+	  python3 -m pytest -sv tests/full_system/test_nonblocking_l1_mshr.py \
+	  tests/full_system/test_nonblocking_l1_mshr_collisions.py
 
 coherence_full_system_smoke: coherence_full_system_build
 	@source $(ENV_SCRIPT); FULL_SYSTEM_COVERAGE_OUTPUT=reports/full_system/smoke/full_system_coverage.json \

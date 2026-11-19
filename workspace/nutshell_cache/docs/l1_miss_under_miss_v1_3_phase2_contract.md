@@ -1,10 +1,21 @@
 # v1.3 Phase 2 — Same-L1 Miss-under-Miss Contract
 
-**Status: design contract for the next RTL increment; not yet implemented.**
+**Status (2026-11-19): implemented and integrated in the current working-tree snapshot; the first same-core Directory concurrency acceptance test and four-miss resource test pass.**
 
-This document extends the implemented v1.3 two-entry request tracker. The
-current RTL and its passing evidence remain the baseline. Nothing here claims
-that two same-L1 misses can already issue concurrently.
+The measured implementation evidence is in
+[`reports/full_system/v13/nonblocking_l1_coverage.json`](../reports/full_system/v13/nonblocking_l1_coverage.json)
+and [`docs/dv/v1.3_nonblocking_l1_validation.md`](dv/v1.3_nonblocking_l1_validation.md).
+The recorded source base is `b75e94ed4ab42024518707d50a8716b128827e35` plus
+the dirty-tree snapshot hash recorded in the JSON. The full AXI wrapper build
+completed, six focused tests passed, and the integrated full-system suite
+reported 76 passed / 1 skipped. The broader `coherence_verify` target did not
+complete because the Benchmark v4 B03 working-set sweep was interrupted; this
+is not a full release sign-off.
+
+This document records the implementation contract and its evidence. Historical
+baseline descriptions and source audits below refer to the pre-implementation
+single-issue design; the 2026-11-19 status and evidence above supersede those
+statements.
 
 ## Baseline and target
 
@@ -175,27 +186,30 @@ oldest-live-MSHR selection keyed by the local acceptance-order sequence.
 Refill/grant responses may target a younger MSHR by its bound coherence ID,
 but cannot overtake an older miss at the CPU interface. The hit bypass remains
 a separately specified response class. The existing ID width and namespace
-must be checked against the maximum number of concurrently live Directory
-transactions before implementation; do not silently truncate or reuse a live
-ID.
+was exercised with distinct live IDs in the two-context and four-miss tests.
+The tests do not replace a separate namespace-width proof for every possible
+parameterization; no live ID may be silently truncated or reused.
 
-## Required proof points for implementation
+## Required proof points and current evidence
 
-All items start **OPEN** until their test and independent checker pass.
+Statuses below refer only to the dirty snapshot and the local runs linked at
+the top of this document. `PASS` means the stated checker/testpoint was observed
+in that run; `PARTIAL` means a related case passed but not the full stated
+cross; `OPEN` remains required work.
 
-| Testpoint | Required observation | Independent check |
+| Testpoint | Required observation | Current status and evidence |
 |---|---|---|
-| Same-core miss-under-miss | Two different-set misses from one core both accepted by Directory before first CPU response | Internal tags, addresses, Directory commits, data and per-core response order |
-| Four CPU misses | CPU0 A/B and CPU1 C/D live before first response | L1 MSHR occupancy is 4; each request has a unique live association |
-| Resource accounting | Concurrent four-miss window | Separate peaks for issued L1 MSHRs, Directory contexts, refill MSHRs, AXI R outstanding and AXI W outstanding |
-| Out-of-order refill | Refill IDs complete out of issue order | Every beat routes to the matching line/tag; CPU miss responses remain FIFO per core |
-| Full backpressure | Both local MSHRs occupied and third miss held | No acceptance, payload stable, one acceptance after a slot retires |
-| Same-line conflict | Duplicate line request while first is live | No duplicate issue; held request re-looks up after retirement |
-| Same-set/victim collision | Two lines compete for one set or victim | No duplicate way, lost dirty data, stale directory entry, or deadlock |
-| Hit-under-miss | Resident read while two misses are live | Existing bypass semantics and data preserved |
-| Store/refill collision | Store and refill contend for the array | Byte mask and final line value correct; no early store commit |
-| Snoop/replacement collision | PutM/replacement and owner-data Snoop overlap | Directory/L1 state and all eight data beats correct; progress under stalls |
-| Reset cancellation | Reset with two live misses and responses pending | All old entries canceled; no stale response; post-reset requests work |
+| Same-core miss-under-miss | Two different-set misses from one core accepted by Directory before first CPU response | **PASS** — seed 1245697; Directory handshakes at cycles 3/7, IDs 0/1; first response cycle 221; lifecycle checkers passed. |
+| Four CPU misses | CPU0 A/B and CPU1 C/D live before first response | **PASS** — seed 1246212; four Directory handshakes observed before any CPU response; per-core MSHR peak 2. |
+| Resource accounting | Concurrent four-miss window | **PASS** — L1 issued contexts 4, Directory 4, refill MSHR 4, AXI R 4, AXI W 0 (read-only test). |
+| Out-of-order refill | AXI read IDs return out of issue order | **PASS** — first two read IDs deliberately reversed; transaction/data association and per-core CPU miss order checked. |
+| Full backpressure | Both local entries occupied and further request held | **PASS** — third request remained unaccepted until an entry retired; request stability/release checked by the four-miss test. |
+| Same-line conflict | Duplicate line request while first is live | **PASS** — duplicate was not separately issued and re-looked-up after the first transaction. |
+| Same-set/victim collision | Two different lines compete for one set/victim | **OPEN** — same-set issue is constrained; dirty victim-way reservation under two live misses needs dedicated checking. |
+| Hit-under-miss | Resident read while misses are live | **PARTIAL** — the existing bypass is verified with one live miss. With both MSHR entries occupied, current `hit_under_miss_ready` deliberately deasserts; resident-hit progress in that state is unsupported and untested. |
+| Store/refill collision | Secondary Store and refill/metadata activity contend | **PARTIAL** — secondary Store commit, peer owner-data Snoop, and FIFO responses passed; complete byte-mask/refill collision matrix remains open. |
+| Snoop/replacement collision | Dirty PutM/replacement overlaps owner-data Snoop | **OPEN** — this run does not close the two-live-miss dirty replacement progress/deadlock case. |
+| Reset cancellation | Reset cancels live entries without stale response | **PARTIAL** — reset epoch and cancellation passed with two accepted L1 entries; all phases with two simultaneously issued misses remain to be covered. |
 
 The directed four-miss test must use four independent lines and different L2
 sets, a fixed seed and sufficient memory latency. It must record cycle-level
@@ -214,21 +228,28 @@ removed:
 | `MesiL1Array` | One refill burst collector, one line-read stream, shared metadata/data write arbitration | Whole-line refill ownership plus safe arbitration for two MSHRs, Snoop, Store, and Replacement |
 | `DirectoryMshrBank` / `SharedLineEngine` | Multi-context Directory state but shared L2/line engine resources | Keep existing capacities; expose real downstream stalls and serialize shared streams without losing per-context identity |
 
-The first coding slice is to split the CPU miss transaction state from the
-shared Snoop state, then route two live miss contexts by transaction ID while
-keeping the existing public CPU ports unchanged. Its first integration target
-is the two-same-core case: two different-set cold misses both handshake at the
-Directory before either CPU miss response, with distinct live IDs and FIFO CPU
-miss retirement. The next slice adds complete-line refill buffering and array
-write arbitration; only after that should replacement/Snoop/Reset collisions
-be enabled for the two-context path. Each slice must include a directed test
-and Checker before proceeding.
+The first coding slice described by the original plan is implemented in the
+current snapshot: two live miss contexts per L1 are routed by their internal
+transaction IDs, while the existing public CPU ports remain unchanged. The
+same-core test observes two different-set Directory handshakes before the first
+CPU response; the four-miss test observes four Directory contexts, refill
+MSHRs and AXI reads outstanding. Refill ownership is held for a complete line,
+and metadata/store/refill writes are arbitrated at the L1 array interface.
+Replacement remains a single per-core FSM, so not every replacement/Snoop
+overlap has been proven for two live misses.
 
-Current baseline evidence is only the accepted-entry tracker: each core has
-two allocated slots, while controller-owned and Directory-issued miss peaks
-are one per core. The present top therefore does **not** satisfy the first
-coding-slice criterion. No production RTL change is made by this contract
-update.
+The pre-implementation accepted-entry-only measurements (one controller-owned
+and one Directory-issued miss per core) are historical. The current snapshot
+has separate primary and secondary miss contexts and records two issued misses
+per core in the four-request test. See the machine-readable evidence above for
+the current checker results and resource peaks.
+
+The Hit-under-Miss bypass is intentionally narrower than the two-entry miss
+capacity: it accepts a resident read only when exactly one MSHR is valid. With
+two live entries, the shared lookup/refill arbitration and single hit-response
+slot are not proven for bypass, so requests remain backpressured. This is a
+known v1.3 limitation, not evidence that Hit-under-Miss works at full MSHR
+occupancy.
 
 ## Explicit limits for this phase
 

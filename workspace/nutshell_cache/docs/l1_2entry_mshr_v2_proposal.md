@@ -1,10 +1,23 @@
 # L1 Two-Entry MSHR — v1.3 Design and Implementation Contract
 
-**Status:** v1.3 incremental RTL implementation is present at
-`fb9db8b8ef20fa0091293b41726b5667eda3c015`; targeted lifecycle and four-entry
-occupancy tests pass. Full-system release regression and PPA are not signed
-off. This document replaces the earlier open-question proposal. It does not
-claim Miss-under-Miss or four simultaneous Directory/AXI transactions.
+**Status (2026-11-19):** the design described here has progressed beyond the
+original queued-entry proposal. The current working-tree snapshot implements
+two per-L1 miss contexts, same-core Directory issue, transaction-ID grant/refill
+routing, shared Snoop control, L1 refill/metadata arbitration, and ordered
+same-core miss responses. The focused acceptance suite and full-system pytest
+results are recorded in
+[`docs/dv/v1.3_nonblocking_l1_validation.md`](dv/v1.3_nonblocking_l1_validation.md).
+
+This file preserves the earlier two-entry tracker proposal for design history;
+its single-issued-miss/queued-second-miss descriptions below are superseded by
+the implementation status and Phase 2 contract. `coherence_verify` did not
+finish its Benchmark v4 stage in the latest run, so this is not a release or
+PPA sign-off.
+
+The sections below the original proposal are historical design notes. For the
+current interface contract, measured two-context behavior, test commands, and
+remaining gaps, use the 2026-11-19 implementation refresh in the linked DV
+report and [`l1_miss_under_miss_v1_3_phase2_contract.md`](l1_miss_under_miss_v1_3_phase2_contract.md).
 
 ## Goal and scope
 
@@ -61,9 +74,12 @@ transaction ID once its Directory request is accepted.
    fail-stop as in the existing design; reset is required to recover it.
 
 The ready signal deasserts for a third independent miss while both entries are
-valid. The requester must hold valid and payload until accepted. Existing
-eligible resident read hits retain their Hit-under-Miss path, including while
-both MSHRs are occupied.
+valid. The requester must hold valid and payload until accepted. The current
+resident-read Hit-under-Miss bypass is enabled only while exactly one miss
+context is live. When both MSHRs are occupied, even a resident read hit is
+backpressured. Extending the bypass to two live misses needs separate proof of
+lookup/refill array-port arbitration, response-slot behavior, and transaction-ID
+uniqueness; it is not claimed by this implementation.
 
 ## Conflict and resource rules
 
@@ -125,6 +141,19 @@ actual resource level measured.
 - Four simultaneous Directory contexts/refill streams/AXI reads.
 - Same-line MSHR merge or arbitrary same-core response reordering.
 - L2 banking, extra array ports, Directory context-count changes, or PPA.
+
+## RTL preparation checkpoint
+
+`MesiL1Controller`'s existing single-miss transaction FSM has been extracted
+into `rtl/l1/MesiL1MissContext.sv`. The controller still instantiates exactly
+one context and retains its existing external ports and request/response
+behavior. The optional external transaction-ID input on the context is
+disabled by the compatibility wrapper. This is a structural preparation for
+future context replication; it does not add Miss-under-Miss, a second
+controller-issued request, or additional L1 array bandwidth. The context must
+not be replicated until response routing, refill/metadata arbitration,
+replacement and snoop conflicts have a matching RTL design and directed
+system-level evidence.
 
 The next P2 step is to evaluate true per-core Miss-under-Miss only after the
 two-entry tracker passes the directed lifecycle suite and benchmark evidence

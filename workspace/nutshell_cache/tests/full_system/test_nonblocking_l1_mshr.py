@@ -127,6 +127,13 @@ async def _wait_until(env, predicate, description, *, timeout=800):
     raise TimeoutError(f"timed out waiting for {description}")
 
 
+def _directory_requests_since(env, event_start, *, core):
+    return [event for event in env.monitor.events[event_start:]
+            if event.get("source") == "directory" and
+            event.get("event_type") == "request_accept" and
+            int(event.get("source_id", -1)) == core]
+
+
 async def _offer_one(env, core, address, *, write=False, data=0, mask=0xFF,
                      timeout=1000):
     """Drive one raw CPU lane and hold its payload until a real handshake."""
@@ -176,6 +183,147 @@ async def _take_one_response(env, core, *, timeout=1800):
             )
             return response
     raise TimeoutError(f"core{core} response did not handshake")
+
+
+@case
+async def test_same_core_two_distinct_misses_reach_directory_before_first_response(
+        full_system_env):
+    """Both same-core misses handshake at Directory before response 0 is valid."""
+    env = await full_system_env(
+        seed=0x13_0201,
+        axi_options={"latency": 160, "r_valid_gap_period": 2,
+                     "read_reorder_window": 2},
+    )
+    env.trace_scenario_id = "V13_SAME_CORE_TWO_DIRECTORY_HANDSHAKES"
+    addresses = (0x0055_0008, 0x0055_0088)
+    expected = []
+    for index, address in enumerate(addresses):
+        line = address & 0xFFFF_FFC0
+        for beat in range(8):
+            word_address = line + beat * 8
+            env.seed_word(word_address,
+                          0xD102_0000_0000_0000 | (index << 32) |
+                          word_address)
+        expected.append((0, address, env.axi.read_word(address)))
+
+    env.dut.cpu_resp_ready.value = 0
+    event_start = len(env.monitor.events)
+    env.trace_config.update({
+        "l1_mshr_entries_per_core": 2,
+        "same_core_addresses": list(addresses),
+        "l1_set_indices": [(address >> 6) & 0x7F for address in addresses],
+        "memory_latency_cycles": 160,
+        "cpu_response_ready_during_directory_handshakes": 0,
+    })
+    env.trace_operations.extend([
+        {"kind": "legal_prelude", "operation": "seed_two_distinct_lines",
+         "addresses": list(addresses)},
+        {"kind": "stimulus", "operation": "same_core_two_cold_reads",
+         "core": 0, "addresses": list(addresses)},
+    ])
+
+    await _offer_one(env, 0, addresses[0])
+    await _wait_until(
+        env, lambda: len(_directory_requests_since(
+            env, event_start, core=0)) == 1,
+        "first same-core miss Directory handshake",
+    )
+    first_directory = _directory_requests_since(env, event_start, core=0)[0]
+    await _offer_one(env, 0, addresses[1])
+
+    # Check response VALID as well as CPU response completion. READY is held
+    # low so the first response cannot retire and conceal an early response.
+    for _ in range(800):
+        if int(env.dut.cpu_resp_valid.value) & 1:
+            raise AssertionError(
+                "first CPU response became valid before the second Directory handshake"
+            )
+        requests = _directory_requests_since(env, event_start, core=0)
+        if len(requests) == 2:
+            break
+        await ClockCycles(env.dut, 1)
+    else:
+        raise TimeoutError("second same-core miss did not handshake at Directory")
+
+    # The Directory handshake and the registered per-entry issued bit update
+    # on the same RTL edge. Let the passive monitor sample that updated bitmap
+    # before checking the independently reported L1 issue peak.
+    await ClockCycles(env.dut, 1)
+    assert not (int(env.dut.cpu_resp_valid.value) & 1), (
+        "first CPU response became valid before observing both Directory handshakes"
+    )
+
+    second_directory = requests[1]
+    assert [event["address"] & 0xFFFF_FFC0 for event in requests] == [
+        address & 0xFFFF_FFC0 for address in addresses
+    ]
+    assert first_directory["cycle"] < second_directory["cycle"]
+    assert first_directory["txn_id"] != second_directory["txn_id"], (
+        "same-core in-flight Directory transactions reused an ID"
+    )
+    assert env.monitor.max_l1_mshr_per_core[0] == 2
+    assert env.monitor.max_l1_mshr_active_per_core[0] == 2
+    assert env.monitor.max_l1_mshr_issued_per_core[0] == 2
+    assert env.monitor.max_directory_contexts >= 2
+    assert not (int(env.dut.cpu_resp_valid.value) & 1)
+    assert not any(event.get("source") == "cpu" and
+                   event.get("event_type") == "response_complete"
+                   for event in env.monitor.events[event_start:])
+
+    env.trace_operations.append({
+        "kind": "directory_handshake_evidence",
+        "requests": [{key: event[key] for key in
+                       ("cycle", "source_id", "txn_id", "address", "opcode")}
+                      for event in requests],
+        "first_response_valid_before_second_handshake": False,
+        "l1_mshr_peak_per_core": dict(env.monitor.max_l1_mshr_per_core),
+        "l1_mshr_issued_peak_per_core": dict(
+            env.monitor.max_l1_mshr_issued_per_core),
+        "directory_context_peak": env.monitor.max_directory_contexts,
+    })
+
+    env.dut.cpu_resp_ready.value = 1
+    responses = await _collect_responses(env, 2)
+    env.dut.cpu_resp_ready.value = 0
+    await ClockCycles(env.dut, 2)
+    assert [response["address"] for response in responses] == list(addresses), (
+        "same-core miss responses did not retire in acceptance order"
+    )
+    by_address = {response["address"]: response for response in responses}
+    for core, address, value in expected:
+        response = by_address[address]
+        assert response["data"] == value
+        directory = next(event for event in requests
+                         if (event["address"] & 0xFFFF_FFC0) ==
+                         (address & 0xFFFF_FFC0))
+        assert response["txn_id"] == directory["txn_id"], (
+            f"CPU response ID did not match Directory request for {address:#x}"
+        )
+        env.reference.observe(core, address, response_data=response["data"])
+        env._check_observed_commits(address & 0xFFFF_FFC0, event_start)
+
+    lifecycle = L1MshrLifecycleChecker.check(
+        env.monitor.events[event_start:], expected_requests=expected
+    )
+    refill = MshrLifecycleChecker.check(
+        env.monitor.events[event_start:],
+        expected_lines={address for _core, address, _value in expected},
+        expected_words={address: value for _core, address, value in expected},
+        expected_cores={address: 0 for _core, address, _value in expected},
+    )
+    env.trace_operations.extend([
+        {"kind": "checker_evidence", "checker": "L1MshrLifecycleChecker",
+         "result": lifecycle},
+        {"kind": "checker_evidence", "checker": "MshrLifecycleChecker",
+         "result": refill},
+        {"kind": "resource_peaks",
+         "l1_mshr_issued": env.monitor.max_l1_mshr_issued,
+         "directory_contexts": env.monitor.max_directory_contexts,
+         "refill_mshrs": env.monitor.max_mshr_occupancy,
+         "axi_read_outstanding": env.axi.peak_reads},
+    ])
+    assert int(env.dut.protocol_error.value) == 0
+    assert int(env.dut.fatal_error.value) == 0
 
 
 @case
@@ -261,13 +409,31 @@ async def test_four_l1_misses_occupy_two_entries_per_core(full_system_env):
     assert len(env.axi.read_completions) == completion_start, (
         "memory latency did not preserve the four-entry allocation window"
     )
+    await _wait_until(
+        env,
+        lambda: len([event for event in env.monitor.events[event_start:]
+                     if event.get("source") == "directory" and
+                     event.get("event_type") == "request_accept"]) == 4,
+        "all four independent L1 misses to handshake at Directory",
+        timeout=80,
+    )
+    # Directory request acceptance and the registered MSHR issue bitmap are
+    # observed on adjacent monitor samples.
+    await ClockCycles(env.dut, 1)
+    assert not any(event["source"] == "cpu" and
+                   event["event_type"] == "response_complete"
+                   for event in env.monitor.events[event_start:]), (
+        "a CPU response completed before all four Directory handshakes"
+    )
     assert env.monitor.max_l1_mshr_per_core == {0: 2, 1: 2}
-    assert env.monitor.max_l1_mshr_active_per_core == {0: 1, 1: 1}
-    assert env.monitor.max_l1_mshr_issued_per_core == {0: 1, 1: 1}
-    assert env.monitor.max_l1_mshr_issued <= 2
-    assert env.monitor.max_directory_contexts == 2
-    assert env.monitor.max_mshr_occupancy == 2
-    assert env.axi.peak_reads == 2
+    assert env.monitor.max_l1_mshr_active_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_issued_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_issued == 4
+    assert env.monitor.max_directory_contexts >= 3
+    # Refill MSHR and AXI peaks are separate downstream resource limits; they
+    # need not equal the four live CPU-side miss contexts.
+    assert env.monitor.max_mshr_occupancy >= 2
+    assert env.axi.peak_reads >= 2
 
     # Keep third requests stable through full-bank backpressure. They handshake
     # only after response retirement releases an L1 entry.
@@ -357,12 +523,12 @@ async def test_four_l1_misses_occupy_two_entries_per_core(full_system_env):
 
     assert env.monitor.max_l1_mshr_occupancy == 4
     assert env.monitor.max_l1_mshr_per_core == {0: 2, 1: 2}
-    assert env.monitor.max_l1_mshr_active_per_core == {0: 1, 1: 1}
-    assert env.monitor.max_l1_mshr_issued_per_core == {0: 1, 1: 1}
-    assert env.monitor.max_l1_mshr_issued <= 2
-    assert env.monitor.max_directory_contexts == 2
-    assert env.monitor.max_mshr_occupancy == 2
-    assert env.axi.peak_reads >= 2
+    assert env.monitor.max_l1_mshr_active_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_issued_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_issued == 4
+    assert env.monitor.max_directory_contexts == 4
+    assert env.monitor.max_mshr_occupancy == 4
+    assert env.axi.peak_reads == 4
 
 
 @case
@@ -534,8 +700,16 @@ async def test_reset_cancels_active_and_queued_l1_mshrs(full_system_env):
 
 
 @case
-async def test_queued_store_relooks_up_after_remote_snoop(full_system_env):
-    """A peer invalidation before queued dispatch must affect the fresh lookup."""
+async def test_secondary_store_context_commits_before_ordered_response(full_system_env):
+    """A secondary Store commits independently while responses retire in order.
+
+    Core0 already owns the shared line in S and has an unrelated cold miss in
+    flight. Its second request upgrades the shared line to M before the older
+    CPU response retires. A later Core1 Store must snoop Core0 and receive the
+    newly committed owner data. Core0's two responses must still retire in
+    request-acceptance order, with the Store response retaining its pre-write
+    data snapshot.
+    """
     env = await full_system_env(axi_options={"latency": 96})
     shared = 0x0054_0008
     pending = 0x0054_1088
@@ -551,6 +725,48 @@ async def test_queued_store_relooks_up_after_remote_snoop(full_system_env):
     env.reference.observe(1, shared, response_data=initial)
 
     event_start = len(env.monitor.events)
+
+    def check_latest_commits_against_reference():
+        """Check the terminal architectural state after a multi-step transaction.
+
+        An Upgrade may legally invalidate the requester before it receives M,
+        so a single operation can emit intermediate I and final M commits.
+        The reference model advances at the CPU response boundary; comparing
+        every earlier commit to that final state would reject those legal
+        intermediate commits. Check the latest observed commit per participant
+        and the latest Directory commit at each response boundary instead.
+        """
+        line = shared & 0xFFFF_FFC0
+        latest_l1 = {}
+        latest_directory = None
+        for event in env.monitor.events[event_start:]:
+            if event.get("event_type") != "metadata_commit":
+                continue
+            if event.get("address", 0) & 0xFFFF_FFC0 != line:
+                continue
+            if event.get("source") == "l1":
+                latest_l1[event["core"]] = event
+            elif event.get("source") == "directory":
+                latest_directory = event
+
+        expected_l1 = {"I": 0, "S": 1, "E": 2, "M": 3}
+        assert set(latest_l1) == {0, 1}, "missing L1 metadata commit evidence"
+        for core, state in enumerate(env.reference.states[line]):
+            assert latest_l1[core]["new_state"] == expected_l1[state], (
+                f"terminal L1 state mismatch for core{core}: "
+                f"observed={latest_l1[core]['new_state']} expected={state}"
+            )
+
+        expected_directory = env.reference.directory_view(line)
+        assert latest_directory is not None, "missing Directory commit evidence"
+        assert latest_directory["state"] == {
+            "I": 0, "S": 1, "U": 2
+        }[expected_directory["state"]]
+        if expected_directory["state"] == "S":
+            assert latest_directory["sharers"] == expected_directory["sharers"]
+        elif expected_directory["state"] == "U":
+            assert latest_directory["owner"] == expected_directory["owner"]
+
     env.dut.cpu_resp_ready.value = 0
     await _offer_one(env, 0, pending)
     await _wait_until(
@@ -563,21 +779,79 @@ async def test_queued_store_relooks_up_after_remote_snoop(full_system_env):
         "queued core0 store MSHR",
     )
 
-    # Core1 obtains M while core0's Store-to-S upgrade is still queued behind
-    # its unrelated miss. The resulting real Snoop must invalidate core0's S
-    # copy before the queued operation is replayed and looked up again.
+    # The second context must issue its own Directory transaction without
+    # waiting for the first miss's CPU response.
+    await _wait_until(
+        env,
+        lambda: any(event.get("source") == "directory" and
+                    event.get("event_type") == "request_accept" and
+                    event.get("source_id") == 0 and
+                    (event.get("address", 0) & 0xFFFF_FFC0) ==
+                    (shared & 0xFFFF_FFC0)
+                    for event in env.monitor.events[event_start:]),
+        "secondary Store Directory handshake",
+    )
+    core0_upgrade = [event for event in env.monitor.events[event_start:]
+                     if event["source"] == "directory" and
+                     event["event_type"] == "request_accept" and
+                     event.get("source_id") == 0 and
+                     (event.get("address", 0) & 0xFFFF_FFC0) ==
+                     (shared & 0xFFFF_FFC0)]
+    assert core0_upgrade, "secondary Store did not reach Directory"
+    assert not any(event.get("source") == "cpu" and
+                   event.get("event_type") == "response_complete" and
+                   event.get("core") == 0
+                   for event in env.monitor.events[event_start:]), (
+        "Core0 response retired while response backpressure was asserted"
+    )
+    await _wait_until(
+        env,
+        lambda: (any(event.get("source") == "l1" and
+                     event.get("event_type") == "metadata_commit" and
+                     event.get("core") == 0 and event.get("new_state") == 3 and
+                     (event.get("address", 0) & 0xFFFF_FFC0) ==
+                     (shared & 0xFFFF_FFC0)
+                     for event in env.monitor.events[event_start:]) and
+                 any(event.get("source") == "l1" and
+                     event.get("event_type") == "metadata_commit" and
+                     event.get("core") == 1 and event.get("new_state") == 0 and
+                     (event.get("address", 0) & 0xFFFF_FFC0) ==
+                     (shared & 0xFFFF_FFC0)
+                     for event in env.monitor.events[event_start:]) and
+                 any(event.get("source") == "directory" and
+                     event.get("event_type") == "metadata_commit" and
+                     event.get("state") == 2 and event.get("owner") == 0 and
+                     (event.get("address", 0) & 0xFFFF_FFC0) ==
+                     (shared & 0xFFFF_FFC0)
+                     for event in env.monitor.events[event_start:])),
+        "secondary Store MESI and Directory commit",
+    )
+
+    # Advance the independent model at the Directory-ordered Store point.
+    # Although CPU0 cannot retire its response yet, the line is already M and
+    # contains queued_store. Core1 must snoop this owner and receive that data.
+    env.reference.observe(0, shared, write=True, write_data=queued_store,
+                          write_mask=0xFF)
+    check_latest_commits_against_reference()
     assert await env.cpu.access(1, shared, write=True,
-                                data=peer_store) == initial
+                                data=peer_store) == queued_store
     env.reference.observe(1, shared, write=True, write_data=peer_store,
                           write_mask=0xFF)
-    queued_snoop_commit_end = len(env.monitor.events)
-    env._check_observed_commits(shared & 0xFFFF_FFC0, event_start)
+    check_latest_commits_against_reference()
     peer_snoop = [event for event in env.monitor.events[event_start:]
                   if event["source"] == "snoop" and
                   event["event_type"] == "accept" and event["core"] == 0 and
                   (event.get("address", 0) & 0xFFFF_FFC0) ==
                   (shared & 0xFFFF_FFC0)]
     assert peer_snoop, "peer Store did not invalidate queued core0 line"
+    owner_beats = [event for event in env.monitor.events[event_start:]
+                   if event.get("source") == "coherence" and
+                   event.get("event_type") == "owner_data_beat" and
+                   (event.get("address", 0) & 0xFFFF_FFC0) ==
+                   (shared & 0xFFFF_FFC0)]
+    assert [event.get("beat") for event in owner_beats] == list(range(8))
+    assert owner_beats[1].get("data") == queued_store
+    assert [event.get("last") for event in owner_beats] == [0] * 7 + [1]
 
     env.dut.cpu_resp_ready.value = 1
     first = await _take_one_response(env, 0)
@@ -585,25 +859,11 @@ async def test_queued_store_relooks_up_after_remote_snoop(full_system_env):
     second = await _take_one_response(env, 0)
     env.dut.cpu_resp_ready.value = 0
     assert second["address"] == shared and second["write"] == 1
-    assert second["data"] == peer_store
+    assert second["data"] == initial
 
-    core0_upgrade = [event for event in env.monitor.events[event_start:]
-                     if event["source"] == "directory" and
-                     event["event_type"] == "request_accept" and
-                     event["source_id"] == 0 and
-                     (event.get("address", 0) & 0xFFFF_FFC0) ==
-                     (shared & 0xFFFF_FFC0)]
-    assert core0_upgrade and peer_snoop[0]["cycle"] < core0_upgrade[-1]["cycle"], (
-        "queued Store was not dispatched after the intervening Snoop"
-    )
-    env.reference.observe(0, shared, write=True, write_data=queued_store,
-                          write_mask=0xFF)
-    queued_store_commit_end = len(env.monitor.events)
-    env._check_observed_commits(shared & 0xFFFF_FFC0,
-                                queued_snoop_commit_end)
-    assert await env.cpu.access(1, shared) == queued_store
-    env.reference.observe(1, shared, response_data=queued_store)
-    env._check_observed_commits(shared & 0xFFFF_FFC0,
-                                queued_store_commit_end)
+    check_latest_commits_against_reference()
+    assert await env.cpu.access(1, shared) == peer_store
+    env.reference.observe(1, shared, response_data=peer_store)
+    check_latest_commits_against_reference()
     assert int(env.dut.protocol_error.value) == 0
     assert int(env.dut.fatal_error.value) == 0

@@ -149,11 +149,20 @@ module DualL1MesiCluster #(
     logic [31:0] controller_cpu_active_addr;
     logic [1:0] l1_mshr_valid_q;
     logic [1:0] l1_mshr_active_q;
+    logic [1:0] l1_mshr_issued_q;
     logic [31:0] l1_mshr_addr_q [0:1];
+    logic [1:0] l1_mshr_way_q [0:1];
+    logic l1_mshr_hit_q [0:1];
+    mesi_state_t l1_mshr_state_q [0:1];
     logic l1_mshr_write_q [0:1];
     logic [7:0] l1_mshr_wmask_q [0:1];
     logic [63:0] l1_mshr_wdata_q [0:1];
     logic [TXN_ID_WIDTH-1:0] l1_mshr_txn_id_q [0:1];
+    logic [1:0] l1_mshr_store_committed_q;
+    logic ctrl_resp_data_valid_q;
+    logic [63:0] ctrl_resp_data_q;
+    logic secondary_resp_data_valid_q;
+    logic [63:0] secondary_resp_data_q;
     logic [1:0] l1_mshr_occupancy;
     logic l1_mshr_same_line;
     logic l1_mshr_needs_coherence;
@@ -161,31 +170,80 @@ module DualL1MesiCluster #(
     logic l1_mshr_free_idx;
     logic l1_mshr_active_found;
     logic l1_mshr_active_idx;
-    logic l1_mshr_queued_found;
-    logic l1_mshr_queued_idx;
     logic mshr_direct_ready;
     logic mshr_queue_ready;
     logic mshr_queue_accept;
-    logic mshr_dispatch;
+    logic core_dir_req_select_secondary;
+    logic secondary_dir_req_valid;
+    logic secondary_dir_req_ready;
+    request_opcode_t secondary_dir_req_opcode;
+    logic [31:0] secondary_dir_req_addr;
+    logic [TXN_ID_WIDTH-1:0] secondary_dir_req_txn_id;
+    logic secondary_grant_valid;
+    logic secondary_grant_ready;
+    logic secondary_grant_data_valid;
+    logic secondary_grant_data_ready;
+    logic secondary_refill_valid;
+    logic [2:0] secondary_refill_beat_idx;
+    logic [63:0] secondary_refill_data;
+    logic secondary_refill_last;
+    logic secondary_grant_commit_valid;
+    logic secondary_grant_commit_ready;
+    logic [TXN_ID_WIDTH-1:0] secondary_grant_commit_txn_id;
+    logic secondary_cpu_meta_write_valid;
+    logic secondary_cpu_meta_write_ready;
+    logic [31:0] secondary_cpu_meta_write_line_addr;
+    mesi_state_t secondary_cpu_meta_write_state;
+    logic [2:0] secondary_cpu_state;
+    logic [31:0] secondary_cpu_active_addr;
+    logic secondary_cpu_req_valid;
+    logic secondary_cpu_req_ready;
+    logic secondary_ctx_grant_ready;
+    logic secondary_ctx_grant_data_ready;
+    logic secondary_ctx_grant_commit_valid;
+    logic secondary_resp_valid;
+    logic secondary_resp_ready;
+    logic [31:0] secondary_resp_addr;
+    logic secondary_resp_write;
+    logic [TXN_ID_WIDTH-1:0] secondary_resp_txn_id;
+    logic ctrl_grant_data_valid;
+    logic ctrl_grant_data_ready;
+    logic ctrl_refill_ready;
+    logic ctrl_refill_valid;
+    logic [2:0] ctrl_refill_beat_idx;
+    logic [63:0] ctrl_refill_data;
+    logic ctrl_refill_last;
+    logic secondary_refill_ready;
+    logic array_refill_valid;
+    logic [31:0] array_refill_line_addr;
+    logic [1:0] array_refill_way;
+    logic [2:0] array_refill_beat_idx;
+    logic [63:0] array_refill_data;
+    logic array_refill_last;
+    logic refill_owner_valid_q;
+    logic refill_owner_secondary_q;
+    logic refill_select_secondary;
+    logic secondary_context_started_q;
+    logic array_cpu_store_valid;
+    logic [31:0] array_cpu_store_addr;
+    logic [1:0] array_cpu_store_way;
+    logic [7:0] array_cpu_store_wmask;
+    logic [63:0] array_cpu_store_wdata;
+    logic ctrl_resp_snapshot_needed;
+    logic secondary_resp_snapshot_needed;
+    logic ctrl_mshr_store_commit_pending;
+    logic secondary_mshr_store_commit_pending;
+    logic ctrl_resp_store_wait;
+    logic secondary_resp_store_wait;
 
     assign monitor_cpu_state[core*3 +: 3] = controller_cpu_state;
     assign monitor_snoop_state[core*3 +: 3] = controller_snoop_state;
     assign monitor_cpu_active_addr[core*32 +: 32] =
       controller_cpu_active_addr;
     assign monitor_l1_mshr_valid[core*2 +: 2] = l1_mshr_valid_q;
-    // Keep allocation, controller ownership, and Directory issue distinct.
-    // A queued MSHR is valid but not active; an active request is not issued
-    // until the controller enters WAIT_GRANT or a later transaction state.
+    // Keep allocation, context ownership, and accepted Directory issue distinct.
     assign monitor_l1_mshr_active[core*2 +: 2] = l1_mshr_active_q;
-    for (genvar entry = 0; entry < 2; entry = entry + 1) begin : gen_issue_monitor
-      assign monitor_l1_mshr_issued[core*2+entry] =
-        l1_mshr_active_q[entry] &&
-        ((controller_cpu_state == CPU_WAIT_GRANT_STATE) ||
-         (controller_cpu_state == CPU_REFILL_STATE) ||
-         (controller_cpu_state == CPU_META_WRITE_STATE) ||
-         (controller_cpu_state == CPU_RESP_STATE) ||
-         (controller_cpu_state == CPU_ERROR_STATE));
-    end
+    assign monitor_l1_mshr_issued[core*2 +: 2] = l1_mshr_issued_q;
     for (genvar entry = 0; entry < 2; entry = entry + 1) begin : gen_mshr_monitor
       assign monitor_l1_mshr_addr[(core*2+entry)*32 +: 32] =
         l1_mshr_addr_q[entry];
@@ -210,10 +268,6 @@ module DualL1MesiCluster #(
     logic [TXN_ID_WIDTH-1:0] hit_next_txn_id_safe;
     logic hit_under_miss_ready;
     logic hit_under_miss_accept;
-    logic refill_valid;
-    logic [2:0] refill_beat_idx;
-    logic [63:0] refill_data;
-    logic refill_last;
     logic snoop_meta_write_valid;
     logic snoop_meta_write_ready;
     logic [31:0] snoop_meta_write_line_addr;
@@ -286,7 +340,26 @@ module DualL1MesiCluster #(
       ((replace_state_q == REPLACE_CHECK) ||
        (replace_state_q == REPLACE_REPLAY)) ? pending_cpu_write_q :
                                              cpu_req_write[core];
-    assign lookup_addr = ctrl_resp_valid ? ctrl_resp_addr : ctrl_cpu_req_addr;
+    assign ctrl_resp_snapshot_needed = ctrl_resp_valid &&
+                                       !ctrl_resp_data_valid_q;
+    assign secondary_resp_snapshot_needed = secondary_resp_valid &&
+                                            !secondary_resp_data_valid_q;
+    assign ctrl_mshr_store_commit_pending = ctrl_grant_commit_valid &&
+      ctrl_resp_write && l1_mshr_valid_q[0] &&
+      !l1_mshr_store_committed_q[0];
+    assign secondary_mshr_store_commit_pending =
+      secondary_grant_commit_valid && secondary_resp_write &&
+      l1_mshr_valid_q[1] && !l1_mshr_store_committed_q[1];
+    // The single lookup port services response snapshots first, then a store
+    // permission commit. A secondary commit waits while the older response
+    // still needs its pre-write data captured.
+    assign lookup_addr = ctrl_resp_snapshot_needed ? ctrl_resp_addr :
+      (ctrl_mshr_store_commit_pending ? ctrl_resp_addr :
+      (secondary_resp_snapshot_needed ? secondary_resp_addr :
+      (secondary_mshr_store_commit_pending ? secondary_resp_addr :
+      (ctrl_resp_valid ? ctrl_resp_addr :
+      ((secondary_resp_valid && !l1_mshr_valid_q[0]) ? secondary_resp_addr :
+                                                        ctrl_cpu_req_addr)))));
     assign request_needs_replace = !lookup_hit && replace_valid[core];
     // Keep controller valid driven only by registered replacement state.
     // A hit or cold miss with a free way skips CHECK but is replayed one cycle
@@ -299,11 +372,20 @@ module DualL1MesiCluster #(
     assign hit_under_miss_ready =
       ((controller_cpu_state == CPU_SEND_REQ_STATE) ||
        (controller_cpu_state == CPU_WAIT_GRANT_STATE)) &&
+      (l1_mshr_occupancy == 1) && l1_mshr_valid_q[0] &&
+      !l1_mshr_valid_q[1] &&
       (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
       !snoop_valid[core] && lookup_hit && !cpu_req_write[core] &&
       (!hit_resp_valid_q || cpu_resp_ready[core]);
     assign hit_under_miss_accept = cpu_req_valid[core] &&
                                    hit_under_miss_ready;
+    // The queued second miss is launched into its own protocol context once
+    // per allocation. It carries the transaction ID reserved at CPU accept.
+    assign secondary_cpu_req_valid = l1_mshr_valid_q[1] &&
+                                     !secondary_context_started_q;
+    // MesiL1MissContext's ready input is an acceptance qualifier; the
+    // cluster has already reserved this MSHR slot before presenting it.
+    assign secondary_cpu_req_ready = 1'b1;
     assign hit_alloc_txn_id = hit_bypass_started_q ? hit_next_txn_id_q :
       ctrl_resp_txn_id + TXN_ID_WIDTH'(1);
     // Keep every bypass ID distinct from the still-active miss ID. This
@@ -322,8 +404,6 @@ module DualL1MesiCluster #(
       l1_mshr_free_idx = 1'b0;
       l1_mshr_active_found = 1'b0;
       l1_mshr_active_idx = 1'b0;
-      l1_mshr_queued_found = 1'b0;
-      l1_mshr_queued_idx = 1'b0;
       for (int entry = 0; entry < 2; entry = entry + 1) begin
         if (l1_mshr_valid_q[entry]) begin
           if (line_align(l1_mshr_addr_q[entry]) ==
@@ -332,10 +412,6 @@ module DualL1MesiCluster #(
           if (l1_mshr_active_q[entry] && !l1_mshr_active_found) begin
             l1_mshr_active_found = 1'b1;
             l1_mshr_active_idx = 1'(entry);
-          end
-          if (!l1_mshr_active_q[entry] && !l1_mshr_queued_found) begin
-            l1_mshr_queued_found = 1'b1;
-            l1_mshr_queued_idx = 1'(entry);
           end
         end else if (!l1_mshr_free_found) begin
           l1_mshr_free_found = 1'b1;
@@ -354,7 +430,10 @@ module DualL1MesiCluster #(
     // Queue allocation only captures the second distinct miss. It does not
     // touch the L1 array or pause the active controller/replacement FSM.
     assign mshr_queue_ready = (l1_mshr_occupancy == 1) &&
-      l1_mshr_active_found && l1_mshr_free_found &&
+      l1_mshr_active_found && (l1_mshr_active_idx == 1'b0) &&
+      l1_mshr_free_found && (l1_mshr_free_idx == 1'b1) &&
+      (secondary_cpu_state == CPU_IDLE_STATE) && !request_needs_replace &&
+      (cpu_req_addr[core][12:6] != l1_mshr_addr_q[0][12:6]) &&
       ((controller_cpu_state == CPU_SEND_REQ_STATE) ||
        (controller_cpu_state == CPU_WAIT_GRANT_STATE)) &&
       (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
@@ -364,11 +443,6 @@ module DualL1MesiCluster #(
                                  hit_under_miss_ready ||
                                  mshr_queue_ready;
     assign mshr_queue_accept = cpu_req_valid[core] && mshr_queue_ready;
-    assign mshr_dispatch = (l1_mshr_occupancy == 1) &&
-      !l1_mshr_active_found && l1_mshr_queued_found &&
-      (controller_cpu_state == CPU_IDLE_STATE) &&
-      (replace_state_q == REPLACE_IDLE) && !snoop_active_q &&
-      !snoop_valid[core] && !ctrl_resp_valid && !hit_resp_valid_q;
     // A read hit needs an existing MESI copy. A write hit is silent only in
     // E/M; an S-state store requires a Directory Upgrade and counts as a miss.
     assign cpu_hit_event[core] = !reset && cpu_req_valid[core] &&
@@ -377,44 +451,132 @@ module DualL1MesiCluster #(
        (lookup_state == MESI_M));
     assign cpu_miss_event[core] = !reset && cpu_req_valid[core] &&
       cpu_req_ready[core] && !cpu_hit_event[core];
+    assign ctrl_resp_store_wait = ctrl_resp_write && l1_mshr_valid_q[0] &&
+                                  !l1_mshr_store_committed_q[0];
+    assign secondary_resp_store_wait = secondary_resp_write &&
+      l1_mshr_valid_q[1] && !l1_mshr_store_committed_q[1];
     assign cpu_resp_valid[core] = hit_resp_valid_q ||
-      (ctrl_resp_valid && (!ctrl_resp_write || array_store_ready));
+      (ctrl_resp_valid && ctrl_resp_data_valid_q && !ctrl_resp_store_wait) ||
+      (secondary_resp_valid && !l1_mshr_valid_q[0] &&
+       secondary_resp_data_valid_q && !secondary_resp_store_wait);
     assign cpu_resp_addr[core] = hit_resp_valid_q ? hit_resp_addr_q :
-                                                       ctrl_resp_addr;
-    assign cpu_resp_write[core] = hit_resp_valid_q ? 1'b0 : ctrl_resp_write;
+      (ctrl_resp_valid ? ctrl_resp_addr : secondary_resp_addr);
+    assign cpu_resp_write[core] = hit_resp_valid_q ? 1'b0 :
+      (ctrl_resp_valid ? ctrl_resp_write : secondary_resp_write);
     assign cpu_resp_txn_id[core] = hit_resp_valid_q ? hit_resp_txn_id_q :
-                                                       ctrl_resp_txn_id;
+      (ctrl_resp_valid ? ctrl_resp_txn_id : secondary_resp_txn_id);
     assign cpu_resp_rdata[core] = hit_resp_valid_q ? hit_resp_data_q :
-                                                       lookup_word;
+      (ctrl_resp_valid ? ctrl_resp_data_q : secondary_resp_data_q);
     assign ctrl_resp_ready = !hit_resp_valid_q && cpu_resp_ready[core] &&
-                             ctrl_resp_valid &&
-                             (!ctrl_resp_write || array_store_ready);
+      ctrl_resp_valid && ctrl_resp_data_valid_q && !ctrl_resp_store_wait;
+    assign secondary_resp_ready = !hit_resp_valid_q && !ctrl_resp_valid &&
+      !l1_mshr_valid_q[0] && cpu_resp_ready[core] && secondary_resp_valid &&
+      secondary_resp_data_valid_q && !secondary_resp_store_wait;
+
+    assign core_dir_req_select_secondary = !controller_req_valid[core] &&
+                                           secondary_dir_req_valid;
 
     assign arb_req_is_replace = (replace_state_q == REPLACE_SEND_PUT);
-    assign arb_req_valid[core] = arb_req_is_replace ? 1'b1 : controller_req_valid[core];
+    assign arb_req_valid[core] = arb_req_is_replace ? 1'b1 :
+      (controller_req_valid[core] || secondary_dir_req_valid);
     assign arb_req_opcode[core] = arb_req_is_replace ? replace_opcode_q :
-                                                       controller_req_opcode[core];
+      (core_dir_req_select_secondary ? secondary_dir_req_opcode :
+                                       controller_req_opcode[core]);
     assign arb_req_addr[core] = arb_req_is_replace ? replace_line_addr_q :
-                                                    controller_req_addr[core];
+      (core_dir_req_select_secondary ? secondary_dir_req_addr :
+                                       controller_req_addr[core]);
     assign arb_req_txn_id[core] = arb_req_is_replace ? replace_txn_q :
-                                                      controller_req_txn_id[core];
-    assign controller_req_ready[core] = arb_req_ready[core] && !arb_req_is_replace;
+      (core_dir_req_select_secondary ? secondary_dir_req_txn_id :
+                                       controller_req_txn_id[core]);
+    assign controller_req_ready[core] = arb_req_ready[core] &&
+      !arb_req_is_replace && !core_dir_req_select_secondary;
+    assign secondary_dir_req_ready = arb_req_ready[core] &&
+      !arb_req_is_replace && core_dir_req_select_secondary;
 
-    assign ctrl_grant_valid = grant_valid[core] &&
-                              (replace_state_q != REPLACE_WAIT_ACK);
+    assign ctrl_grant_valid = grant_valid[core] && l1_mshr_valid_q[0] &&
+      (grant_txn_id[core] == controller_req_txn_id[core]) &&
+      (replace_state_q != REPLACE_WAIT_ACK);
     assign ctrl_grant_opcode = grant_opcode[core];
     assign ctrl_grant_txn_id = grant_txn_id[core];
+    assign secondary_grant_valid = grant_valid[core] && l1_mshr_valid_q[1] &&
+      (grant_txn_id[core] == l1_mshr_txn_id_q[1]) &&
+      (replace_state_q != REPLACE_WAIT_ACK);
     assign ctrl_grant_commit_ready = grant_commit_ready[core] &&
-                                     (replace_state_q != REPLACE_WAIT_COMMIT);
+      (replace_state_q != REPLACE_WAIT_COMMIT) &&
+      (replace_state_q != REPLACE_WAIT_ACK) &&
+      (!ctrl_mshr_store_commit_pending ||
+       (array_cpu_store_valid && array_store_ready));
+    assign secondary_grant_commit_ready = grant_commit_ready[core] &&
+      (replace_state_q != REPLACE_WAIT_COMMIT) &&
+      (replace_state_q != REPLACE_WAIT_ACK) && !ctrl_grant_commit_valid &&
+      (!ctrl_resp_snapshot_needed) &&
+      (!secondary_mshr_store_commit_pending ||
+       (array_cpu_store_valid && array_store_ready));
     assign evict_grant_ready = (grant_txn_id[core] == replace_txn_q) &&
                                (grant_opcode[core] == GRANT_PUT_ACK);
     assign grant_ready[core] = (replace_state_q == REPLACE_WAIT_ACK) ?
-                               evict_grant_ready : ctrl_grant_ready;
+      evict_grant_ready :
+      (ctrl_grant_valid ? ctrl_grant_ready :
+       (secondary_grant_valid ? secondary_ctx_grant_ready : 1'b0));
     assign grant_commit_valid[core] =
-      (replace_state_q == REPLACE_WAIT_COMMIT) || ctrl_grant_commit_valid;
+      (replace_state_q == REPLACE_WAIT_COMMIT) || ctrl_grant_commit_valid ||
+      secondary_grant_commit_valid;
     assign grant_commit_txn_id[core] =
       (replace_state_q == REPLACE_WAIT_COMMIT) ? replace_txn_q :
-                                                 ctrl_grant_commit_txn_id;
+      (ctrl_grant_commit_valid ? ctrl_grant_commit_txn_id :
+                                 secondary_grant_commit_txn_id);
+
+    assign ctrl_grant_data_valid = grant_data_valid[core] &&
+      l1_mshr_valid_q[0] &&
+      (grant_data_txn_id[core] == controller_req_txn_id[core]);
+    assign secondary_grant_data_valid = grant_data_valid[core] &&
+      l1_mshr_valid_q[1] &&
+      (grant_data_txn_id[core] == l1_mshr_txn_id_q[1]);
+    assign refill_select_secondary = refill_owner_valid_q ?
+      refill_owner_secondary_q :
+      (secondary_refill_valid && !ctrl_refill_valid);
+    assign grant_data_ready[core] = secondary_grant_data_valid ?
+      secondary_ctx_grant_data_ready :
+      (ctrl_grant_data_valid ? ctrl_grant_data_ready : 1'b0);
+    assign ctrl_refill_ready = array_refill_ready && !refill_select_secondary;
+    assign secondary_refill_ready = array_refill_ready &&
+                                    refill_select_secondary;
+    assign array_refill_valid = refill_select_secondary ?
+      secondary_refill_valid : ctrl_refill_valid;
+    assign array_refill_line_addr = refill_select_secondary ?
+      l1_mshr_addr_q[1] : ctrl_resp_addr;
+    assign array_refill_way = refill_select_secondary ? l1_mshr_way_q[1] :
+                                                        allocation_way_q;
+    assign array_refill_beat_idx = refill_select_secondary ?
+      secondary_refill_beat_idx : ctrl_refill_beat_idx;
+    assign array_refill_data = refill_select_secondary ? secondary_refill_data :
+                                                         ctrl_refill_data;
+    assign array_refill_last = refill_select_secondary ? secondary_refill_last :
+                                                         ctrl_refill_last;
+
+    // A miss-store changes the resident data when its M permission is
+    // committed, not when the ordered CPU response eventually retires. This
+    // prevents a later remote Snoop from forwarding stale data while the
+    // requester is holding an older response under backpressure.
+    assign array_cpu_store_valid = ctrl_mshr_store_commit_pending ||
+      (secondary_mshr_store_commit_pending && !ctrl_resp_snapshot_needed) ||
+      (cpu_resp_valid[core] && cpu_resp_write[core] &&
+       cpu_resp_ready[core] && !hit_resp_valid_q &&
+       !l1_mshr_valid_q[0] && !l1_mshr_valid_q[1]);
+    assign array_cpu_store_addr = ctrl_mshr_store_commit_pending ?
+      ctrl_resp_addr :
+      (secondary_mshr_store_commit_pending ? secondary_resp_addr :
+      (ctrl_resp_valid ? ctrl_resp_addr :
+      (hit_resp_valid_q ? hit_resp_addr_q : secondary_resp_addr)));
+    assign array_cpu_store_way = lookup_way;
+    assign array_cpu_store_wmask = ctrl_mshr_store_commit_pending ?
+      store_wmask_q :
+      (secondary_mshr_store_commit_pending ? l1_mshr_wmask_q[1] :
+                                             store_wmask_q);
+    assign array_cpu_store_wdata = ctrl_mshr_store_commit_pending ?
+      store_wdata_q :
+      (secondary_mshr_store_commit_pending ? l1_mshr_wdata_q[1] :
+                                             store_wdata_q);
 
     // Replacement owns the L1 array only while it reads/streams the victim or
     // commits its invalidation. During the protocol wait states it has no array
@@ -443,15 +605,20 @@ module DualL1MesiCluster #(
 
     assign array_cpu_meta_write_valid =
       (replace_state_q == REPLACE_INVALIDATE) ? 1'b1 :
-                                                ctrl_cpu_meta_write_valid;
+      (ctrl_cpu_meta_write_valid || secondary_cpu_meta_write_valid);
     assign array_cpu_meta_write_line_addr =
       (replace_state_q == REPLACE_INVALIDATE) ? replace_line_addr_q :
-                                                ctrl_cpu_meta_write_line_addr;
+      (ctrl_cpu_meta_write_valid ? ctrl_cpu_meta_write_line_addr :
+                                   secondary_cpu_meta_write_line_addr);
     assign array_cpu_meta_write_state =
       (replace_state_q == REPLACE_INVALIDATE) ? MESI_I :
-                                                ctrl_cpu_meta_write_state;
+      (ctrl_cpu_meta_write_valid ? ctrl_cpu_meta_write_state :
+                                   secondary_cpu_meta_write_state);
     assign ctrl_cpu_meta_write_ready = array_cpu_meta_write_ready &&
-                                       (replace_state_q != REPLACE_INVALIDATE);
+      (replace_state_q != REPLACE_INVALIDATE);
+    assign secondary_cpu_meta_write_ready = array_cpu_meta_write_ready &&
+      (replace_state_q != REPLACE_INVALIDATE) &&
+      !ctrl_cpu_meta_write_valid;
     assign metadata_commit_is_snoop[core] =
       snoop_meta_write_valid && snoop_meta_write_ready;
     assign metadata_commit_valid[core] = metadata_commit_is_snoop[core] ||
@@ -506,8 +673,16 @@ module DualL1MesiCluster #(
         pending_cpu_write_q <= 1'b0;
         l1_mshr_valid_q <= '0;
         l1_mshr_active_q <= '0;
+        l1_mshr_issued_q <= '0;
+        l1_mshr_store_committed_q <= '0;
+        secondary_context_started_q <= 1'b0;
+        refill_owner_valid_q <= 1'b0;
+        refill_owner_secondary_q <= 1'b0;
         for (int entry = 0; entry < 2; entry = entry + 1) begin
           l1_mshr_addr_q[entry] <= '0;
+          l1_mshr_way_q[entry] <= '0;
+          l1_mshr_hit_q[entry] <= 1'b0;
+          l1_mshr_state_q[entry] <= MESI_I;
           l1_mshr_write_q[entry] <= 1'b0;
           l1_mshr_wmask_q[entry] <= '0;
           l1_mshr_wdata_q[entry] <= '0;
@@ -523,6 +698,10 @@ module DualL1MesiCluster #(
         hit_resp_addr_q <= '0;
         hit_resp_data_q <= '0;
         hit_resp_txn_id_q <= '0;
+        ctrl_resp_data_valid_q <= 1'b0;
+        ctrl_resp_data_q <= '0;
+        secondary_resp_data_valid_q <= 1'b0;
+        secondary_resp_data_q <= '0;
         hit_bypass_started_q <= 1'b0;
         hit_next_txn_id_q <= '0;
       end else begin
@@ -531,12 +710,18 @@ module DualL1MesiCluster #(
         // registers. The entry remains valid until its own CPU response.
         if (mshr_queue_accept) begin
           l1_mshr_valid_q[l1_mshr_free_idx] <= 1'b1;
-          l1_mshr_active_q[l1_mshr_free_idx] <= 1'b0;
+          l1_mshr_active_q[l1_mshr_free_idx] <= 1'b1;
+          l1_mshr_issued_q[l1_mshr_free_idx] <= 1'b0;
+          l1_mshr_store_committed_q[l1_mshr_free_idx] <= 1'b0;
           l1_mshr_addr_q[l1_mshr_free_idx] <= cpu_req_addr[core];
+          l1_mshr_way_q[l1_mshr_free_idx] <= replace_way_int;
+          l1_mshr_hit_q[l1_mshr_free_idx] <= lookup_hit;
+          l1_mshr_state_q[l1_mshr_free_idx] <= lookup_state;
           l1_mshr_write_q[l1_mshr_free_idx] <= cpu_req_write[core];
           l1_mshr_wmask_q[l1_mshr_free_idx] <= cpu_req_wmask[core];
           l1_mshr_wdata_q[l1_mshr_free_idx] <= cpu_req_wdata[core];
-          l1_mshr_txn_id_q[l1_mshr_free_idx] <= '0;
+          l1_mshr_txn_id_q[l1_mshr_free_idx] <=
+            controller_req_txn_id[core] + TXN_ID_WIDTH'(1);
         end
 
         // Retire only the MSHR associated with the controller response. A
@@ -544,14 +729,63 @@ module DualL1MesiCluster #(
         if (ctrl_resp_valid && ctrl_resp_ready && l1_mshr_active_found) begin
           l1_mshr_valid_q[l1_mshr_active_idx] <= 1'b0;
           l1_mshr_active_q[l1_mshr_active_idx] <= 1'b0;
+          l1_mshr_issued_q[l1_mshr_active_idx] <= 1'b0;
+          l1_mshr_store_committed_q[l1_mshr_active_idx] <= 1'b0;
+        end
+
+        if (secondary_resp_valid && secondary_resp_ready) begin
+          l1_mshr_valid_q[1] <= 1'b0;
+          l1_mshr_active_q[1] <= 1'b0;
+          l1_mshr_issued_q[1] <= 1'b0;
+          l1_mshr_store_committed_q[1] <= 1'b0;
+          secondary_context_started_q <= 1'b0;
+        end
+
+        // Snapshot each context's pre-operation word before the response can
+        // be exposed. The snapshot survives later Snoop/Replacement activity
+        // and therefore remains stable through CPU response backpressure.
+        if (ctrl_resp_valid && !ctrl_resp_data_valid_q) begin
+          ctrl_resp_data_q <= lookup_word;
+          ctrl_resp_data_valid_q <= 1'b1;
+        end else if (ctrl_resp_valid && ctrl_resp_ready) begin
+          ctrl_resp_data_valid_q <= 1'b0;
+        end
+        if (secondary_resp_valid && !secondary_resp_data_valid_q) begin
+          secondary_resp_data_q <= lookup_word;
+          secondary_resp_data_valid_q <= 1'b1;
+        end else if (secondary_resp_valid && secondary_resp_ready) begin
+          secondary_resp_data_valid_q <= 1'b0;
+        end
+
+        if (ctrl_mshr_store_commit_pending && array_cpu_store_valid &&
+            array_store_ready)
+          l1_mshr_store_committed_q[0] <= 1'b1;
+        if (secondary_mshr_store_commit_pending && array_cpu_store_valid &&
+            array_store_ready)
+          l1_mshr_store_committed_q[1] <= 1'b1;
+
+        if (secondary_cpu_req_valid && secondary_cpu_req_ready)
+          secondary_context_started_q <= 1'b1;
+
+        if (!refill_owner_valid_q && array_refill_valid && array_refill_ready &&
+            (array_refill_beat_idx == 3'd0)) begin
+          refill_owner_valid_q <= !array_refill_last;
+          refill_owner_secondary_q <= refill_select_secondary;
+        end else if (refill_owner_valid_q && array_refill_valid &&
+                     array_refill_ready && array_refill_last) begin
+          refill_owner_valid_q <= 1'b0;
         end
 
         // The internal transaction ID is assigned by the legacy MESI
         // controller when the Directory request is actually accepted.
         if (controller_req_valid[core] && controller_req_ready[core] &&
-            l1_mshr_active_found)
+            l1_mshr_valid_q[0]) begin
           l1_mshr_txn_id_q[l1_mshr_active_idx] <=
             controller_req_txn_id[core];
+          l1_mshr_issued_q[0] <= 1'b1;
+        end
+        if (secondary_dir_req_valid && secondary_dir_req_ready)
+          l1_mshr_issued_q[1] <= 1'b1;
 
         if (hit_under_miss_accept) begin
           hit_resp_valid_q <= 1'b1;
@@ -576,7 +810,12 @@ module DualL1MesiCluster #(
           if (l1_mshr_needs_coherence) begin
             l1_mshr_valid_q[l1_mshr_free_idx] <= 1'b1;
             l1_mshr_active_q[l1_mshr_free_idx] <= 1'b1;
+            l1_mshr_issued_q[l1_mshr_free_idx] <= 1'b0;
+            l1_mshr_store_committed_q[l1_mshr_free_idx] <= 1'b0;
             l1_mshr_addr_q[l1_mshr_free_idx] <= cpu_req_addr[core];
+            l1_mshr_way_q[l1_mshr_free_idx] <= replace_way_int;
+            l1_mshr_hit_q[l1_mshr_free_idx] <= lookup_hit;
+            l1_mshr_state_q[l1_mshr_free_idx] <= lookup_state;
             l1_mshr_write_q[l1_mshr_free_idx] <= cpu_req_write[core];
             l1_mshr_wmask_q[l1_mshr_free_idx] <= cpu_req_wmask[core];
             l1_mshr_wdata_q[l1_mshr_free_idx] <= cpu_req_wdata[core];
@@ -607,6 +846,8 @@ module DualL1MesiCluster #(
           case (replace_state_q)
           REPLACE_CHECK: begin
             allocation_way_q <= replace_way_int;
+            if (l1_mshr_valid_q[0] && l1_mshr_active_q[0])
+              l1_mshr_way_q[0] <= replace_way_int;
             if (request_needs_replace) begin
               replace_line_addr_q <= replace_line_addr_int;
               replace_txn_q <= replace_txn_counter_q;
@@ -673,19 +914,6 @@ module DualL1MesiCluster #(
           endcase
         end
 
-        // Once the current miss and its response have retired, replay the
-        // queued CPU operation through the existing lookup/replacement and
-        // MESI controller path. This deliberately serializes each L1's
-        // downstream coherence issue while allowing two CPU misses to remain
-        // outstanding at its interface.
-        if (mshr_dispatch) begin
-          pending_cpu_addr_q <= l1_mshr_addr_q[l1_mshr_queued_idx];
-          pending_cpu_write_q <= l1_mshr_write_q[l1_mshr_queued_idx];
-          store_wmask_q <= l1_mshr_wmask_q[l1_mshr_queued_idx];
-          store_wdata_q <= l1_mshr_wdata_q[l1_mshr_queued_idx];
-          l1_mshr_active_q[l1_mshr_queued_idx] <= 1'b1;
-          replace_state_q <= REPLACE_CHECK;
-        end
       end
     end
 
@@ -705,14 +933,14 @@ module DualL1MesiCluster #(
       .dir_req_txn_id(controller_req_txn_id[core]),
       .grant_valid(ctrl_grant_valid), .grant_ready(ctrl_grant_ready),
       .grant_opcode(ctrl_grant_opcode), .grant_txn_id(ctrl_grant_txn_id),
-      .grant_data_valid(grant_data_valid[core]),
-      .grant_data_ready(grant_data_ready[core]),
+      .grant_data_valid(ctrl_grant_data_valid),
+      .grant_data_ready(ctrl_grant_data_ready),
       .grant_data_txn_id(grant_data_txn_id[core]),
       .grant_data_beat_idx(grant_data_beat_idx[core]),
       .grant_data(grant_data[core]), .grant_data_last(grant_data_last[core]),
-      .refill_valid(refill_valid), .refill_ready(array_refill_ready),
-      .refill_txn_id(), .refill_beat_idx(refill_beat_idx),
-      .refill_data(refill_data), .refill_last(refill_last),
+      .refill_valid(ctrl_refill_valid), .refill_ready(ctrl_refill_ready),
+      .refill_txn_id(), .refill_beat_idx(ctrl_refill_beat_idx),
+      .refill_data(ctrl_refill_data), .refill_last(ctrl_refill_last),
       .grant_commit_valid(ctrl_grant_commit_valid),
       .grant_commit_ready(ctrl_grant_commit_ready),
       .grant_commit_txn_id(ctrl_grant_commit_txn_id),
@@ -752,6 +980,59 @@ module DualL1MesiCluster #(
       .monitor_cpu_active_addr(controller_cpu_active_addr)
     );
 
+    // Second in-flight miss. It has an independent Directory/Grant/Refill/
+    // metadata lifecycle, while the primary controller retains the shared
+    // per-core Snoop engine. Grant and data channels are selected by txn ID.
+    MesiL1MissContext #(
+      .TXN_ID_WIDTH(TXN_ID_WIDTH),
+      .EXTERNAL_TXN_ID(1'b1)
+    ) secondary_miss_context (
+      .clock, .reset,
+      .cpu_req_valid(secondary_cpu_req_valid),
+      .cpu_req_ready(secondary_cpu_req_ready),
+      .cpu_req_addr(l1_mshr_addr_q[1]),
+      .cpu_req_write(l1_mshr_write_q[1]),
+      .cpu_req_hit(l1_mshr_hit_q[1]),
+      .cpu_req_line_state(l1_mshr_state_q[1]),
+      .cpu_req_txn_id(l1_mshr_txn_id_q[1]),
+      .cpu_resp_valid(secondary_resp_valid),
+      .cpu_resp_ready(secondary_resp_ready),
+      .cpu_resp_addr(secondary_resp_addr),
+      .cpu_resp_write(secondary_resp_write),
+      .cpu_resp_txn_id(secondary_resp_txn_id),
+      .dir_req_valid(secondary_dir_req_valid),
+      .dir_req_ready(secondary_dir_req_ready),
+      .dir_req_opcode(secondary_dir_req_opcode),
+      .dir_req_line_addr(secondary_dir_req_addr),
+      .dir_req_txn_id(secondary_dir_req_txn_id),
+      .grant_valid(secondary_grant_valid),
+      .grant_ready(secondary_ctx_grant_ready),
+      .grant_opcode(grant_opcode[core]),
+      .grant_txn_id(grant_txn_id[core]),
+      .grant_data_valid(secondary_grant_data_valid),
+      .grant_data_ready(secondary_ctx_grant_data_ready),
+      .grant_data_txn_id(grant_data_txn_id[core]),
+      .grant_data_beat_idx(grant_data_beat_idx[core]),
+      .grant_data(grant_data[core]),
+      .grant_data_last(grant_data_last[core]),
+      .refill_valid(secondary_refill_valid),
+      .refill_ready(secondary_refill_ready),
+      .refill_txn_id(),
+      .refill_beat_idx(secondary_refill_beat_idx),
+      .refill_data(secondary_refill_data),
+      .refill_last(secondary_refill_last),
+      .grant_commit_valid(secondary_grant_commit_valid),
+      .grant_commit_ready(secondary_grant_commit_ready),
+      .grant_commit_txn_id(secondary_grant_commit_txn_id),
+      .cpu_meta_write_valid(secondary_cpu_meta_write_valid),
+      .cpu_meta_write_ready(secondary_cpu_meta_write_ready),
+      .cpu_meta_write_line_addr(secondary_cpu_meta_write_line_addr),
+      .cpu_meta_write_state(secondary_cpu_meta_write_state),
+      .protocol_error(),
+      .monitor_cpu_state(secondary_cpu_state),
+      .monitor_cpu_active_addr(secondary_cpu_active_addr)
+    );
+
     MesiL1Array #(.SETS(128), .WAYS(4), .TAG_WIDTH(19)) l1_array (
       .clock(clock), .reset(reset),
       .cpu_lookup_addr(lookup_addr), .cpu_lookup_hit(lookup_hit),
@@ -772,15 +1053,17 @@ module DualL1MesiCluster #(
       .snoop_meta_write_ready(snoop_meta_write_ready),
       .snoop_meta_write_line_addr(snoop_meta_write_line_addr),
       .snoop_meta_write_state(snoop_meta_write_state),
-      .refill_valid(refill_valid), .refill_ready(array_refill_ready),
-      .refill_line_addr(ctrl_resp_addr), .refill_way(allocation_way_q),
-      .refill_beat_idx(refill_beat_idx), .refill_data(refill_data),
-      .refill_last(refill_last),
-      .cpu_store_valid(cpu_resp_valid[core] && ctrl_resp_write &&
-                       cpu_resp_ready[core]),
-      .cpu_store_ready(array_store_ready), .cpu_store_addr(ctrl_resp_addr),
-      .cpu_store_way(lookup_way), .cpu_store_wmask(store_wmask_q),
-      .cpu_store_wdata(store_wdata_q),
+      .refill_valid(array_refill_valid), .refill_ready(array_refill_ready),
+      .refill_line_addr(array_refill_line_addr),
+      .refill_way(array_refill_way),
+      .refill_beat_idx(array_refill_beat_idx),
+      .refill_data(array_refill_data), .refill_last(array_refill_last),
+      .cpu_store_valid(array_cpu_store_valid),
+      .cpu_store_ready(array_store_ready),
+      .cpu_store_addr(array_cpu_store_addr),
+      .cpu_store_way(array_cpu_store_way),
+      .cpu_store_wmask(array_cpu_store_wmask),
+      .cpu_store_wdata(array_cpu_store_wdata),
       .line_rd_valid(array_line_rd_valid),
       .line_rd_ready(array_line_rd_ready), .line_rd_addr(array_line_rd_addr),
       .line_rd_hit(array_line_rd_hit_int),

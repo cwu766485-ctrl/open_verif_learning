@@ -96,7 +96,7 @@
       $fatal(1, "cache hit event response mismatch: valid=%b rdata=%016x expected=%016x state=%0d",
              cpu_resp_valid[0], cpu_resp_rdata[0],
              64'hA000_0000_0000_0000 + 3,
-             dut.cores[0].l1_controller.cpu_state_q);
+             dut.monitor_cpu_state[2:0]);
     tick();
 
     if (controller_protocol_error != 2'b00 || array_protocol_error != 2'b00)

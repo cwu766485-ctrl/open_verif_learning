@@ -117,13 +117,15 @@ LSU Load/Store ─────>│ L1 DCache (writable)  │──┐ │
 | 数据传输 | 64bit × 8 拍 | 64bit × 8 拍 |
 | 写策略 | Write-back + Write-allocate | Write-back，具体回写状态需跟 Directory 协调 |
 | 元数据 | Tag + MESI + Replacement | Tag + Directory State + Sharers + Owner + Dirty/有效性 |
-| Miss 机制 | v1 Blocking | v1 Blocking |
+| Miss 机制 | v1.3：每核 2-entry 接受/跟踪槽；每核仍只有 1 笔已派发 miss | 多 Context；共享数据路径仲裁 |
 
 **寻址**：基于当前测试平台的 32-bit 地址模型。L1：`tag[31:13]`, `set[12:6]`, `word[5:3]`, `byte[2:0]`；L2：`tag[31:15]`, `set[14:6]`, `line offset[5:0]`。
 
 **Inclusive 设计规则**：v1 采用 L2 **Tag/Directory Inclusion**。若任何 L1 持有 Line A，L2 必须保留 A 的目录和 Tag；但 **L2 Data 不一定最新**（L1 的 M Owner 可以具有最新副本）。L2 驱逐 A 时必须先完成对 L1 的 Back-Invalidation / Dirty Owner 数据回收。
 
-**当前事务能力**：每 L1 最多发起 1 笔未完成的 CPU coherent miss，因此双 LSU 当前最多产生 2 笔 CPU miss。Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR；AXI 读/写 adapter 各最多允许 4 笔 outstanding。不同 L2 set 的事务可占用不同 context 并并行等待内存响应，但共享 L2 array/metadata、Snoop、Grant 和传输输出仍需仲裁；同一 L2 set 的 ownership request 在活动 context 结束前受 admission interlock 阻塞。同址 duplicate ownership request 被抑制；Put 有为解除 victim/Snoop 等待环而定义的有限 bypass 规则。该结构不是四笔 CPU miss 的端到端并行保证。进展假设见第 6.2 节。
+**当前事务能力**：每个 L1 有两个接受/跟踪槽，因此两个 LSU 在首笔响应返回前可以合计保留四笔不同 Cache Line 的 miss 请求。第一个 miss 进入该核唯一的 `MesiL1Controller`；第二个请求暂存在排队槽，等前一事务及 CPU 响应完成后重新查阵列再派发。槽位满时新请求反压；同址请求不合并。故当前保证的是最多四笔已接受的 CPU miss 被跟踪，**不是**四笔（或同核两笔）已发往 Directory 的并行 miss。每核 Controller 仍串行派发，所以该实现的 Directory Context、Refill MSHR 与 AXI 读峰值受两核各一笔的限制。
+
+Directory bank 有 4 个独立事务上下文，读 refill 路径有 4 个 MSHR；AXI 读/写 adapter 各最多允许 4 笔 outstanding。不同 L2 set 的事务可占用不同 context 并并行等待内存响应，但共享 L2 array/metadata、Snoop、Grant 和传输输出仍需仲裁；同一 L2 set 的 ownership request 在活动 context 结束前受 admission interlock 阻塞。同址 duplicate ownership request 被抑制；Put 有为解除 victim/Snoop 等待环而定义的有限 bypass 规则。下游资源容量不代表上游已能产生同等数量的并行 miss。进展假设见第 6.2 节。
 
 ### 2.1 Coherence litmus 与 CPU memory ordering 的边界
 

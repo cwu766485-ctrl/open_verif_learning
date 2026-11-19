@@ -1,7 +1,7 @@
 # MesiL1Controller Verification
 
 - **DUT:** `MesiL1Controller`
-- **RTL dependencies:** `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1SnoopEngine.sv`, `rtl/l1/MesiL1Controller.sv`
+- **RTL dependencies:** `rtl/common/CoherenceProtocol.sv`, `rtl/l1/MesiL1SnoopArbiter.sv`, `rtl/l1/MesiL1SnoopEngine.sv`, `rtl/l1/MesiL1MissContext.sv`, `rtl/l1/MesiL1Controller.sv`
 - **Testbench:** `tb/MesiL1Controller_tb.sv`
 - **Filelist:** `filelist.f`; paths are resolved from `rtl/` by the named Make target.
 - **Run:** `make coherence_l1_controller`

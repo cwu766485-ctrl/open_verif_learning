@@ -2,8 +2,272 @@
   "schema_version": 1,
   "dut": "CoherentCacheAxiSubsystem",
   "pytest_exit_status": 0,
-  "test_environment_count": 5,
+  "test_environment_count": 6,
   "runs": [
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_same_core_two_distinct_misses_reach_directory_before_first_response",
+      "scenario_id": "V13_SAME_CORE_TWO_DIRECTORY_HANDSHAKES",
+      "seed": 1245697,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 160,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "same_core_addresses": [
+          5570568,
+          5570696
+        ],
+        "l1_set_indices": [
+          0,
+          2
+        ],
+        "memory_latency_cycles": 160,
+        "cpu_response_ready_during_directory_handshakes": 0
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "seed_two_distinct_lines",
+          "addresses": [
+            5570568,
+            5570696
+          ]
+        },
+        {
+          "kind": "stimulus",
+          "operation": "same_core_two_cold_reads",
+          "core": 0,
+          "addresses": [
+            5570568,
+            5570696
+          ]
+        },
+        {
+          "kind": "directory_handshake_evidence",
+          "requests": [
+            {
+              "cycle": 3,
+              "source_id": 0,
+              "txn_id": 0,
+              "address": 5570560,
+              "opcode": 0
+            },
+            {
+              "cycle": 7,
+              "source_id": 0,
+              "txn_id": 1,
+              "address": 5570688,
+              "opcode": 0
+            }
+          ],
+          "first_response_valid_before_second_handshake": false,
+          "l1_mshr_peak_per_core": {
+            "0": 2,
+            "1": 0
+          },
+          "l1_mshr_issued_peak_per_core": {
+            "0": 2,
+            "1": 0
+          },
+          "directory_context_peak": 2
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core0:0x00550008": 2,
+              "core0:0x00550088": 6
+            },
+            "response_cycles": {
+              "core0:0x00550008": 221,
+              "core0:0x00550088": 230
+            },
+            "directory_txn_ids": {
+              "core0:0x00550008": 0,
+              "core0:0x00550088": 1
+            },
+            "axi_ids": {
+              "core0:0x00550008": 0,
+              "core0:0x00550088": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              5570560,
+              5570688
+            ],
+            "mshr_allocations": 2,
+            "mshr_retirements": 2,
+            "axi_read_beats": 16,
+            "l2_refill_beats": 16
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_issued": 2,
+          "directory_contexts": 2,
+          "refill_mshrs": 2,
+          "axi_read_outstanding": 2
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00550000": "0xd102000000550000",
+        "0x00550008": "0xd102000000550008",
+        "0x00550010": "0xd102000000550010",
+        "0x00550018": "0xd102000000550018",
+        "0x00550020": "0xd102000000550020",
+        "0x00550028": "0xd102000000550028",
+        "0x00550030": "0xd102000000550030",
+        "0x00550038": "0xd102000000550038",
+        "0x00550080": "0xd102000100550080",
+        "0x00550088": "0xd102000100550088",
+        "0x00550090": "0xd102000100550090",
+        "0x00550098": "0xd102000100550098",
+        "0x005500a0": "0xd1020001005500a0",
+        "0x005500a8": "0xd1020001005500a8",
+        "0x005500b0": "0xd1020001005500b0",
+        "0x005500b8": "0xd1020001005500b8"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "l1_mshr.txn_assign": 1,
+          "axi.read_valid_gap": 181,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 2,
+          "directory_context.retire": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 22,
+          "1": 13,
+          "2": 200
+        },
+        "directory_context_histogram": {
+          "0": 8,
+          "1": 13,
+          "2": 214
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "1": 13,
+          "2": 217
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "1": 13,
+          "2": 217
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 7,
+          "1": 13,
+          "2": 215
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 13,
+            "2": 217
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 13,
+            "2": 217
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 7,
+            "1": 13,
+            "2": 215
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
     {
       "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_four_l1_misses_occupy_two_entries_per_core",
       "scenario_id": "V13_L1_MSHR_FOUR_CPU_MISSES",
@@ -74,32 +338,32 @@
               "core0:0x00410088": 11,
               "core1:0x00410108": 2,
               "core1:0x00410188": 11,
-              "core0:0x00412008": 211,
-              "core1:0x00412088": 202
+              "core0:0x00412008": 237,
+              "core1:0x00412088": 246
             },
             "response_cycles": {
-              "core0:0x00410008": 205,
-              "core0:0x00410088": 407,
-              "core1:0x00410108": 196,
-              "core1:0x00410188": 398,
-              "core0:0x00412008": 615,
-              "core1:0x00412088": 606
+              "core0:0x00410008": 225,
+              "core0:0x00410088": 234,
+              "core1:0x00410108": 213,
+              "core1:0x00410188": 243,
+              "core0:0x00412008": 439,
+              "core1:0x00412088": 448
             },
             "directory_txn_ids": {
               "core0:0x00410008": 0,
               "core0:0x00410088": 1,
               "core1:0x00410108": 0,
               "core1:0x00410188": 1,
-              "core0:0x00412008": 2,
-              "core1:0x00412088": 2
+              "core0:0x00412008": 1,
+              "core1:0x00412088": 1
             },
             "axi_ids": {
               "core0:0x00410008": 0,
-              "core0:0x00410088": 1,
+              "core0:0x00410088": 2,
               "core1:0x00410108": 1,
-              "core1:0x00410188": 0,
-              "core0:0x00412008": 1,
-              "core1:0x00412088": 0
+              "core1:0x00410188": 3,
+              "core0:0x00412008": 0,
+              "core1:0x00412088": 1
             }
           }
         },
@@ -129,16 +393,16 @@
             "1": 2
           },
           "l1_controller_owned_per_core": {
-            "0": 1,
-            "1": 1
+            "0": 2,
+            "1": 2
           },
           "l1_directory_issued_per_core": {
-            "0": 1,
-            "1": 1
+            "0": 2,
+            "1": 2
           },
-          "directory_contexts": 2,
-          "refill_mshrs": 2,
-          "axi_read_outstanding": 2
+          "directory_contexts": 4,
+          "refill_mshrs": 4,
+          "axi_read_outstanding": 4
         },
         {
           "kind": "replay",
@@ -275,13 +539,14 @@
           "cpu.request_accept": 6,
           "l1_mshr.allocate": 6,
           "directory.request_accept": 6,
-          "directory.request_stall": 1,
+          "directory.request_stall": 2,
           "l2.lookup": 6,
           "directory_context.allocate": 6,
           "l1_mshr.dispatch": 6,
           "axi.read_address": 6,
           "mshr.allocate": 6,
-          "axi.read_valid_gap": 479,
+          "axi.read_valid_gap": 336,
+          "l1_mshr.txn_assign": 4,
           "axi.read_beat": 48,
           "l2.refill_start": 6,
           "l2.line_write_beat": 48,
@@ -294,93 +559,104 @@
           "directory_context.retire": 6,
           "l1_mshr.retire": 6,
           "l1_mshr.deactivate": 6,
-          "directory.transfer_stall": 6,
-          "l1_mshr.txn_assign": 4,
+          "directory.transfer_stall": 3,
           "axi.stall": 1
         },
         "stall_cycles": {
-          "directory_request": 1,
-          "directory_transfer": 6,
+          "directory_request": 2,
+          "directory_transfer": 3,
           "AR": 1
         },
         "mshr_occupancy_histogram": {
-          "0": 45,
-          "1": 41,
-          "2": 534
+          "0": 34,
+          "1": 26,
+          "2": 194,
+          "3": 14,
+          "4": 185
         },
         "directory_context_histogram": {
-          "0": 7,
-          "1": 27,
-          "2": 586
+          "0": 8,
+          "1": 19,
+          "2": 213,
+          "3": 14,
+          "4": 199
         },
         "l1_mshr_occupancy_histogram": {
           "0": 5,
-          "2": 208,
-          "4": 381,
-          "3": 17,
-          "1": 9
+          "2": 221,
+          "4": 204,
+          "3": 12,
+          "1": 11
         },
         "l1_mshr_active_histogram": {
           "0": 5,
-          "2": 602,
-          "1": 13
+          "2": 221,
+          "4": 204,
+          "3": 12,
+          "1": 11
         },
         "l1_mshr_issued_histogram": {
           "0": 7,
-          "1": 27,
-          "2": 586
+          "1": 17,
+          "2": 215,
+          "3": 14,
+          "4": 200
         },
         "l1_mshr_per_core_histogram": {
           "0": {
-            "0": 5,
-            "1": 221,
-            "2": 394
+            "0": 15,
+            "1": 222,
+            "2": 216
           },
           "1": {
-            "0": 14,
-            "1": 221,
-            "2": 385
+            "0": 6,
+            "1": 243,
+            "2": 204
           }
         },
         "l1_mshr_active_per_core_histogram": {
           "0": {
-            "0": 7,
-            "1": 613
+            "0": 15,
+            "1": 222,
+            "2": 216
           },
           "1": {
-            "0": 16,
-            "1": 604
+            "0": 6,
+            "1": 243,
+            "2": 204
           }
         },
         "l1_mshr_issued_per_core_histogram": {
           "0": {
-            "0": 15,
-            "1": 605
+            "0": 19,
+            "1": 220,
+            "2": 214
           },
           "1": {
-            "0": 26,
-            "1": 594
+            "0": 12,
+            "1": 241,
+            "2": 200
           }
         },
-        "max_mshr_occupancy": 2,
-        "max_directory_contexts": 2,
+        "max_mshr_occupancy": 4,
+        "max_directory_contexts": 4,
         "max_l1_mshr_occupancy": 4,
-        "max_l1_mshr_active": 2,
-        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_active": 4,
+        "max_l1_mshr_issued": 4,
         "max_l1_mshr_per_core": {
           "0": 2,
           "1": 2
         },
         "max_l1_mshr_active_per_core": {
-          "0": 1,
-          "1": 1
+          "0": 2,
+          "1": 2
         },
         "max_l1_mshr_issued_per_core": {
-          "0": 1,
-          "1": 1
+          "0": 2,
+          "1": 2
         },
         "reset_epoch": 0,
-        "axi_peak_reads": 2,
+        "axi_peak_reads": 4,
         "axi_peak_writes": 0,
         "cpu_request_accepts": 6,
         "cpu_response_completions": 6,
@@ -452,50 +728,50 @@
         },
         "stall_cycles": {},
         "mshr_occupancy_histogram": {
-          "0": 22,
+          "0": 24,
           "1": 68
         },
         "directory_context_histogram": {
-          "0": 8,
+          "0": 10,
           "1": 82
         },
         "l1_mshr_occupancy_histogram": {
-          "0": 6,
-          "1": 84
+          "0": 7,
+          "1": 85
         },
         "l1_mshr_active_histogram": {
-          "0": 6,
-          "1": 84
+          "0": 7,
+          "1": 85
         },
         "l1_mshr_issued_histogram": {
-          "0": 8,
-          "1": 82
+          "0": 9,
+          "1": 83
         },
         "l1_mshr_per_core_histogram": {
           "0": {
-            "0": 6,
-            "1": 84
+            "0": 7,
+            "1": 85
           },
           "1": {
-            "0": 90
+            "0": 92
           }
         },
         "l1_mshr_active_per_core_histogram": {
           "0": {
-            "0": 6,
-            "1": 84
+            "0": 7,
+            "1": 85
           },
           "1": {
-            "0": 90
+            "0": 92
           }
         },
         "l1_mshr_issued_per_core_histogram": {
           "0": {
-            "0": 8,
-            "1": 82
+            "0": 9,
+            "1": 83
           },
           "1": {
-            "0": 90
+            "0": 92
           }
         },
         "max_mshr_occupancy": 1,
@@ -573,7 +849,8 @@
           "l1_mshr.dispatch": 2,
           "axi.read_address": 2,
           "mshr.allocate": 2,
-          "axi.read_valid_gap": 100,
+          "axi.read_valid_gap": 53,
+          "l1_mshr.txn_assign": 1,
           "axi.read_beat": 16,
           "l2.refill_start": 2,
           "l2.line_write_beat": 16,
@@ -585,78 +862,83 @@
           "directory_context.retire": 2,
           "cpu.response_complete": 2,
           "l1_mshr.retire": 2,
-          "l1_mshr.deactivate": 2,
-          "l1_mshr.txn_assign": 1
+          "l1_mshr.deactivate": 2
         },
         "stall_cycles": {},
         "mshr_occupancy_histogram": {
-          "0": 48,
-          "1": 139
+          "0": 23,
+          "1": 16,
+          "2": 72
         },
         "directory_context_histogram": {
-          "0": 20,
-          "1": 167
+          "0": 9,
+          "1": 16,
+          "2": 86
         },
         "l1_mshr_occupancy_histogram": {
           "0": 5,
-          "1": 92,
-          "2": 90
+          "1": 8,
+          "2": 98
         },
         "l1_mshr_active_histogram": {
-          "0": 6,
-          "1": 181
+          "0": 5,
+          "1": 8,
+          "2": 98
         },
         "l1_mshr_issued_histogram": {
-          "0": 11,
-          "1": 176
+          "0": 7,
+          "1": 8,
+          "2": 96
         },
         "l1_mshr_per_core_histogram": {
           "0": {
             "0": 5,
-            "1": 92,
-            "2": 90
+            "1": 8,
+            "2": 98
           },
           "1": {
-            "0": 187
+            "0": 111
           }
         },
         "l1_mshr_active_per_core_histogram": {
           "0": {
-            "0": 6,
-            "1": 181
+            "0": 5,
+            "1": 8,
+            "2": 98
           },
           "1": {
-            "0": 187
+            "0": 111
           }
         },
         "l1_mshr_issued_per_core_histogram": {
           "0": {
-            "0": 11,
-            "1": 176
+            "0": 7,
+            "1": 8,
+            "2": 96
           },
           "1": {
-            "0": 187
+            "0": 111
           }
         },
-        "max_mshr_occupancy": 1,
-        "max_directory_contexts": 1,
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
         "max_l1_mshr_occupancy": 2,
-        "max_l1_mshr_active": 1,
-        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
         "max_l1_mshr_per_core": {
           "0": 2,
           "1": 0
         },
         "max_l1_mshr_active_per_core": {
-          "0": 1,
+          "0": 2,
           "1": 0
         },
         "max_l1_mshr_issued_per_core": {
-          "0": 1,
+          "0": 2,
           "1": 0
         },
         "reset_epoch": 0,
-        "axi_peak_reads": 1,
+        "axi_peak_reads": 2,
         "axi_peak_writes": 0,
         "cpu_request_accepts": 2,
         "cpu_response_completions": 2,
@@ -715,6 +997,7 @@
           "axi.read_address": 2,
           "mshr.allocate": 2,
           "axi.read_valid_gap": 195,
+          "l1_mshr.txn_assign": 1,
           "system.reset_assert": 1,
           "system.reset_cancel": 1,
           "axi.read_beat": 8,
@@ -725,72 +1008,74 @@
           "mshr.retire": 1,
           "directory.grant_accept": 1,
           "l1.metadata_commit": 1,
-          "cpu.response_complete": 1,
           "directory_context.retire": 1,
+          "cpu.response_complete": 1,
           "l1_mshr.retire": 1,
           "l1_mshr.deactivate": 1
         },
         "stall_cycles": {},
         "mshr_occupancy_histogram": {
-          "0": 35,
+          "0": 36,
           "1": 214
         },
         "directory_context_histogram": {
-          "0": 19,
+          "0": 20,
           "1": 230
         },
         "l1_mshr_occupancy_histogram": {
           "0": 14,
-          "1": 234,
+          "1": 235,
           "2": 1
         },
         "l1_mshr_active_histogram": {
           "0": 14,
-          "1": 235
+          "1": 235,
+          "2": 1
         },
         "l1_mshr_issued_histogram": {
           "0": 18,
-          "1": 231
+          "1": 232
         },
         "l1_mshr_per_core_histogram": {
           "0": {
             "0": 14,
-            "1": 234,
+            "1": 235,
             "2": 1
           },
           "1": {
-            "0": 249
+            "0": 250
           }
         },
         "l1_mshr_active_per_core_histogram": {
           "0": {
             "0": 14,
-            "1": 235
+            "1": 235,
+            "2": 1
           },
           "1": {
-            "0": 249
+            "0": 250
           }
         },
         "l1_mshr_issued_per_core_histogram": {
           "0": {
             "0": 18,
-            "1": 231
+            "1": 232
           },
           "1": {
-            "0": 249
+            "0": 250
           }
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 1,
         "max_l1_mshr_occupancy": 2,
-        "max_l1_mshr_active": 1,
+        "max_l1_mshr_active": 2,
         "max_l1_mshr_issued": 1,
         "max_l1_mshr_per_core": {
           "0": 2,
           "1": 0
         },
         "max_l1_mshr_active_per_core": {
-          "0": 1,
+          "0": 2,
           "1": 0
         },
         "max_l1_mshr_issued_per_core": {
@@ -809,8 +1094,8 @@
       }
     },
     {
-      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_queued_store_relooks_up_after_remote_snoop",
-      "scenario_id": "test_queued_store_relooks_up_after_remote_snoop",
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_secondary_store_context_commits_before_ordered_response",
+      "scenario_id": "test_secondary_store_context_commits_before_ordered_response",
       "seed": null,
       "test_status": "passed",
       "configuration": {
@@ -848,107 +1133,108 @@
       "monitor": {
         "event_counts": {
           "cpu.request_accept": 7,
-          "l1_mshr.allocate": 6,
-          "directory.request_accept": 6,
+          "l1_mshr.allocate": 5,
+          "directory.request_accept": 5,
           "l2.lookup": 2,
-          "directory_context.allocate": 6,
-          "l1_mshr.dispatch": 6,
+          "directory_context.allocate": 5,
+          "l1_mshr.dispatch": 5,
           "axi.read_address": 2,
           "mshr.allocate": 2,
           "axi.read_valid_gap": 220,
           "axi.read_beat": 16,
           "l2.refill_start": 2,
-          "l2.line_write_beat": 40,
+          "l2.line_write_beat": 32,
           "l2.refill_end": 2,
-          "directory.metadata_commit": 6,
+          "directory.metadata_commit": 5,
           "mshr.retire": 2,
-          "directory.grant_accept": 6,
-          "l1.metadata_commit": 10,
+          "directory.grant_accept": 5,
+          "l1.metadata_commit": 8,
+          "directory_context.retire": 5,
           "cpu.response_complete": 6,
-          "directory_context.retire": 6,
-          "l1_mshr.retire": 6,
-          "l1_mshr.deactivate": 6,
-          "snoop.accept": 4,
-          "directory.snoop_offer": 4,
-          "coherence.owner_data_beat": 24,
-          "snoop.response": 4,
-          "l1_mshr.txn_assign": 5,
-          "axi.stall": 1
+          "l1_mshr.retire": 5,
+          "l1_mshr.deactivate": 5,
+          "snoop.accept": 3,
+          "directory.snoop_offer": 3,
+          "coherence.owner_data_beat": 16,
+          "snoop.response": 3,
+          "l1_mshr.txn_assign": 3
         },
-        "stall_cycles": {
-          "AR": 1
-        },
+        "stall_cycles": {},
         "mshr_occupancy_histogram": {
-          "0": 121,
+          "0": 74,
           "1": 258
         },
         "directory_context_histogram": {
-          "0": 21,
-          "1": 351,
-          "2": 7
+          "0": 22,
+          "1": 279,
+          "2": 31
         },
         "l1_mshr_occupancy_histogram": {
-          "0": 6,
-          "1": 233,
-          "2": 130,
-          "3": 10
+          "0": 10,
+          "1": 181,
+          "2": 113,
+          "3": 28
         },
         "l1_mshr_active_histogram": {
-          "0": 7,
-          "1": 362,
-          "2": 10
+          "0": 10,
+          "1": 181,
+          "2": 113,
+          "3": 28
         },
         "l1_mshr_issued_histogram": {
-          "0": 18,
-          "1": 353,
-          "2": 8
+          "0": 16,
+          "1": 177,
+          "2": 113,
+          "3": 26
         },
         "l1_mshr_per_core_histogram": {
           "0": {
-            "0": 60,
-            "1": 179,
-            "2": 140
+            "0": 38,
+            "1": 153,
+            "2": 141
           },
           "1": {
-            "0": 315,
-            "1": 64
+            "0": 276,
+            "1": 56
           }
         },
         "l1_mshr_active_per_core_histogram": {
           "0": {
-            "0": 61,
-            "1": 318
+            "0": 38,
+            "1": 153,
+            "2": 141
           },
           "1": {
-            "0": 315,
-            "1": 64
+            "0": 276,
+            "1": 56
           }
         },
         "l1_mshr_issued_per_core_histogram": {
           "0": {
-            "0": 68,
-            "1": 311
+            "0": 42,
+            "1": 151,
+            "2": 139
           },
           "1": {
-            "0": 321,
-            "1": 58
+            "0": 280,
+            "1": 52
           }
         },
         "max_mshr_occupancy": 1,
         "max_directory_contexts": 2,
         "max_l1_mshr_occupancy": 3,
-        "max_l1_mshr_active": 2,
-        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_active": 3,
+        "max_l1_mshr_issued": 3,
         "max_l1_mshr_per_core": {
           "0": 2,
           "1": 1
         },
         "max_l1_mshr_active_per_core": {
-          "0": 1,
+          "0": 2,
           "1": 1
         },
         "max_l1_mshr_issued_per_core": {
-          "0": 1,
+          "0": 2,
           "1": 1
         },
         "reset_epoch": 0,
@@ -963,12 +1249,23 @@
       }
     }
   ],
-  "git_sha": "8333c2a5692eb4e1d4c1a30edf83ec57c849f398",
+  "git_sha": "b75e94ed4ab42024518707d50a8716b128827e35",
   "source_snapshot": {
-    "working_tree_dirty": false,
-    "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "untracked_source_files": [],
-    "untracked_source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    "working_tree_dirty": true,
+    "source_diff_sha256": "4293d8983c657f274008060fb6fe5a06d88a36143782f4251466380be78134f9",
+    "untracked_source_files": [
+      "dv/blocks/mesi_l1_miss_context/README.md",
+      "dv/blocks/mesi_l1_miss_context/filelist.f",
+      "dv/blocks/mesi_l1_miss_context/tb/MesiL1MissContext_tb.sv",
+      "dv/blocks/mesi_l1_miss_context/testplan.md",
+      "dv/blocks/mesi_l1_miss_response_order/README.md",
+      "dv/blocks/mesi_l1_miss_response_order/filelist.f",
+      "dv/blocks/mesi_l1_miss_response_order/tb/MesiL1MissResponseOrder_tb.sv",
+      "dv/blocks/mesi_l1_miss_response_order/testplan.md",
+      "rtl/l1/MesiL1MissContext.sv",
+      "rtl/l1/MesiL1MissResponseOrder.sv"
+    ],
+    "untracked_source_sha256": "9c8ff9af3da42a168c1752bf25816721cbdeb133a36cb32abbfd9eaca4b01371"
   },
   "tool_versions": {
     "python": "3.12.3",

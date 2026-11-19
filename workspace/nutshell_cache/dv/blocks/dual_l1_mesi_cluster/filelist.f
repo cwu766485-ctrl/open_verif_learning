@@ -3,6 +3,7 @@
 common/CoherenceProtocol.sv
 l1/MesiL1SnoopArbiter.sv
 l1/MesiL1SnoopEngine.sv
+l1/MesiL1MissContext.sv
 l1/MesiL1Controller.sv
 l1/MesiL1Array.sv
 interconnect/CoherenceRequestArbiterCore.sv
