@@ -188,6 +188,25 @@ Functional/Cross bin IDs.
 | Resource boundary | Two MSHRs full, third request held | Stable request payload and exactly one acceptance after retirement | CPU handshake + MSHR lifecycle checker; OPEN |
 | Conflicts and recovery | Same-line, same-set, live snoop, PutM replacement, reset with two misses | Defined retry/serialization, no stale response, and forward progress | Independent MESI/data checker; OPEN |
 
+### v1.3 true Miss-under-Miss acceptance gates
+
+The test sequence below is deliberately split so an L1 allocation peak cannot
+be mistaken for downstream concurrency. All current rows are **OPEN**; this
+section does not add Functional/Cross bin IDs or alter the legacy bins.
+
+| Gate | Testpoint | Required sampled event | Independent checker / status |
+|---|---|---|---|
+| MUM-01 | Two misses from one L1 | Two distinct line IDs both handshake at Directory before either corresponding CPU response | `MshrLifecycleChecker` correlates CPU accept, Directory request, grant, 8-beat refill, commit, CPU response; OPEN |
+| MUM-02 | Four total misses | CPU0 A/B and CPU1 C/D are all Directory-accepted before the first CPU miss response | L1 issued-MSHR bitmap + separate Directory/refill/AXI occupancy; unique live IDs, address/data/order scoreboard; OPEN |
+| MUM-03 | Out-of-order completion and FIFO retirement | Two same-core refill contexts finish in reverse order where the shared datapath allows it | Per-ID beat routing, response queue and accepted-order CPU response checker; OPEN |
+| MUM-04 | ID lifetime/wrap | Repeated allocations across the configured ID-space wrap with two live entries | No live-ID alias; every response maps to the original address and request; OPEN |
+| MUM-05 | Array and replacement ownership | Refill, Store, Snoop, and PutM/owner-data streams contend for the L1 array | Ready/valid stability, full-line integrity, directory/data model and bounded progress; OPEN |
+| MUM-06 | Capacity and recovery | Third miss under full occupancy, response stall, reset with two active misses | Stable CPU request, exactly-once later acceptance, epoch cancellation and post-reset recovery; OPEN |
+
+Resource counters are separate evidence: L1 allocated/issued MSHRs, Directory
+contexts, refill MSHRs, shared line-engine transaction, AXI read outstanding,
+and AXI write outstanding. A peak at one layer never substitutes for another.
+
 Until these checks pass, the existing measured limits remain one issued miss per
 L1 and a peak of two issued misses across the two-core subsystem in the
 four-entry occupancy test.

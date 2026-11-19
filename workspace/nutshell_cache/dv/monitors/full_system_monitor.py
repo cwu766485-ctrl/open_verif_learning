@@ -32,12 +32,20 @@ class FullSystemMonitor:
         self.l1_mshr_per_core_histogram = {
             0: Counter(), 1: Counter(),
         }
+        self.l1_mshr_active_per_core_histogram = {
+            0: Counter(), 1: Counter(),
+        }
+        self.l1_mshr_issued_per_core_histogram = {
+            0: Counter(), 1: Counter(),
+        }
         self.max_mshr_occupancy = 0
         self.max_directory_contexts = 0
         self.max_l1_mshr_occupancy = 0
         self.max_l1_mshr_active = 0
         self.max_l1_mshr_issued = 0
         self.max_l1_mshr_per_core = {0: 0, 1: 0}
+        self.max_l1_mshr_active_per_core = {0: 0, 1: 0}
+        self.max_l1_mshr_issued_per_core = {0: 0, 1: 0}
         self._axi_reads = {}
         self._axi_writes = {}
         self._axi_write_order = deque()
@@ -460,6 +468,15 @@ class FullSystemMonitor:
         l1_mshr_bitmap = _bits(d.monitor_l1_mshr_valid)
         l1_mshr_active_bitmap = _bits(d.monitor_l1_mshr_active)
         l1_mshr_issued_bitmap = _bits(d.monitor_l1_mshr_issued)
+        l1_mshr_slot_mask = (1 << 4) - 1
+        if l1_mshr_active_bitmap & ~l1_mshr_bitmap & l1_mshr_slot_mask:
+            raise AssertionError(
+                "L1 MSHR controller ownership without a live allocation"
+            )
+        if l1_mshr_issued_bitmap & ~l1_mshr_active_bitmap & l1_mshr_slot_mask:
+            raise AssertionError(
+                "L1 MSHR Directory issue without controller ownership"
+            )
         l1_mshr_occupancy = l1_mshr_bitmap.bit_count()
         l1_mshr_active = (l1_mshr_bitmap & l1_mshr_active_bitmap).bit_count()
         l1_mshr_issued = (l1_mshr_bitmap & l1_mshr_issued_bitmap).bit_count()
@@ -475,8 +492,16 @@ class FullSystemMonitor:
             issued = (core_bitmap & core_issued).bit_count()
             per_core_occupancy[core] = occupancy
             self.l1_mshr_per_core_histogram[core][occupancy] += 1
+            self.l1_mshr_active_per_core_histogram[core][active] += 1
+            self.l1_mshr_issued_per_core_histogram[core][issued] += 1
             self.max_l1_mshr_per_core[core] = max(
                 self.max_l1_mshr_per_core[core], occupancy
+            )
+            self.max_l1_mshr_active_per_core[core] = max(
+                self.max_l1_mshr_active_per_core[core], active
+            )
+            self.max_l1_mshr_issued_per_core[core] = max(
+                self.max_l1_mshr_issued_per_core[core], issued
             )
             for entry in range(2):
                 slot = core * 2 + entry

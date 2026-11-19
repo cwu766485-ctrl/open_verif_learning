@@ -2,8 +2,16 @@
 
 所有记录按时间倒序，简要说明变更、发现的问题和修复思路。
 
+## 2026-11-19
+
+- **完成完整基线回归并固定当前 v1.3 结论。** `make COHERENCE_JOBS=2 coherence_verify` 在源码 SHA `75104a7e` 加记录的 dirty-tree diff `77a64bdc…` 上退出码为 0；Block、AXI、Formal、RTL/Python 回归、两组压力测试、Mutation 和 Benchmark v4 均通过。Python Coverage 为 Functional 49/49、Cross 19/19，9/9 Checker Fault Injection 被捕获。Benchmark v4 校验 24 个 workload 行，是重测基线，不是优化收益。集成 LCOV 1715/1855 包含 TB，不能当作产品 RTL 覆盖率。远端 CI 尚未核验。
+- **完成 v1.3 基线回归复核并审计 Miss-under-Miss RTL 边界。** 当前 `coherence_nonblocking_l1_mshr` 5/5 PASS；`coherence_hit_under_miss` 的 Python 子系统 2/2、AXI Top 3/3 PASS。最新资源证据仍是每核 2 个已分配槽、每核最多 1 个 controller-owned/Directory-issued miss；Directory Context、Refill MSHR、AXI R outstanding 峰值分别为 2/2/2。因此已验证的是 tracking 与跨核并行，不是同核 miss 并行。
+- **补充 v1.3 Phase 2 的 RTL 所有权审计和实现边界。** 源码确认每核只有一个 MESI CPU 事务上下文、一个替换 FSM；L1 阵列只有单 refill burst collector 和单 line-read stream。简单复制完整控制器会复制 Snoop FSM 并引入事务 ID 冲突风险；仅解除 queued-MSHR 派发限制则会争用 refill、metadata、line-read 和 victim-way 资源。契约现明确要求两笔独立 tagged miss context、单一共享 Snoop、refill/array 仲裁、活跃 ID 分配与按接受序号 FIFO 响应。保持 LSU 接口，不改产品 RTL 功能/接口，不声称 four-issued-miss 完成。
+- **修正文档证据状态。** 记录了 `coherence_hit_under_miss` 本轮完整重建后通过 5 项测试；先前 status 143 的中断构建不再是最终结果。Benchmark 数字仅描述既有 Hit-under-Miss bypass 的合成延迟工作负载，不作为 v1.3 MSHR 性能提升。
+
 ## 2026-11-18
 
+- **校准 L1 MSHR 并发监控口径。** 复查发现 `valid`（已分配）被重复当作 active，而 controller ownership 又被直接当作 Directory-issued。现已拆分 Allocated、Controller-owned、Directory-issued 的逐核直方图和峰值；issued 只统计 Directory 握手后 `WAIT_GRANT/REFILL/META_WRITE/RESP/ERROR` 阶段。四冷读证据分别为 L1 分配 4（每核 2）、controller-owned 每核 1、Directory-issued 每核 1、Directory Context 2、Refill MSHR 2、AXI R outstanding 2。结论是跨核两笔已 issue；每核第二笔仍排队，真正的同核 Miss-under-Miss 和四笔下游并发保持未实现。此次仅修正 monitor 与验证口径，不改变 RTL 功能和模块接口。
 - **复核 v1.3 两入口 MSHR 的真实并发边界。** 在 `codex/v1.3-nonblocking-l1`、源码基线 `06572c0f` 重跑 `coherence_nonblocking_l1_mshr`（5/5 PASS）和 `coherence_hit_under_miss`（Python 2/2、AXI Top 3/3 PASS）。四个 L1 tracking entry 可在首个 CPU 响应前同时有效 381 个采样周期，但 issued L1 controller、Directory Context、Refill MSHR、AXI R outstanding 峰值分别只有 2/2/2/2。根因是每核仍只有一个 `MesiL1Controller`，第二个 entry 要等第一个 miss 响应退休后再派发；所以槽位容量不能当成同核 Miss-under-Miss 或四笔下游并发的证据。
 - **冻结 v1.3 Phase 2 Miss-under-Miss 设计契约。** 新增 `docs/l1_miss_under_miss_v1_3_phase2_contract.md`，明确保持 CPU 接口、同核 miss 响应按接受顺序、将本地顺序号与 Directory/Grant/Refill 使用的事务 ID 分开、双槽满时反压、同地址暂不合并、同 Set 初始串行，并列出 L1 阵列端口仲裁、Snoop/Replacement/Reset 冲突和逐资源 Checker。主 Spec、Testplan、DV 记录已链接该契约；目标场景仍标 OPEN，没有增加/伪造 Coverage Bin，也没有改 RTL。
 

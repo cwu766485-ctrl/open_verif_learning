@@ -16,6 +16,15 @@ outstanding each peaked at two. The next target is two independent,
 different-line coherence transactions per L1, for four total CPU misses in
 flight, provided the shared downstream resources accept them.
 
+For measurement, distinguish these per-entry states: **allocated** means the
+CPU request was accepted and the entry is valid; **controller-owned** means
+the entry has been selected by the per-core MESI controller; **Directory-issued**
+means the controller accepted the Directory request and is in `WAIT_GRANT`,
+`REFILL`, `META_WRITE`, `RESP`, or its post-issue `ERROR` state. Directory
+Context occupancy, refill MSHR occupancy, and AXI outstanding transactions are
+separate counters. The issued state is not inferred from allocation or from
+controller ownership alone.
+
 The target is bounded concurrency, not a promise that all four transactions
 always progress in the same cycle. Directory set interlocks, the shared
 `SharedLineEngine`, single L1 array ports, and downstream backpressure may
@@ -98,6 +107,63 @@ metadata commit, store merge, snoop metadata change, and replacement line
 read. Arbitration must define priority and backpressure for each conflict.
 While a request is stalled, its payload and MSHR association remain stable.
 
+## RTL ownership audit and implementation boundary
+
+The following boundary is based on the current RTL, not a proposed module
+diagram:
+
+- `DualL1MesiCluster` has one `MesiL1Controller` and one replacement FSM per
+  core. Its two-entry tracker retains the second request, but only dispatches
+  that entry after the current controller transaction and response retire.
+- `MesiL1Controller` owns one CPU transaction register set (`cpu_addr_q`,
+  `cpu_txn_q`, `cpu_state_q`) and a separate single-entry Snoop FSM. Grant,
+  refill, metadata-commit, and CPU-response handshakes are all qualified by
+  that single CPU transaction ID. Duplicating the whole controller per MSHR
+  would also duplicate Snoop acceptance/state and risks collisions between
+  independently reset transaction-ID counters.
+- `DualL1MesiCluster` owns one per-core replacement transaction, one serialized
+  line-read owner, and the CPU-versus-replacement request selection. The
+  replacement victim way is not reserved for two simultaneous replacement
+  transactions today.
+- `MesiL1Array` has one refill burst collector (`refill_pending_q`, address,
+  way, expected beat), one line-read stream, a shared metadata-write port with
+  Snoop priority, and a store write path. It cannot accept interleaved refill
+  beats for two lines or two simultaneous line reads. Granting two live CPU
+  contexts therefore requires explicit ownership/backpressure at these ports;
+  it cannot be enabled by only removing the queued-MSHR dispatch condition.
+- The shared Directory and refill MSHR bank already track multiple tagged
+  requests, but their occupancy is not evidence that the L1 can associate two
+  transactions. The shared line engine, same-set interlock, array port, and
+  Grant/Transfer routing remain separate limits and must be measured rather
+  than assumed away.
+
+### First implementation slice
+
+Keep the public CPU request/response interface unchanged. Use the existing
+per-core response transaction ID as the internal coherence tag, but change its
+allocator to select an ID that is not live in either local MSHR. Keep local CPU
+acceptance sequence separate from this recyclable protocol ID. No incoming CPU
+request ID is needed while miss responses remain FIFO per core and the existing
+resident-hit bypass remains its explicitly checked exception.
+
+The first functional RTL slice should create two independent miss contexts per
+core and let each issue a Directory request with its own live tag. Keep one
+shared Snoop engine per L1, route its metadata/data work through the same array
+arbiter, and buffer refill beats by the matching MSHR before granting the
+single array refill stream to one complete line at a time. Preserve the current
+one replacement FSM per core in this slice: a miss that needs a live victim
+must wait for victim release before occupying/refilling that way. Do not claim
+two overlapping victim replacements.
+
+This slice does not imply that four refills, Directory grants, or AXI reads
+will all overlap. Its first acceptance criterion is two distinct Directory
+transactions from one L1 live before either CPU miss response, with correct
+out-of-order refill association and FIFO CPU miss retirement. Then measure the
+shared Directory, refill, line-engine, L1 array, and AXI peaks independently.
+If buffering/serialization at the current array or line engine prevents that
+criterion, report the concrete limiting resource before considering additional
+ports or banking.
+
 The response path needs a per-core ordered completion queue or equivalent
 oldest-live-MSHR selection keyed by the local acceptance-order sequence.
 Refill/grant responses may target a younger MSHR by its bound coherence ID,
@@ -129,6 +195,34 @@ The directed four-miss test must use four independent lines and different L2
 sets, a fixed seed and sufficient memory latency. It must record cycle-level
 handshakes and retain its trace/waveform. L1 allocation count alone is not
 proof of downstream issue or four active refills.
+
+## Implementation ownership and first coding slice
+
+The source audit shows why the queued-MSHR dispatch condition cannot simply be
+removed:
+
+| Existing owner | Current single-context resource | Required v1.3 owner |
+|---|---|---|
+| `MesiL1Controller` | One CPU transaction register set and one CPU FSM | Two miss contexts, each with its own request/grant/refill/commit lifecycle; preserve one shared Snoop engine |
+| `DualL1MesiCluster` | Two accepted-entry records, one active controller dispatch per core, one replacement FSM | Order/ID allocation, per-context response retention, grant routing by live ID, and request/response reorder control |
+| `MesiL1Array` | One refill burst collector, one line-read stream, shared metadata/data write arbitration | Whole-line refill ownership plus safe arbitration for two MSHRs, Snoop, Store, and Replacement |
+| `DirectoryMshrBank` / `SharedLineEngine` | Multi-context Directory state but shared L2/line engine resources | Keep existing capacities; expose real downstream stalls and serialize shared streams without losing per-context identity |
+
+The first coding slice is to split the CPU miss transaction state from the
+shared Snoop state, then route two live miss contexts by transaction ID while
+keeping the existing public CPU ports unchanged. Its first integration target
+is the two-same-core case: two different-set cold misses both handshake at the
+Directory before either CPU miss response, with distinct live IDs and FIFO CPU
+miss retirement. The next slice adds complete-line refill buffering and array
+write arbitration; only after that should replacement/Snoop/Reset collisions
+be enabled for the two-context path. Each slice must include a directed test
+and Checker before proceeding.
+
+Current baseline evidence is only the accepted-entry tracker: each core has
+two allocated slots, while controller-owned and Directory-issued miss peaks
+are one per core. The present top therefore does **not** satisfy the first
+coding-slice criterion. No production RTL change is made by this contract
+update.
 
 ## Explicit limits for this phase
 

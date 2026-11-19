@@ -1,8 +1,11 @@
-# NutShell Cache v1.3 — Two-Entry L1 Miss Tracking
+# NutShell Cache v1.3 — Two-Entry L1 MSHR and Miss-under-Miss
 
 **Document state:** implementation contract for the v1.3 incremental change.
 This supplements the frozen v1.1 cache specification; it does not replace that
-baseline or describe silicon/PPA sign-off.
+baseline or describe silicon/PPA sign-off. The accepted two-entry tracker is
+the current implementation baseline. The true Miss-under-Miss requirements
+below are the next RTL increment and remain **OPEN** until implemented and
+checked on the integrated subsystem.
 
 ## Functional requirements
 
@@ -70,3 +73,84 @@ and live coherence transaction ID association. It also requires explicit
 single-port L1 array arbitration and per-resource concurrency evidence. Until
 the directed tests in that contract pass on the modified RTL, same-L1
 Miss-under-Miss and four simultaneous downstream requests remain unsupported.
+
+### Required behavior for this increment
+
+1. Each L1 has two independently live coherence-miss contexts. Two different
+   cache-line misses from the same core must each complete a Directory request
+   handshake before either miss response is returned. CPU0 and CPU1 may each
+   reach this condition, for up to four live L1 miss contexts in total.
+2. CPU request/response ports remain source-compatible: no incoming CPU
+   Request ID is added. Miss responses from one core retire in CPU request
+   acceptance order. A later miss may finish internally first, but its result
+   waits in its MSHR until older miss responses retire. Existing resident-read
+   Hit-under-Miss bypass remains its documented exception and is checked as a
+   separate response class. The two cores have no cross-core response ordering
+   requirement.
+3. Every live miss has a coherence transaction ID unique among transactions
+   from the same request source. The allocator must not reuse an ID until its
+   grant/refill/commit lifecycle and response association are retired. Local
+   CPU acceptance sequence is stored separately from the recyclable protocol
+   ID. The configured ID width and wrap behavior are checked at the maximum
+   live occupancy. An upstream request tag is needed only if the CPU interface
+   later promises arbitrary same-core response reordering.
+4. An MSHR is allocated only on an accepted CPU request that needs coherence
+   service; it stores the full request payload, line address, set, local order,
+   protocol ID, selected way when reserved, and lifecycle state. It retires
+   only after its checked CPU response handshakes, or is canceled by the
+   specified reset contract. A store miss applies its byte mask/data only
+   after ownership and refill data are valid.
+5. A repeated request to a line with a live MSHR is not merged in this
+   increment. It is backpressured and re-looked-up after the earlier line
+   retires. Two misses mapping to the same L1 set may be accepted into tracking
+   only if way allocation and replacement ownership are unambiguous; otherwise
+   the later request remains held until the first fill/replacement releases
+   the set. The initial four-miss proof uses four distinct lines and distinct
+   L1/L2 sets.
+6. Each L1 retains one shared Snoop engine and one replacement controller.
+   Snoop, PutM victim streaming, refill, store, and metadata commits use an
+   explicit per-L1 array arbiter. A snoop matching a line with an uncommitted
+   refill must make forward progress without observing partial data, losing
+   ownership, or deadlocking the refill/Directory context. A second live miss
+   may wait for the single replacement engine; concurrent victim replacement
+   is not implied by two MSHRs.
+7. Refill data is associated by the live coherence ID. The L1 may buffer each
+   transaction's beats or hold a complete stream at the source, but the single
+   array refill writer must never interleave two lines. Grant commit occurs
+   only after all eight beats are accepted into the correct line and metadata
+   state is ready. Directory contexts, refill MSHRs, shared L2/line-engine
+   ownership, and AXI outstanding requests are independently backpressured and
+   reported; four L1 MSHRs do not promise four concurrent AXI reads.
+8. When both local MSHRs are full, a third coherence miss is not accepted and
+   its request payload remains stable. A response stall retains completed
+   entries and cannot change response address/data/order. Reset cancels all
+   live local contexts under the existing coordinated reset; no pre-reset
+   response may be accepted after reset, and post-reset traffic must recover.
+9. The change must preserve MESI state transitions, clean/dirty L1 replacement,
+   owner-data Snoop, same-line conflict handling, MMIO bypass, APB CSR
+   behavior, AXI ID/response semantics, and the existing Hit-under-Miss
+   contract. L2 banking, extra SRAM ports, changed Directory capacity, and
+   changed AXI interfaces are out of scope unless separate measurements and
+   design review establish they are necessary.
+
+### Acceptance evidence
+
+The minimum system test sends A/B from CPU0 and C/D from CPU1, with each pair
+using distinct lines and sets. Before the first miss response, independent
+monitoring must show two Directory-accepted live miss IDs per L1 (four total).
+The test separately records per-cycle L1 MSHR occupancy, Directory contexts,
+refill MSHRs, shared line-engine ownership, AXI R outstanding and AXI W
+outstanding. It checks ID-to-line association, all eight refill beats, final
+CPU data, FIFO miss response order per core, and no duplicate/lost transaction.
+The same-source refills must be deliberately completed in reverse order where
+the shared line-engine protocol permits it; otherwise the concrete serialization
+point and its effect on the test are reported. Waveform/handshake trace, fixed
+seed, checker result, and the exact source/tool fingerprint are retained.
+
+Full MUM closure also requires separate directed checks for MSHR-full
+backpressure, same-line conflict, same-set way conflict, replacement PutM vs
+owner-data Snoop, Store/refill contention, CPU response backpressure, reset
+cancellation with two active contexts, and transaction-ID wrap. A performance
+gain is claimed only after the same Benchmark v4 workloads and settings run
+against the preserved blocking baseline and the new RTL; occupancy alone is
+not a throughput result.

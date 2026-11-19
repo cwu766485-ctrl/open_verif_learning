@@ -154,6 +154,16 @@ def pytest_sessionfinish(session, exitstatus):
                     for core, histogram in
                     env.monitor.l1_mshr_per_core_histogram.items()
                 },
+                "l1_mshr_active_per_core_histogram": {
+                    str(core): dict(histogram)
+                    for core, histogram in
+                    env.monitor.l1_mshr_active_per_core_histogram.items()
+                },
+                "l1_mshr_issued_per_core_histogram": {
+                    str(core): dict(histogram)
+                    for core, histogram in
+                    env.monitor.l1_mshr_issued_per_core_histogram.items()
+                },
                 "max_mshr_occupancy": env.monitor.max_mshr_occupancy,
                 "max_directory_contexts": env.monitor.max_directory_contexts,
                 "max_l1_mshr_occupancy": env.monitor.max_l1_mshr_occupancy,
@@ -162,6 +172,14 @@ def pytest_sessionfinish(session, exitstatus):
                 "max_l1_mshr_per_core": {
                     str(core): occupancy for core, occupancy in
                     env.monitor.max_l1_mshr_per_core.items()
+                },
+                "max_l1_mshr_active_per_core": {
+                    str(core): active for core, active in
+                    env.monitor.max_l1_mshr_active_per_core.items()
+                },
+                "max_l1_mshr_issued_per_core": {
+                    str(core): issued for core, issued in
+                    env.monitor.max_l1_mshr_issued_per_core.items()
                 },
                 "reset_epoch": env.monitor.reset_epoch,
                 "axi_peak_reads": env.axi.peak_reads,

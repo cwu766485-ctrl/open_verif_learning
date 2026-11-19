@@ -125,6 +125,10 @@ module DualL1MesiCluster #(
     localparam logic [2:0] CPU_SEND_REQ_STATE = 3'd1;
     localparam logic [2:0] CPU_WAIT_GRANT_STATE = 3'd2;
     localparam logic [2:0] CPU_IDLE_STATE = 3'd0;
+    localparam logic [2:0] CPU_REFILL_STATE = 3'd3;
+    localparam logic [2:0] CPU_META_WRITE_STATE = 3'd4;
+    localparam logic [2:0] CPU_RESP_STATE = 3'd5;
+    localparam logic [2:0] CPU_ERROR_STATE = 3'd6;
     logic [31:0] lookup_addr;
     logic ctrl_cpu_req_valid;
     logic ctrl_cpu_req_ready;
@@ -169,10 +173,19 @@ module DualL1MesiCluster #(
     assign monitor_cpu_active_addr[core*32 +: 32] =
       controller_cpu_active_addr;
     assign monitor_l1_mshr_valid[core*2 +: 2] = l1_mshr_valid_q;
-    // Active means an allocated CPU miss awaiting its response. Issued is a
-    // separate observation of the single MESI-controller transaction slot.
-    assign monitor_l1_mshr_active[core*2 +: 2] = l1_mshr_valid_q;
-    assign monitor_l1_mshr_issued[core*2 +: 2] = l1_mshr_active_q;
+    // Keep allocation, controller ownership, and Directory issue distinct.
+    // A queued MSHR is valid but not active; an active request is not issued
+    // until the controller enters WAIT_GRANT or a later transaction state.
+    assign monitor_l1_mshr_active[core*2 +: 2] = l1_mshr_active_q;
+    for (genvar entry = 0; entry < 2; entry = entry + 1) begin : gen_issue_monitor
+      assign monitor_l1_mshr_issued[core*2+entry] =
+        l1_mshr_active_q[entry] &&
+        ((controller_cpu_state == CPU_WAIT_GRANT_STATE) ||
+         (controller_cpu_state == CPU_REFILL_STATE) ||
+         (controller_cpu_state == CPU_META_WRITE_STATE) ||
+         (controller_cpu_state == CPU_RESP_STATE) ||
+         (controller_cpu_state == CPU_ERROR_STATE));
+    end
     for (genvar entry = 0; entry < 2; entry = entry + 1) begin : gen_mshr_monitor
       assign monitor_l1_mshr_addr[(core*2+entry)*32 +: 32] =
         l1_mshr_addr_q[entry];

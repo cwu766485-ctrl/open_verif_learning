@@ -262,7 +262,12 @@ async def test_four_l1_misses_occupy_two_entries_per_core(full_system_env):
         "memory latency did not preserve the four-entry allocation window"
     )
     assert env.monitor.max_l1_mshr_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_active_per_core == {0: 1, 1: 1}
+    assert env.monitor.max_l1_mshr_issued_per_core == {0: 1, 1: 1}
     assert env.monitor.max_l1_mshr_issued <= 2
+    assert env.monitor.max_directory_contexts == 2
+    assert env.monitor.max_mshr_occupancy == 2
+    assert env.axi.peak_reads == 2
 
     # Keep third requests stable through full-bank backpressure. They handshake
     # only after response retirement releases an L1 entry.
@@ -328,9 +333,14 @@ async def test_four_l1_misses_occupy_two_entries_per_core(full_system_env):
     })
     env.trace_operations.append({
         "kind": "resource_peaks",
-        "l1_mshr_occupied": env.monitor.max_l1_mshr_occupancy,
-        "l1_mshr_per_core": dict(env.monitor.max_l1_mshr_per_core),
-        "l1_controller_issued": env.monitor.max_l1_mshr_issued,
+        "l1_mshr_allocated_total": env.monitor.max_l1_mshr_occupancy,
+        "l1_mshr_allocated_per_core": dict(env.monitor.max_l1_mshr_per_core),
+        "l1_controller_owned_per_core": dict(
+            env.monitor.max_l1_mshr_active_per_core
+        ),
+        "l1_directory_issued_per_core": dict(
+            env.monitor.max_l1_mshr_issued_per_core
+        ),
         "directory_contexts": env.monitor.max_directory_contexts,
         "refill_mshrs": env.monitor.max_mshr_occupancy,
         "axi_read_outstanding": env.axi.peak_reads,
@@ -347,7 +357,11 @@ async def test_four_l1_misses_occupy_two_entries_per_core(full_system_env):
 
     assert env.monitor.max_l1_mshr_occupancy == 4
     assert env.monitor.max_l1_mshr_per_core == {0: 2, 1: 2}
+    assert env.monitor.max_l1_mshr_active_per_core == {0: 1, 1: 1}
+    assert env.monitor.max_l1_mshr_issued_per_core == {0: 1, 1: 1}
     assert env.monitor.max_l1_mshr_issued <= 2
+    assert env.monitor.max_directory_contexts == 2
+    assert env.monitor.max_mshr_occupancy == 2
     assert env.axi.peak_reads >= 2
 
 
