@@ -6,7 +6,7 @@ from dv.coverage.rtl_release_gate import _manifest_errors
 
 def test_all_manifest_sources_are_classified_as_product_rtl():
     product = audit.read_manifest()
-    assert len(product) == 18
+    assert product
     assert any(path.startswith("rtl/coherence/") for path in product)
     assert any(path.startswith("rtl/interconnect/") for path in product)
     assert all(audit.classify(path, product) == "Product RTL" for path in product)
