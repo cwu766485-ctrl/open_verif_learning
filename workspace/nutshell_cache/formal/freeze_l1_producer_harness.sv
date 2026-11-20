@@ -111,9 +111,9 @@ module FreezeL1ProducerFormal(
     end
     if(past_valid && init_reset_count>=2) begin
       // Asserted strengthening links independent model to implementation.
-      assert(dut.txn_counter_q==next_cpu_id);
-      assert(dut.cpu_txn_q==accepted_cpu_id);
-      assert(dut.cpu_addr_q==accepted_cpu_addr);
+      assert(dut.cpu_context.txn_counter_q==next_cpu_id);
+      assert(dut.cpu_context.cpu_txn_q==accepted_cpu_id);
+      assert(dut.cpu_context.cpu_addr_q==accepted_cpu_addr);
       assert(dut.snoop_engine.snoop_txn_q==accepted_snoop_id);
       assert(monitor_cpu_state<=6 && monitor_snoop_state<=5);
       if(dir_req_valid) begin
