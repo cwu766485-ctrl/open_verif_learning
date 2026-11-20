@@ -5,6 +5,7 @@ from toffee_test import case
 
 from dv.checkers.l1_mshr_collision_checker import L1MshrCollisionChecker
 from dv.checkers.l1_mshr_lifecycle_checker import L1MshrLifecycleChecker
+from dv.checkers.l1_mshr_reset_reuse_checker import L1MshrResetReuseChecker
 from dv.checkers.mshr_lifecycle_checker import MshrLifecycleChecker
 
 
@@ -273,6 +274,298 @@ async def test_owner_snoop_progresses_while_two_l1_misses_are_live(full_system_e
     env.coverage.sample_checked_event("FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR",
                                       checked=True)
     await ClockCycles(env.dut, 2)
+
+
+@case
+async def test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs(
+        full_system_env):
+    """A dirty replacement and remote owner Snoop overlap two peer misses."""
+    env = await full_system_env(
+        seed=0x13_0C04,
+        axi_options={"latency": 240, "r_valid_gap_period": 2,
+                     "read_reorder_window": 2},
+    )
+    env.trace_scenario_id = "V13_PUTM_OWNER_SNOOP_TWO_REQUESTER_MSHR"
+
+    dirty_victim_line = 0x00C0_0000
+    dirty_owner_line = dirty_victim_line + 0x2000
+    miss_a = dirty_victim_line + 0x100
+    replacement = dirty_victim_line + 4 * 0x2000
+    owner_words = [0xCAFE_C011_0000_0000 | beat for beat in range(8)]
+    replacement_words = [0xBEEF_0000_0000_0000 | beat for beat in range(8)]
+    miss_words = [0xA110_0000_0000_0000 | (0x10 + beat)
+                  for beat in range(8)]
+
+    for address, words in ((dirty_owner_line, owner_words),
+                           (dirty_victim_line, replacement_words),
+                           (replacement, replacement_words),
+                           (miss_a, miss_words)):
+        for beat, value in enumerate(words):
+            env.seed_word(address + beat * 8, value)
+
+    # L1 uses address[12:6] for its set and L2 uses address[14:6]. These
+    # lines alias in L1 while occupying distinct L2 sets, allowing the dirty
+    # victim PutM and owner-data Snoop to refer to different lines.
+    # Core1 makes the first line dirty, then keeps dirty_owner_line resident.
+    assert await env.cpu_access(1, dirty_victim_line, write=True,
+                                data=replacement_words[0]) == replacement_words[0]
+    assert await env.cpu_access(1, dirty_owner_line, write=True,
+                                data=owner_words[0]) == owner_words[0]
+    for index, address in enumerate((dirty_victim_line + 2 * 0x2000,
+                                     dirty_victim_line + 3 * 0x2000), start=1):
+        words = [0xC100_0000_0000_0000 | (index << 8) | beat
+                 for beat in range(8)]
+        for beat, value in enumerate(words):
+            env.seed_word(address + beat * 8, value)
+        assert await env.cpu_access(1, address) == words[0]
+
+    env.dut.cpu_resp_ready.value = 0
+    event_start = len(env.monitor.events)
+    env.trace_config.update({
+        "seed": 0x13_0C04,
+        "owner_core": 1,
+        "requester_core": 0,
+        "dirty_victim_line": dirty_victim_line,
+        "dirty_owner_line": dirty_owner_line,
+        "replacement_line": replacement,
+        "concurrent_miss_lines": [miss_a, dirty_owner_line],
+        "concurrent_miss_core": 0,
+        "memory_latency_cycles": 240,
+        "required_overlap": "owner PutM + matching Snoop + 8 data beats while requester L1 MSHRs=2",
+    })
+    env.trace_operations.extend([
+        {"kind": "legal_prelude", "operation": "establish_dirty_owner_and_fill_l1_set",
+         "core": 1, "dirty_victim_line": dirty_victim_line,
+         "dirty_owner_line": dirty_owner_line,
+         "other_lines": [dirty_victim_line + index * 0x2000
+                         for index in range(2, 4)]},
+        {"kind": "stimulus", "operation": "overlap_remote_gets_with_dirty_putm_replacement",
+         "requester_core": 0, "requester_misses": [miss_a, dirty_owner_line],
+         "owner_core": 1, "replacement_line": replacement},
+    ])
+
+    # Start one cold miss first, then present the remote owner-line miss and
+    # Core1's replacement together. Long memory latency keeps the first
+    # requester context live while the independent PutM/Snoop requests contend.
+    await _offer_one(env, 0, miss_a)
+    await _wait(env, lambda: any(
+        event.get("source") == "directory" and
+        event.get("event_type") == "request_accept" and
+        int(event.get("address", -1)) & LINE_MASK == miss_a & LINE_MASK
+        for event in env.monitor.events[event_start:]),
+        "first requester Directory handshake")
+    await _offer_pair(env, dirty_owner_line, replacement)
+
+    def putm_seen():
+        return any(event.get("source") == "directory" and
+                   event.get("event_type") == "request_accept" and
+                   int(event.get("opcode", -1)) == 0b101 and
+                   int(event.get("address", -1)) & LINE_MASK == dirty_victim_line
+                   for event in env.monitor.events[event_start:])
+
+    def snoop_seen():
+        return any(event.get("source") == "snoop" and
+                   event.get("event_type") == "accept" and
+                   int(event.get("core", -1)) == 1 and
+                   int(event.get("address", -1)) & LINE_MASK == dirty_owner_line
+                   for event in env.monitor.events[event_start:])
+
+    await _wait(env, lambda: env.monitor.max_l1_mshr_per_core.get(0, 0) == 2,
+                "two requester L1 MSHRs", timeout=2400)
+    await _wait(env, lambda: putm_seen() and snoop_seen(),
+                "replacement PutM and matching owner Snoop", timeout=2400)
+    await _wait(env, lambda: sum(
+        event.get("source") == "coherence" and
+        event.get("event_type") == "owner_data_beat" and
+        int(event.get("core", -1)) == 1 and
+        int(event.get("address", -1)) & LINE_MASK == dirty_owner_line
+        for event in env.monitor.events[event_start:]) == 8,
+        "eight owner-data beats", timeout=2400)
+    await _wait(env, lambda: any(
+        event.get("source") == "snoop" and
+        event.get("event_type") == "response" and
+        int(event.get("core", -1)) == 1
+        for event in env.monitor.events[event_start:]),
+        "owner Snoop response", timeout=2400)
+
+    events = env.monitor.events[event_start:]
+    assert int(env.dut.monitor_l1_mshr_valid.value) & 0b0011 == 0b0011
+    collision = L1MshrCollisionChecker.check(
+        events, dirty_line=dirty_owner_line, putm_line=dirty_victim_line,
+        owner_core=1, requester_core=0,
+        expected_owner_words=owner_words, expect_putm=True,
+        concurrent_miss_lines=(miss_a, dirty_owner_line),
+        concurrent_miss_core=0,
+    )
+
+    responses = await _collect_responses(env, 3)
+    await ClockCycles(env.dut, 2)
+    # Include the monitor edge that observes retirement after the final
+    # accepted response; the race checker above intentionally used the live
+    # event window before responses were released.
+    events = env.monitor.events[event_start:]
+    core0_order = [item["address"] for item in responses if item["core"] == 0]
+    assert core0_order == [miss_a, dirty_owner_line], core0_order
+    expected = {
+        (0, miss_a): env.axi.read_word(miss_a),
+        (0, dirty_owner_line): owner_words[0],
+        (1, replacement): env.axi.read_word(replacement),
+    }
+    observed = {(item["core"], item["address"]): item["data"]
+                for item in responses}
+    assert observed == expected
+
+    # The cold miss has a memory refill; the remote owner line is checked by
+    # the independent eight-beat checker above and the CPU response scoreboard.
+    l1_evidence = L1MshrLifecycleChecker.check(
+        events, expected_requests=[(0, miss_a, expected[(0, miss_a)])],
+        first_response_must_follow_all_allocs=False,
+    )
+    refill_evidence = MshrLifecycleChecker.check(
+        # Both cold misses allocate lower-level refill MSHRs: the requester
+        # miss and Core1's replacement line. The remote owner line is supplied
+        # by the checked Snoop stream and is deliberately not counted as an AXI
+        # refill.
+        events, expected_lines={miss_a & LINE_MASK, replacement & LINE_MASK},
+        expected_words={miss_a: expected[(0, miss_a)],
+                        replacement: expected[(1, replacement)]},
+        expected_cores={miss_a: 0, replacement: 1},
+    )
+    assert env.monitor.max_l1_mshr_per_core[0] == 2
+    assert env.monitor.max_directory_contexts >= 2
+    assert env.monitor.max_mshr_occupancy >= 1
+    assert int(env.dut.protocol_error.value) == 0
+    assert int(env.dut.fatal_error.value) == 0
+    assert not env.axi.errors, env.axi.errors
+
+    evidence = {"collision": collision, "l1_lifecycle": l1_evidence,
+                "refill_lifecycle": refill_evidence,
+                "l1_mshr_peak_requester": env.monitor.max_l1_mshr_per_core[0],
+                "directory_context_peak": env.monitor.max_directory_contexts,
+                "refill_mshr_peak": env.monitor.max_mshr_occupancy,
+                "axi_read_peak": env.axi.peak_reads}
+    env.trace_operations.append({"kind": "checker_evidence",
+                                 "checker": "PutMOwnerSnoopTwoMshrCheckers",
+                                 "result": evidence})
+    env.coverage.sample_checked_event(
+        "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR", checked=True
+    )
+
+
+@case
+async def test_two_l1_mshrs_reset_cancel_and_reuse_ids_with_response_backpressure(
+        full_system_env):
+    """Reset cancels two live misses; replay reuses IDs and retires in order."""
+    env = await full_system_env(
+        seed=0x13_0C05,
+        axi_options={"latency": 420, "r_valid_gap_period": 2,
+                     "read_reorder_window": 2},
+    )
+    env.trace_scenario_id = "V13_TWO_MSHR_RESET_ID_REUSE_BACKPRESSURE"
+    addresses = (0x00D0_0008, 0x00D0_0108)
+    values = (0xDADA_0000_0000_0001, 0xDADA_0000_0000_0002)
+    for address, value in zip(addresses, values):
+        for beat in range(8):
+            env.seed_word((address & LINE_MASK) + beat * 8,
+                          value ^ (beat << 48))
+
+    env.dut.cpu_resp_ready.value = 0
+    pre_epoch = env.monitor.reset_epoch
+    event_start = len(env.monitor.events)
+    env.trace_config.update({
+        "seed": 0x13_0C05,
+        "core": 0,
+        "addresses": list(addresses),
+        "axi_latency_cycles": 420,
+        "response_backpressure": True,
+        "expected_reset_cancel": {"l1_mshr_entries": 2, "axi_reads": 2},
+        "expected_after_reset": "same per-protocol IDs reused by same address; ordered responses",
+    })
+    env.trace_operations.append({
+        "kind": "stimulus", "operation": "two_misses_reset_then_replay_same_lines",
+        "core": 0, "addresses": list(addresses),
+    })
+
+    await _offer_one(env, 0, addresses[0])
+    await _wait(env, lambda: len(env.axi.read_addresses) >= 1,
+                "first AXI read address", timeout=800)
+    await _offer_one(env, 0, addresses[1])
+    await _wait(env, lambda: len(env.axi.read_addresses) >= 2 and
+                env.monitor.max_l1_mshr_per_core.get(0, 0) == 2,
+                "two live L1 misses and AXI reads", timeout=800)
+    assert env.axi.peak_reads >= 2, env.axi.peak_reads
+    assert int(env.dut.monitor_l1_mshr_valid.value) & 0b0011 == 0b0011
+    pre_events = env.monitor.events[event_start:]
+    assert not any(event.get("source") == "cpu" and
+                   event.get("event_type") == "response_complete"
+                   for event in pre_events)
+
+    await env.reset(cycles=3)
+    post_epoch = env.monitor.reset_epoch
+    assert post_epoch == pre_epoch + 1
+    await ClockCycles(env.dut, 8)
+    assert int(env.dut.monitor_l1_mshr_valid.value) == 0
+    assert int(env.dut.cpu_resp_valid.value) == 0
+    reset_event = next(event for event in reversed(env.monitor.events)
+                       if event.get("source") == "system" and
+                       event.get("event_type") == "reset_cancel" and
+                       event.get("reset_epoch") == pre_epoch)
+    assert reset_event["payload"]["l1_mshr_entries"] == 2
+    assert reset_event["payload"]["axi_reads"] == 2
+
+    replay_start = len(env.monitor.events)
+    axi_start = len(env.axi.read_addresses)
+    for address in addresses:
+        await _offer_one(env, 0, address)
+    await _wait(env, lambda: len(env.axi.read_addresses) >= axi_start + 2,
+                "both replay AXI reads", timeout=800)
+    await _wait(env, lambda: int(env.dut.cpu_resp_valid.value) & 1,
+                "response held under CPU backpressure", timeout=1200)
+    assert int(env.dut.cpu_resp_ready.value) & 1 == 0
+    assert int(env.dut.monitor_l1_mshr_valid.value) & 0b0011 == 0b0011
+
+    responses = await _collect_responses(env, 2)
+    await ClockCycles(env.dut, 2)
+    assert [item["address"] for item in responses] == list(addresses)
+    assert [item["data"] for item in responses] == [
+        env.axi.read_word(address) for address in addresses
+    ]
+    post_events = env.monitor.events[replay_start:]
+    # The direct driver callback and passive pin sampler can timestamp the
+    # same ready/valid edge on adjacent monitor ticks. Use the passive pin
+    # observation as the single handshake source for lifecycle accounting;
+    # the raw trace retains both records for audit.
+    lifecycle_events = [
+        event for event in post_events
+        if not (event.get("source") == "cpu" and
+                event.get("event_type") == "request_accept" and
+                event.get("payload", {}).get("observed_by") == "cpu_driver")
+    ]
+    lifecycle = L1MshrLifecycleChecker.check(
+        lifecycle_events,
+        expected_requests=[(0, address, env.axi.read_word(address))
+                           for address in addresses],
+        first_response_must_follow_all_allocs=True,
+    )
+    reuse = L1MshrResetReuseChecker.check(
+        env.monitor.events, core=0, addresses=addresses,
+        pre_reset_epoch=pre_epoch, post_reset_epoch=post_epoch,
+        expected_cancelled_mshrs=2, expected_cancelled_axi_reads=2,
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    assert int(env.dut.fatal_error.value) == 0
+    assert not env.axi.errors, env.axi.errors
+    env.trace_operations.extend([
+        {"kind": "checker_evidence", "checker": "L1MshrLifecycleChecker",
+         "result": lifecycle},
+        {"kind": "checker_evidence", "checker": "L1MshrResetReuseChecker",
+         "result": reuse},
+        {"kind": "resource_peaks",
+         "l1_mshr_per_core": dict(env.monitor.max_l1_mshr_per_core),
+         "directory_contexts": env.monitor.max_directory_contexts,
+         "refill_mshrs": env.monitor.max_mshr_occupancy,
+         "axi_read_outstanding": env.axi.peak_reads},
+    ])
 
 
 @case

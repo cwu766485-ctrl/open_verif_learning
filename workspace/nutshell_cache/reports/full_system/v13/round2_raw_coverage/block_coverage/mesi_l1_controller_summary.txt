@@ -1,0 +1,57 @@
+Coverage Summary:
+  line      :  97.9% ( 138/ 141)
+  toggle    :  38.7% (1721/4452)
+  branch    :  93.3% (  56/  60)
+  expr      :   0.0% (   0/   0)
+  fsm_state : 100.0% (  13/  13)
+  fsm_arc   :  45.5% (   5/  11)
+Hierarchy Coverage Summary:
+  MesiL1Controller_tb
+    line      :  97.9% ( 138/ 141)
+    toggle    :  38.7% (1721/4452)
+    branch    :  93.3% (  56/  60)
+    fsm_state : 100.0% (  13/  13)
+    fsm_arc   :  45.5% (   5/  11)
+  MesiL1Controller_tb.dut
+    line      :  92.3% (  36/  39)
+    toggle    :  39.2% (1257/3204)
+    branch    :  92.0% (  46/  50)
+    fsm_state : 100.0% (  13/  13)
+    fsm_arc   :  45.5% (   5/  11)
+  MesiL1Controller_tb.dut.cpu_context
+    line      :  95.5% ( 21/ 22)
+    toggle    :  45.0% (405/900)
+    branch    :  95.8% ( 23/ 24)
+    fsm_state : 100.0% (  7/  7)
+    fsm_arc   :  50.0% (  3/  6)
+  MesiL1Controller_tb.dut.req_snoop_arbiter
+    line      : 100.0% (  1/  1)
+    toggle    :  41.5% (113/272)
+  MesiL1Controller_tb.dut.snoop_engine
+    line      :  87.5% ( 14/ 16)
+    toggle    :  34.4% (243/706)
+    branch    :  88.5% ( 23/ 26)
+    fsm_state : 100.0% (  6/  6)
+    fsm_arc   :  40.0% (  2/  5)
+Design Unit Coverage Summary:
+  MesiL1Controller
+    toggle    :  37.4% ( 496/1326)
+  MesiL1Controller_tb
+    line      : 100.0% ( 102/ 102)
+    toggle    :  37.2% ( 464/1248)
+    branch    : 100.0% (  10/  10)
+  MesiL1MissContext__T4
+    line      :  95.5% ( 21/ 22)
+    toggle    :  45.0% (405/900)
+    branch    :  95.8% ( 23/ 24)
+    fsm_state : 100.0% (  7/  7)
+    fsm_arc   :  50.0% (  3/  6)
+  MesiL1SnoopArbiter
+    line      : 100.0% (  1/  1)
+    toggle    :  41.5% (113/272)
+  MesiL1SnoopEngine__T4
+    line      :  87.5% ( 14/ 16)
+    toggle    :  34.4% (243/706)
+    branch    :  88.5% ( 23/ 26)
+    fsm_state : 100.0% (  6/  6)
+    fsm_arc   :  40.0% (  2/  5)

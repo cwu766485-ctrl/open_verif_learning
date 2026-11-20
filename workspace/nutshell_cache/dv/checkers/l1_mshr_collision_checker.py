@@ -18,14 +18,18 @@ class L1MshrCollisionChecker:
     @staticmethod
     def check(events, *, dirty_line, owner_core, requester_core,
               expected_owner_words, expect_putm=False, max_event_skew=80,
-              concurrent_miss_lines=()):
+              concurrent_miss_lines=(), concurrent_miss_core=None,
+              putm_line=None):
         line = int(dirty_line) & LINE_MASK
+        victim_line = line if putm_line is None else int(putm_line) & LINE_MASK
+        miss_core = (int(owner_core) if concurrent_miss_core is None else
+                     int(concurrent_miss_core))
         putm = [event for event in events
                 if event.get("source") == "directory" and
                 event.get("event_type") == "request_accept" and
                 int(event.get("source_id", -1)) == int(owner_core) and
                 int(event.get("opcode", -1)) == 0b101 and
-                int(event.get("address", -1)) & LINE_MASK == line]
+                int(event.get("address", -1)) & LINE_MASK == victim_line]
         snoop_requests = [event for event in events
                           if event.get("source") == "snoop" and
                           event.get("event_type") == "accept" and
@@ -99,17 +103,17 @@ class L1MshrCollisionChecker:
                 allocations = [event for event in events
                                if event.get("source") == "l1_mshr" and
                                event.get("event_type") == "allocate" and
-                               int(event.get("core", -1)) == int(owner_core) and
+                               int(event.get("core", -1)) == miss_core and
                                int(event.get("address", -1)) & LINE_MASK == miss_line]
                 retirements = [event for event in events
                                if event.get("source") == "l1_mshr" and
                                event.get("event_type") == "retire" and
-                               int(event.get("core", -1)) == int(owner_core) and
+                               int(event.get("core", -1)) == miss_core and
                                int(event.get("address", -1)) & LINE_MASK == miss_line]
                 directory = [event for event in events
                              if event.get("source") == "directory" and
                              event.get("event_type") == "request_accept" and
-                             int(event.get("source_id", -1)) == int(owner_core) and
+                             int(event.get("source_id", -1)) == miss_core and
                              int(event.get("address", -1)) & LINE_MASK == miss_line]
                 if len(allocations) != 1 or len(directory) != 1:
                     raise AssertionError(
@@ -135,6 +139,7 @@ class L1MshrCollisionChecker:
         # the caller's lifecycle checker and response scoreboard.
         return {
             "dirty_line": line,
+            "putm_victim_line": victim_line if putm else None,
             "owner_core": int(owner_core),
             "requester_core": int(requester_core),
             "putm_cycle": int(putm[0]["cycle"]) if putm else None,
@@ -142,6 +147,7 @@ class L1MshrCollisionChecker:
             "snoop_txn_id": int(snoop["txn_id"]),
             "owner_data_beats": 8,
             "putm_snoop_cycle_skew": skew,
+            "concurrent_miss_core": miss_core,
             "concurrent_miss_lines": [int(value) & LINE_MASK
                                        for value in concurrent_miss_lines],
         }

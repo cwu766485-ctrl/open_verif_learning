@@ -1,0 +1,25 @@
+Coverage Summary:
+  line      :  99.2% ( 128/ 129)
+  toggle    :  46.9% ( 608/1296)
+  branch    :  83.9% (  47/  56)
+  expr      :   0.0% (   0/   0)
+  fsm_state :   0.0% (   0/   0)
+  fsm_arc   :   0.0% (   0/   0)
+Hierarchy Coverage Summary:
+  SharedLineEngine_tb
+    line      :  99.2% ( 128/ 129)
+    toggle    :  46.9% ( 608/1296)
+    branch    :  83.9% (  47/  56)
+  SharedLineEngine_tb.dut
+    line      :  97.8% ( 44/ 45)
+    toggle    :  46.9% (304/648)
+    branch    :  84.6% ( 44/ 52)
+Design Unit Coverage Summary:
+  SharedLineEngine__T4
+    line      :  97.8% ( 44/ 45)
+    toggle    :  46.9% (304/648)
+    branch    :  84.6% ( 44/ 52)
+  SharedLineEngine_tb
+    line      : 100.0% ( 84/ 84)
+    toggle    :  46.9% (304/648)
+    branch    :  75.0% (  3/  4)

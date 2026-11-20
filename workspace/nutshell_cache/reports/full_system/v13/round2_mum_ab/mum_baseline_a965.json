@@ -1,0 +1,53 @@
+{
+  "schema": "same_core_mum_ab_v1",
+  "source_sha": "a965f6a05397fb6aa56181f5ffaad897946301d4",
+  "seed": "0x13A1301",
+  "configuration": {
+    "core": 0,
+    "addresses": [
+      "0x00100008",
+      "0x00100088"
+    ],
+    "l1_sets": [
+      0,
+      2
+    ],
+    "axi_latency": 120,
+    "r_valid_gap_period": 2,
+    "read_reorder_window": 3,
+    "response_ready": 1
+  },
+  "accepted": [
+    {
+      "address": 1048584,
+      "cycle": 0
+    },
+    {
+      "address": 1048712,
+      "cycle": 171
+    }
+  ],
+  "directory_handshake_cycles": {
+    "0x00100008": 3,
+    "0x00100088": 174
+  },
+  "responses": [
+    {
+      "address": 1048584,
+      "data": 11614783438989557768,
+      "txn_id": 0,
+      "cycle": 170
+    },
+    {
+      "address": 1048712,
+      "data": 11614783443284525192,
+      "txn_id": 1,
+      "cycle": 338
+    }
+  ],
+  "second_directory_before_first_response": false,
+  "total_elapsed_cycles": 338,
+  "operations": 2,
+  "operations_per_cycle": 0.005917159763313609,
+  "axi_read_address_count": 2
+}

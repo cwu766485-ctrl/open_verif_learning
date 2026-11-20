@@ -1,0 +1,252 @@
+Coverage Summary:
+  line      :  79.9% (  318/  398)
+  toggle    :  47.1% (19470/41312)
+  branch    :  79.0% (  667/  844)
+  expr      :   0.0% (    0/    0)
+  fsm_state :  52.5% (   42/   80)
+  fsm_arc   :   8.6% (    6/   70)
+Note: hierarchy report contains collapsed hierarchy paths; it is not precise per-instance coverage.
+Hierarchy Coverage Summary:
+  CoherentCacheAxiSubsystem_tb
+    line      :  79.9% (  318/  398)
+    toggle    :  47.1% (19470/41312)
+    branch    :  79.0% (  667/  844)
+    fsm_state :  52.5% (   42/   80)
+    fsm_arc   :   8.6% (    6/   70)
+  CoherentCacheAxiSubsystem_tb.dut
+    line      :  77.1% (  256/  332)
+    toggle    :  47.5% (18350/38604)
+    branch    :  77.4% (  588/  760)
+    fsm_state :  52.5% (   42/   80)
+    fsm_arc   :   8.6% (    6/   70)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core
+    line      :  76.5% (  231/  302)
+    toggle    :  48.0% (16189/33746)
+    branch    :  76.6% (  524/  684)
+    fsm_state :  52.5% (   42/   80)
+    fsm_arc   :   8.6% (    6/   70)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller
+    line      :  67.2% (  43/  64)
+    toggle    :  27.5% ( 798/2904)
+    branch    :  75.8% (  97/ 128)
+    fsm_state :  45.0% (  18/  40)
+    fsm_arc   :   5.6% (   2/  36)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[*]
+    line      :  61.4% ( 27/ 44)
+    toggle    :  46.1% (282/612)
+    branch    :  64.3% ( 27/ 42)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[*].context_i
+    line      :  61.4% ( 27/ 44)
+    toggle    :  46.1% (282/612)
+    branch    :  64.3% ( 27/ 42)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[0]
+    fsm_state :  90.0% ( 9/10)
+    fsm_arc   :  11.1% ( 1/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[0].context_i
+    fsm_state :  90.0% ( 9/10)
+    fsm_arc   :  11.1% ( 1/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[1]
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  11.1% ( 1/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[1].context_i
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  11.1% ( 1/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[2]
+    fsm_state :  10.0% ( 1/10)
+    fsm_arc   :   0.0% ( 0/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[2].context_i
+    fsm_state :  10.0% ( 1/10)
+    fsm_arc   :   0.0% ( 0/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[3]
+    fsm_state :  10.0% ( 1/10)
+    fsm_arc   :   0.0% ( 0/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.directory_controller.contexts[3].context_i
+    fsm_state :  10.0% ( 1/10)
+    fsm_arc   :   0.0% ( 0/ 9)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster
+    line      :  72.2% (   83/  115)
+    toggle    :  49.5% ( 8549/17288)
+    branch    :  71.7% (  231/  322)
+    fsm_state :  60.0% (   24/   40)
+    fsm_arc   :  11.8% (    4/   34)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*]
+    line      :  60.8% (  45/  74)
+    toggle    :  47.3% (2912/6158)
+    branch    :  65.4% (  89/ 136)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].l1_array
+    line      : 100.0% (  13/  13)
+    toggle    :  39.3% ( 807/2054)
+    branch    :  83.9% (  52/  62)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].l1_controller
+    line      :  74.4% (  29/  39)
+    toggle    :  56.6% (1814/3204)
+    branch    :  68.0% (  34/  50)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].l1_controller.cpu_context
+    line      :  77.3% ( 17/ 22)
+    toggle    :  56.2% (506/900)
+    branch    :  83.3% ( 20/ 24)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].l1_controller.req_snoop_arbiter
+    line      : 100.0% (  1/  1)
+    toggle    :  23.2% ( 63/272)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].l1_controller.snoop_engine
+    line      :  68.8% ( 11/ 16)
+    toggle    :  60.1% (424/706)
+    branch    :  53.8% ( 14/ 26)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[*].secondary_miss_context
+    line      :  13.6% (  3/ 22)
+    toggle    :  32.3% (291/900)
+    branch    :  12.5% (  3/ 24)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[0]
+    fsm_state :  60.0% (12/20)
+    fsm_arc   :  11.8% ( 2/17)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[0].l1_controller
+    fsm_state :  84.6% (11/13)
+    fsm_arc   :  18.2% ( 2/11)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[0].l1_controller.cpu_context
+    fsm_state :  85.7% (6/7)
+    fsm_arc   :  16.7% (1/6)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[0].l1_controller.snoop_engine
+    fsm_state :  83.3% (5/6)
+    fsm_arc   :  20.0% (1/5)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[0].secondary_miss_context
+    fsm_state :  14.3% (1/7)
+    fsm_arc   :   0.0% (0/6)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[1]
+    fsm_state :  60.0% (12/20)
+    fsm_arc   :  11.8% ( 2/17)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[1].l1_controller
+    fsm_state :  84.6% (11/13)
+    fsm_arc   :  18.2% ( 2/11)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[1].l1_controller.cpu_context
+    fsm_state :  85.7% (6/7)
+    fsm_arc   :  16.7% (1/6)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[1].l1_controller.snoop_engine
+    fsm_state :  83.3% (5/6)
+    fsm_arc   :  20.0% (1/5)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.cores[1].secondary_miss_context
+    fsm_state :  14.3% (1/7)
+    fsm_arc   :   0.0% (0/6)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.request_arbiter
+    line      : 100.0% ( 10/ 10)
+    toggle    :  38.4% (259/674)
+    branch    : 100.0% (  4/  4)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l1_cluster.request_arbiter.core
+    line      : 100.0% (  9/  9)
+    toggle    :  40.0% (104/260)
+    branch    : 100.0% (  4/  4)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l2_array
+    line      :  88.2% (  15/  17)
+    toggle    :  44.6% ( 591/1324)
+    branch    :  90.5% (  67/  74)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.l2_line_write_arbiter
+    line      : 100.0% (   8/   8)
+    toggle    :  72.6% ( 998/1374)
+    branch    : 100.0% (   4/   4)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.memory_refill_mshr_bank
+    line      : 100.0% (  9/  9)
+    toggle    :  35.6% (263/738)
+    branch    :  94.1% ( 32/ 34)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.mmio_router
+    line      :  62.5% (   5/   8)
+    toggle    :  46.3% ( 867/1872)
+    branch    :  45.0% (   9/  20)
+  CoherentCacheAxiSubsystem_tb.dut.cache_core.shared_line_engine
+    line      :  71.1% ( 32/ 45)
+    toggle    :  47.7% (309/648)
+    branch    :  65.4% ( 34/ 52)
+  CoherentCacheAxiSubsystem_tb.dut.memory_adapter
+    line      :  94.1% (  16/  17)
+    toggle    :  41.9% ( 793/1892)
+    branch    :  83.8% (  57/  68)
+  CoherentCacheAxiSubsystem_tb.dut.performance_csr
+    line      :  66.7% (  8/ 12)
+    toggle    :  21.3% (119/558)
+    branch    :  87.5% (  7/  8)
+Design Unit Coverage Summary:
+  CachePerformanceCsr
+    line      :  66.7% (  8/ 12)
+    toggle    :  21.3% (119/558)
+    branch    :  87.5% (  7/  8)
+  CoherenceRequestArbiterCore
+    line      : 100.0% (  9/  9)
+    toggle    :  40.0% (104/260)
+    branch    : 100.0% (  4/  4)
+  CoherenceRequestArbiter__T4
+    line      : 100.0% (  1/  1)
+    toggle    :  37.4% (155/414)
+  CoherentCacheAxiSubsystem
+    line      : 100.0% (   1/   1)
+    toggle    :  51.9% (1249/2408)
+  CoherentCacheAxiSubsystem_tb
+    line      :  93.9% (  62/  66)
+    toggle    :  41.4% (1120/2708)
+    branch    :  94.0% (  79/  84)
+  CoherentCacheSubsystem__T4
+    line      : 100.0% (  36/  36)
+    toggle    :  50.2% (3814/7598)
+    branch    : 100.0% (  50/  50)
+  CpuMmioRouter__T4
+    line      :  62.5% (   5/   8)
+    toggle    :  46.3% ( 867/1872)
+    branch    :  45.0% (   9/  20)
+  DirectoryController__T4
+    line      :  61.4% ( 27/ 44)
+    toggle    :  46.1% (282/612)
+    branch    :  64.3% ( 27/ 42)
+    fsm_state :  45.0% ( 18/ 40)
+    fsm_arc   :   5.6% (  2/ 36)
+  DirectoryMshrBank__T4
+    line      :  80.0% (  16/  20)
+    toggle    :  22.5% ( 516/2292)
+    branch    :  81.4% (  70/  86)
+  DualL1MesiCluster__T4
+    line      :  90.3% (   28/   31)
+    toggle    :  51.4% ( 5378/10456)
+    branch    :  75.8% (  138/  182)
+  L2LineWriteArbiter
+    line      : 100.0% (   8/   8)
+    toggle    :  72.6% ( 998/1374)
+    branch    : 100.0% (   4/   4)
+  LineMemoryAxi4Adapter__I4
+    line      :  94.1% (  16/  17)
+    toggle    :  41.9% ( 793/1892)
+    branch    :  83.8% (  57/  68)
+  MemoryRefillMshrBank__T4_M2
+    line      : 100.0% (  9/  9)
+    toggle    :  35.6% (263/738)
+    branch    :  94.1% ( 32/ 34)
+  MesiL1Array
+    line      : 100.0% (  13/  13)
+    toggle    :  39.3% ( 807/2054)
+    branch    :  83.9% (  52/  62)
+  MesiL1Controller__T4
+    toggle    :  61.9% ( 821/1326)
+  MesiL1MissContext__T4
+    line      :  77.3% ( 17/ 22)
+    toggle    :  56.2% (506/900)
+    branch    :  83.3% ( 20/ 24)
+    fsm_state :  85.7% ( 12/ 14)
+    fsm_arc   :  16.7% (  2/ 12)
+  MesiL1MissContext__pibd9623c2
+    line      :  13.6% (  3/ 22)
+    toggle    :  32.3% (291/900)
+    branch    :  12.5% (  3/ 24)
+    fsm_state :  14.3% (  2/ 14)
+    fsm_arc   :   0.0% (  0/ 12)
+  MesiL1SnoopArbiter
+    line      : 100.0% (  1/  1)
+    toggle    :  23.2% ( 63/272)
+  MesiL1SnoopEngine__T4
+    line      :  68.8% ( 11/ 16)
+    toggle    :  60.1% (424/706)
+    branch    :  53.8% ( 14/ 26)
+    fsm_state :  83.3% ( 10/ 12)
+    fsm_arc   :  20.0% (  2/ 10)
+  SharedL2DirectoryArray
+    line      :  88.2% (  15/  17)
+    toggle    :  44.6% ( 591/1324)
+    branch    :  90.5% (  67/  74)
+  SharedLineEngine__T4_M2
+    line      :  71.1% ( 32/ 45)
+    toggle    :  47.7% (309/648)
+    branch    :  65.4% ( 34/ 52)

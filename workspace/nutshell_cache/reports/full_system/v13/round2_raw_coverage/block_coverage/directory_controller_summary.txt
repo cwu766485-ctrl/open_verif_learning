@@ -1,0 +1,30 @@
+Coverage Summary:
+  line      :  99.3% ( 134/ 135)
+  toggle    :  41.6% ( 453/1090)
+  branch    :  88.1% (  37/  42)
+  expr      :   0.0% (   0/   0)
+  fsm_state : 100.0% (  10/  10)
+  fsm_arc   :  33.3% (   3/   9)
+Hierarchy Coverage Summary:
+  DirectoryController_tb
+    line      :  99.3% ( 134/ 135)
+    toggle    :  41.6% ( 453/1090)
+    branch    :  88.1% (  37/  42)
+    fsm_state : 100.0% (  10/  10)
+    fsm_arc   :  33.3% (   3/   9)
+  DirectoryController_tb.dut
+    line      :  97.7% ( 43/ 44)
+    toggle    :  42.5% (260/612)
+    branch    :  88.1% ( 37/ 42)
+    fsm_state : 100.0% ( 10/ 10)
+    fsm_arc   :  33.3% (  3/  9)
+Design Unit Coverage Summary:
+  DirectoryController
+    line      :  97.7% ( 43/ 44)
+    toggle    :  42.5% (260/612)
+    branch    :  88.1% ( 37/ 42)
+    fsm_state : 100.0% ( 10/ 10)
+    fsm_arc   :  33.3% (  3/  9)
+  DirectoryController_tb
+    line      : 100.0% ( 91/ 91)
+    toggle    :  40.4% (193/478)

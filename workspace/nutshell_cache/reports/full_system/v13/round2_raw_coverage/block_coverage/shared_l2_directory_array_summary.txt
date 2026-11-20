@@ -1,0 +1,24 @@
+Coverage Summary:
+  line      :  93.0% (  40/  43)
+  toggle    :  11.8% ( 311/2636)
+  branch    :  87.8% (  65/  74)
+  expr      :   0.0% (   0/   0)
+  fsm_state :   0.0% (   0/   0)
+  fsm_arc   :   0.0% (   0/   0)
+Hierarchy Coverage Summary:
+  SharedL2DirectoryArray_tb
+    line      :  93.0% (  40/  43)
+    toggle    :  11.8% ( 311/2636)
+    branch    :  87.8% (  65/  74)
+  SharedL2DirectoryArray_tb.dut
+    line      :  82.4% (  14/  17)
+    toggle    :  11.1% ( 197/1778)
+    branch    :  87.8% (  65/  74)
+Design Unit Coverage Summary:
+  SharedL2DirectoryArray__pib33848a2
+    line      :  82.4% (  14/  17)
+    toggle    :  11.1% ( 197/1778)
+    branch    :  87.8% (  65/  74)
+  SharedL2DirectoryArray_tb
+    line      : 100.0% ( 26/ 26)
+    toggle    :  13.3% (114/858)

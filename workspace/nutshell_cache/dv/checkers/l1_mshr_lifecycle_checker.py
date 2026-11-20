@@ -113,7 +113,12 @@ class L1MshrLifecycleChecker:
                     f"core{key[0]} response data mismatch for {key[1]:#x}: "
                     f"got {response['data']:#x}, expected {expected[key]:#x}"
                 )
-            if (int(alloc["cycle"]) > int(accepts[key][0]["cycle"]) + 2 or
+            # The monitor timestamps the accepted CPU ready/valid edge, while
+            # the registered cluster decode/allocate event can be observed up
+            # to three monitor cycles later (the monitor samples on the
+            # following clock phase). Keep this bounded so a stale or
+            # unrelated MSHR allocation still fails correlation.
+            if (int(alloc["cycle"]) > int(accepts[key][0]["cycle"]) + 3 or
                     int(retire["cycle"]) < int(response["cycle"]) - 1):
                 raise AssertionError(f"L1 MSHR lifecycle is not tied to CPU request {key}")
 

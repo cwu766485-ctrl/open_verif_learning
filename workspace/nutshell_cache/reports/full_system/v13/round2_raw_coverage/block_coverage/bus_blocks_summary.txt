@@ -1,0 +1,32 @@
+Coverage Summary:
+  line      :  97.8% (  88/  90)
+  toggle    :  39.9% (1450/3638)
+  branch    :  92.1% (  70/  76)
+  expr      :   0.0% (   0/   0)
+  fsm_state :   0.0% (   0/   0)
+  fsm_arc   :   0.0% (   0/   0)
+Hierarchy Coverage Summary:
+  CacheBusBlocks_tb
+    line      :  97.8% (  88/  90)
+    toggle    :  39.9% (1450/3638)
+    branch    :  92.1% (  70/  76)
+  CacheBusBlocks_tb.adapter
+    line      : 100.0% (  17/  17)
+    toggle    :  35.3% ( 667/1892)
+    branch    :  91.2% (  62/  68)
+  CacheBusBlocks_tb.csr
+    line      :  91.7% ( 11/ 12)
+    toggle    :  77.6% (433/558)
+    branch    : 100.0% (  8/  8)
+Design Unit Coverage Summary:
+  CacheBusBlocks_tb
+    line      :  98.4% (  60/  61)
+    toggle    :  29.5% ( 350/1188)
+  CachePerformanceCsr
+    line      :  91.7% ( 11/ 12)
+    toggle    :  77.6% (433/558)
+    branch    : 100.0% (  8/  8)
+  LineMemoryAxi4Adapter__I4
+    line      : 100.0% (  17/  17)
+    toggle    :  35.3% ( 667/1892)
+    branch    :  91.2% (  62/  68)

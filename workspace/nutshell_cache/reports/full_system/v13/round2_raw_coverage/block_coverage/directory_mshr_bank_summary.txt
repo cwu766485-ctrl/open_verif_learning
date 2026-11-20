@@ -1,0 +1,68 @@
+Coverage Summary:
+  line      :  75.7% ( 112/ 148)
+  toggle    :  43.0% (1593/3704)
+  branch    :  73.3% ( 107/ 146)
+  expr      :   0.0% (   0/   0)
+  fsm_state :  77.5% (  31/  40)
+  fsm_arc   :  30.6% (  11/  36)
+Note: hierarchy report contains collapsed hierarchy paths; it is not precise per-instance coverage.
+Hierarchy Coverage Summary:
+  DirectoryMshrBank_tb
+    line      :  75.7% ( 112/ 148)
+    toggle    :  43.0% (1593/3704)
+    branch    :  73.3% ( 107/ 146)
+    fsm_state :  77.5% (  31/  40)
+    fsm_arc   :  30.6% (  11/  36)
+  DirectoryMshrBank_tb.dut
+    line      :  54.7% (  35/  64)
+    toggle    :  43.0% (1249/2904)
+    branch    :  78.1% ( 100/ 128)
+    fsm_state :  77.5% (  31/  40)
+    fsm_arc   :  30.6% (  11/  36)
+  DirectoryMshrBank_tb.dut.contexts[*]
+    line      :  34.1% ( 15/ 44)
+    toggle    :  51.0% (312/612)
+    branch    :  45.2% ( 19/ 42)
+  DirectoryMshrBank_tb.dut.contexts[*].context_i
+    line      :  34.1% ( 15/ 44)
+    toggle    :  51.0% (312/612)
+    branch    :  45.2% ( 19/ 42)
+  DirectoryMshrBank_tb.dut.contexts[0]
+    fsm_state :  90.0% ( 9/10)
+    fsm_arc   :  44.4% ( 4/ 9)
+  DirectoryMshrBank_tb.dut.contexts[0].context_i
+    fsm_state :  90.0% ( 9/10)
+    fsm_arc   :  44.4% ( 4/ 9)
+  DirectoryMshrBank_tb.dut.contexts[1]
+    fsm_state :  80.0% ( 8/10)
+    fsm_arc   :  33.3% ( 3/ 9)
+  DirectoryMshrBank_tb.dut.contexts[1].context_i
+    fsm_state :  80.0% ( 8/10)
+    fsm_arc   :  33.3% ( 3/ 9)
+  DirectoryMshrBank_tb.dut.contexts[2]
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  22.2% ( 2/ 9)
+  DirectoryMshrBank_tb.dut.contexts[2].context_i
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  22.2% ( 2/ 9)
+  DirectoryMshrBank_tb.dut.contexts[3]
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  22.2% ( 2/ 9)
+  DirectoryMshrBank_tb.dut.contexts[3].context_i
+    fsm_state :  70.0% ( 7/10)
+    fsm_arc   :  22.2% ( 2/ 9)
+Design Unit Coverage Summary:
+  DirectoryController__T4
+    line      :  34.1% ( 15/ 44)
+    toggle    :  51.0% (312/612)
+    branch    :  45.2% ( 19/ 42)
+    fsm_state :  77.5% ( 31/ 40)
+    fsm_arc   :  30.6% ( 11/ 36)
+  DirectoryMshrBank__T4_M2
+    line      : 100.0% (  20/  20)
+    toggle    :  40.9% ( 937/2292)
+    branch    :  94.2% (  81/  86)
+  DirectoryMshrBank_tb
+    line      :  91.7% ( 77/ 84)
+    toggle    :  43.0% (344/800)
+    branch    :  38.9% (  7/ 18)

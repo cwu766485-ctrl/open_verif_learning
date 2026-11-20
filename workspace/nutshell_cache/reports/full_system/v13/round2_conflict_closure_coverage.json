@@ -1,0 +1,4618 @@
+{
+  "schema_version": 1,
+  "dut": "CoherentCacheAxiSubsystem",
+  "pytest_exit_status": 0,
+  "test_environment_count": 16,
+  "runs": [
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_same_core_two_distinct_misses_reach_directory_before_first_response",
+      "scenario_id": "V13_SAME_CORE_TWO_DIRECTORY_HANDSHAKES",
+      "seed": 1245697,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 160,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "same_core_addresses": [
+          5570568,
+          5570696
+        ],
+        "l1_set_indices": [
+          0,
+          2
+        ],
+        "memory_latency_cycles": 160,
+        "cpu_response_ready_during_directory_handshakes": 0
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "seed_two_distinct_lines",
+          "addresses": [
+            5570568,
+            5570696
+          ]
+        },
+        {
+          "kind": "stimulus",
+          "operation": "same_core_two_cold_reads",
+          "core": 0,
+          "addresses": [
+            5570568,
+            5570696
+          ]
+        },
+        {
+          "kind": "directory_handshake_evidence",
+          "requests": [
+            {
+              "cycle": 3,
+              "source_id": 0,
+              "txn_id": 0,
+              "address": 5570560,
+              "opcode": 0
+            },
+            {
+              "cycle": 7,
+              "source_id": 0,
+              "txn_id": 1,
+              "address": 5570688,
+              "opcode": 0
+            }
+          ],
+          "first_response_valid_before_second_handshake": false,
+          "l1_mshr_peak_per_core": {
+            "0": 2,
+            "1": 0
+          },
+          "l1_mshr_issued_peak_per_core": {
+            "0": 2,
+            "1": 0
+          },
+          "directory_context_peak": 2
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core0:0x00550008": 2,
+              "core0:0x00550088": 6
+            },
+            "response_cycles": {
+              "core0:0x00550008": 221,
+              "core0:0x00550088": 230
+            },
+            "directory_txn_ids": {
+              "core0:0x00550008": 0,
+              "core0:0x00550088": 1
+            },
+            "axi_ids": {
+              "core0:0x00550008": 0,
+              "core0:0x00550088": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              5570560,
+              5570688
+            ],
+            "mshr_allocations": 2,
+            "mshr_retirements": 2,
+            "axi_read_beats": 16,
+            "l2_refill_beats": 16
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_issued": 2,
+          "directory_contexts": 2,
+          "refill_mshrs": 2,
+          "axi_read_outstanding": 2
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00550000": "0xd102000000550000",
+        "0x00550008": "0xd102000000550008",
+        "0x00550010": "0xd102000000550010",
+        "0x00550018": "0xd102000000550018",
+        "0x00550020": "0xd102000000550020",
+        "0x00550028": "0xd102000000550028",
+        "0x00550030": "0xd102000000550030",
+        "0x00550038": "0xd102000000550038",
+        "0x00550080": "0xd102000100550080",
+        "0x00550088": "0xd102000100550088",
+        "0x00550090": "0xd102000100550090",
+        "0x00550098": "0xd102000100550098",
+        "0x005500a0": "0xd1020001005500a0",
+        "0x005500a8": "0xd1020001005500a8",
+        "0x005500b0": "0xd1020001005500b0",
+        "0x005500b8": "0xd1020001005500b8"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "l1_mshr.txn_assign": 1,
+          "axi.read_valid_gap": 181,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 2,
+          "directory_context.retire": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 22,
+          "1": 13,
+          "2": 200
+        },
+        "directory_context_histogram": {
+          "0": 8,
+          "1": 13,
+          "2": 214
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "1": 13,
+          "2": 217
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "1": 13,
+          "2": 217
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 7,
+          "1": 13,
+          "2": 215
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 13,
+            "2": 217
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 13,
+            "2": 217
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 7,
+            "1": 13,
+            "2": 215
+          },
+          "1": {
+            "0": 235
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_four_l1_misses_occupy_two_entries_per_core",
+      "scenario_id": "V13_L1_MSHR_FOUR_CPU_MISSES",
+      "seed": 1246212,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 140,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 3
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "l1_mshr_total_entries": 4,
+        "memory_latency_cycles": 140,
+        "addresses_by_core": {
+          "0": [
+            4259848,
+            4259976
+          ],
+          "1": [
+            4260104,
+            4260232
+          ]
+        },
+        "axi_reorder": "reverse_first_two_read_ids",
+        "response_ready_during_allocation": 0
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "seed_four_distinct_lines",
+          "addresses_by_core": {
+            "0": [
+              4259848,
+              4259976
+            ],
+            "1": [
+              4260104,
+              4260232
+            ]
+          }
+        },
+        {
+          "kind": "stimulus",
+          "operation": "two_wave_paired_cold_reads",
+          "waves": [
+            [
+              4259848,
+              4260104
+            ],
+            [
+              4259976,
+              4260232
+            ]
+          ]
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 6,
+            "allocation_cycles": {
+              "core0:0x00410008": 2,
+              "core0:0x00410088": 11,
+              "core1:0x00410108": 2,
+              "core1:0x00410188": 11,
+              "core0:0x00412008": 237,
+              "core1:0x00412088": 246
+            },
+            "response_cycles": {
+              "core0:0x00410008": 225,
+              "core0:0x00410088": 234,
+              "core1:0x00410108": 213,
+              "core1:0x00410188": 243,
+              "core0:0x00412008": 439,
+              "core1:0x00412088": 448
+            },
+            "directory_txn_ids": {
+              "core0:0x00410008": 0,
+              "core0:0x00410088": 1,
+              "core1:0x00410108": 0,
+              "core1:0x00410188": 1,
+              "core0:0x00412008": 1,
+              "core1:0x00412088": 1
+            },
+            "axi_ids": {
+              "core0:0x00410008": 0,
+              "core0:0x00410088": 2,
+              "core1:0x00410108": 1,
+              "core1:0x00410188": 3,
+              "core0:0x00412008": 0,
+              "core1:0x00412088": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              4259840,
+              4259968,
+              4260096,
+              4260224,
+              4268032,
+              4268160
+            ],
+            "mshr_allocations": 6,
+            "mshr_retirements": 6,
+            "axi_read_beats": 48,
+            "l2_refill_beats": 48
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_allocated_total": 4,
+          "l1_mshr_allocated_per_core": {
+            "0": 2,
+            "1": 2
+          },
+          "l1_controller_owned_per_core": {
+            "0": 2,
+            "1": 2
+          },
+          "l1_directory_issued_per_core": {
+            "0": 2,
+            "1": 2
+          },
+          "directory_contexts": 4,
+          "refill_mshrs": 4,
+          "axi_read_outstanding": 4
+        },
+        {
+          "kind": "replay",
+          "seed": 1246212,
+          "configuration": {
+            "agents": {
+              "axi": {
+                "latency": 140,
+                "r_valid_gap_period": 2,
+                "read_reorder_window": 3
+              },
+              "mmio": {}
+            },
+            "l1_mshr_entries_per_core": 2,
+            "l1_mshr_total_entries": 4,
+            "memory_latency_cycles": 140,
+            "addresses_by_core": {
+              "0": [
+                4259848,
+                4259976
+              ],
+              "1": [
+                4260104,
+                4260232
+              ]
+            },
+            "axi_reorder": "reverse_first_two_read_ids",
+            "response_ready_during_allocation": 0
+          },
+          "operations": [
+            {
+              "core": 0,
+              "address": 4259848,
+              "write": false
+            },
+            {
+              "core": 0,
+              "address": 4259976,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4260104,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4260232,
+              "write": false
+            },
+            {
+              "core": 0,
+              "address": 4268040,
+              "write": false
+            },
+            {
+              "core": 1,
+              "address": 4268168,
+              "write": false
+            }
+          ]
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00410000": "0xd000000000410000",
+        "0x00410008": "0xd000000000410008",
+        "0x00410010": "0xd000000000410010",
+        "0x00410018": "0xd000000000410018",
+        "0x00410020": "0xd000000000410020",
+        "0x00410028": "0xd000000000410028",
+        "0x00410030": "0xd000000000410030",
+        "0x00410038": "0xd000000000410038",
+        "0x00410080": "0xd000010000410080",
+        "0x00410088": "0xd000010000410088",
+        "0x00410090": "0xd000010000410090",
+        "0x00410098": "0xd000010000410098",
+        "0x004100a0": "0xd0000100004100a0",
+        "0x004100a8": "0xd0000100004100a8",
+        "0x004100b0": "0xd0000100004100b0",
+        "0x004100b8": "0xd0000100004100b8",
+        "0x00410100": "0xd001000000410100",
+        "0x00410108": "0xd001000000410108",
+        "0x00410110": "0xd001000000410110",
+        "0x00410118": "0xd001000000410118",
+        "0x00410120": "0xd001000000410120",
+        "0x00410128": "0xd001000000410128",
+        "0x00410130": "0xd001000000410130",
+        "0x00410138": "0xd001000000410138",
+        "0x00410180": "0xd001010000410180",
+        "0x00410188": "0xd001010000410188",
+        "0x00410190": "0xd001010000410190",
+        "0x00410198": "0xd001010000410198",
+        "0x004101a0": "0xd0010100004101a0",
+        "0x004101a8": "0xd0010100004101a8",
+        "0x004101b0": "0xd0010100004101b0",
+        "0x004101b8": "0xd0010100004101b8",
+        "0x00412000": "0xe000000000412000",
+        "0x00412008": "0xe000000000412008",
+        "0x00412010": "0xe000000000412010",
+        "0x00412018": "0xe000000000412018",
+        "0x00412020": "0xe000000000412020",
+        "0x00412028": "0xe000000000412028",
+        "0x00412030": "0xe000000000412030",
+        "0x00412038": "0xe000000000412038",
+        "0x00412080": "0xe001000000412080",
+        "0x00412088": "0xe001000000412088",
+        "0x00412090": "0xe001000000412090",
+        "0x00412098": "0xe001000000412098",
+        "0x004120a0": "0xe0010000004120a0",
+        "0x004120a8": "0xe0010000004120a8",
+        "0x004120b0": "0xe0010000004120b0",
+        "0x004120b8": "0xe0010000004120b8"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 6,
+          "l1_mshr.allocate": 6,
+          "directory.request_accept": 6,
+          "directory.request_stall": 2,
+          "l2.lookup": 6,
+          "directory_context.allocate": 6,
+          "l1_mshr.dispatch": 6,
+          "axi.read_address": 6,
+          "mshr.allocate": 6,
+          "axi.read_valid_gap": 336,
+          "l1_mshr.txn_assign": 4,
+          "axi.read_beat": 48,
+          "l2.refill_start": 6,
+          "l2.line_write_beat": 48,
+          "l2.refill_end": 6,
+          "directory.metadata_commit": 6,
+          "mshr.retire": 6,
+          "directory.grant_accept": 6,
+          "l1.metadata_commit": 6,
+          "cpu.response_complete": 6,
+          "directory_context.retire": 6,
+          "l1_mshr.retire": 6,
+          "l1_mshr.deactivate": 6,
+          "directory.transfer_stall": 3,
+          "axi.stall": 1
+        },
+        "stall_cycles": {
+          "directory_request": 2,
+          "directory_transfer": 3,
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 34,
+          "1": 26,
+          "2": 194,
+          "3": 14,
+          "4": 185
+        },
+        "directory_context_histogram": {
+          "0": 8,
+          "1": 19,
+          "2": 213,
+          "3": 14,
+          "4": 199
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "2": 221,
+          "4": 204,
+          "3": 12,
+          "1": 11
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "2": 221,
+          "4": 204,
+          "3": 12,
+          "1": 11
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 7,
+          "1": 17,
+          "2": 215,
+          "3": 14,
+          "4": 200
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 15,
+            "1": 222,
+            "2": 216
+          },
+          "1": {
+            "0": 6,
+            "1": 243,
+            "2": 204
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 15,
+            "1": 222,
+            "2": 216
+          },
+          "1": {
+            "0": 6,
+            "1": 243,
+            "2": 204
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 19,
+            "1": 220,
+            "2": 214
+          },
+          "1": {
+            "0": 12,
+            "1": 241,
+            "2": 200
+          }
+        },
+        "max_mshr_occupancy": 4,
+        "max_directory_contexts": 4,
+        "max_l1_mshr_occupancy": 4,
+        "max_l1_mshr_active": 4,
+        "max_l1_mshr_issued": 4,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 2
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 2
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 2
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 4,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 6,
+        "cpu_response_completions": 6,
+        "replay_records": 1,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_same_line_second_miss_waits_then_relooks_up_as_hit",
+      "scenario_id": "test_same_line_second_miss_waits_then_relooks_up_as_hit",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 32
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00524008": "0x51a61e0000000042"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 1,
+          "directory.request_accept": 1,
+          "l2.lookup": 1,
+          "directory_context.allocate": 1,
+          "l1_mshr.dispatch": 1,
+          "axi.read_address": 1,
+          "mshr.allocate": 1,
+          "axi.read_valid_gap": 49,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "cpu.response_complete": 2,
+          "directory_context.retire": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 24,
+          "1": 68
+        },
+        "directory_context_histogram": {
+          "0": 10,
+          "1": 82
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 7,
+          "1": 85
+        },
+        "l1_mshr_active_histogram": {
+          "0": 7,
+          "1": 85
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 9,
+          "1": 83
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 7,
+            "1": 85
+          },
+          "1": {
+            "0": 92
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 7,
+            "1": 85
+          },
+          "1": {
+            "0": 92
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 9,
+            "1": 83
+          },
+          "1": {
+            "0": 92
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_cpu_response_backpressure_retains_active_and_queued_mshrs",
+      "scenario_id": "test_cpu_response_backpressure_retains_active_and_queued_mshrs",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 36
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00528008": "0xbacc000000000001",
+        "0x00528088": "0xbacc000000000002"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 53,
+          "l1_mshr.txn_assign": 1,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "directory_context.retire": 2,
+          "cpu.response_complete": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 23,
+          "1": 16,
+          "2": 72
+        },
+        "directory_context_histogram": {
+          "0": 9,
+          "1": 16,
+          "2": 86
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 5,
+          "1": 8,
+          "2": 98
+        },
+        "l1_mshr_active_histogram": {
+          "0": 5,
+          "1": 8,
+          "2": 98
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 7,
+          "1": 8,
+          "2": 96
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 8,
+            "2": 98
+          },
+          "1": {
+            "0": 111
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 5,
+            "1": 8,
+            "2": 98
+          },
+          "1": {
+            "0": 111
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 7,
+            "1": 8,
+            "2": 96
+          },
+          "1": {
+            "0": 111
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_reset_cancels_active_and_queued_l1_mshrs",
+      "scenario_id": "test_reset_cancels_active_and_queued_l1_mshrs",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 180
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00530008": "0xa110000000000001",
+        "0x00530088": "0xa110000000000002",
+        "0x00531008": "0xa110000000000003"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 3,
+          "l1_mshr.allocate": 3,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 195,
+          "l1_mshr.txn_assign": 1,
+          "system.reset_assert": 1,
+          "system.reset_cancel": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "directory_context.retire": 1,
+          "cpu.response_complete": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 36,
+          "1": 214
+        },
+        "directory_context_histogram": {
+          "0": 20,
+          "1": 230
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 14,
+          "1": 235,
+          "2": 1
+        },
+        "l1_mshr_active_histogram": {
+          "0": 14,
+          "1": 235,
+          "2": 1
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 18,
+          "1": 232
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 14,
+            "1": 235,
+            "2": 1
+          },
+          "1": {
+            "0": 250
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 14,
+            "1": 235,
+            "2": 1
+          },
+          "1": {
+            "0": 250
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 18,
+            "1": 232
+          },
+          "1": {
+            "0": 250
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr.py::test_secondary_store_context_commits_before_ordered_response",
+      "scenario_id": "test_secondary_store_context_commits_before_ordered_response",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 96
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00540008": "0xbbbb000000000001",
+        "0x00541088": "0xaaaa000000000004"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 7,
+          "l1_mshr.allocate": 5,
+          "directory.request_accept": 5,
+          "l2.lookup": 2,
+          "directory_context.allocate": 5,
+          "l1_mshr.dispatch": 5,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 220,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 32,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 5,
+          "mshr.retire": 2,
+          "directory.grant_accept": 5,
+          "l1.metadata_commit": 8,
+          "directory_context.retire": 5,
+          "cpu.response_complete": 6,
+          "l1_mshr.retire": 5,
+          "l1_mshr.deactivate": 5,
+          "snoop.accept": 3,
+          "directory.snoop_offer": 3,
+          "coherence.owner_data_beat": 16,
+          "snoop.response": 3,
+          "l1_mshr.txn_assign": 3
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 74,
+          "1": 258
+        },
+        "directory_context_histogram": {
+          "0": 22,
+          "1": 279,
+          "2": 31
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 10,
+          "1": 181,
+          "2": 113,
+          "3": 28
+        },
+        "l1_mshr_active_histogram": {
+          "0": 10,
+          "1": 181,
+          "2": 113,
+          "3": 28
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 16,
+          "1": 177,
+          "2": 113,
+          "3": 26
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 38,
+            "1": 153,
+            "2": 141
+          },
+          "1": {
+            "0": 276,
+            "1": 56
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 38,
+            "1": 153,
+            "2": 141
+          },
+          "1": {
+            "0": 276,
+            "1": 56
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 42,
+            "1": 151,
+            "2": 139
+          },
+          "1": {
+            "0": 280,
+            "1": 52
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 3,
+        "max_l1_mshr_active": 3,
+        "max_l1_mshr_issued": 3,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 7,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live",
+      "scenario_id": "V13_TWO_LIVE_MSHR_OWNER_SNOOP_PROGRESS",
+      "seed": 1248258,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 180,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "owner_core": 1,
+        "remote_gets_core": 0,
+        "dirty_owner_line": 10485760,
+        "concurrent_miss_lines": [
+          10486016,
+          10486144
+        ],
+        "memory_latency_cycles": 180,
+        "cpu_response_ready_during_overlap": 0,
+        "required_overlap": "two Core1 MSHRs active during all owner data beats"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "establish_core1_dirty_owner",
+          "core": 1,
+          "address": 10485760,
+          "data": 14627392578676610680
+        },
+        {
+          "kind": "stimulus",
+          "operation": "first_miss_then_owner_gets_and_second_miss",
+          "core1_misses": [
+            10486016,
+            10486144
+          ],
+          "core0_remote_gets": [
+            10485760
+          ]
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrCollisionChecker",
+          "result": {
+            "dirty_line": 10485760,
+            "putm_victim_line": null,
+            "owner_core": 1,
+            "requester_core": 0,
+            "putm_cycle": null,
+            "snoop_cycle": 239,
+            "snoop_txn_id": 0,
+            "owner_data_beats": 8,
+            "putm_snoop_cycle_skew": null,
+            "concurrent_miss_core": 1,
+            "concurrent_miss_lines": [
+              10486016,
+              10486144
+            ]
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core1:0x00a00100": 233,
+              "core1:0x00a00180": 237
+            },
+            "response_cycles": {
+              "core1:0x00a00100": 457,
+              "core1:0x00a00180": 473
+            },
+            "directory_txn_ids": {
+              "core1:0x00a00100": 1,
+              "core1:0x00a00180": 2
+            },
+            "axi_ids": {
+              "core1:0x00a00100": 0,
+              "core1:0x00a00180": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              10486016,
+              10486144
+            ],
+            "mshr_allocations": 2,
+            "mshr_retirements": 2,
+            "axi_read_beats": 16,
+            "l2_refill_beats": 16
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_per_core": {
+            "0": 1,
+            "1": 2
+          },
+          "directory_contexts": 3,
+          "refill_mshrs": 2,
+          "axi_read_outstanding": 2
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00a00000": "0xcafef00d12345678",
+        "0x00a00008": "0xd17a000000000001",
+        "0x00a00010": "0xd17a000000000002",
+        "0x00a00018": "0xd17a000000000003",
+        "0x00a00020": "0xd17a000000000004",
+        "0x00a00028": "0xd17a000000000005",
+        "0x00a00030": "0xd17a000000000006",
+        "0x00a00038": "0xd17a000000000007",
+        "0x00a00100": "0xa110000000000101",
+        "0x00a00108": "0xa111000000000101",
+        "0x00a00110": "0xa112000000000101",
+        "0x00a00118": "0xa113000000000101",
+        "0x00a00120": "0xa114000000000101",
+        "0x00a00128": "0xa115000000000101",
+        "0x00a00130": "0xa116000000000101",
+        "0x00a00138": "0xa117000000000101",
+        "0x00a00180": "0xa110000000000202",
+        "0x00a00188": "0xa111000000000202",
+        "0x00a00190": "0xa112000000000202",
+        "0x00a00198": "0xa113000000000202",
+        "0x00a001a0": "0xa114000000000202",
+        "0x00a001a8": "0xa115000000000202",
+        "0x00a001b0": "0xa116000000000202",
+        "0x00a001b8": "0xa117000000000202"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.WRITE": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ],
+            "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_M": 1,
+          "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.WRITE": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ],
+            "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_owner_snoop_progresses_while_two_l1_misses_are_live"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 4,
+          "l1_mshr.allocate": 4,
+          "directory.request_accept": 4,
+          "l2.lookup": 3,
+          "directory_context.allocate": 4,
+          "l1_mshr.dispatch": 4,
+          "axi.read_address": 3,
+          "mshr.allocate": 3,
+          "axi.read_valid_gap": 391,
+          "axi.read_beat": 24,
+          "l2.refill_start": 3,
+          "l2.line_write_beat": 32,
+          "l2.refill_end": 3,
+          "directory.metadata_commit": 4,
+          "mshr.retire": 3,
+          "directory.grant_accept": 4,
+          "l1.metadata_commit": 5,
+          "directory_context.retire": 4,
+          "cpu.response_complete": 4,
+          "l1_mshr.retire": 4,
+          "l1_mshr.deactivate": 4,
+          "l1_mshr.txn_assign": 2,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "directory.transfer_stall": 11,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
+        },
+        "stall_cycles": {
+          "directory_transfer": 11
+        },
+        "mshr_occupancy_histogram": {
+          "0": 43,
+          "1": 244,
+          "2": 193
+        },
+        "directory_context_histogram": {
+          "0": 15,
+          "1": 246,
+          "2": 195,
+          "3": 24
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 8,
+          "1": 250,
+          "3": 28,
+          "2": 194
+        },
+        "l1_mshr_active_histogram": {
+          "0": 8,
+          "1": 250,
+          "3": 28,
+          "2": 194
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 12,
+          "1": 248,
+          "2": 195,
+          "3": 25
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 452,
+            "1": 28
+          },
+          "1": {
+            "0": 8,
+            "1": 250,
+            "2": 222
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 452,
+            "1": 28
+          },
+          "1": {
+            "0": 8,
+            "1": 250,
+            "2": 222
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 454,
+            "1": 26
+          },
+          "1": {
+            "0": 12,
+            "1": 249,
+            "2": 219
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 3,
+        "max_l1_mshr_occupancy": 3,
+        "max_l1_mshr_active": 3,
+        "max_l1_mshr_issued": 3,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 2
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 2
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 2
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 4,
+        "cpu_response_completions": 4,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs",
+      "scenario_id": "V13_PUTM_OWNER_SNOOP_TWO_REQUESTER_MSHR",
+      "seed": 1248260,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 240,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        },
+        "seed": 1248260,
+        "owner_core": 1,
+        "requester_core": 0,
+        "dirty_victim_line": 12582912,
+        "dirty_owner_line": 12591104,
+        "replacement_line": 12615680,
+        "concurrent_miss_lines": [
+          12583168,
+          12591104
+        ],
+        "concurrent_miss_core": 0,
+        "memory_latency_cycles": 240,
+        "required_overlap": "owner PutM + matching Snoop + 8 data beats while requester L1 MSHRs=2"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "legal_prelude",
+          "operation": "establish_dirty_owner_and_fill_l1_set",
+          "core": 1,
+          "dirty_victim_line": 12582912,
+          "dirty_owner_line": 12591104,
+          "other_lines": [
+            12599296,
+            12607488
+          ]
+        },
+        {
+          "kind": "stimulus",
+          "operation": "overlap_remote_gets_with_dirty_putm_replacement",
+          "requester_core": 0,
+          "requester_misses": [
+            12583168,
+            12591104
+          ],
+          "owner_core": 1,
+          "replacement_line": 12615680
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "PutMOwnerSnoopTwoMshrCheckers",
+          "result": {
+            "collision": {
+              "dirty_line": 12591104,
+              "putm_victim_line": 12582912,
+              "owner_core": 1,
+              "requester_core": 0,
+              "putm_cycle": 1158,
+              "snoop_cycle": 1169,
+              "snoop_txn_id": 1,
+              "owner_data_beats": 8,
+              "putm_snoop_cycle_skew": 11,
+              "concurrent_miss_core": 0,
+              "concurrent_miss_lines": [
+                12583168,
+                12591104
+              ]
+            },
+            "l1_lifecycle": {
+              "checked_requests": 1,
+              "allocation_cycles": {
+                "core0:0x00c00100": 1153
+              },
+              "response_cycles": {
+                "core0:0x00c00100": 1439
+              },
+              "directory_txn_ids": {
+                "core0:0x00c00100": 0
+              },
+              "axi_ids": {
+                "core0:0x00c00100": 0
+              }
+            },
+            "refill_lifecycle": {
+              "refill_lines": [
+                12583168,
+                12615680
+              ],
+              "mshr_allocations": 2,
+              "mshr_retirements": 2,
+              "axi_read_beats": 16,
+              "l2_refill_beats": 16
+            },
+            "l1_mshr_peak_requester": 2,
+            "directory_context_peak": 3,
+            "refill_mshr_peak": 2,
+            "axi_read_peak": 2
+          }
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00c00000": "0xbeef000000000000",
+        "0x00c00008": "0xbeef000000000001",
+        "0x00c00010": "0xbeef000000000002",
+        "0x00c00018": "0xbeef000000000003",
+        "0x00c00020": "0xbeef000000000004",
+        "0x00c00028": "0xbeef000000000005",
+        "0x00c00030": "0xbeef000000000006",
+        "0x00c00038": "0xbeef000000000007",
+        "0x00c00100": "0xa110000000000010",
+        "0x00c00108": "0xa110000000000011",
+        "0x00c00110": "0xa110000000000012",
+        "0x00c00118": "0xa110000000000013",
+        "0x00c00120": "0xa110000000000014",
+        "0x00c00128": "0xa110000000000015",
+        "0x00c00130": "0xa110000000000016",
+        "0x00c00138": "0xa110000000000017",
+        "0x00c02000": "0xcafec01100000000",
+        "0x00c02008": "0xcafec01100000001",
+        "0x00c02010": "0xcafec01100000002",
+        "0x00c02018": "0xcafec01100000003",
+        "0x00c02020": "0xcafec01100000004",
+        "0x00c02028": "0xcafec01100000005",
+        "0x00c02030": "0xcafec01100000006",
+        "0x00c02038": "0xcafec01100000007",
+        "0x00c04000": "0xc100000000000100",
+        "0x00c04008": "0xc100000000000101",
+        "0x00c04010": "0xc100000000000102",
+        "0x00c04018": "0xc100000000000103",
+        "0x00c04020": "0xc100000000000104",
+        "0x00c04028": "0xc100000000000105",
+        "0x00c04030": "0xc100000000000106",
+        "0x00c04038": "0xc100000000000107",
+        "0x00c06000": "0xc100000000000200",
+        "0x00c06008": "0xc100000000000201",
+        "0x00c06010": "0xc100000000000202",
+        "0x00c06018": "0xc100000000000203",
+        "0x00c06020": "0xc100000000000204",
+        "0x00c06028": "0xc100000000000205",
+        "0x00c06030": "0xc100000000000206",
+        "0x00c06038": "0xc100000000000207",
+        "0x00c08000": "0xbeef000000000000",
+        "0x00c08008": "0xbeef000000000001",
+        "0x00c08010": "0xbeef000000000002",
+        "0x00c08018": "0xbeef000000000003",
+        "0x00c08020": "0xbeef000000000004",
+        "0x00c08028": "0xbeef000000000005",
+        "0x00c08030": "0xbeef000000000006",
+        "0x00c08038": "0xbeef000000000007"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 2,
+          "FS.CPU.WRITE.CORE1": 2,
+          "FS.MESI.I_TO_E": 2,
+          "FS.MESI.I_TO_M": 2,
+          "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE1.WRITE": 2
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 2,
+          "FS.CPU.WRITE.CORE1": 2,
+          "FS.MESI.I_TO_E": 2,
+          "FS.MESI.I_TO_M": 2,
+          "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 2,
+          "FS.CROSS.CORE1.WRITE": 2
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_dirty_replacement_putm_overlaps_owner_snoop_with_two_requester_mshrs"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 7,
+          "l1_mshr.allocate": 7,
+          "directory.request_accept": 8,
+          "l2.lookup": 6,
+          "directory_context.allocate": 8,
+          "l1_mshr.dispatch": 7,
+          "axi.read_address": 6,
+          "mshr.allocate": 6,
+          "axi.read_valid_gap": 1266,
+          "axi.read_beat": 48,
+          "l2.refill_start": 6,
+          "l2.line_write_beat": 64,
+          "l2.refill_end": 6,
+          "directory.metadata_commit": 8,
+          "mshr.retire": 6,
+          "directory.grant_accept": 8,
+          "l1.metadata_commit": 9,
+          "directory_context.retire": 8,
+          "cpu.response_complete": 7,
+          "l1_mshr.retire": 7,
+          "l1_mshr.deactivate": 7,
+          "l1_mshr.txn_assign": 8,
+          "directory.request_stall": 1,
+          "directory.snoop_offer": 9,
+          "snoop.accept": 1,
+          "coherence.owner_data_beat": 8,
+          "directory.transfer_stall": 5,
+          "snoop.response": 1
+        },
+        "stall_cycles": {
+          "directory_request": 1,
+          "directory_transfer": 5
+        },
+        "mshr_occupancy_histogram": {
+          "0": 98,
+          "1": 1125,
+          "2": 245
+        },
+        "directory_context_histogram": {
+          "0": 28,
+          "1": 1159,
+          "2": 251,
+          "3": 30
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 9,
+          "1": 1174,
+          "3": 284,
+          "2": 1
+        },
+        "l1_mshr_active_histogram": {
+          "0": 9,
+          "1": 1174,
+          "3": 284,
+          "2": 1
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 19,
+          "1": 1168,
+          "2": 16,
+          "3": 265
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 1179,
+            "1": 5,
+            "2": 284
+          },
+          "1": {
+            "0": 13,
+            "1": 1455
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 1179,
+            "1": 5,
+            "2": 284
+          },
+          "1": {
+            "0": 13,
+            "1": 1455
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 1181,
+            "1": 7,
+            "2": 280
+          },
+          "1": {
+            "0": 40,
+            "1": 1428
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 3,
+        "max_l1_mshr_occupancy": 3,
+        "max_l1_mshr_active": 3,
+        "max_l1_mshr_issued": 3,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 1
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 7,
+        "cpu_response_completions": 7,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_two_l1_mshrs_reset_cancel_and_reuse_ids_with_response_backpressure",
+      "scenario_id": "V13_TWO_MSHR_RESET_ID_REUSE_BACKPRESSURE",
+      "seed": 1248261,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 420,
+            "r_valid_gap_period": 2,
+            "read_reorder_window": 2
+          },
+          "mmio": {}
+        },
+        "seed": 1248261,
+        "core": 0,
+        "addresses": [
+          13631496,
+          13631752
+        ],
+        "axi_latency_cycles": 420,
+        "response_backpressure": true,
+        "expected_reset_cancel": {
+          "l1_mshr_entries": 2,
+          "axi_reads": 2
+        },
+        "expected_after_reset": "same per-protocol IDs reused by same address; ordered responses"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "stimulus",
+          "operation": "two_misses_reset_then_replay_same_lines",
+          "core": 0,
+          "addresses": [
+            13631496,
+            13631752
+          ]
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core0:0x00d00008": 28,
+              "core0:0x00d00108": 30
+            },
+            "response_cycles": {
+              "core0:0x00d00008": 506,
+              "core0:0x00d00108": 514
+            },
+            "directory_txn_ids": {
+              "core0:0x00d00008": 0,
+              "core0:0x00d00108": 1
+            },
+            "axi_ids": {
+              "core0:0x00d00008": 0,
+              "core0:0x00d00108": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrResetReuseChecker",
+          "result": {
+            "core": 0,
+            "addresses": [
+              13631496,
+              13631752
+            ],
+            "pre_reset_epoch": 0,
+            "post_reset_epoch": 1,
+            "cancelled_l1_mshrs": 2,
+            "cancelled_axi_reads": 2,
+            "reused_ids_by_protocol": {
+              "l1_mshr_id": {
+                "0xd00000": 0,
+                "0xd00100": 1
+              },
+              "directory_id": {
+                "0xd00000": 0,
+                "0xd00100": 1
+              },
+              "axi_id": {
+                "0xd00000": 0,
+                "0xd00100": 1
+              }
+            },
+            "post_reset_responses": 2
+          }
+        },
+        {
+          "kind": "resource_peaks",
+          "l1_mshr_per_core": {
+            "0": 2,
+            "1": 0
+          },
+          "directory_contexts": 2,
+          "refill_mshrs": 2,
+          "axi_read_outstanding": 2
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00d00000": "0xdada000000000001",
+        "0x00d00008": "0xdadb000000000001",
+        "0x00d00010": "0xdad8000000000001",
+        "0x00d00018": "0xdad9000000000001",
+        "0x00d00020": "0xdade000000000001",
+        "0x00d00028": "0xdadf000000000001",
+        "0x00d00030": "0xdadc000000000001",
+        "0x00d00038": "0xdadd000000000001",
+        "0x00d00100": "0xdada000000000002",
+        "0x00d00108": "0xdadb000000000002",
+        "0x00d00110": "0xdad8000000000002",
+        "0x00d00118": "0xdad9000000000002",
+        "0x00d00120": "0xdade000000000002",
+        "0x00d00128": "0xdadf000000000002",
+        "0x00d00130": "0xdadc000000000002",
+        "0x00d00138": "0xdadd000000000002"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 5,
+          "l1_mshr.allocate": 4,
+          "directory.request_accept": 4,
+          "l2.lookup": 4,
+          "directory_context.allocate": 4,
+          "l1_mshr.dispatch": 4,
+          "axi.read_address": 4,
+          "mshr.allocate": 4,
+          "axi.read_valid_gap": 445,
+          "l1_mshr.txn_assign": 2,
+          "system.reset_assert": 1,
+          "system.reset_cancel": 1,
+          "axi.stall": 1,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "directory_context.retire": 2,
+          "cpu.response_complete": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 37,
+          "1": 18,
+          "2": 461
+        },
+        "directory_context_histogram": {
+          "0": 21,
+          "1": 18,
+          "2": 477
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 16,
+          "1": 17,
+          "2": 483
+        },
+        "l1_mshr_active_histogram": {
+          "0": 16,
+          "1": 17,
+          "2": 483
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 20,
+          "1": 17,
+          "2": 479
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 16,
+            "1": 17,
+            "2": 483
+          },
+          "1": {
+            "0": 516
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 16,
+            "1": 17,
+            "2": 483
+          },
+          "1": {
+            "0": 516
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 20,
+            "1": 17,
+            "2": 479
+          },
+          "1": {
+            "0": 516
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 1,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 5,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_same_set_second_miss_waits_for_first_retirement",
+      "scenario_id": "V13_SAME_SET_MISS_BACKPRESSURE_RECOVERY",
+      "seed": 1248259,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 80,
+            "r_valid_gap_period": 2
+          },
+          "mmio": {}
+        },
+        "l1_mshr_entries_per_core": 2,
+        "same_l1_set_addresses": [
+          11534344,
+          11567112
+        ],
+        "expected_behavior": "second request stalls until first MSHR retires"
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core0:0x00b00008": 2,
+              "core0:0x00b08008": 144
+            },
+            "response_cycles": {
+              "core0:0x00b00008": 141,
+              "core0:0x00b08008": 277
+            },
+            "directory_txn_ids": {
+              "core0:0x00b00008": 0,
+              "core0:0x00b08008": 1
+            },
+            "axi_ids": {
+              "core0:0x00b00008": 0,
+              "core0:0x00b08008": 0
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              11534336,
+              11567104
+            ],
+            "mshr_allocations": 2,
+            "mshr_retirements": 2,
+            "axi_read_beats": 16,
+            "l2_refill_beats": 16
+          }
+        },
+        {
+          "kind": "backpressure_evidence",
+          "scenario": "same_l1_set",
+          "stall_cycles": 8,
+          "accepted_after_first_retire": true
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00b00000": "0x51a0000000000001",
+        "0x00b00008": "0x51a1000000000001",
+        "0x00b00010": "0x51a2000000000001",
+        "0x00b00018": "0x51a3000000000001",
+        "0x00b00020": "0x51a4000000000001",
+        "0x00b00028": "0x51a5000000000001",
+        "0x00b00030": "0x51a6000000000001",
+        "0x00b00038": "0x51a7000000000001",
+        "0x00b08000": "0x51a0000000000002",
+        "0x00b08008": "0x51a1000000000002",
+        "0x00b08010": "0x51a2000000000002",
+        "0x00b08018": "0x51a3000000000002",
+        "0x00b08020": "0x51a4000000000002",
+        "0x00b08028": "0x51a5000000000002",
+        "0x00b08030": "0x51a6000000000002",
+        "0x00b08038": "0x51a7000000000002"
+      },
+      "coverage": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {},
+        "cross_bins": {},
+        "sample_testcases": {
+          "bins": {},
+          "cross_bins": {}
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 204,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "cpu.response_complete": 2,
+          "directory_context.retire": 2,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2,
+          "l1_mshr.txn_assign": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 40,
+          "1": 242
+        },
+        "directory_context_histogram": {
+          "0": 12,
+          "1": 270
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 6,
+          "1": 276
+        },
+        "l1_mshr_active_histogram": {
+          "0": 6,
+          "1": 276
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 10,
+          "1": 272
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 6,
+            "1": 276
+          },
+          "1": {
+            "0": 282
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 6,
+            "1": 276
+          },
+          "1": {
+            "0": 282
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 10,
+            "1": 272
+          },
+          "1": {
+            "0": 282
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 2,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full",
+      "scenario_id": "V13_FULL_MSHR_HIT_BACKPRESSURE_FORWARD_PROGRESS",
+      "seed": 1248260,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 180,
+            "r_valid_gap_period": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [
+        {
+          "kind": "checker_evidence",
+          "checker": "L1MshrLifecycleChecker",
+          "result": {
+            "checked_requests": 2,
+            "allocation_cycles": {
+              "core0:0x00c10008": 245,
+              "core0:0x00c20108": 252
+            },
+            "response_cycles": {
+              "core0:0x00c10008": 500,
+              "core0:0x00c20108": 501
+            },
+            "directory_txn_ids": {
+              "core0:0x00c10008": 1,
+              "core0:0x00c20108": 2
+            },
+            "axi_ids": {
+              "core0:0x00c10008": 0,
+              "core0:0x00c20108": 1
+            }
+          }
+        },
+        {
+          "kind": "checker_evidence",
+          "checker": "MshrLifecycleChecker",
+          "result": {
+            "refill_lines": [
+              12648448,
+              12714240
+            ],
+            "mshr_allocations": 2,
+            "mshr_retirements": 2,
+            "axi_read_beats": 16,
+            "l2_refill_beats": 16
+          }
+        },
+        {
+          "kind": "backpressure_evidence",
+          "scenario": "full_mshr_resident_hit",
+          "stall_cycles": 8,
+          "accepted_after_capacity_freed": true,
+          "miss_response_order": [
+            12648456,
+            12714248
+          ]
+        }
+      ],
+      "initial_backing_memory": {
+        "0x00c00040": "0xf011000000000001",
+        "0x00c00048": "0xf010000000000001",
+        "0x00c00050": "0xf013000000000001",
+        "0x00c00058": "0xf012000000000001",
+        "0x00c00060": "0xf015000000000001",
+        "0x00c00068": "0xf014000000000001",
+        "0x00c00070": "0xf017000000000001",
+        "0x00c00078": "0xf016000000000001",
+        "0x00c10000": "0xf011000000000002",
+        "0x00c10008": "0xf010000000000002",
+        "0x00c10010": "0xf013000000000002",
+        "0x00c10018": "0xf012000000000002",
+        "0x00c10020": "0xf015000000000002",
+        "0x00c10028": "0xf014000000000002",
+        "0x00c10030": "0xf017000000000002",
+        "0x00c10038": "0xf016000000000002",
+        "0x00c20100": "0xf011000000000003",
+        "0x00c20108": "0xf010000000000003",
+        "0x00c20110": "0xf013000000000003",
+        "0x00c20118": "0xf012000000000003",
+        "0x00c20120": "0xf015000000000003",
+        "0x00c20128": "0xf014000000000003",
+        "0x00c20130": "0xf017000000000003",
+        "0x00c20138": "0xf016000000000003"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_nonblocking_l1_mshr_collisions.py::test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 4,
+          "l1_mshr.allocate": 3,
+          "directory.request_accept": 3,
+          "l2.lookup": 3,
+          "directory_context.allocate": 3,
+          "l1_mshr.dispatch": 3,
+          "axi.read_address": 3,
+          "mshr.allocate": 3,
+          "axi.read_valid_gap": 411,
+          "axi.read_beat": 24,
+          "l2.refill_start": 3,
+          "l2.line_write_beat": 24,
+          "l2.refill_end": 3,
+          "directory.metadata_commit": 3,
+          "mshr.retire": 3,
+          "directory.grant_accept": 3,
+          "l1.metadata_commit": 3,
+          "directory_context.retire": 3,
+          "cpu.response_complete": 4,
+          "l1_mshr.retire": 3,
+          "l1_mshr.deactivate": 3,
+          "l1_mshr.txn_assign": 2,
+          "axi.stall": 1
+        },
+        "stall_cycles": {
+          "AR": 1
+        },
+        "mshr_occupancy_histogram": {
+          "0": 44,
+          "1": 240,
+          "2": 224
+        },
+        "directory_context_histogram": {
+          "0": 16,
+          "1": 254,
+          "2": 238
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 8,
+          "1": 250,
+          "2": 250
+        },
+        "l1_mshr_active_histogram": {
+          "0": 8,
+          "1": 250,
+          "2": 250
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 12,
+          "1": 248,
+          "2": 248
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 8,
+            "1": 250,
+            "2": 250
+          },
+          "1": {
+            "0": 508
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 8,
+            "1": 250,
+            "2": 250
+          },
+          "1": {
+            "0": 508
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 12,
+            "1": 248,
+            "2": 248
+          },
+          "1": {
+            "0": 508
+          }
+        },
+        "max_mshr_occupancy": 2,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 2,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 2,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 4,
+        "cpu_response_completions": 4,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+      "scenario_id": "test_axi_top_hit_under_miss_response_id_wrap_and_stall",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00404008": "0xa11ce00112345678",
+        "0x00404088": "0xb22df00287654321"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
+          "FS.HIT_UNDER_MISS.RESPONSE_STALL": 1,
+          "FS.HIT_UNDER_MISS.TXN_ID_WRAP": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.RESPONSE_STALL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.TXN_ID_WRAP": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE0": 1,
+          "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": 1,
+          "FS.HIT_UNDER_MISS.RESPONSE_STALL": 1,
+          "FS.HIT_UNDER_MISS.TXN_ID_WRAP": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.PENDING_MISS_HIT": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.RESPONSE_STALL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.HIT_UNDER_MISS.TXN_ID_WRAP": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ],
+            "FS.CROSS.HIT_UNDER_MISS_X_AXI_REFILL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_hit_under_miss_response_id_wrap_and_stall"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 15,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 130,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 16,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 2,
+          "mshr.retire": 2,
+          "directory.grant_accept": 2,
+          "l1.metadata_commit": 2,
+          "directory_context.retire": 2,
+          "cpu.response_complete": 15,
+          "l1_mshr.retire": 2,
+          "l1_mshr.deactivate": 2,
+          "l1_mshr.txn_assign": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 39,
+          "1": 168
+        },
+        "directory_context_histogram": {
+          "0": 11,
+          "1": 196
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 4,
+          "1": 203
+        },
+        "l1_mshr_active_histogram": {
+          "0": 4,
+          "1": 203
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 8,
+          "1": 199
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 4,
+            "1": 203
+          },
+          "1": {
+            "0": 207
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 4,
+            "1": 203
+          },
+          "1": {
+            "0": 207
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 8,
+            "1": 199
+          },
+          "1": {
+            "0": 207
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 15,
+        "cpu_response_completions": 15,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss",
+      "scenario_id": "test_axi_top_snoop_completes_during_other_line_pending_miss",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 2
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00606008": "0xc33e000311112222",
+        "0x00606088": "0x0102030405060708"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": 1,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.WRITE": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ]
+          }
+        },
+        "checked_cross_evidence": {
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": [
+            {
+              "checker": "Hit-under-Miss independent data/MESI/Directory checker",
+              "checker_pass": true,
+              "overlap": {
+                "start_cycle": 68,
+                "end_cycle": 79,
+                "roles": {
+                  "pending_miss": {
+                    "start_cycle": 57,
+                    "end_cycle": 184,
+                    "start_event_ref": "miss_cpu_request",
+                    "end_event_ref": "miss_cpu_response"
+                  },
+                  "axi_refill": {
+                    "start_cycle": 63,
+                    "end_cycle": 162,
+                    "start_event_ref": "miss_ar",
+                    "end_event_ref": "miss_rlast"
+                  },
+                  "remote_snoop": {
+                    "start_cycle": 68,
+                    "end_cycle": 79,
+                    "start_event_ref": "snoop_accept",
+                    "end_event_ref": "snoop_response"
+                  }
+                }
+              },
+              "transactions": [
+                {
+                  "role": "pending_miss",
+                  "protocol": "CPU",
+                  "txn_id": 1,
+                  "address": 6316040,
+                  "event_ref_ids": [
+                    "miss_cpu_request",
+                    "miss_cpu_response"
+                  ]
+                },
+                {
+                  "role": "directory_miss",
+                  "protocol": "Directory",
+                  "txn_id": 1,
+                  "address": 6316032,
+                  "event_ref_ids": [
+                    "miss_directory_request"
+                  ]
+                },
+                {
+                  "role": "axi_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 6316032,
+                  "event_ref_ids": [
+                    "miss_ar",
+                    "miss_rlast"
+                  ]
+                },
+                {
+                  "role": "owner_gets",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 6316168,
+                  "event_ref_ids": [
+                    "owner_cpu_request",
+                    "owner_cpu_response"
+                  ]
+                },
+                {
+                  "role": "owner_snoop",
+                  "protocol": "Snoop",
+                  "txn_id": 0,
+                  "address": 6316160,
+                  "event_ref_ids": [
+                    "snoop_accept",
+                    "snoop_response"
+                  ]
+                }
+              ],
+              "state_transitions": [
+                {
+                  "event_ref_id": "owner_l1_commit",
+                  "old_state": 3,
+                  "new_state": 1
+                },
+                {
+                  "event_ref_id": "requester_l1_commit",
+                  "old_state": 0,
+                  "new_state": 1
+                },
+                {
+                  "event_ref_id": "owner_directory_commit",
+                  "state": 1
+                }
+              ],
+              "event_refs": [
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316040,
+                  "write": 0,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "miss_cpu_request",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 184,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316040,
+                  "write": 0,
+                  "data": 14068682299123245602,
+                  "txn_id": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "miss_cpu_response",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 60,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "txn_id": 1,
+                  "source_id": 0,
+                  "opcode": 0,
+                  "ref_id": "miss_directory_request",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 63,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "miss_ar",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 162,
+                  "reset_epoch": 0,
+                  "address": 6316088,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "miss_rlast",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 64,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316168,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "owner_cpu_request",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 92,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316168,
+                  "write": 0,
+                  "data": 15298446477239731268,
+                  "txn_id": 0,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "owner_cpu_response",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 68,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "txn_id": 0,
+                  "opcode": 0,
+                  "ref_id": "snoop_accept",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 79,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "snoop_response",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 78,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "old_state": 3,
+                  "new_state": 1,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "owner_l1_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 90,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316160,
+                  "old_state": 0,
+                  "new_state": 1,
+                  "cause": "non_snoop",
+                  "is_snoop": 0,
+                  "ref_id": "requester_l1_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "metadata_commit",
+                  "cycle": 80,
+                  "reset_epoch": 0,
+                  "address": 6316160,
+                  "old_state": 2,
+                  "old_sharers": 0,
+                  "old_owner": 0,
+                  "state": 1,
+                  "sharers": 3,
+                  "owner": 0,
+                  "ref_id": "owner_directory_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 70,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_0",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 71,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 15298446477239731268,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_1",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 72,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_2",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 73,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_3",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 74,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_4",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 75,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_5",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 76,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_6",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 77,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "owner_data_beat_7",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 155,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_0",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 156,
+                  "reset_epoch": 0,
+                  "address": 6316040,
+                  "data": 14068682299123245602,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_1",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 157,
+                  "reset_epoch": 0,
+                  "address": 6316048,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_2",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 158,
+                  "reset_epoch": 0,
+                  "address": 6316056,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_3",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 159,
+                  "reset_epoch": 0,
+                  "address": 6316064,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_4",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 160,
+                  "reset_epoch": 0,
+                  "address": 6316072,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_5",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 161,
+                  "reset_epoch": 0,
+                  "address": 6316080,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_6",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 162,
+                  "reset_epoch": 0,
+                  "address": 6316088,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_7",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 67,
+                  "reset_epoch": 0,
+                  "address": 6316160,
+                  "txn_id": 0,
+                  "source_id": 1,
+                  "opcode": 0,
+                  "ref_id": "owner_directory_request",
+                  "role": "remote_snoop"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.WRITE.CORE0": 1,
+          "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": 1,
+          "FS.MESI.I_TO_M": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.WRITE": 1,
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.WRITE.CORE0": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.HIT_UNDER_MISS.SNOOP_PROGRESS": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.WRITE": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ],
+            "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_snoop_completes_during_other_line_pending_miss"
+            ]
+          }
+        },
+        "checked_cross_evidence": {
+          "FS.CROSS.HIT_UNDER_MISS_X_SNOOP": [
+            {
+              "checker": "Hit-under-Miss independent data/MESI/Directory checker",
+              "checker_pass": true,
+              "overlap": {
+                "start_cycle": 68,
+                "end_cycle": 79,
+                "roles": {
+                  "pending_miss": {
+                    "start_cycle": 57,
+                    "end_cycle": 184,
+                    "start_event_ref": "miss_cpu_request",
+                    "end_event_ref": "miss_cpu_response"
+                  },
+                  "axi_refill": {
+                    "start_cycle": 63,
+                    "end_cycle": 162,
+                    "start_event_ref": "miss_ar",
+                    "end_event_ref": "miss_rlast"
+                  },
+                  "remote_snoop": {
+                    "start_cycle": 68,
+                    "end_cycle": 79,
+                    "start_event_ref": "snoop_accept",
+                    "end_event_ref": "snoop_response"
+                  }
+                }
+              },
+              "transactions": [
+                {
+                  "role": "pending_miss",
+                  "protocol": "CPU",
+                  "txn_id": 1,
+                  "address": 6316040,
+                  "event_ref_ids": [
+                    "miss_cpu_request",
+                    "miss_cpu_response"
+                  ]
+                },
+                {
+                  "role": "directory_miss",
+                  "protocol": "Directory",
+                  "txn_id": 1,
+                  "address": 6316032,
+                  "event_ref_ids": [
+                    "miss_directory_request"
+                  ]
+                },
+                {
+                  "role": "axi_refill",
+                  "protocol": "AXI4-R",
+                  "txn_id": 0,
+                  "address": 6316032,
+                  "event_ref_ids": [
+                    "miss_ar",
+                    "miss_rlast"
+                  ]
+                },
+                {
+                  "role": "owner_gets",
+                  "protocol": "CPU",
+                  "txn_id": 0,
+                  "address": 6316168,
+                  "event_ref_ids": [
+                    "owner_cpu_request",
+                    "owner_cpu_response"
+                  ]
+                },
+                {
+                  "role": "owner_snoop",
+                  "protocol": "Snoop",
+                  "txn_id": 0,
+                  "address": 6316160,
+                  "event_ref_ids": [
+                    "snoop_accept",
+                    "snoop_response"
+                  ]
+                }
+              ],
+              "state_transitions": [
+                {
+                  "event_ref_id": "owner_l1_commit",
+                  "old_state": 3,
+                  "new_state": 1
+                },
+                {
+                  "event_ref_id": "requester_l1_commit",
+                  "old_state": 0,
+                  "new_state": 1
+                },
+                {
+                  "event_ref_id": "owner_directory_commit",
+                  "state": 1
+                }
+              ],
+              "event_refs": [
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 57,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316040,
+                  "write": 0,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "miss_cpu_request",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 184,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316040,
+                  "write": 0,
+                  "data": 14068682299123245602,
+                  "txn_id": 1,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "miss_cpu_response",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 60,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "txn_id": 1,
+                  "source_id": 0,
+                  "opcode": 0,
+                  "ref_id": "miss_directory_request",
+                  "role": "pending_miss"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_address",
+                  "cycle": 63,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "txn_id": 0,
+                  "length": 7,
+                  "payload": {
+                    "size": 3,
+                    "burst": 1
+                  },
+                  "ref_id": "miss_ar",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 162,
+                  "reset_epoch": 0,
+                  "address": 6316088,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "miss_rlast",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "request_accept",
+                  "cycle": 64,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316168,
+                  "write": 0,
+                  "payload": {
+                    "write_data": 0,
+                    "write_mask": 0
+                  },
+                  "ref_id": "owner_cpu_request",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "cpu",
+                  "event_type": "response_complete",
+                  "cycle": 92,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316168,
+                  "write": 0,
+                  "data": 15298446477239731268,
+                  "txn_id": 0,
+                  "payload": {
+                    "observed_by": "cpu_driver"
+                  },
+                  "ref_id": "owner_cpu_response",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "accept",
+                  "cycle": 68,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "txn_id": 0,
+                  "opcode": 0,
+                  "ref_id": "snoop_accept",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "snoop",
+                  "event_type": "response",
+                  "cycle": 79,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "txn_id": 0,
+                  "opcode": 2,
+                  "ref_id": "snoop_response",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 78,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "old_state": 3,
+                  "new_state": 1,
+                  "cause": "snoop",
+                  "is_snoop": 1,
+                  "ref_id": "owner_l1_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "l1",
+                  "event_type": "metadata_commit",
+                  "cycle": 90,
+                  "reset_epoch": 0,
+                  "core": 1,
+                  "address": 6316160,
+                  "old_state": 0,
+                  "new_state": 1,
+                  "cause": "non_snoop",
+                  "is_snoop": 0,
+                  "ref_id": "requester_l1_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "metadata_commit",
+                  "cycle": 80,
+                  "reset_epoch": 0,
+                  "address": 6316160,
+                  "old_state": 2,
+                  "old_sharers": 0,
+                  "old_owner": 0,
+                  "state": 1,
+                  "sharers": 3,
+                  "owner": 0,
+                  "ref_id": "owner_directory_commit",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 70,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_0",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 71,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 15298446477239731268,
+                  "beat": 1,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_1",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 72,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_2",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 73,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_3",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 74,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_4",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 75,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_5",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 76,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "ref_id": "owner_data_beat_6",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "coherence",
+                  "event_type": "owner_data_beat",
+                  "cycle": 77,
+                  "reset_epoch": 0,
+                  "core": 0,
+                  "address": 6316160,
+                  "data": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "ref_id": "owner_data_beat_7",
+                  "role": "remote_snoop"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 155,
+                  "reset_epoch": 0,
+                  "address": 6316032,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 0,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_0",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 156,
+                  "reset_epoch": 0,
+                  "address": 6316040,
+                  "data": 14068682299123245602,
+                  "txn_id": 0,
+                  "beat": 1,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_1",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 157,
+                  "reset_epoch": 0,
+                  "address": 6316048,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 2,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_2",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 158,
+                  "reset_epoch": 0,
+                  "address": 6316056,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 3,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_3",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 159,
+                  "reset_epoch": 0,
+                  "address": 6316064,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 4,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_4",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 160,
+                  "reset_epoch": 0,
+                  "address": 6316072,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 5,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_5",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 161,
+                  "reset_epoch": 0,
+                  "address": 6316080,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 6,
+                  "last": 0,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_6",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "axi",
+                  "event_type": "read_beat",
+                  "cycle": 162,
+                  "reset_epoch": 0,
+                  "address": 6316088,
+                  "data": 0,
+                  "txn_id": 0,
+                  "beat": 7,
+                  "last": 1,
+                  "response": 0,
+                  "ref_id": "miss_r_beat_7",
+                  "role": "axi_refill"
+                },
+                {
+                  "source": "directory",
+                  "event_type": "request_accept",
+                  "cycle": 67,
+                  "reset_epoch": 0,
+                  "address": 6316160,
+                  "txn_id": 0,
+                  "source_id": 1,
+                  "opcode": 0,
+                  "ref_id": "owner_directory_request",
+                  "role": "remote_snoop"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 3,
+          "l1_mshr.allocate": 3,
+          "directory.request_accept": 3,
+          "l2.lookup": 2,
+          "directory_context.allocate": 3,
+          "l1_mshr.dispatch": 3,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 110,
+          "axi.read_beat": 16,
+          "l2.refill_start": 2,
+          "l2.line_write_beat": 24,
+          "l2.refill_end": 2,
+          "directory.metadata_commit": 3,
+          "mshr.retire": 2,
+          "directory.grant_accept": 3,
+          "l1.metadata_commit": 4,
+          "directory_context.retire": 3,
+          "cpu.response_complete": 3,
+          "l1_mshr.retire": 3,
+          "l1_mshr.deactivate": 3,
+          "l1_mshr.txn_assign": 1,
+          "snoop.accept": 1,
+          "directory.snoop_offer": 1,
+          "coherence.owner_data_beat": 8,
+          "snoop.response": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 39,
+          "1": 148
+        },
+        "directory_context_histogram": {
+          "0": 11,
+          "1": 152,
+          "2": 24
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 4,
+          "1": 155,
+          "2": 28
+        },
+        "l1_mshr_active_histogram": {
+          "0": 4,
+          "1": 155,
+          "2": 28
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 8,
+          "1": 153,
+          "2": 26
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 4,
+            "1": 183
+          },
+          "1": {
+            "0": 159,
+            "1": 28
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 4,
+            "1": 183
+          },
+          "1": {
+            "0": 159,
+            "1": 28
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 8,
+            "1": 179
+          },
+          "1": {
+            "0": 161,
+            "1": 26
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 2,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 3,
+        "cpu_response_completions": 3,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request",
+      "scenario_id": "test_axi_top_reset_cancels_pending_hit_under_miss_request",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 80
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00808008": "0xe5500005aaaabbbb"
+      },
+      "coverage": {
+        "bins": {
+          "FS.HIT_UNDER_MISS.RESET_CANCEL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.HIT_UNDER_MISS_X_RESET": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.HIT_UNDER_MISS.RESET_CANCEL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.HIT_UNDER_MISS_X_RESET": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.HIT_UNDER_MISS.RESET_CANCEL": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.HIT_UNDER_MISS_X_RESET": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.HIT_UNDER_MISS.RESET_CANCEL": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.HIT_UNDER_MISS_X_RESET": [
+              "tests/full_system/test_hit_under_miss_axi.py::test_axi_top_reset_cancels_pending_hit_under_miss_request"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 92,
+          "system.reset_assert": 1,
+          "system.reset_cancel": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "directory_context.retire": 1,
+          "cpu.response_complete": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 36,
+          "1": 112
+        },
+        "directory_context_histogram": {
+          "0": 20,
+          "1": 128
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 14,
+          "1": 134
+        },
+        "l1_mshr_active_histogram": {
+          "0": 14,
+          "1": 134
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 18,
+          "1": 130
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 14,
+            "1": 134
+          },
+          "1": {
+            "0": 148
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 14,
+            "1": 134
+          },
+          "1": {
+            "0": 148
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 18,
+            "1": 130
+          },
+          "1": {
+            "0": 148
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop",
+      "scenario_id": "test_l1_replacement_putm_races_remote_snoop",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 8
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00a00000": "0x0000000000001234",
+        "0x00a08000": "0x0000000022000001",
+        "0x00a10000": "0x0000000022000002",
+        "0x00a18000": "0x0000000022000003",
+        "0x00a20000": "0x5566778899aabbcc"
+      },
+      "coverage": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 1,
+          "FS.RACE.REPLACEMENT_PUTM_SNOOP": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE1.WRITE": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.RACE.REPLACEMENT_PUTM_SNOOP": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.CPU.READ.CORE1": 3,
+          "FS.CPU.WRITE.CORE1": 1,
+          "FS.MESI.I_TO_E": 3,
+          "FS.MESI.I_TO_M": 1,
+          "FS.RACE.REPLACEMENT_PUTM_SNOOP": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE1.READ": 3,
+          "FS.CROSS.CORE1.WRITE": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.CPU.READ.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.CPU.WRITE.CORE1": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.MESI.I_TO_M": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.RACE.REPLACEMENT_PUTM_SNOOP": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE1.READ": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ],
+            "FS.CROSS.CORE1.WRITE": [
+              "tests/full_system/test_full_system_signoff.py::test_l1_replacement_putm_races_remote_snoop"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 6,
+          "l1_mshr.allocate": 6,
+          "directory.request_accept": 7,
+          "l2.lookup": 6,
+          "directory_context.allocate": 7,
+          "l1_mshr.dispatch": 6,
+          "axi.read_address": 5,
+          "mshr.allocate": 5,
+          "axi.read_valid_gap": 89,
+          "axi.read_beat": 40,
+          "l2.refill_start": 5,
+          "l2.line_write_beat": 48,
+          "l2.refill_end": 5,
+          "directory.metadata_commit": 7,
+          "mshr.retire": 5,
+          "directory.grant_accept": 7,
+          "l1.metadata_commit": 7,
+          "directory_context.retire": 7,
+          "cpu.response_complete": 6,
+          "l1_mshr.retire": 6,
+          "l1_mshr.deactivate": 6,
+          "l1_mshr.txn_assign": 7,
+          "axi.stall": 1,
+          "directory.snoop_offer": 18,
+          "snoop.accept": 1,
+          "directory.request_stall": 17,
+          "snoop.response": 1
+        },
+        "stall_cycles": {
+          "AR": 1,
+          "directory_request": 17
+        },
+        "mshr_occupancy_histogram": {
+          "0": 132,
+          "1": 184
+        },
+        "directory_context_histogram": {
+          "0": 29,
+          "1": 273,
+          "2": 14
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 7,
+          "1": 272,
+          "2": 37
+        },
+        "l1_mshr_active_histogram": {
+          "0": 7,
+          "1": 272,
+          "2": 37
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 17,
+          "1": 299
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 279,
+            "1": 37
+          },
+          "1": {
+            "0": 7,
+            "1": 309
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 279,
+            "1": 37
+          },
+          "1": {
+            "0": 7,
+            "1": 309
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 281,
+            "1": 35
+          },
+          "1": {
+            "0": 52,
+            "1": 264
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 2,
+        "max_l1_mshr_occupancy": 2,
+        "max_l1_mshr_active": 2,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 1
+        },
+        "reset_epoch": 0,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 6,
+        "cpu_response_completions": 6,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    },
+    {
+      "test_id": "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id",
+      "scenario_id": "test_reset_cancels_outstanding_axi_read_and_reuses_id",
+      "seed": null,
+      "test_status": "passed",
+      "configuration": {
+        "agents": {
+          "axi": {
+            "latency": 80,
+            "read_reorder_window": 20
+          },
+          "mmio": {}
+        }
+      },
+      "failure_context": null,
+      "generated_operations": [],
+      "initial_backing_memory": {
+        "0x00405008": "0xfacecafe01234567"
+      },
+      "coverage": {
+        "bins": {
+          "FS.AXI.RESET_CANCEL": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_WITH_OUTSTANDING": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.AXI.RESET_CANCEL": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.CROSS.RESET_WITH_OUTSTANDING": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "coverage_delta": {
+        "bins": {
+          "FS.AXI.RESET_CANCEL": 1,
+          "FS.CPU.READ.CORE0": 1,
+          "FS.MESI.I_TO_E": 1
+        },
+        "cross_bins": {
+          "FS.CROSS.CORE0.READ": 1,
+          "FS.CROSS.RESET_WITH_OUTSTANDING": 1
+        },
+        "sample_testcases": {
+          "bins": {
+            "FS.AXI.RESET_CANCEL": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.CPU.READ.CORE0": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.MESI.I_TO_E": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ]
+          },
+          "cross_bins": {
+            "FS.CROSS.CORE0.READ": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ],
+            "FS.CROSS.RESET_WITH_OUTSTANDING": [
+              "tests/full_system/test_full_system_coherence.py::test_reset_cancels_outstanding_axi_read_and_reuses_id"
+            ]
+          }
+        },
+        "checked_cross_evidence": {}
+      },
+      "monitor": {
+        "event_counts": {
+          "cpu.request_accept": 2,
+          "l1_mshr.allocate": 2,
+          "directory.request_accept": 2,
+          "l2.lookup": 2,
+          "directory_context.allocate": 2,
+          "l1_mshr.dispatch": 2,
+          "axi.read_address": 2,
+          "mshr.allocate": 2,
+          "axi.read_valid_gap": 122,
+          "system.reset_assert": 1,
+          "system.reset_cancel": 1,
+          "axi.read_beat": 8,
+          "l2.refill_start": 1,
+          "l2.line_write_beat": 8,
+          "l2.refill_end": 1,
+          "directory.metadata_commit": 1,
+          "mshr.retire": 1,
+          "directory.grant_accept": 1,
+          "l1.metadata_commit": 1,
+          "directory_context.retire": 1,
+          "cpu.response_complete": 1,
+          "l1_mshr.retire": 1,
+          "l1_mshr.deactivate": 1
+        },
+        "stall_cycles": {},
+        "mshr_occupancy_histogram": {
+          "0": 35,
+          "1": 141
+        },
+        "directory_context_histogram": {
+          "0": 19,
+          "1": 157
+        },
+        "l1_mshr_occupancy_histogram": {
+          "0": 13,
+          "1": 163
+        },
+        "l1_mshr_active_histogram": {
+          "0": 13,
+          "1": 163
+        },
+        "l1_mshr_issued_histogram": {
+          "0": 17,
+          "1": 159
+        },
+        "l1_mshr_per_core_histogram": {
+          "0": {
+            "0": 13,
+            "1": 163
+          },
+          "1": {
+            "0": 176
+          }
+        },
+        "l1_mshr_active_per_core_histogram": {
+          "0": {
+            "0": 13,
+            "1": 163
+          },
+          "1": {
+            "0": 176
+          }
+        },
+        "l1_mshr_issued_per_core_histogram": {
+          "0": {
+            "0": 17,
+            "1": 159
+          },
+          "1": {
+            "0": 176
+          }
+        },
+        "max_mshr_occupancy": 1,
+        "max_directory_contexts": 1,
+        "max_l1_mshr_occupancy": 1,
+        "max_l1_mshr_active": 1,
+        "max_l1_mshr_issued": 1,
+        "max_l1_mshr_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_active_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "max_l1_mshr_issued_per_core": {
+          "0": 1,
+          "1": 0
+        },
+        "reset_epoch": 1,
+        "axi_peak_reads": 1,
+        "axi_peak_writes": 0,
+        "cpu_request_accepts": 2,
+        "cpu_response_completions": 1,
+        "replay_records": 0,
+        "protocol_error": 0,
+        "fatal_error": 0,
+        "axi_error_count": 0
+      }
+    }
+  ],
+  "git_sha": "e60a084980d992ba85d6edade4572ce1491563b5",
+  "source_snapshot": {
+    "working_tree_dirty": true,
+    "source_diff_sha256": "15b5070d532eaacd9be61c30beecc40f669403f9f99f50da149fdeb30f4c2da8",
+    "untracked_source_files": [
+      "dv/checkers/l1_mshr_reset_reuse_checker.py"
+    ],
+    "untracked_source_sha256": "5ffbba55d652165c999f2050e7e8130a1bc311800e703b13e34bca7e6221fe31"
+  },
+  "tool_versions": {
+    "python": "3.12.3",
+    "pytest": "9.1.1",
+    "toffee": "not-installed-as-python-package",
+    "picker-py": "not-installed-as-python-package",
+    "verilator": "Verilator 5.053 devel rev v5.052-521-g6388139f7 (mod)",
+    "picker": "Running as normal executable"
+  }
+}
