@@ -101,6 +101,33 @@ async def _collect_responses(env, count, *, timeout=2400):
     raise TimeoutError(f"CPU responses incomplete: {len(responses)}/{count}")
 
 
+async def _take_one_response(env, core, *, timeout=1800):
+    """Accept and return one response while preserving per-core ordering."""
+    dut = env.dut
+    bit = 1 << core
+    dut.cpu_resp_ready.value = bit
+    for _ in range(timeout):
+        await ClockCycles(dut, 1)
+        if (int(dut.cpu_resp_valid.value) &
+                int(dut.cpu_resp_ready.value) & bit):
+            response = {
+                "core": core,
+                "address": (int(dut.cpu_resp_addr.value) >> (32 * core)) &
+                           0xFFFF_FFFF,
+                "data": (int(dut.cpu_resp_rdata.value) >> (64 * core)) &
+                        DATA_MASK,
+                "txn_id": (int(dut.cpu_resp_txn_id.value) >> (3 * core)) & 7,
+                "write": (int(dut.cpu_resp_write.value) >> core) & 1,
+            }
+            env.monitor.record_cpu_response_complete(
+                core, response["address"], response["write"],
+                response["data"], response["txn_id"],
+                cycle=env.monitor.cycle,
+            )
+            return response
+    raise TimeoutError(f"core{core} response did not handshake")
+
+
 @case
 async def test_owner_snoop_progresses_while_two_l1_misses_are_live(full_system_env):
     """A dirty-owner transfer completes while its L1 tracks two other misses."""
@@ -246,3 +273,251 @@ async def test_owner_snoop_progresses_while_two_l1_misses_are_live(full_system_e
     env.coverage.sample_checked_event("FS.RACE.OWNER_SNOOP_WITH_TWO_L1_MSHR",
                                       checked=True)
     await ClockCycles(env.dut, 2)
+
+
+@case
+async def test_same_set_second_miss_waits_for_first_retirement(full_system_env):
+    """A same-L1-set miss is held stable, then progresses after retirement."""
+    env = await full_system_env(
+        seed=0x13_0C03,
+        axi_options={"latency": 80, "r_valid_gap_period": 2},
+    )
+    env.trace_scenario_id = "V13_SAME_SET_MISS_BACKPRESSURE_RECOVERY"
+    first = 0x00B0_0008
+    second = first + 0x8000  # Same L1 and L2 set, different cache line/tag.
+    values = {
+        first: 0x51A0_0000_0000_0001,
+        second: 0x51A0_0000_0000_0002,
+    }
+    for address, value in values.items():
+        line = address & LINE_MASK
+        for beat in range(8):
+            env.seed_word(line + beat * 8, value ^ (beat << 48))
+    expected_data = {address: env.axi.read_word(address) for address in values}
+
+    env.dut.cpu_resp_ready.value = 0
+    event_start = len(env.monitor.events)
+    env.trace_config.update({
+        "l1_mshr_entries_per_core": 2,
+        "same_l1_set_addresses": [first, second],
+        "expected_behavior": "second request stalls until first MSHR retires",
+    })
+    await _offer_one(env, 0, first)
+    await _wait(
+        env,
+        lambda: any(event.get("source") == "directory" and
+                    event.get("event_type") == "request_accept" and
+                    int(event.get("source_id", -1)) == 0 and
+                    (int(event.get("address", -1)) & LINE_MASK) ==
+                    (first & LINE_MASK)
+                    for event in env.monitor.events[event_start:]),
+        "first same-set Directory request",
+    )
+
+    # Keep the second request and all payload fields unchanged through the
+    # backpressure interval. It must not allocate a second context or issue a
+    # Directory transaction while the first same-set miss owns the array path.
+    env.dut.cpu_req_addr.value = second
+    env.dut.cpu_req_write.value = 0
+    env.dut.cpu_req_wdata.value = 0
+    env.dut.cpu_req_wmask.value = 0
+    env.dut.cpu_req_valid.value = 1
+    for _ in range(8):
+        await ClockCycles(env.dut, 1)
+        assert not (int(env.dut.cpu_req_ready.value) & 1), (
+            "same-set second miss was accepted while the first MSHR was live"
+        )
+        assert (int(env.dut.cpu_req_addr.value) & 0xFFFF_FFFF) == second
+        assert int(env.dut.monitor_l1_mshr_valid.value) & 0b11 == 0b01
+        assert sum(event.get("source") == "directory" and
+                   event.get("event_type") == "request_accept" and
+                   int(event.get("source_id", -1)) == 0
+                   for event in env.monitor.events[event_start:]) == 1
+
+    first_response = await _take_one_response(env, 0)
+    env.dut.cpu_resp_ready.value = 0
+    assert first_response["address"] == first
+    assert first_response["data"] == expected_data[first]
+
+    # The held request must eventually handshake after capacity is released.
+    accepted = False
+    for _ in range(200):
+        await ClockCycles(env.dut, 1)
+        if int(env.dut.cpu_req_ready.value) & 1:
+            env.monitor.record_cpu_request_accept(
+                0, second, False, cycle=env.monitor.cycle
+            )
+            accepted = True
+            env.dut.cpu_req_valid.value = 0
+            break
+    env.dut.cpu_req_valid.value = 0
+    assert accepted, "held same-set request did not make forward progress"
+    second_response = await _take_one_response(env, 0)
+    env.dut.cpu_resp_ready.value = 0
+    assert second_response["address"] == second
+    assert second_response["data"] == expected_data[second]
+    # Drain the monitor's sampling edge after the final response handshake so
+    # its independently observed MSHR retire event is included below.
+    await ClockCycles(env.dut, 2)
+
+    events = env.monitor.events[event_start:]
+    requests = [event for event in events
+                if event.get("source") == "directory" and
+                event.get("event_type") == "request_accept" and
+                int(event.get("source_id", -1)) == 0]
+    assert [event["address"] & LINE_MASK for event in requests] == [
+        first & LINE_MASK, second & LINE_MASK,
+    ]
+    assert requests[0]["cycle"] < requests[1]["cycle"]
+    lifecycle = L1MshrLifecycleChecker.check(
+        events,
+        expected_requests=[(0, first, expected_data[first]),
+                           (0, second, expected_data[second])],
+        first_response_must_follow_all_allocs=False,
+    )
+    refill = MshrLifecycleChecker.check(
+        events,
+        expected_lines={first & LINE_MASK, second & LINE_MASK},
+        expected_words=expected_data,
+        expected_cores={first: 0, second: 0},
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    assert int(env.dut.fatal_error.value) == 0
+    env.trace_operations.extend([
+        {"kind": "checker_evidence", "checker": "L1MshrLifecycleChecker",
+         "result": lifecycle},
+        {"kind": "checker_evidence", "checker": "MshrLifecycleChecker",
+         "result": refill},
+        {"kind": "backpressure_evidence", "scenario": "same_l1_set",
+         "stall_cycles": 8, "accepted_after_first_retire": accepted},
+    ])
+
+
+@case
+async def test_resident_hit_is_backpressured_when_both_l1_mshrs_are_full(full_system_env):
+    """Full miss tracking blocks a hit, then the held hit proceeds safely."""
+    env = await full_system_env(
+        seed=0x13_0C04,
+        axi_options={"latency": 180, "r_valid_gap_period": 2},
+    )
+    env.trace_scenario_id = "V13_FULL_MSHR_HIT_BACKPRESSURE_FORWARD_PROGRESS"
+    resident = 0x00C0_0048
+    miss_a = 0x00C1_0008
+    miss_b = 0x00C2_0108
+    expected = {
+        resident: 0xF011_0000_0000_0001,
+        miss_a: 0xF011_0000_0000_0002,
+        miss_b: 0xF011_0000_0000_0003,
+    }
+    for address, value in expected.items():
+        line = address & LINE_MASK
+        for beat in range(8):
+            env.seed_word(line + beat * 8, value ^ (beat << 48))
+    expected_data = {address: env.axi.read_word(address) for address in expected}
+    assert await env.cpu_access(0, resident) == expected_data[resident]
+
+    env.dut.cpu_resp_ready.value = 0
+    event_start = len(env.monitor.events)
+    await _offer_one(env, 0, miss_a)
+    await _wait(
+        env,
+        lambda: any(event.get("source") == "axi" and
+                    event.get("event_type") == "read_address" and
+                    (int(event.get("address", -1)) & LINE_MASK) ==
+                    (miss_a & LINE_MASK)
+                    for event in env.monitor.events[event_start:]),
+        "first miss AXI read address",
+    )
+    await _offer_one(env, 0, miss_b)
+    await _wait(
+        env,
+        lambda: (int(env.dut.monitor_l1_mshr_valid.value) & 0b11) == 0b11,
+        "both L1 miss entries live",
+    )
+    await _wait(
+        env,
+        lambda: bool(int(env.dut.cpu_resp_valid.value) & 1),
+        "miss response held while both entries remain allocated",
+    )
+
+    # A genuine resident read is offered while both miss contexts are occupied.
+    # The legacy bypass predicate intentionally requires occupancy == 1.
+    env.dut.cpu_req_addr.value = resident
+    env.dut.cpu_req_write.value = 0
+    env.dut.cpu_req_wdata.value = 0
+    env.dut.cpu_req_wmask.value = 0
+    env.dut.cpu_req_valid.value = 1
+    for _ in range(8):
+        await ClockCycles(env.dut, 1)
+        assert not (int(env.dut.cpu_req_ready.value) & 1), (
+            "resident hit bypassed while both L1 MSHRs were occupied"
+        )
+        assert (int(env.dut.cpu_req_addr.value) & 0xFFFF_FFFF) == resident
+        assert int(env.dut.monitor_l1_mshr_valid.value) & 0b11 == 0b11
+
+    # Retiring misses frees an entry. Keep the hit stable while collecting all
+    # responses; it may complete between the two FIFO-ordered miss responses.
+    env.dut.cpu_resp_ready.value = 1
+    responses = []
+    hit_accepted = False
+    for _ in range(2400):
+        await ClockCycles(env.dut, 1)
+        if not hit_accepted and int(env.dut.cpu_req_ready.value) & 1:
+            env.monitor.record_cpu_request_accept(
+                0, resident, False, cycle=env.monitor.cycle
+            )
+            env.dut.cpu_req_valid.value = 0
+            hit_accepted = True
+        fire = int(env.dut.cpu_resp_valid.value) & int(
+            env.dut.cpu_resp_ready.value) & 1
+        if fire:
+            response = {
+                "core": 0,
+                "address": int(env.dut.cpu_resp_addr.value) & 0xFFFF_FFFF,
+                "data": int(env.dut.cpu_resp_rdata.value) & DATA_MASK,
+                "txn_id": int(env.dut.cpu_resp_txn_id.value) & 7,
+                "write": int(env.dut.cpu_resp_write.value) & 1,
+            }
+            responses.append(response)
+            env.monitor.record_cpu_response_complete(
+                0, response["address"], response["write"], response["data"],
+                response["txn_id"], cycle=env.monitor.cycle,
+            )
+        if hit_accepted and len(responses) == 3:
+            break
+    env.dut.cpu_req_valid.value = 0
+    env.dut.cpu_resp_ready.value = 0
+    assert hit_accepted, "held resident hit did not progress after an MSHR retired"
+    assert len(responses) == 3, f"observed {len(responses)}/3 CPU responses"
+    by_address = {item["address"]: item for item in responses}
+    assert set(by_address) == set(expected)
+    for address, value in expected_data.items():
+        assert by_address[address]["data"] == value
+    miss_response_order = [item["address"] for item in responses
+                           if item["address"] in (miss_a, miss_b)]
+    assert miss_response_order == [miss_a, miss_b], miss_response_order
+
+    events = env.monitor.events[event_start:]
+    lifecycle = L1MshrLifecycleChecker.check(
+        events,
+        expected_requests=[(0, miss_a, expected_data[miss_a]),
+                           (0, miss_b, expected_data[miss_b])],
+    )
+    refill = MshrLifecycleChecker.check(
+        events,
+        expected_lines={miss_a & LINE_MASK, miss_b & LINE_MASK},
+        expected_words={miss_a: expected_data[miss_a],
+                        miss_b: expected_data[miss_b]},
+        expected_cores={miss_a: 0, miss_b: 0},
+    )
+    assert int(env.dut.protocol_error.value) == 0
+    assert int(env.dut.fatal_error.value) == 0
+    env.trace_operations.extend([
+        {"kind": "checker_evidence", "checker": "L1MshrLifecycleChecker",
+         "result": lifecycle},
+        {"kind": "checker_evidence", "checker": "MshrLifecycleChecker",
+         "result": refill},
+        {"kind": "backpressure_evidence", "scenario": "full_mshr_resident_hit",
+         "stall_cycles": 8, "accepted_after_capacity_freed": hit_accepted,
+         "miss_response_order": miss_response_order},
+    ])
