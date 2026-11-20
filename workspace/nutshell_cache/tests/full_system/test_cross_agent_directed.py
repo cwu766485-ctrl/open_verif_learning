@@ -320,6 +320,10 @@ async def test_same_set_directory_conflict_overlaps_axi_ar_stall(full_system_env
     requests = [None, None]
     requests[owner_core] = CpuRequest(refill_addr)
     requests[snooper_core] = CpuRequest(owner_addr)
+    # Periodic READY can miss the short ARVALID window for a fixed seed.
+    # Hold the next accepted refill request long enough for the competing
+    # same-set Directory lookup to overlap it deterministically.
+    env.axi.arm_stall("AR", cycles=8)
     event_start = len(env.monitor.events)
     results = await env.cpu_access_pair(
         requests[0], requests[1],

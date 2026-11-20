@@ -930,6 +930,10 @@ async def test_apb_counters_writeback_and_reset_semantics(full_system_env):
 
     aw_before = len(env.axi.write_addresses)
     write_cursor = len(env.axi.write_beats)
+    # The replacement produces short AW/W windows. Arm one real handshake
+    # stall on each channel so the test does not depend on cycle modulo phase.
+    env.axi.arm_stall("AW", cycles=1)
+    env.axi.arm_stall("W", cycles=1)
     dirty_values = await _dirty_l2_set(env, 10, base=0x0140_2000)
     # Ten dirty lines in one 8-way L2 set require at least two dirty victims.
     # Set-up may have happened in _dirty_l2_set, so its traffic is retained.
@@ -957,7 +961,10 @@ async def test_apb_counters_writeback_and_reset_semantics(full_system_env):
             f"writeback data lost for dirty victim {addr:#x}"
         )
     for channel in ("AW", "W"):
-        assert env.axi.stalls[channel] > 0, (
+        # The protocol monitor samples VALID/READY at the DUT boundary. The
+        # backing agent's event counter is a driver-side statistic and can be
+        # offset by the simulator edge scheduling around a registered VALID.
+        assert env.monitor.stall_cycles[channel] > 0, (
             f"integrated dirty writeback did not exercise AXI {channel} stall"
         )
 
