@@ -70,6 +70,7 @@ def _run_one(mutation: Mutation) -> dict[str, object]:
             str(PROJECT_ROOT / "rtl/common/CoherenceProtocol.sv"),
             str(PROJECT_ROOT / "rtl/l1/MesiL1SnoopArbiter.sv"),
             str(mutant_rtl), str(TB),
+            str(PROJECT_ROOT / "rtl/l1/MesiL1MissContext.sv"),
             str(PROJECT_ROOT / "rtl/l1/MesiL1Controller.sv"),
         ]
         compiled = subprocess.run(
